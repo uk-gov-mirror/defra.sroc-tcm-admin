@@ -1,0 +1,2 @@
+class Regime < ApplicationRecord
+end
