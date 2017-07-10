@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170606092750) do
+ActiveRecord::Schema.define(version: 20170703074514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,72 @@ ActiveRecord::Schema.define(version: 20170606092750) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_regimes_on_name"
+  end
+
+  create_table "transaction_details", force: :cascade do |t|
+    t.bigint "transaction_header_id"
+    t.integer "sequence_number"
+    t.string "customer_reference"
+    t.datetime "transaction_date"
+    t.string "transaction_type"
+    t.string "transaction_reference"
+    t.string "related_reference"
+    t.string "currency_code"
+    t.string "header_narrative"
+    t.string "header_attr_1"
+    t.string "header_attr_2"
+    t.string "header_attr_3"
+    t.string "header_attr_4"
+    t.string "header_attr_5"
+    t.string "header_attr_6"
+    t.string "header_attr_7"
+    t.string "header_attr_8"
+    t.string "header_attr_9"
+    t.string "header_attr_10"
+    t.integer "line_amount"
+    t.string "line_vat_code"
+    t.string "line_area_code"
+    t.string "line_description"
+    t.string "line_income_stream_code"
+    t.string "line_context_code"
+    t.string "line_attr_1"
+    t.string "line_attr_2"
+    t.string "line_attr_3"
+    t.string "line_attr_4"
+    t.string "line_attr_5"
+    t.string "line_attr_6"
+    t.string "line_attr_7"
+    t.string "line_attr_8"
+    t.string "line_attr_9"
+    t.string "line_attr_10"
+    t.string "line_attr_11"
+    t.string "line_attr_12"
+    t.string "line_attr_13"
+    t.string "line_attr_14"
+    t.string "line_attr_15"
+    t.integer "line_quantity"
+    t.string "unit_of_measure"
+    t.integer "unit_of_measure_price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
+    t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
+    t.index ["transaction_header_id"], name: "index_transaction_details_on_transaction_header_id"
+  end
+
+  create_table "transaction_headers", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.string "feeder_source_code"
+    t.string "region"
+    t.integer "file_sequence_number"
+    t.string "bill_run_id"
+    t.datetime "generated_at"
+    t.integer "transaction_count"
+    t.integer "invoice_total"
+    t.integer "credit_total"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["regime_id"], name: "index_transaction_headers_on_regime_id"
   end
 
 end

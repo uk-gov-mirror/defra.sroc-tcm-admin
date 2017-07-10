@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :regime do
-    name "MyString"
+    name "CFD"
   end
 end

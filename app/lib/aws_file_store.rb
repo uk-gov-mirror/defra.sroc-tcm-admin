@@ -10,6 +10,8 @@ class AwsFileStore
   def list(path = "")
     resp = s3.list_objects_v2(bucket: s3_bucket_name, prefix: rebase_path(path))
     resp.contents.select { |f| f.key != base_path }.map { |f| f.key.sub(base_path, "") }
+  rescue Aws::S3::Errors::AccessDenied => e
+    raise Exceptions::PermissionError.new("No permission to list: #{path}")
   end
 
   # to_path can be file path or io object
@@ -17,6 +19,8 @@ class AwsFileStore
     s3.get_object(bucket: s3_bucket_name, key: rebase_path(from_path), response_target: to_path)
   rescue Aws::S3::Errors::NoSuchKey => e
     raise Exceptions::FileNotFoundError.new("AWS S3 storage file not found: #{from_path}")
+  rescue Aws::S3::Errors::AccessDenied => e
+    raise Exceptions::PermissionError.new("No permission to access file: #{from_path}")
   end
 
   # stream file from disk
@@ -28,11 +32,15 @@ class AwsFileStore
     raise Exceptions::FileNotFoundError.new("Cannot open file: #{from_path}")
   rescue Aws::S3::Errors::NoSuchKey => e
     raise Exceptions::FileNotFoundError.new("AWS S3 storage file not found: #{to_path}")
+  rescue Aws::S3::Errors::AccessDenied => e
+    raise Exceptions::PermissionError.new("No permission to access file: #{to_path}")
   end
 
   def delete_file(file_path)
     # NOTE: this doesn't raise a S3 error if the key is not found
     s3.delete_object(bucket: s3_bucket_name, key: rebase_path(file_path))
+  rescue Aws::S3::Errors::AccessDenied => e
+    raise Exceptions::PermissionError.new("No permission to access file: #{file_path}")
   end
 
 #private
