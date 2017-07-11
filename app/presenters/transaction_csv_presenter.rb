@@ -69,7 +69,7 @@ class TransactionCsvPresenter < SimpleDelegator
     [
       "T",
       padded_number(count + 1),
-      padded_number(count + 2, 8),
+      record_count,
       invoice_total,
       credit_total
     ]
@@ -85,7 +85,20 @@ private
   end
 
   def file_id
-    file_sequence_number.to_s.rjust(5, "0")
+    if feeder_source_code == "CFD"
+      file_sequence_number
+    else
+      padded_number(file_sequence_number, 5)
+    end
+  end
+
+  def record_count
+    count = transaction_details.count + 2
+    if feeder_source_code == "CFD"
+      count
+    else
+      padded_number(count, 8)
+    end
   end
 
   def fmt_date(dt)

@@ -23,6 +23,20 @@ RSpec.describe TransactionCsvPresenter do
     it 'formats :generated_at in the style 1-JAN-2017' do
       expect(header[TransactionFile::Header::FileDate]).to eq subject.generated_at.strftime("%-d-%^b-%Y")
     end
+
+    context 'when regime is "CFD"' do
+      it 'does not zero pad :file_sequence_number' do
+        t = FactoryGirl.create(:transaction_header, :with_details, feeder_source_code: "CFD")
+        tp = described_class.new(t)
+        expect(tp.header[TransactionFile::Header::FileSequenceNumber]).to eq t.file_sequence_number
+      end
+    end
+
+    context 'when regime is not "CFD"' do
+      it 'zero pads :file_sequence_number to 5 digits' do
+        expect(header[TransactionFile::Header::FileSequenceNumber]).to match /\d{5}/
+      end
+    end
   end
 
   describe '#details' do

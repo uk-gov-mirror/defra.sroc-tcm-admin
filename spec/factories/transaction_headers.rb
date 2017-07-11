@@ -1,9 +1,9 @@
 FactoryGirl.define do
   factory :transaction_header do
     association :regime
-    feeder_source_code "CFD"
+    feeder_source_code "PAS"
     region "E"
-    file_sequence_number 0
+    file_sequence_number 123
     bill_run_id "01234"
     generated_at { DateTime.now }
 

@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :regime do
-    name "CFD"
+    name "PAS"
   end
 end
