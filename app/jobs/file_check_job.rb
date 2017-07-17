@@ -50,7 +50,6 @@ class FileCheckJob < ApplicationJob
 
   def quarantine(service, tmp_file, filename)
     # move a dodgy or error file out of the import folder and stash smoewhere else
-    debugger
     service.store_file_in(:quarantine, tmp_file.path, filename)
     service.delete_file_from(:import, filename)
   rescue => e

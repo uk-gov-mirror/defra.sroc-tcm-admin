@@ -38,7 +38,7 @@ class AwsFileStore
     raise Exceptions::PermissionError.new("No permission to access file: #{file_path}")
   end
 
-#private
+private
   def s3
     @s3 ||= Aws::S3::Client.new(region: aws_region, credentials: credentials)
   end
