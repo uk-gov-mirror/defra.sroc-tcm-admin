@@ -14,7 +14,7 @@ class TransactionFileHandler
       csv << presenter.trailer
     end
   rescue => e
-    raise TransactionFileError, e
+    raise Exceptions::TransactionFileError, e
   end
 
   def import(path)
@@ -42,25 +42,28 @@ class TransactionFileHandler
               generated_at: generated_at
             )
           else
-            raise TransactionFileError, "Not a transaction file!"
+            raise Exceptions::TransactionFileError, "Not a transaction file!"
           end
         else
-          raise TransactionFileError, "Header record already exists?!"
+          raise Exceptions::TransactionFileError, "Header record already exists?!"
         end
       elsif record_type == "D"
         # detail record
-        raise TransactionFileError, "Detail record but no header record" if header.nil?
+        raise Exceptions::TransactionFileError, "Detail record but no header record" if header.nil?
         header.transaction_details.create(extract_detail(row))
       elsif record_type == "T"
         # trailer record
-        raise TransactionFileError, "Trailer record but no header record" if header.nil?
+        raise Exceptions::TransactionFileError, "Trailer record but no header record" if header.nil?
         # pull totals from trailer record
         header.transaction_count = row[Trailer::RecordCount].to_i
         header.invoice_total = row[Trailer::DebitTotal].to_i
         header.credit_total = row[Trailer::CreditTotal].to_i
         header.save!
+      else
+        raise Exceptions::TransactionFileError, "Unknown record type (expected 'H', 'D' or 'T'): [#{record_type}]"
       end
     end
+    header
   end
 
   def extract_detail(row)

@@ -2,10 +2,6 @@
 require "fileutils"
 
 class LocalFileStorage
-  def initialize(path)
-    @base_path = path
-  end
-
   def list(path = "")
     Dir.glob(File.join(file_path(path), "**", "*")).select { |f| File.file?(f) }
   end
@@ -39,6 +35,6 @@ class LocalFileStorage
   end
 private
   def file_path(path)
-    Rails.root.join("tmp", "files", base_path, path)
+    Rails.root.join("tmp", "files", path)
   end
 end
