@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col">
+    <p id="notice"><%= notice %></p>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <h1>Permits for <%= @regime.name %></h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Permit reference</th>
+          <th>Permit Category</th>
+          <th>Effective Date</th>
+          <th>Status</th>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% @permits.each do |permit| %>
+          <tr>
+            <td><%= permit.permit_reference %></td>
+            <td><%= permit.permit_category %></td>
+            <td><%= permit.effective_date %></td>
+            <td><%= permit.status %></td>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-small btn-secondary dropdown-toggle"
+                        type="button"
+                        id="options_for_<%= permit.permit_reference.parameterize %>"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        Options<span class="sr-only"> for permit reference
+                          <%= permit.permit_reference %></span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="options_for_<%= permit.permit_reference.parameterize %>">
+                  <%= link_to 'Show', regime_permit_path(@regime, permit), class: "dropdown-item" %>
+                  <%= link_to 'Edit', edit_regime_permit_path(@regime, permit), class: "dropdown-item" %>
+                  <%= link_to 'Destroy', regime_permit_path(@regime, permit),
+                    method: :delete, data: { confirm: 'Are you sure?' }, class: "dropdown-item" %>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <%= link_to 'New Permit', new_regime_permit_path(@regime),
+      class: "btn btn-primary", role: "button" %>
+  </div>
+</div>

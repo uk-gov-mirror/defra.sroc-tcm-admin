@@ -2,18 +2,19 @@ require 'rails_helper'
 
 RSpec.describe "regimes/index", type: :view do
   before(:each) do
-    assign(:regimes, [
-      Regime.create!(
-        :name => "Name"
-      ),
-      Regime.create!(
-        :name => "Name"
-      )
-    ])
+    rs = []
+    %w[ PAS CFD ].each do |n|
+      r = Regime.new(name: n)
+      r.save!
+      rs << r.reload
+    end
+
+    assign(:regimes, rs)
   end
 
   it "renders a list of regimes" do
     render
-    assert_select "tr>td", :text => "Name".to_s, :count => 2
+    assert_select "tr>td", :text => "PAS"
+    assert_select "tr>td", :text => "CFD"
   end
 end

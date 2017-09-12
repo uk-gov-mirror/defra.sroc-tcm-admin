@@ -38,6 +38,15 @@ class AwsFileStore
     raise Exceptions::PermissionError.new("No permission to access file: #{file_path}")
   end
 
+  # extras that can be useful
+
+  # copy object within s3 (this implementation is within our bucket but this can work across buckets)
+  def copy_file(from_path, to_path)
+    s3.copy_object(bucket: s3_bucket_name, copy_source: File.join(s3_bucket_name, from_path), key: to_path)
+  rescue Aws::S3::Errors::AccessDenied => e
+    raise Exceptions::PermissionError.new("Unable to copy file: #{from_path} to #{to_path}")
+  end
+
 private
   def s3
     @s3 ||= Aws::S3::Client.new(region: aws_region, credentials: credentials)

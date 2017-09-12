@@ -1,0 +1,37 @@
+<%= form_with(model: [@regime, permit], local: true) do |form| %>
+  <% if permit.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(permit.errors.count, "error") %> prohibited this permit from being saved:</h2>
+
+      <ul>
+      <% permit.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :permit_reference %>
+    <%= form.text_field :permit_reference, id: :permit_permit_reference %>
+  </div>
+
+  <div class="field">
+    <%= form.label :permit_category %>
+    <%= form.text_field :permit_category, id: :permit_permit_category %>
+  </div>
+
+  <div class="field">
+    <%= form.label :effective_date %>
+    <%= form.text_field :effective_date, id: :permit_effective_date %>
+  </div>
+
+  <div class="field">
+    <%= form.label :status %>
+    <%= form.text_field :status, id: :permit_status %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

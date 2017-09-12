@@ -10,16 +10,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170703074514) do
+ActiveRecord::Schema.define(version: 20170907110514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "permits", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.string "permit_reference", null: false
+    t.string "original_reference"
+    t.string "obs_original_reference"
+    t.string "version"
+    t.string "discharge_reference"
+    t.string "operator"
+    t.string "permit_category", null: false
+    t.datetime "effective_date", null: false
+    t.string "status", null: false
+    t.boolean "pre_construction", null: false
+    t.datetime "pre_construction_end"
+    t.boolean "temporary_cessation", null: false
+    t.datetime "temporary_cessation_start"
+    t.datetime "temporary_cessation_end"
+    t.string "compliance_score"
+    t.string "compliance_band"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permit_reference"], name: "index_permits_on_permit_reference"
+    t.index ["regime_id"], name: "index_permits_on_regime_id"
+  end
 
   create_table "regimes", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_regimes_on_name"
+    t.string "slug", null: false
+    t.index ["name"], name: "index_regimes_on_name", unique: true
   end
 
   create_table "transaction_details", force: :cascade do |t|
