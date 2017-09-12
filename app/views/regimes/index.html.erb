@@ -1,27 +1,41 @@
-<p id="notice"><%= notice %></p>
+<div class="row">
+  <div class="col">
+    <p id="notice"><%= notice %></p>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <h1>Regimes</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th colspan="3"></th>
+        </tr>
+      </thead>
 
-<h1>Regimes</h1>
+      <tbody>
+        <% @regimes.each do |regime| %>
+          <tr>
+            <td><%= regime.name %></td>
+            <td><%= link_to 'Permits', regime_permits_path(regime) %></td>
+            <td><%= link_to 'Edit', edit_regime_path(regime) %></td>
+            <td><%= link_to 'Destroy', regime, method: :delete,
+              data: { confirm: 'Are you sure?' } %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @regimes.each do |regime| %>
-      <tr>
-        <td><%= regime.name %></td>
-        <td><%= link_to 'Show', regime %></td>
-        <td><%= link_to 'Edit', edit_regime_path(regime) %></td>
-        <td><%= link_to 'Destroy', regime, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Regime', new_regime_path %>
+<div class="row">
+  <div class="col">
+    <%= link_to 'New Regime', new_regime_path, class: "btn btn-primary",
+      role: "button" %>
+  </div>
+</div>
