@@ -14,18 +14,31 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th colspan="3"></th>
+          <td></td>
         </tr>
       </thead>
-
       <tbody>
         <% @regimes.each do |regime| %>
           <tr>
             <td><%= regime.name %></td>
-            <td><%= link_to 'Permits', regime_permits_path(regime) %></td>
-            <td><%= link_to 'Edit', edit_regime_path(regime) %></td>
-            <td><%= link_to 'Destroy', regime, method: :delete,
-              data: { confirm: 'Are you sure?' } %></td>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        id="options_for_<%= regime.slug %>"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        Options<span class="sr-only"> for regime
+                          <%= regime.slug %></span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="options_for_<%= regime.slug %>">
+                  <%= link_to 'Edit', edit_regime_path(regime), class: "dropdown-item" %>
+                  <%= link_to 'Destroy', regime_path(regime),
+                    method: :delete, data: { confirm: 'Are you sure?' }, class: "dropdown-item" %>
+                </div>
+              </div>
+            </td>
           </tr>
         <% end %>
       </tbody>

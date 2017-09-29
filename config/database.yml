@@ -9,10 +9,13 @@ development:
   <<: *default
   database: sroc-tcm-admin_development
 
-test:
+test: &test
   <<: *default
   database: sroc-tcm-admin_test
 
 production:
   <<: *default
   database: sroc-tcm-admin_production
+
+cucumber:
+  <<: *test

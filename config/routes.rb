@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :regimes do
     resources :permits
+    resources :permit_categories
+    resources :transactions, only: [:index, :show, :edit, :update]
   end
 
   root to: 'regimes#index'

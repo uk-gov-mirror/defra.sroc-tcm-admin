@@ -1,0 +1,44 @@
+
+$pale-blue: #d5e8f3 !default;
+
+.content {
+  margin: 0.5em;
+
+  .heading {
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
+  }
+}
+
+.cookie-message-seen #cookie-message {
+  display: none;
+}
+
+#cookie-message {
+  width: 100%;
+  background-color: $pale-blue;
+  padding: 0.5em;
+  margin-bottom: 0;
+
+  p {
+    margin: 0;
+  }
+}
+
+#skiplink-container {
+  text-align: center;
+  color: theme-color("dark");
+  background: theme-color("dark"); 
+
+  .skiplink {
+    display: inline-block;
+    position: absolute;
+    left: -9999em;
+  }
+}
+
+.panel {
+  border-left: 0.75rem solid $gray-400;
+  padding-left: 0.5rem;
+  margin-bottom: 1.5rem;
+}

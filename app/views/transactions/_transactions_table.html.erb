@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="col">
+    <table class="table table-responsive">
+      <thead>
+        <tr>
+          <% if @regime.waste_or_installations? %>
+            <th>Customer Reference</th>
+            <th>Permit Reference</th>
+            <th>SRoC Category</th>
+            <th>Compliance band</th>
+          <% else %>
+            <th>Customer Reference</th>
+            <th>Consent</th>
+            <th>Version</th>
+            <th>Discharge</th>
+            <th>SRoC Category</th>
+            <th>Variation</th>
+          <% end %>
+          <th>Period</th>
+          <th class="text-right">Amount (£)</th>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% transactions.each do |t| %>
+          <% transaction = present_transaction(t) %>
+          <tr>
+            <td><%= transaction.customer_reference %></td>
+            <td><%= transaction.permit_reference %></td>
+            <% if @regime.waste_or_installations? %>
+              <td><%= transaction.sroc_category %></td>
+              <td><%= transaction.compliance_band %></td>
+            <% else %>
+              <td><%= transaction.version %></td>
+              <td><%= transaction.discharge_reference %></td>
+              <td><%= transaction.sroc_category %></td>
+              <td><%= transaction.variation_percentage %></td>
+            <% end %>
+            <td><%= transaction.period %></td>
+            <td class="text-right"><%= number_to_currency transaction.amount, unit: "" %></td>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        id="options_for_<%= transaction.sequence_number %>"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        Options<span class="sr-only"> for transaction
+                          <%= transaction.sequence_number %></span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="options_for_<%= transaction.sequence_number %>">
+                  <%= link_to 'Show', regime_transaction_path(@regime, transaction), class: "dropdown-item" %>
+                  <%= link_to 'Edit', edit_regime_transaction_path(@regime, transaction), class: "dropdown-item" %>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

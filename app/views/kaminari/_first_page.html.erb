@@ -1,0 +1,13 @@
+<li class="page-item">
+  <% if current_page.first? %>
+    <span class="page-link disabled">
+      <span aria-hidden="true">&laquo;</span>
+      <span class="sr-only"><%= raw(t 'views.pagination.first') %></span>
+    </span>
+  <% else %>
+    <%= link_to url, remote: remote, class: 'page-link' do %>
+      <span aria-hidden="true">&laquo;</span>
+      <span class="sr-only"><%= raw(t 'views.pagination.first') %></span>
+    <% end %>
+  <% end %>
+</li>

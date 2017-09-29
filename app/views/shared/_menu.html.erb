@@ -1,33 +1,68 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<%
+    regime_list = Regime.all.order(:name)
+    @regime = regime_list.first if (defined?(@regime)).nil?
+%>
+<nav class="main-menu navbar navbar-expand-lg navbar-dark bg-dark">
   <%= link_to "Tactical Charging Module", root_path, class: "navbar-brand" %>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
+  <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
     <ul class="navbar-nav">
+      <!-- Admin menu -->
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarRegimeSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <% if (defined?(@regime)).nil? %>
-            Select Regime
-          <% else %>
-            <%= @regime.name %>
-          <% end %>
+        <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Admin
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
-          <% Regime.all.order(:name).each do |r| %>
-            <%= link_to r.name, regime_path(r), class: "dropdown-item" %>
-          <% end %>
+        <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
+          <%= link_to "Regimes", regimes_path, class: "dropdown-item" %>
         </div>
       </li>
-      <li class="nav-item active">
-        <%= link_to "Regimes", regimes_path, class: "nav-link" %>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Permits</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Transactions</a>
-      </li>
+      <!-- End of Admin menu -->
+      <% unless (defined?(@regime)).nil? %>
+        <!-- Transactions menu -->
+        <li class="nav-item dropdown <%= active_for_current_controller("transactions") %>">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarTransactionsSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Transactions
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
+            <%= link_to "Transactions to be billed", regime_transactions_path(@regime), class: "dropdown-item" %>
+            <%= link_to "Transaction history", regime_transactions_path(@regime), class: "dropdown-item" %>
+          </div>
+        </li>
+        <!-- End of Transactions menu -->
+        <!-- Permits menu -->
+        <li class="nav-item dropdown <%= active_for_current_controller("permits") %>">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarPermitsSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Permits
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarPermitsSelectorLink">
+            <%= link_to "Permits", regime_permits_path(@regime), class: "dropdown-item" %>
+            <%= link_to "Permit Categories", regime_permit_categories_path(@regime), class: "dropdown-item" %>
+          </div>
+        </li>
+        <!-- End of Permits menu -->
+      <% end %>
+    </ul>
+    <ul class="navbar-nav">
+      <% unless (defined?(@regime)).nil? %>
+        <li class="nav-item dropdown mr-4">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarRegimeSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Regime: <%= @regime.name %>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
+            <% regime_list.each do |r| %>
+              <%= link_to r.name, menu_path(r, controller_name), class: "dropdown-item" %>
+            <% end %>
+          </div>
+        </li>
+        <li class="nav-item navbar-text mr-4">
+          Signed in as <b>Bert Kwouk</b>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Sign out", "#", class: "navbar-text" %>
+        </li>
+      <% end %>
     </ul>
   </div>
 </nav>

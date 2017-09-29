@@ -1,0 +1,16 @@
+.paging-info {
+  margin-top: 2rem;
+
+  .page-info {
+    margin-top: 0;
+    margin-bottom: 1em;
+    @include media-breakpoint-up(lg) {
+      margin-top: 0.45em;
+    }
+  }
+
+  .page-link.disabled {
+    color: $gray-600;
+    background: $gray-200;
+  }
+}

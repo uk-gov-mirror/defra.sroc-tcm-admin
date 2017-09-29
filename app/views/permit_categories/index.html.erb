@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="col">
+    <h1 class="heading">Permit Categories</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Display order</th>
+          <td></td>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @permit_categories.each do |permit_category| %>
+          <tr>
+            <td><%= permit_category.code %></td>
+            <td><%= permit_category.description %></td>
+            <td><%= permit_category.status %></td>
+            <td><%= permit_category.display_order %></td>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        type="button"
+                        id="options_for_<%= permit_category.code.parameterize %>"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        Options<span class="sr-only"> for permit category
+                          <%= permit_category.code.parameterize %></span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="options_for_<%= permit_category.code.parameterize %>">
+                  <%= link_to 'Show', regime_permit_category_path(@regime, permit_category), class: "dropdown-item" %>
+                  <%= link_to 'Edit', edit_regime_permit_category_path(@regime, permit_category), class: "dropdown-item" %>
+                  <%= link_to 'Destroy', regime_permit_category_path(@regime, permit_category),
+                    method: :delete, data: { confirm: 'Are you sure?' }, class: "dropdown-item" %>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <%= link_to 'New Permit Category', new_regime_permit_category_path(@regime) %>
+  </div>
+</div>

@@ -50,7 +50,7 @@ class TransactionFileHandler
       elsif record_type == "D"
         # detail record
         raise Exceptions::TransactionFileError, "Detail record but no header record" if header.nil?
-        header.transaction_details.create(extract_detail(row))
+        header.transaction_details.create(extract_detail(header.regime, row))
       elsif record_type == "T"
         # trailer record
         raise Exceptions::TransactionFileError, "Trailer record but no header record" if header.nil?
@@ -66,7 +66,7 @@ class TransactionFileHandler
     header
   end
 
-  def extract_detail(row)
+  def extract_detail(regime, row)
     data = {
       sequence_number: row[Common::SequenceNumber].to_i,
       customer_reference: row[Detail::CustomerReference],
@@ -86,6 +86,28 @@ class TransactionFileHandler
       unit_of_measure: row[Detail::LineUnitOfMeasure],
       unit_of_measure_price: row[Detail::LineUOMPrice].to_i
     }
+
+    if regime.installations?
+      data.merge({
+        filename: row[Detail::Filename],
+        reference_1: row[Detail::PermitReference],
+        reference_2: row[Detail::OriginalPermitReference],
+        reference_3: row[Detail::OriginalPermitReference]
+      })
+    elsif regime.water_quality?
+      consent = row[Detail::LineDescription]
+      if consent.present?
+        consent = consent.split(' ').last.split('/')
+        data.merge({
+          # consent
+          reference_1: consent.take(consent.length - 2).join('/'),
+          # version
+          reference_2: consent.second_to_last,
+          # discharge
+          reference_3: consent.last
+        })
+      end
+    end
 
     # Header attrs 1 - 10
     (1..10).each do |n|
