@@ -6,4 +6,12 @@ class TransactionHeader < ApplicationRecord
   validates :region, presence: true
   validates :file_sequence_number, presence: true
   validates :generated_at, presence: true
+
+  def self.in_region(region)
+    if region == 'all'
+      all
+    else
+      where(region: region)
+    end
+  end
 end

@@ -1,0 +1,13 @@
+<li class="page-item">
+  <% if current_page.first? %>
+    <span class="page-link disabled">
+      <span aria-hidden="true">&lt;</span>
+      <span class="sr-only"><%= raw(t 'views.pagination.previous') %></span>
+    </span>
+  <% else %>
+    <%= link_to url, rel: 'prev', remote: remote, class: 'page-link' do %>
+      <span aria-hidden="true">&lt;</span>
+      <span class="sr-only"><%= raw(t 'views.pagination.previous') %></span>
+    <% end %>
+  <% end %>
+</li>

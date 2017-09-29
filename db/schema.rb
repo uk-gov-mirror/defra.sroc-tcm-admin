@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170907110514) do
+ActiveRecord::Schema.define(version: 20170927102758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "permit_categories", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.string "code", null: false
+    t.string "description"
+    t.string "status", null: false
+    t.integer "display_order", default: 1000, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code", "regime_id"], name: "index_permit_categories_on_code_and_regime_id", unique: true
+    t.index ["regime_id"], name: "index_permit_categories_on_regime_id"
+  end
 
   create_table "permits", force: :cascade do |t|
     t.bigint "regime_id"
@@ -93,6 +105,11 @@ ActiveRecord::Schema.define(version: 20170907110514) do
     t.integer "unit_of_measure_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "unbilled", null: false
+    t.string "filename"
+    t.string "reference_1"
+    t.string "reference_2"
+    t.string "reference_3"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_header_id"], name: "index_transaction_details_on_transaction_header_id"

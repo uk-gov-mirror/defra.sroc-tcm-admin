@@ -1,0 +1,23 @@
+<div class="paging-info row">
+  <div class="col-12 col-md-4">
+    <div class="page-info">
+      <%= page_entries_info collection %>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 justify-content-lg-end mb-4">
+    <%= form_with controller: controller_name, action: action_name, method: "get", class: 'form-inline justify-content-lg-end', local: true do %>
+      <div class="">
+        <div class="form-group">
+          <%= label_tag(:per_page, 'Items per page', class: 'mr-sm-2') %>
+          <%= select_tag(:per_page, per_page_options, id: 'per-page-select', class: "mr-sm-2 form-control") %>
+          <%= hidden_field_tag :page, params.fetch(:page, 1), id: 'page-number' %>
+          <%= hidden_field_tag :region, params.fetch(:region, 'all') %>
+          <%= hidden_field_tag :search, params[:search] %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-12 col-md-4 justify-content-lg-end">
+    <%= paginate collection %>
+  </div>
+</div>

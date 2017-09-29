@@ -1,5 +1,17 @@
 {
   "name": "sroc-tcm-admin",
   "private": true,
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "standard": "^10.0.3"
+  },
+  "scripts": {
+    "test": "standard app/assets/javascripts/*.js"
+  },
+  "standard": {
+    "ignore": [
+      "application.js",
+      "cable.js"
+    ]
+  }
 }

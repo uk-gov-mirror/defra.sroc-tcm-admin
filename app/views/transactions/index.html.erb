@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col">
+    <p id="notice"><%= notice %></p>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <h1>Transactions to be billed</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+  <p>These transactions will be transferred to SSCL on <em>todo</em></p>
+  </div>
+</div>
+<%= render partial: "transaction_summary", locals: { summary: @summary } %>
+<%= render partial: 'transaction_search_bar' %>
+<%= render partial: 'transactions_table', locals: { transactions: @transactions } %>
+<hr />
+<%= render partial: 'shared/pagination', locals: { collection: @transactions } %>

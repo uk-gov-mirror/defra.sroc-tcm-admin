@@ -55,6 +55,11 @@ module TransactionFile
     LineQuantity          = 40
     LineUnitOfMeasure     = 41
     LineUOMPrice          = 42
+    # PAS extra fields
+    Filename              = 43
+    PermitReference       = 44
+    OriginalPermitReference = 45
+    AbsOriginalPermitReference = 46
   end
 
   module Trailer

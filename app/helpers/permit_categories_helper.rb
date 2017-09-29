@@ -1,0 +1,2 @@
+module PermitCategoriesHelper
+end
