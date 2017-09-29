@@ -1,1 +1,3 @@
-Resque.redis = ENV.fetch("REDIS_URL")
+unless ENV.fetch("HEROKU", false)
+  Resque.redis = ENV.fetch("REDIS_URL")
+end
