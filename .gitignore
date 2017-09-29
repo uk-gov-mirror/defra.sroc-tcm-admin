@@ -19,7 +19,8 @@
 .byebug_history
 .env
 
-config/secrets.yml
+# needed for heroku - all ENV vars anyway
+# config/secrets.yml
 public/assets
 coverage
 .DS_Store
