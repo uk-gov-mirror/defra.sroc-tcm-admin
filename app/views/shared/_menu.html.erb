@@ -19,7 +19,7 @@
         </div>
       </li>
       <!-- End of Admin menu -->
-      <% unless (defined?(@regime)).nil? %>
+      <% if (defined?(@regime) && @regime) %>
         <!-- Transactions menu -->
         <li class="nav-item dropdown <%= active_for_current_controller("transactions") %>">
           <a class="nav-link dropdown-toggle" href="#" id="navbarTransactionsSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -45,7 +45,7 @@
       <% end %>
     </ul>
     <ul class="navbar-nav">
-      <% unless (defined?(@regime)).nil? %>
+      <% if (defined?(@regime) && @regime) %>
         <li class="nav-item dropdown mr-4">
           <a class="nav-link dropdown-toggle" href="#" id="navbarRegimeSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Regime: <%= @regime.name %>
@@ -54,15 +54,15 @@
             <% regime_list.each do |r| %>
               <%= link_to r.name, menu_path(r, controller_name), class: "dropdown-item" %>
             <% end %>
-          </div>
-        </li>
-        <li class="nav-item navbar-text mr-4">
-          Signed in as <b>Bert Kwouk</b>
-        </li>
-        <li class="nav-item">
-          <%= link_to "Sign out", "#", class: "navbar-text" %>
+          <div>
         </li>
       <% end %>
+      <li class="nav-item navbar-text mr-4">
+        Signed in as <b>Bert Kwouk</b>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Sign out", "#", class: "navbar-text" %>
+      </li>
     </ul>
   </div>
 </nav>

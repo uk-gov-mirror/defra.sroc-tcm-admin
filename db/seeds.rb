@@ -5,3 +5,10 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+if Regime.count.zero?
+  Regime.create!(name: 'PAS')
+  Regime.create!(name: 'CFD')
+  Regime.create!(name: 'WaBS')
+end
+
