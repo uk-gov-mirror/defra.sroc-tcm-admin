@@ -88,7 +88,7 @@ class TransactionFileHandler
     }
 
     if regime.installations?
-      data.merge({
+      data.merge!({
         filename: row[Detail::Filename],
         reference_1: row[Detail::PermitReference],
         reference_2: row[Detail::OriginalPermitReference],
@@ -98,7 +98,7 @@ class TransactionFileHandler
       consent = row[Detail::LineDescription]
       if consent.present?
         consent = consent.split(' ').last.split('/')
-        data.merge({
+        data.merge!({
           # consent
           reference_1: consent.take(consent.length - 2).join('/'),
           # version

@@ -14,4 +14,8 @@ class TransactionHeader < ApplicationRecord
       where(region: region)
     end
   end
+
+  def file_reference
+    "#{feeder_source_code}#{region}#{"%05d" % file_sequence_number}"
+  end
 end

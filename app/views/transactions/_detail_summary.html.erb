@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col">
+    <div class="panel">
+      <dl class="transaction-summary dl-horizontal">
+        <dt>Customer Reference</dt>
+        <dd><%= transaction.customer_reference %></dd>
+        <% if @regime.waste_or_installations? %>
+          <dt>Permit Reference</dt>
+          <dd><%= transaction.permit_reference %></dd>
+          <dt>Original Permit Ref</dt>
+          <dd><%= transaction.original_permit_reference %></dd>
+        <% else %>
+          <dt>Consent Reference</dt>
+          <dd><%= transaction.permit_reference %></dd>
+          <dt>Version</dt>
+          <dd><%= transaction.version %></dd>
+          <dt>Discharge</dt>
+          <dd><%= transaction.discharge_reference %> (<%= transaction.discharge_description %>)</dd>
+        <% end %>
+        <dt>Site</dt>
+        <dd><%= transaction.site %></dd>
+        <dt>Generated On</dt>
+        <dd><%= transaction.generated_at %></dd>
+        <% if @regime.waste_or_installations? %>
+          <dt>Compliance Band</dt>
+          <dd><%= transaction.compliance_band %></dd>
+        <% else %>
+          <dt>Variation</dt>
+          <dd><%= transaction.variation_percentage %></dd>
+        <% end %>
+        <dt>Period</dt>
+        <dd><%= transaction.period %></dd>
+        <dt>Amount</dt>
+        <dd><%= transaction.amount %></dd>
+      </dl>
+    </div>
+  </div>
+</div>

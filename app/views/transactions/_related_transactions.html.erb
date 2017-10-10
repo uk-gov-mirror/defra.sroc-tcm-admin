@@ -1,20 +1,25 @@
 <div class="row">
   <div class="col">
-    <table class="table table-responsive">
+    <h2>Related transactions</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table table-sm table-responsive">
       <thead>
         <tr>
           <% if @regime.waste_or_installations? %>
-            <th><%= sortable :customer_reference %></th>
-            <th><%= sortable :permit_reference %></th>
-            <th><%= sortable :sroc_category %></th>
-            <th><%= sortable :compliance_band %></th>
+            <th><%= th :customer_reference %></th>
+            <th><%= th :permit_reference %></th>
+            <th><%= th :sroc_category %></th>
+            <th><%= th :compliance_band %></th>
           <% else %>
-            <th><%= sortable :customer_reference %></th>
-            <th><%= sortable :consent_reference %></th>
+            <th><%= th :customer_reference %></th>
+            <th><%= th :consent_reference %></th>
             <th>Version</th>
             <th>Discharge</th>
-            <th><%= sortable :sroc_category %></th>
-            <th><%= sortable :variation %></th>
+            <th><%= th :sroc_category %></th>
+            <th><%= th :variation %></th>
           <% end %>
           <th>Temporary Cessation</th>
           <th>Period</th>
@@ -41,8 +46,10 @@
             <td><%= transaction.period %></td>
             <td class="text-right"><%= transaction.amount %></td>
             <td>
-              <%= link_to 'Edit', edit_regime_transaction_path(@regime, transaction),
-                class: 'btn btn-sm btn-success', role: 'button' %>
+              <%= link_to edit_regime_transaction_path(@regime, transaction),
+                class: 'btn btn-sm btn-success', role: 'button' do %>
+                Edit<span class='sr-only'> transaction <%= transaction.transaction_reference %></span>
+              <% end %>
             </td>
           </tr>
         <% end %>

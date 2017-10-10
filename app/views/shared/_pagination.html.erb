@@ -9,10 +9,12 @@
       <div class="">
         <div class="form-group">
           <%= label_tag(:per_page, 'Items per page', class: 'mr-sm-2') %>
-          <%= select_tag(:per_page, per_page_options, id: 'per-page-select', class: "mr-sm-2 form-control") %>
+          <%= select_tag(:per_page, per_page_options, class: "mr-sm-2 form-control") %>
           <%= hidden_field_tag :page, params.fetch(:page, 1), id: 'page-number' %>
           <%= hidden_field_tag :region, params.fetch(:region, 'all') %>
           <%= hidden_field_tag :search, params[:search] %>
+          <%= hidden_field_tag :sort, params[:sort] %>
+          <%= hidden_field_tag :sort_direction, params[:sort_direction] %>
         </div>
       </div>
     <% end %>
