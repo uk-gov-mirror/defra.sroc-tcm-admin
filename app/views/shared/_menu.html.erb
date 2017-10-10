@@ -10,24 +10,26 @@
   <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
     <ul class="navbar-nav">
       <!-- Admin menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Admin
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
-          <%= link_to "Regimes", regimes_path, class: "dropdown-item" %>
-        </div>
-      </li>
+      <% unless ENV.fetch('HEROKU', false) %>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Admin
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
+            <%= link_to "Regimes", regimes_path, class: "dropdown-item" %>
+          </div>
+        </li>
+      <% end %>
       <!-- End of Admin menu -->
       <% if (defined?(@regime) && @regime) %>
         <!-- Transactions menu -->
-        <li class="nav-item dropdown <%= active_for_current_controller("transactions") %>">
+        <li class="nav-item dropdown <%= active_for_current_controller(["transactions", "history"]) %>">
           <a class="nav-link dropdown-toggle" href="#" id="navbarTransactionsSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Transactions
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
             <%= link_to "Transactions to be billed", regime_transactions_path(@regime), class: "dropdown-item" %>
-            <%= link_to "Transaction history", regime_transactions_path(@regime), class: "dropdown-item" %>
+            <%= link_to "Transaction history", regime_history_index_path(@regime), class: "dropdown-item" %>
           </div>
         </li>
         <!-- End of Transactions menu -->

@@ -29,8 +29,12 @@ module TransactionsHelper
 
   def region_options(regime)
     options_for_select([['All', 'all']] +
-                       regime.transaction_headers.pluck(:region).
+                       regime.transaction_headers.pluck(:region).uniq.
                        sort.map { |r| [r, r] },
                        params.fetch(:region, 'all'))
+  end
+
+  def category_options(regime, selected)
+    options_for_select([['Cat1',1],['Cat2',2]], selected)
   end
 end

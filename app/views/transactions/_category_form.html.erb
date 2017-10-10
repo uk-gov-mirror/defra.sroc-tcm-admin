@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col col-lg-6 mb-2">
+    <div class="transaction-summary panel">
+      <%= form_with model: [@regime, transaction],
+        url: regime_transaction_path(@regime, transaction),
+        method: 'patch',
+        class: 'cccategory-form', local: true do |f| %>
+        <dl>
+          <dt>
+            <%= f.label(:category, 'SRoC Category') %>
+          </dt>
+          <dd>
+          <%= f.select(:category, category_options(@regime, transaction.category),
+                       { include_blank: "Select a category" },
+                       class: 'form-control', id: 'transaction_detail_category') %>
+        </dd>
+        <dt></dt>
+        <dd">
+          <%= f.submit 'Save & Calculate Charge', class: 'mt-2 btn btn-primary' %>
+        </dd>
+        </dl>
+      <% end %>
+    </div>
+  </div>
+</div>

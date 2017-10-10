@@ -8,12 +8,14 @@ class TransactionDetail < ApplicationRecord
   validates :unit_of_measure_price, presence: true
 
   scope :unbilled, -> { where(status: 'unbilled') }
+  scope :historic, -> { where(status: 'billed') }
 
   scope :credits, -> { where(arel_table[:line_amount].lt 0) }
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
   scope :region, ->(region) { joins(:transaction_header).merge(TransactionHeader.in_region(region)) }
 
   def self.search(q)
-    where(arel_table[:customer_reference].matches("%#{q}%").or(arel_table[:reference_1].matches("%#{q}%")))
+    m = "%#{q}%"
+    where(arel_table[:customer_reference].matches(m).or(arel_table[:reference_1].matches("m")).or(arel_table[:transaction_reference].matches(m)))
   end
 end

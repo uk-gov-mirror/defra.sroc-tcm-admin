@@ -1,49 +1,44 @@
 <div class="row">
   <div class="col">
-    <table class="table table-responsive">
+    <table class="table table-responsive sortable">
       <thead>
         <tr>
+          <th><%= sortable :file_reference %></th>
+          <th><%= sortable :customer_reference %></th>
+          <th><%= sortable :transaction_reference %></th>
           <% if @regime.waste_or_installations? %>
-            <th><%= sortable :customer_reference %></th>
             <th><%= sortable :permit_reference %></th>
             <th><%= sortable :sroc_category %></th>
             <th><%= sortable :compliance_band %></th>
           <% else %>
-            <th><%= sortable :customer_reference %></th>
             <th><%= sortable :consent_reference %></th>
-            <th>Version</th>
-            <th>Discharge</th>
             <th><%= sortable :sroc_category %></th>
             <th><%= sortable :variation %></th>
           <% end %>
-          <th>Temporary Cessation</th>
+          <th><%= sortable :generated_at %></th>
           <th>Period</th>
           <th class="text-right">Amount (£)</th>
-          <td></td>
         </tr>
       </thead>
       <tbody>
         <% transactions.each do |t| %>
           <% transaction = present_transaction(t) %>
           <tr>
+            <td><%= transaction.file_reference %></td>
             <td><%= transaction.customer_reference %></td>
-            <td><%= transaction.permit_reference %></td>
+            <td><%= transaction.transaction_reference %></td>
             <% if @regime.waste_or_installations? %>
+              <td><%= transaction.permit_reference %></td>
               <td><%= transaction.sroc_category %></td>
               <td><%= transaction.compliance_band %></td>
             <% else %>
-              <td><%= transaction.version %></td>
-              <td><%= transaction.discharge_reference %></td>
+              <td><%= transaction.consent_reference %></td>
               <td><%= transaction.sroc_category %></td>
               <td><%= transaction.variation_percentage %></td>
             <% end %>
-            <td><%= transaction.temporary_cessation_flag %></td>
+            <td><%= transaction.generated_at %></td>
             <td><%= transaction.period %></td>
             <td class="text-right"><%= transaction.amount %></td>
-            <td>
-              <%= link_to 'Edit', edit_regime_transaction_path(@regime, transaction),
-                class: 'btn btn-sm btn-success', role: 'button' %>
-            </td>
           </tr>
         <% end %>
       </tbody>

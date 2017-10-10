@@ -14,7 +14,9 @@ class TransactionsController < ApplicationController
       q,
       params.fetch(:page, 1),
       params.fetch(:per_page, 10),
-      region)
+      region,
+      params.fetch(:sort, :customer_reference),
+      params.fetch(:sort_direction, 'asc'))
     @summary = transaction_store.transactions_to_be_billed_summary(q, region)
   end
 
@@ -25,6 +27,7 @@ class TransactionsController < ApplicationController
 
   # GET /regimes/:regimes_id/transactions/1/edit
   def edit
+    @related_transactions = transaction_store.transactions_related_to(@transaction)
   end
 
   # PATCH/PUT /regimes/:regimes_id/transactions/1
@@ -32,7 +35,8 @@ class TransactionsController < ApplicationController
   def update
     respond_to do |format|
       if @transaction.update(transaction_params)
-        format.html { redirect_to regime_transaction_path(@regime, @transaction), notice: 'Permit was successfully updated.' }
+        format.html { redirect_to edit_regime_transaction_path(@regime, @transaction),
+                      notice: 'Transaction  was successfully updated.' }
         format.json { render :show, status: :ok, location: regime_transaction_path(@regime, @transaction) }
       else
         format.html { render :edit }
@@ -54,8 +58,7 @@ class TransactionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def transaction_params
-      params.require(:transaction).
-        permit(:transaction_reference, :transaction_category, :effective_date, :status)
+      params.require(:transaction_detail).permit(:category)
     end
 
     def transaction_store

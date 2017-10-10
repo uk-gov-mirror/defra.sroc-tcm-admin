@@ -4,6 +4,10 @@ class TransactionDetailPresenter < SimpleDelegator
     collection.map { |o| new o }
   end
 
+  def file_reference
+    transaction_detail.transaction_header.file_reference
+  end
+
   def permit_reference
     "todo"
   end
@@ -24,12 +28,30 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date created_at
   end
 
+  def temporary_cessation_flag
+    temporary_cessation? ? 'Y' : 'N'
+  end
+
   def period
     "todo"
   end
 
   def amount
-    sprintf('%.2f', line_amount / 100.0)
+    if transaction_detail.calculated_charge
+      ActiveSupport::NumberHelper.number_to_currency(
+        sprintf('%.2f', calculated_charge / 100.0), unit: "")
+    else
+      if line_amount.negative?
+        'Credit (TBC)'
+      else
+        'Invoice (TBC)'
+      end
+    end
+  end
+
+  def generated_at
+    # TODO: replace this with the date *we* generated the file
+    fmt_date transaction_detail.transaction_header.generated_at
   end
 
 private
