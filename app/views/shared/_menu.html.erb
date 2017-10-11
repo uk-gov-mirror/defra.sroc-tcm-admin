@@ -33,6 +33,7 @@
           </div>
         </li>
         <!-- End of Transactions menu -->
+      <% unless ENV.fetch('HEROKU', false) %>
         <!-- Permits menu -->
         <li class="nav-item dropdown <%= active_for_current_controller("permits") %>">
           <a class="nav-link dropdown-toggle" href="#" id="navbarPermitsSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -44,6 +45,7 @@
           </div>
         </li>
         <!-- End of Permits menu -->
+      <% end %>
       <% end %>
     </ul>
     <ul class="navbar-nav">
