@@ -16,6 +16,6 @@ class TransactionDetail < ApplicationRecord
 
   def self.search(q)
     m = "%#{q}%"
-    where(arel_table[:customer_reference].matches(m).or(arel_table[:reference_1].matches("m")).or(arel_table[:transaction_reference].matches(m)))
+    where(arel_table[:customer_reference].matches(m).or(arel_table[:reference_1].matches(m)).or(arel_table[:transaction_reference].matches(m)))
   end
 end
