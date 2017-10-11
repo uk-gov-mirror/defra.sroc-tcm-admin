@@ -27,7 +27,13 @@ class HistoryController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_regime
-      @regime = Regime.find_by!(slug: params[:regime_id])
+      # FIXME: this is just to avoid not having a regime set on entry
+      # this will be replaced by using user regimes roles/permissions
+      if params.fetch(:regime_id, nil)
+        @regime = Regime.find_by!(slug: params[:regime_id])
+      else
+        @regime = Regime.first
+      end
     end
 
     def set_transaction
