@@ -35,6 +35,6 @@ module TransactionsHelper
   end
 
   def category_options(regime, selected)
-    options_for_select([['Cat1',1],['Cat2',2]], selected)
+    options_for_select([['Category 1',1],['Category 2',2]], selected)
   end
 end

@@ -13,7 +13,14 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def sroc_category
-    "todo"
+    case category
+    when '1'
+      'Category 1'
+    when '2'
+      'Category 2'
+    else
+      ''
+    end
   end
 
   def compliance_band

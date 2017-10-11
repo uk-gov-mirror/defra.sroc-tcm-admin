@@ -92,7 +92,7 @@ class TransactionStorageService
       q.order(reference_1: dir, reference_2: dir, reference_3: dir)
     when :sroc_category
       # FIXME: not implemented this one yet
-      q.order(sequence_numbr: dir)
+      q.order(category: dir)
     when :compliance_band
       q.order(line_attr_11: dir)
     when :variation
