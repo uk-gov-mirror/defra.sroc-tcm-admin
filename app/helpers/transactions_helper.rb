@@ -29,6 +29,15 @@ module TransactionsHelper
 
   def region_options(regime)
     options_for_select([['All', 'all']] +
+                       regime.transaction_headers.
+                       join(:transaction_details).
+                       merge(TranactionDetail.historic).
+                       pluck(:region).uniq.sort.map { |r| [r, r] },
+                       params.fetch(:region, 'all'))
+  end
+
+  def region_options_historic(regime)
+    options_for_select([['All', 'all']] +
                        regime.transaction_headers.pluck(:region).uniq.
                        sort.map { |r| [r, r] },
                        params.fetch(:region, 'all'))
