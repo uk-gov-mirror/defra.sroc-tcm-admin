@@ -105,6 +105,7 @@ export default class TransactionsView extends React.Component {
     })
   }
 
+  // wigwam
   render() {
     const regime = this.props.regime
     const mode = this.props.mode
