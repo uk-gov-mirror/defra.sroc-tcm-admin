@@ -1,0 +1,78 @@
+﻿2.3.1,"Sewage > 500,000 m3/day with OSM"
+2.3.2,"Sewage 150,000 - 500,000 m3/day"
+2.3.3,"Sewage 150,000 - 500,000 m3/day with OSM"
+2.3.4,"Sewage 50,000 - 150,000 m3/day"
+2.3.5,"Sewage 50,000 - 150,000 m3/day with OSM"
+2.3.6,"Sewage 10,000 - 50,000 m3/day"
+2.3.7,"Sewage 10,000 - 50,000 m3/day with OSM"
+2.3.8,"Sewage 1,000 -10,000 m3/day"
+2.3.9,"Sewage 1,000 -10,000 m3/day with OSM"
+2.3.10,"Sewage 500 - 1,000 m3/day"
+2.3.11,"Sewage 500 - 1,000 m3/day with OSM"
+2.3.12,Sewage 100 - 500 m3/day
+2.3.13,Sewage 100 - 500 m3/day with OSM
+2.3.14,Sewage 50 - 100 m3/day
+2.3.15,Sewage 50 - 100 m3/day with OSM
+2.3.16,Sewage 20 - 50 m3/day
+2.3.17,Sewage 20 - 50 m3/day with OSM
+2.3.18,Sewage 5 - 20 m3/day
+2.3.19,Sewage 5 - 20 m3/day with OSM
+2.3.20,Sewage up to 5 m3/day
+2.3.21,"Trade and/or Non-sewage >50,000 m3/day + hazardous substances"
+2.3.22,"Trade and/or Non-sewage >50,000 m3/day + hazardous substances with OSM disc"
+2.3.23,"Trade and/or Non-sewage > 50,000 m3/day "
+2.3.24,"Trade and/or Non-sewage > 50,000 m3/day with OSM discharge"
+2.3.25,"Trade and/or Non-sewage > 50,000 m3/day - no numeric conditions"
+2.3.26,"Trade and/or Non-sewage > 50,000 m3/day - no numeric conditions with OSM discharge"
+2.3.27,"Trade and/or Non-sewage 10,000 - 50,000 m3/day + hazardous substances"
+2.3.28,"Trade and/or Non-sewage 10,000 – 50,000 m3/day + hazardous substances with OSM discharge"
+2.3.29,"Trade and/or Non-sewage 10,000 - 50,000 m3/day "
+2.3.30,"Trade and/or Non-sewage 10,000 - 50,000 m3/day with OSM discharge"
+2.3.31,"Trade and/or Non-sewage 10,000 - 50,000 m3/day - no numeric conditions"
+2.3.32,"Trade and/or Non-sewage 10,000 - 50,000 m3/day - no numeric conditions with OSM disc"
+2.3.33,"Trade and/or Non-sewage 1,000 - 10,000 m3/day + hazardous substances"
+2.3.34,"Trade and/or Non-sewage 1,000 - 10,000 m3/day + hazardous substances with OSM discharge"
+2.3.35,"Trade and/or Non-sewage 1,000 - 10,000 m3/day"
+2.3.36,"Trade and/or Non-sewage 1,000 - 10,000 m3/day with OSM discharge"
+2.3.37,"Trade and/or Non-sewage 1,000 - 10,000 m3/day - no numeric conditions"
+2.3.38,"Trade and/or Non-sewage 1,000 - 10,000 m3/day - no numeric conditions with OSM discharge"
+2.3.39,"Trade and/or Non-sewage 100-1,000 m3/day + hazardous substances"
+2.3.40,"Trade and/or Non-sewage 100-1,000 m3/day + hazardous substances with OSM discharge"
+2.3.41,"Trade and/or Non-sewage 100-1,000 m3/day"
+2.3.42,"Trade and/or Non-sewage 100-1,000 m3/day with OSM discharge"
+2.3.43,"Trade and/or Non-sewage 100-1,000 m3/day - no numeric conditions"
+2.3.44,"Trade and/or Non-sewage 100-1,000 m3/day - no numeric conditions with OSM discharge"
+2.3.45,Trade and/or Non-sewage 20-100 m3/day + hazardous substances
+2.3.46,Trade and/or Non-sewage 20-100 m3/day + hazardous substances with OSM discharge
+2.3.47,Trade and/or Non-sewage 20-100 m3/day
+2.3.48,Trade and/or Non-sewage 20-100 m3/day with OSM discharge
+2.3.49,Trade and/or Non-sewage 20-100 m3/day - no numeric conditions
+2.3.50,Trade and/or Non-sewage 20-100 m3/day - no numeric conditions with OSM discharge
+2.3.51,Trade and/or Non-sewage 5-20 m3/day + hazardous substances
+2.3.52,Trade and/or Non-sewage 5-20 m3/day + hazardous substances with OSM discharge
+2.3.53,Trade and/or Non-sewage 5-20 m3/day
+2.3.54,Trade and/or Non-sewage 5-20 m3/day with OSM discharge
+2.3.55,Trade and/or Non-sewage 5-20 m3/day - no numeric conditions
+2.3.56,Trade and/or Non-sewage 5-20 m3/day - no numeric conditions with OSM discharge
+2.3.57,Trade and/or Non-sewage up to 5 m3/day + hazardous substances
+2.3.58,Trade and/or Non-sewage up to 5 m3/day
+2.3.59,Trade and/or Non-sewage up to 5 m3/day - no numeric conditions
+2.3.60,Landspreading of waste sheep dip LT5m3
+2.3.61,Landspreading of waste sheep dip GT5m3
+2.3.62,Landspreading pesticides
+2.3.63,Non-waste solid deposits into/onto land <100 tonnes 
+2.3.64,"Non-waste solid deposits into/onto land >100 & <15,000 tonnes"
+2.3.65,"Non-waste solid deposits into/onto land >15,000 tonnes"
+2.3.66,Sewerage and STW CSOs
+2.3.67,Emergency PSO
+2.3.68,"Rainfall related - no hazardous substances > 50,000 m3/day"
+2.3.69,"Rainfall related - no hazardous substances > 1,000 - 50,000 m3/day"
+2.3.70,"Rainfall related - no hazardous substances >20 - 1,000 m3/day"
+2.3.71,Rainfall related - no hazardous substances up to 20 m3/day
+2.3.72,"Aquaculture >50,000 m3/day"
+2.3.73,"Aquaculture >100 - 50,000 m3/day"
+2.3.74,Aquaculture up to 100 m3/day
+2.3.75,"Cooling water other content >10,000 m3/day"
+2.3.76,"Cooling water >100 - 10,000 m3/day"
+2.3.77,Cooling water - up to 100 m3/day
+2.3.78,Non-exempt thermal discharges (heat pumps)

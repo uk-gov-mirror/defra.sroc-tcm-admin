@@ -1,0 +1,105 @@
+﻿2.4.1,"Section 4.1 Organic; Organic single chemical <2,000 tonnes/year"
+2.4.2,"Section 4.1 Organic; Organic single chemical >2,000 tonnes/year"
+2.4.3,Section 4.1 Organic; Organic multiple chemical
+2.4.4,Section 4.1 Organic; Organic other
+2.4.5,Section 4.2 Inorganic; Inorganic single chemical <100 tonnes/year
+2.4.6,Section 4.2 Inorganic; Inorganic single chemical >100 tonnes/year
+2.4.7,Section 4.2 Inorganic; Inorganic multiple chemical
+2.4.8,Section 4.2 Inorganic; Inorganic other
+2.4.9,"Chemicals. Anaerobic digestion (crop-fed, non-waste) (Zero plants constructed as of September 2017 )"
+2.4.10,Section 4.3 Fertilizer; Fertilizer
+2.4.11,Section 4.3 Fertilizer; Fertilizer dry process only
+2.4.12,"Section 4.4, 4.5, 4.6, 4.7 other chemicals; Other chemical biochemical/pharmaceutical/explosives <2,000 tonnes/year"
+2.4.13,"Section 4.4, 4.5, 4.6, 4.7 other chemicals; Other chemical biochemical/pharmaceutical/explosives >2,000 tonnes/year"
+2.4.14,"Section 4.4, 4.5, 4.6, 4.7 other chemicals; Other chemical carbon disulphide/ammonia"
+2.2.15,Chemical production incidental to the primary purpose of the installation. Not for commercial purposes.
+2.5.1,Oil refineries
+2.5.2,Gas refineries
+2.5.3,Petroleum distillers
+2.5.4,Crude oil storage greater than 200 tonnes
+2.5.5,Gathering stations
+2.5.6,Synthetic fuels and carbonisation
+2.5.7,Refineries & Fuels. Crude oil storage less than 200 tonnes
+2.6.1,Combustion EfW. New mass-burn incinerator or co-incinerator - 1 line
+2.6.2,Combustion EfW. New mass-burn incinerator or co-incinerator - 2 lines
+2.6.3,Combustion EfW. New mass-burn incinerator or co-incinerator - 3 lines
+2.6.4,Combustion EfW. New mass-burn incinerator or co-incinerator - 4 lines
+2.6.5,Combustion EfW. New mass-burn incinerator or co-incinerator - 5 lines
+2.6.6,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 1 line
+2.6.7,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 2 lines
+2.6.8,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 3 lines
+2.6.9,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 4 lines
+2.6.10,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 5 lines
+2.6.11,Combustion EfW. Existing incinerator or co-incinerator - 1 line
+2.6.12,Combustion EfW. Existing incinerator or co-incinerator - 2 lines
+2.6.13,Combustion EfW. Existing incinerator or co-incinerator - 3 lines
+2.6.14,Combustion EfW. Existing incinerator or co-incinerator - 4 lines
+2.6.15,Combustion EfW. Existing incinerator or co-incinerator - 5 lines
+2.6.16,Combustion EfW. New S1.2 waste gasification or pyrolysis plant
+2.6.17,Combustion EfW. Existing S1.2 waste gasification or pyrolysis plant
+2.6.18,Combustion EfW. New or existing non-Ch4 biomass co-incinerator
+2.6.19,R1 Monitoring*
+2.6.20,Pre-construction charge
+2.7.1,Food and Drink activity with no additional components
+2.7.2,Food and Drink activity with 1 additional component
+2.7.3,Food and Drink activity with 2 additional components
+2.7.4,Food and Drink activity with 3 -4 additional components
+2.7.5,Food and Drink activity with 5-6 additional components
+2.7.6,Food and Drink activity with 7-8 additional components
+2.7.7,Food and Drink activity with 9-13 additional components
+2.7.8,Food and Drink activity with 14+ additional components
+2.8.1,Mining waste Standard Rule 2014 No2
+2.8.2,Mining waste Standard Rule 2015 No1
+2.8.3,Mining Waste Operation
+2.8.4,Mining Waste Operation + Non-hazardous facility
+2.8.5,Mining Waste Operation + Hazardous facility with or without a Non-hazardous facility
+2.8.6,Mining Waste Flare or IED Flare component
+2.8.7,Groundwater activity
+2.8.8,Oil storage Standard Rule 2015 No2
+2.8.9,Bespoke oil storage permit
+2.8.10,Hydraulic Fracturing Plan (hourly charge rate)
+2.9.1,Textiles. Dye houses & finishing sites
+2.9.2,Textiles. Wool scourers
+2.9.3,Textiles. Carpet manufacturers
+2.9.4,Paper & Pulp. Integrated or multi product mill plus two components
+2.9.5,Paper & Pulp. Integrated or multi product mill plus three components
+2.9.6,Paper & Pulp. Integrated or multi product mill plus four components
+2.9.7,Paper & Pulp. With discharge to surface water
+2.9.8,Paper & Pulp. With discharge to surface water plus 1 component
+2.9.9,Paper & Pulp. With discharge to surface water plus 3 components
+2.9.10,Paper & Pulp. With discharge to surface water plus 5 components
+2.9.11,Paper & Pulp. Discharge to sewer.
+2.9.12,Paper & Pulp. Discharge to sewer plus one component
+2.9.13,Paper & Pulp. Discharge to sewer plus two components
+2.9.14,Paper & Pulp. Discharge to sewer plus three components
+2.10.1,Combustion Power. Coal
+2.10.2,Combustion Power. Biomass
+2.10.3,"Combustion Power. GTs, CHP and engines"
+2.10.4,"Combustion Power. GTs, CHP and engines non-CSG"
+2.10.5,Combustion Power. Compressors and boilers
+2.10.6,Combustion Power. Landfill
+2.10.7,Combustion Power. Odorisation
+2.10.8,Combustion Power. MCPD bespoke permit
+2.10.9,Combustion Power. MCPD simple permit
+2.12.1,"Ferrous Metals. Producing, melting or refining iron or steel in an integrated works"
+2.12.2,"Ferrous Metals. Producing, melting or refining iron or steel in an EAF with a holding capacity of more than 7 tonnes and high complexity non-ferrous metals"
+2.12.3,"Ferrous Metals. Producing, melting or refining iron or steel in an EAF with a holding capacity of less than 7 tonnes"
+2.12.4,Ferrous metals. Medium complexity processing ferrous and alloys using hot rolling
+2.12.5,Ferrous metals. Low complexity processing ferrous and alloys using hot rolling
+2.12.6,"Ferrous Metals. Loading, unloading and handling of more than 500,000 tonnes in total in any period of 12 months of iron ore, except during mining operations, or burnt pyrites"
+2.12.7,Non Ferrous metals & surface treatment. Medium complexity producing non-ferrous metals
+2.12.8,Non Ferrous metals & surface treatment. Low-medium complexity producing non-ferrous metals
+2.12.9,Non Ferrous metals & surface treatment. Melting non-ferrous metals
+2.12.10,Non Ferrous metals & surface treatment. High complexity surface treatment of metals and plastics
+2.12.11,Non Ferrous metals & surface treatment. Medium complexity surface treatment of metals and plastics
+2.12.12,Non Ferrous metals & surface treatment. Low complexity surface treatment of metals and plastics
+2.13.1,Section 3.1 A(1)(a). Production of cement clinker in line with descriptions in activity 3.1 without the use of waste derived fuels
+2.13.2,Section 3.1 A(1)(a). Production of cement clinker in line with descriptions in activity 3.1 including the use of waste derived fuels
+2.13.3,Section 3.1 A(1)(b). Production of lime in line with descriptions in activity 3.1 without the use of waste derived fuels
+2.13.4,Section 3.1 A(1)(b). Production of lime in line with descriptions in activity 3.1 including the use of waste derived fuels
+2.13.5,Section 3.1 A(1)(a)and (b). Production of cement clinker and production of lime in line with descriptions in activity 3.1 including the use of waste derived fuels
+2.13.6,Section 3.3 A(1)(a). Manufacturing glass fibre in line with descriptions in activity 3.3
+2.13.7,Section 1.1 Combustion activity. Manufacture of plasterboard where the rated thermal input is greater than 50 MW as described in Section 1.1
+2.13.8,CML Brickworks
+2.14.1,"Section 6.9. Intensive rearing of poultry or pigs: (a) with more than 40,000 places for poultry; (b) with more than 2,000 places for production pigs (over 30kg), or (c) with more than 750 places for sows."
+2.14.2,"Section 6.9. Intensive rearing of poultry or pigs: (a) with more than 40,000 places for poultry; (b) with more than 2,000 places for production pigs (over 30kg), or (c) with more than 750 places for sows. Farms in the Environment Agency Pig and Poultry Assurance Scheme."

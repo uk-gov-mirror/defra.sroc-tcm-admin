@@ -15,8 +15,8 @@
             <th>Discharge</th>
             <th><%= sortable :sroc_category %></th>
             <th><%= sortable :variation %></th>
+            <th>TC</th>
           <% end %>
-          <th>Temporary Cessation</th>
           <th>Period</th>
           <th class="text-right">Amount (£)</th>
           <td></td>
@@ -36,8 +36,8 @@
               <td><%= transaction.discharge_reference %></td>
               <td><%= transaction.sroc_category %></td>
               <td><%= transaction.variation_percentage %></td>
+              <td><%= transaction.temporary_cessation_flag %></td>
             <% end %>
-            <td><%= transaction.temporary_cessation_flag %></td>
             <td><%= transaction.period %></td>
             <td class="text-right"><%= transaction.amount %></td>
             <td>

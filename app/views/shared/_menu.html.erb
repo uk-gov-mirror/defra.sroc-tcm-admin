@@ -1,5 +1,5 @@
 <%
-    regime_list = Regime.all.order(:name)
+    regime_list = Regime.all.order(:title)
     @regime = regime_list.first if (defined?(@regime)).nil?
 %>
 <nav class="main-menu navbar navbar-expand-lg navbar-dark bg-dark">
@@ -28,8 +28,8 @@
             Transactions
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
-            <%= link_to "Transactions to be billed", regime_transactions_path(@regime), class: "dropdown-item" %>
-            <%= link_to "Transaction history", regime_history_index_path(@regime), class: "dropdown-item" %>
+            <%= link_to "Transactions to be billed", regime_transactions_path(@regime), class: "dropdown-item", data: { turbolinks: false } %>
+            <%= link_to "Transaction history", regime_history_index_path(@regime), class: "dropdown-item", data: { turbolinks: false } %>
           </div>
         </li>
         <!-- End of Transactions menu -->
@@ -52,11 +52,11 @@
       <% if (defined?(@regime) && @regime) %>
         <li class="nav-item dropdown mr-4">
           <a class="nav-link dropdown-toggle" href="#" id="navbarRegimeSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Regime: <%= @regime.name %>
+            Regime: <%= @regime.title %>
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
             <% regime_list.each do |r| %>
-              <%= link_to r.name, menu_path(r, controller_name), class: "dropdown-item" %>
+              <%= link_to r.title, menu_path(r, controller_name), class: "dropdown-item", data: { turbolinks: false } %>
             <% end %>
           <div>
         </li>

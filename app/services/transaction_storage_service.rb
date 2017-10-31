@@ -59,7 +59,6 @@ class TransactionStorageService
   end
 
   def transactions_to_be_billed_summary(q = '', region = 'all')
-    summary = OpenStruct.new
     credits = regime.transaction_details.region(region).unbilled.credits
     invoices = regime.transaction_details.region(region).unbilled.invoices
 
@@ -69,13 +68,16 @@ class TransactionStorageService
     end
     credits = credits.pluck(:line_amount)
     invoices = invoices.pluck(:line_amount)
+    credit_total = credits.sum
+    invoice_total = invoices.sum
 
-    summary.credit_count = credits.length
-    summary.credit_total = credits.sum
-    summary.invoice_count = invoices.length
-    summary.invoice_total = invoices.sum
-    summary.net_total = summary.invoice_total + summary.credit_total
-    summary
+    {
+      credit_count:   credits.length,
+      credit_total:   credit_total,
+      invoice_count:  invoices.length,
+      invoice_total:  invoice_total,
+      net_total:      invoice_total + credit_total
+    }
   end
 
   def order_query(q, col, dir)
