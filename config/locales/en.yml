@@ -6,10 +6,15 @@ en-GB:
       transaction_reference: "Transaction"
       permit_reference: "Permit"
       consent_reference: "Consent"
+      version: "Version"
+      discharge: "Discharge"
       sroc_category: "SRoC Category"
+      temporary_cessation: "TC"
       compliance_band: "Compliance Band"
-      variation: "Variation"
+      variation: "%"
       generated_at: "Generated On"
+      period: "Period"
+      amount: "Amount (£)"
   views:
     pagination:
       first: "First"

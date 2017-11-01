@@ -18,4 +18,19 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
   def period
     header_attr_10
   end
+
+  def as_json(options = {})
+    {
+      id: id,
+      customer_reference: customer_reference,
+      permit_reference: permit_reference,
+      original_permit_reference: original_permit_reference,
+      compliance_band: compliance_band,
+      site: site,
+      sroc_category: category,
+      temporary_cessation: temporary_cessation,
+      period: period,
+      amount: amount
+    }
+  end
 end

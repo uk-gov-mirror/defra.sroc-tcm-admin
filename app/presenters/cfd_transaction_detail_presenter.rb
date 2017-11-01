@@ -30,4 +30,19 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
   def period
     line_attr_3
   end
+
+  def as_json(options = {})
+    {
+      id: id,
+      customer_reference: customer_reference,
+      consent_reference: consent_reference,
+      version: version,
+      discharge: discharge_reference,
+      sroc_category: category,
+      variation: variation_percentage,
+      temporary_cessation: temporary_cessation,
+      period: period,
+      amount: amount
+    }
+  end
 end
