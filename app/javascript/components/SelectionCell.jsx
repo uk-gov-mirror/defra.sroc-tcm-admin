@@ -26,7 +26,7 @@ export default class SelectionCell extends React.Component {
     return (
       <Select name={name} value={value}
               options={options} onChange={this.onChange}
-              clearable={false} simpleValue />
+              clearable={true} simpleValue />
     )
   }
 }
