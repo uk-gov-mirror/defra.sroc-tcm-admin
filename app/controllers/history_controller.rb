@@ -7,26 +7,26 @@ class HistoryController < ApplicationController
   # GET /regimes/:regime_id/history
   # GET /regimes/:regime_id/history.json
   def index
-    region = params.fetch(:region, 'all')
-    q = params.fetch(:search, "")
-    pg = params.fetch(:page, 1)
-    per_pg = params.fetch(:per_page, 10)
-
-    @transactions = transaction_store.transaction_history(
-      q,
-      pg,
-      per_pg,
-      region,
-      params.fetch(:sort, :customer_reference),
-      params.fetch(:sort_direction, 'asc'))
-
-    @transactions = present_transactions(@transactions)
     respond_to do |format|
       format.html do
         render
       end
       format.js
       format.json do
+        region = params.fetch(:region, 'all')
+        q = params.fetch(:search, "")
+        pg = params.fetch(:page, 1)
+        per_pg = params.fetch(:per_page, 10)
+
+        @transactions = transaction_store.transaction_history(
+          q,
+          pg,
+          per_pg,
+          region,
+          params.fetch(:sort, :customer_reference),
+          params.fetch(:sort_direction, 'asc'))
+
+        @transactions = present_transactions(@transactions)
         render json: @transactions
       end
     end

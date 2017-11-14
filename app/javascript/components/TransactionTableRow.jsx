@@ -17,12 +17,16 @@ export default class TransactionTableRow extends React.Component {
       if(c.selectable) {
         const categories = this.props.categories
         return (
-          <td key={c.name}><SelectionCell name={c.name} value={row[c.name]}
-            options={categories} onChange={this.onChangeCategory} /></td>
+          <td key={c.name} className={c.rightAlign === true ? 'text-right' : ''}>
+            <SelectionCell name={c.name} value={row[c.name]}
+              options={categories} onChange={this.onChangeCategory} />
+          </td>
         )
       } else {
         return (
-          <td key={c.name}>{ row[c.name] }</td>
+          <td key={c.name} className={c.rightAlign === true ? 'text-right' : ''}>
+            { row[c.name] }
+          </td>
         )
       }
     })

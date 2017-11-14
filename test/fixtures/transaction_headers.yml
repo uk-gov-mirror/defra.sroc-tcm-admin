@@ -1,0 +1,20 @@
+cfd:
+  regime: cfd
+  feeder_source_code: "CFD"
+  region: "A"
+  file_sequence_number: 371
+  bill_run_id: ""
+  generated_at: <%= 2.months.ago %>
+  transaction_count: 61
+  invoice_total: 0
+  credit_total: -279042
+pas:
+  regime: pas
+  feeder_source_code: "PAS"
+  region: "Y"
+  file_sequence_number: 337
+  bill_run_id: "462"
+  generated_at: <%= 6.weeks.ago %>
+  transaction_count: 11
+  invoice_total: 9851959
+  credit_total: -9454762

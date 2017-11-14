@@ -16,4 +16,39 @@ class TcmUtils
     d = %w[ Disposal Facility Farm Unit Incinerator Plant Wharf Tank ]
     "#{a.sample} #{b.sample} #{c.sample} #{d.sample}"
   end
+
+  def self.set_period_dates()
+    Regime.all.each do |r|
+      r.transaction_details.each do |t|
+        dates = self.extract_transaction_period_dates(t, r)
+        if dates.present?
+          t.update_attributes(period_start: dates[0], period_end: dates[1])
+        end
+      end
+    end
+  end
+
+  def self.extract_transaction_period_dates(transaction, regime = nil)
+    regime = transaction.regime if regime.nil?
+    info = TcmConstants::PeriodDates[regime.slug.to_sym]
+    self.extract_period_dates(transaction.send(info[:attr_name]), info[:format])
+  end
+
+  def self.extract_csv_period_dates(regime, row)
+    info = TcmConstants::PeriodDates[regime.slug.to_sym]
+    period_index = "TransactionFile::Detail::#{info[:attr_name].to_s.classify}".constantize 
+    self.extract_period_dates(row[period_index], info[:format])
+  end
+
+  def self.extract_period_dates(period, date_format)
+    dates = []
+    # expecting a string with 2 dates matching the date_format
+    # e.g.
+    # '10/06/17 - 22/12/17' 
+    # '23/06/2017 - 31/03/2017'
+    period.split(' ').select { |i| i != '-' }.each do |d|
+      dates << Date.strptime(d, date_format)
+    end
+    dates
+  end
 end

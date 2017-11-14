@@ -87,14 +87,17 @@ class TransactionFileHandler
       unit_of_measure_price: row[Detail::LineUOMPrice].to_i
     }
 
+    period = nil
+
     if regime.installations?
       data.merge!({
         filename: row[Detail::Filename],
         reference_1: row[Detail::PermitReference],
         reference_2: row[Detail::OriginalPermitReference],
-        reference_3: row[Detail::OriginalPermitReference]
+        reference_3: row[Detail::AbsOriginalPermitReference]
       })
     elsif regime.water_quality?
+      period = extract_period(row[Detail::LineAttr3], "%d/%m/%y")
       consent = row[Detail::LineDescription]
       if consent.present?
         consent = consent.split(' ').last.split('/')
@@ -117,6 +120,13 @@ class TransactionFileHandler
     # Line attrs 1 - 15
     (1..15).each do |n|
       data["line_attr_#{n}".to_sym] = row[24 + n]
+    end
+    
+    # period dates
+    period = TcmUtils.extract_csv_period_dates(regime, row)
+    if period.present?
+      data["period_start"] = period[0]
+      data["period_end"] = period[1]
     end
 
     data

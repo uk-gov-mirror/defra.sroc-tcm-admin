@@ -67,12 +67,15 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails'
+  gem 'rails-controller-testing'
+  # gem 'rspec-rails'
   gem 'cucumber-rails', require: false
-  gem 'database_cleaner'
-  gem 'factory_girl_rails'
-  gem 'shoulda-matchers'
+  # gem 'database_cleaner'
+  gem 'factory_bot_rails', '~> 4.0'
+  # gem 'shoulda-matchers'
   gem 'capybara'
+  gem 'selenium-webdriver'
+  gem 'simplecov', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

@@ -12,16 +12,22 @@
     "react-select": "^1.0.0-rc.10"
   },
   "devDependencies": {
+    "babel-jest": "21.2.0",
+    "jest": "21.2.1",
+    "react-test-renderer": "16.1.1",
     "standard": "^10.0.3",
     "webpack-dev-server": "^2.9.2"
   },
   "scripts": {
-    "test": "standard app/assets/javascripts/*.js"
+    "test": "standard app/assets/javascripts/*.js && jest"
   },
   "standard": {
     "ignore": [
       "application.js",
       "cable.js"
     ]
+  },
+  "jest": {
+    "testMatch": [ "test/javascript/**/*.js?(x)" ]
   }
 }

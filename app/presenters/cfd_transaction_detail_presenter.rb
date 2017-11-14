@@ -1,4 +1,23 @@
 class CfdTransactionDetailPresenter < TransactionDetailPresenter
+  def charge_params
+    {
+      permitCategoryRef: category,
+      percentageAdjustment: clean_variation_percentage,
+      temporaryCessation: false,
+      compliancePerformanceBand: 'B',
+      billableDays: billable_days,
+      financialDays: financial_year_days,
+      chargePeriod: charge_period,
+      preConstruction: false,
+      environmentFlag: 'TEST'
+    }
+  end
+
+  def clean_variation_percentage
+    return 100 if variation_percentage.blank?
+    variation_percentage.gsub(/%/,'')
+  end
+
   def variation_percentage
     line_attr_9
   end
@@ -27,9 +46,9 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     line_attr_1
   end
 
-  def period
-    line_attr_3
-  end
+  # def period
+  #   line_attr_3
+  # end
 
   def as_json(options = {})
     {

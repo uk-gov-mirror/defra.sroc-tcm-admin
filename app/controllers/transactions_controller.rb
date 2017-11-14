@@ -7,27 +7,27 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions
   # GET /regimes/:regime_id/transactions.json
   def index
-    region = params.fetch(:region, 'all')
-    q = params.fetch(:search, "")
-    pg = params.fetch(:page, 1)
-    per_pg = params.fetch(:per_page, 10)
-
-    @transactions = transaction_store.transactions_to_be_billed(
-      q,
-      pg,
-      per_pg,
-      region,
-      params.fetch(:sort, :customer_reference),
-      params.fetch(:sort_direction, 'asc'))
-
-    summary = transaction_store.transactions_to_be_billed_summary(q, region)
-    @transactions = present_transactions(@transactions, summary)
     respond_to do |format|
       format.html do
         render
       end
       format.js
       format.json do
+        region = params.fetch(:region, 'all')
+        q = params.fetch(:search, "")
+        pg = params.fetch(:page, 1)
+        per_pg = params.fetch(:per_page, 10)
+
+        @transactions = transaction_store.transactions_to_be_billed(
+          q,
+          pg,
+          per_pg,
+          region,
+          params.fetch(:sort, :customer_reference),
+          params.fetch(:sort_direction, 'asc'))
+
+        summary = transaction_store.transactions_to_be_billed_summary(q, region)
+        @transactions = present_transactions(@transactions, summary)
         render json: @transactions
       end
     end
@@ -47,10 +47,10 @@ class TransactionsController < ApplicationController
   # PATCH/PUT /regimes/:regimes_id/transactions/1.json
   def update
     respond_to do |format|
-      if @transaction.update(transaction_params)
+      if update_transaction(@transaction)
         format.html { redirect_to edit_regime_transaction_path(@regime, @transaction),
-                      notice: 'Transaction  was successfully updated.' }
-        format.json { render json: { message: 'Transaction updated' }, status: :ok, location: regime_transaction_path(@regime, @transaction) }
+                      notice: 'Transaction was successfully updated.' }
+        format.json { render json: { transaction: presenter.new(@transaction), message: 'Transaction updated' }, status: :ok, location: regime_transaction_path(@regime, @transaction) }
       else
         format.html { render :edit }
         format.json { render json: @transaction.errors, status: :unprocessable_entity }
@@ -59,9 +59,29 @@ class TransactionsController < ApplicationController
   end
 
   private
-    def present_transactions(transactions, summary)
+    def update_transaction(transaction)
+      if transaction.update(transaction_params)
+        transaction.charge_calculation = get_charge_calculation(transaction)
+        transaction.save
+      else
+        false
+      end
+    end
+
+    def get_charge_calculation(transaction)
+      calculator.calculate_transaction_charge(presenter.new(transaction)) if transaction.category.present?
+    end
+
+    def calculator
+      @calculator ||= CalculationService.new
+    end
+
+    def presenter
       name = "#{@regime.slug}_transaction_detail_presenter".camelize
-      presenter = str_to_class(name) || TransactionDetailPresenter
+      str_to_class(name) || TransactionDetailPresenter
+    end
+
+    def present_transactions(transactions, summary)
       arr = Kaminari.paginate_array(presenter.wrap(transactions),
                                     total_count: transactions.total_count,
                                     limit: transactions.limit_value,

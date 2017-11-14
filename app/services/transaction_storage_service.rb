@@ -99,6 +99,8 @@ class TransactionStorageService
       q.order(line_attr_11: dir)
     when :variation
       q.order(line_attr_9: dir)
+    when :period
+      q.order(period_start: dir, period_end: dir, id: dir)
     else
       # file reference
       # TODO: once we have real data this is the one

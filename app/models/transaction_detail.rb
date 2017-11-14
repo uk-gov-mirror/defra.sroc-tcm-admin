@@ -10,6 +10,7 @@ class TransactionDetail < ApplicationRecord
   scope :unbilled, -> { where(status: 'unbilled') }
   scope :historic, -> { where(status: 'billed') }
 
+  scope :with_charge_errors, -> { where("calculated_charge -> 'calculation' ->> 'messages' != null") }
   scope :credits, -> { where(arel_table[:line_amount].lt 0) }
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
   scope :region, ->(region) { joins(:transaction_header).merge(TransactionHeader.in_region(region)) }
@@ -17,5 +18,13 @@ class TransactionDetail < ApplicationRecord
   def self.search(q)
     m = "%#{q}%"
     where(arel_table[:customer_reference].matches(m).or(arel_table[:reference_1].matches(m)).or(arel_table[:transaction_reference].matches(m)))
+  end
+
+  def charge_calculated?
+    charge_calculation != nil
+  end
+
+  def charge_calculation_error?
+    charge_calculated? && charge_calculation["calculation"] && charge_calculation["calculation"]["messages"]
   end
 end

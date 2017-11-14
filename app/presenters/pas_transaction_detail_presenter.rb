@@ -1,6 +1,7 @@
 class PasTransactionDetailPresenter < TransactionDetailPresenter
   def compliance_band
-    line_attr_11.present? ? line_attr_11.first : ""
+    band = line_attr_11.first if line_attr_11.present?
+    band || ""
   end
 
   def permit_reference
@@ -13,10 +14,6 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
 
   def site
     header_attr_3
-  end
-
-  def period
-    header_attr_10
   end
 
   def as_json(options = {})

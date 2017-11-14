@@ -27,6 +27,26 @@ class TransactionDetailPresenter < SimpleDelegator
     "todo"
   end
 
+  def billable_days
+    (period_end.to_date - period_start.to_date).to_i + 1
+  end
+
+  def financial_year_days
+    year = financial_year
+    start_date = Date.new(year, 4, 1)
+    end_date = Date.new(year + 1, 3, 31)
+    (end_date - start_date).to_i + 1
+  end
+
+  def financial_year
+    period_start.month < 4 ? period_start.year - 1 : period_start.year
+  end
+
+  def charge_period
+    year = financial_year - 2000
+    "FY#{year}#{year + 1}"
+  end
+
   def credit_debit_indicator
     line_amount < 0 ? 'C' : 'D'
   end
@@ -40,19 +60,40 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def period
-    "todo"
+    "#{period_start.strftime("%d/%m/%y")} - #{period_end.strftime("%d/%m/%y")}"
   end
 
   def amount
-    if transaction_detail.calculated_charge
-      ActiveSupport::NumberHelper.number_to_currency(
-        sprintf('%.2f', calculated_charge / 100.0), unit: "")
-    else
-      if line_amount.negative?
-        'Credit (TBC)'
+    if transaction_detail.charge_calculated?
+      value = charge_amount
+      if value.nil?
+        credit_debit
       else
-        'Invoice (TBC)'
+        ActiveSupport::NumberHelper.number_to_currency(
+          sprintf('%.2f', value), unit: "")
       end
+    else
+      credit_debit
+    end
+  end
+
+  def credit_debit
+    if line_amount.negative?
+      'Credit (TBC)'
+    else
+      'Invoice (TBC)'
+    end
+  end
+
+  def charge_amount
+    charge = transaction_detail.charge_calculation
+    if charge && charge["calculation"] && charge["calculation"]["messages"].nil?
+      amt = charge["calculation"]["chargeValue"]
+      # FIXME: is this the /best/ way to determine a credt?
+      amt *= -1 if !amt.nil? && line_amount.negative?
+      amt
+    else
+      nil
     end
   end
 

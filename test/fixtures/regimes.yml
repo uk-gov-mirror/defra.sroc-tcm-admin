@@ -1,0 +1,14 @@
+pas:
+  name: "PAS"
+  title: "Installations"
+  slug: "pas"
+
+cfd:
+  name: "CFD"
+  title: "Water Quality"
+  slug: "cfd"
+
+wabs:
+  name: "WABS"
+  title: "Waste"
+  slug: "wabs"

@@ -39,7 +39,9 @@ export default class TransactionTableHeader extends React.Component {
       )
     } else {
       return (
-        <th key={col.name}>{col.label}</th>
+        <th key={col.name} className={col.rightAlign === true ? 'text-right' : ''}>
+          {col.label}
+        </th>
       )
     }
   }

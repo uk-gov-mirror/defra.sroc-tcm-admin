@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171018123446) do
+ActiveRecord::Schema.define(version: 20171107143627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,14 +111,15 @@ ActiveRecord::Schema.define(version: 20171018123446) do
     t.string "reference_1"
     t.string "reference_2"
     t.string "reference_3"
-    t.bigint "calculated_charge"
-    t.datetime "charge_calculated_at"
     t.string "generated_filename"
     t.datetime "generated_file_at"
     t.boolean "temporary_cessation", default: false, null: false
     t.datetime "temporary_cessation_start"
     t.datetime "temporary_cessation_end"
     t.string "category"
+    t.json "charge_calculation"
+    t.datetime "period_start"
+    t.datetime "period_end"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_header_id"], name: "index_transaction_details_on_transaction_header_id"

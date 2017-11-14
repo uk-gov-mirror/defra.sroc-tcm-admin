@@ -17,7 +17,6 @@
   <div class="col">
     <div id="transaction-table"
          data-regime="<%= @regime.slug %>"
-         data-columns="<%= columns_for_regime(@regime) %>"
          data-sort-col="customer_reference"
          data-sort-dir="asc"
          data-path="<%= regime_transactions_path(@regime) %>"

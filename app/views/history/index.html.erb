@@ -17,11 +17,10 @@
   <div class="col">
     <div id="transaction-table" 
          data-regime="<%= @regime.slug %>"
-         data-columns="<%= history_columns_for_regime(@regime) %>"
+         data-historic="true"
          data-sort-col="customer_reference"
          data-sort-dir="asc"
          data-path="<%= regime_history_index_path(@regime) %>"
-         data-transactions="<%= @transactions.to_json %>"
          data-regions="<%= available_regions(@regime).to_json %>"
          data-selected-region="<%= params.fetch(:region, 'all') %>"
          data-search-term="<%= params[:search] %>"
