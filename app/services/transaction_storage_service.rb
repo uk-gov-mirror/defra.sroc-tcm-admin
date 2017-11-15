@@ -85,20 +85,22 @@ class TransactionStorageService
     # lookup col value
     case col.to_sym
     when :customer_reference
-      q.order(customer_reference: dir)
+      q.order(customer_reference: dir, id: dir)
     when :transaction_reference
-      q.order(transaction_reference: dir)
+      q.order(transaction_reference: dir, id: dir)
     when :permit_reference
-      q.order(reference_1: dir)
+      q.order(reference_1: dir, id: dir)
+    when :original_permit_reference
+      q.order(reference_2: dir, id: dir)
     when :consent_reference
-      q.order(reference_1: dir, reference_2: dir, reference_3: dir)
+      q.order(reference_1: dir, reference_2: dir, reference_3: dir, id: dir)
     when :sroc_category
       # FIXME: not implemented this one yet
-      q.order(category: dir)
+      q.order(category: dir, id: dir)
     when :compliance_band
-      q.order(line_attr_11: dir)
+      q.order(line_attr_11: dir, id: dir)
     when :variation
-      q.order(line_attr_9: dir)
+      q.order(line_attr_9: dir, id: dir)
     when :period
       q.order(period_start: dir, period_end: dir, id: dir)
     else
@@ -108,7 +110,7 @@ class TransactionStorageService
 
       q.joins(:transaction_header).
         merge(TransactionHeader.order(region: dir, file_sequence_number: dir)).
-        order(transaction_reference: dir)
+        order(transaction_reference: dir, id: dir)
     end
   end
 end

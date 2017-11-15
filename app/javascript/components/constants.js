@@ -13,6 +13,11 @@ Constants.INSTALLATIONS_COLUMNS = [
     sortable: true,
     selectable: false
   }, {
+    name: 'original_permit_reference',
+    label: 'Original Permit',
+    sortable: true,
+    selectable: false
+  }, {
     name: 'sroc_category',
     label: 'SRoC Category',
     sortable: true,
@@ -21,6 +26,11 @@ Constants.INSTALLATIONS_COLUMNS = [
     name: 'compliance_band',
     label: 'Compliance Band',
     sortable: true,
+    selectable: false
+  }, {
+    name: 'temporary_cessation',
+    label: 'TC',
+    sortable: false,
     selectable: false
   }, {
     name: 'period',

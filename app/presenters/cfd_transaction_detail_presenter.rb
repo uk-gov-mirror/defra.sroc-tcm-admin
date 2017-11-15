@@ -3,7 +3,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     {
       permitCategoryRef: category,
       percentageAdjustment: clean_variation_percentage,
-      temporaryCessation: false,
+      temporaryCessation: temporary_cessation,
       compliancePerformanceBand: 'B',
       billableDays: billable_days,
       financialDays: financial_year_days,
@@ -59,7 +59,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       discharge: discharge_reference,
       sroc_category: category,
       variation: variation_percentage,
-      temporary_cessation: temporary_cessation,
+      temporary_cessation: temporary_cessation_flag,
       period: period,
       amount: amount
     }

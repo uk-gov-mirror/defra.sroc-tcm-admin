@@ -25,7 +25,7 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
       compliance_band: compliance_band,
       site: site,
       sroc_category: category,
-      temporary_cessation: temporary_cessation,
+      temporary_cessation: temporary_cessation_flag,
       period: period,
       amount: amount
     }
