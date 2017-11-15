@@ -26,7 +26,9 @@ class TransactionsController < ApplicationController
           params.fetch(:sort, :customer_reference),
           params.fetch(:sort_direction, 'asc'))
 
-        summary = transaction_store.transactions_to_be_billed_summary(q, region)
+        # don't want to display these here for now
+        # summary = transaction_store.transactions_to_be_billed_summary(q, region)
+        summary = nil
         @transactions = present_transactions(@transactions, summary)
         render json: @transactions
       end
@@ -95,8 +97,8 @@ class TransactionsController < ApplicationController
           total_pages: arr.total_pages,
           total_count: arr.total_count
         },
-        transactions: arr,
-        summary: summary
+        transactions: arr
+        # summary: summary
       }
     end
 
