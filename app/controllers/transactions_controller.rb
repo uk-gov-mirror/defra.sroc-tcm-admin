@@ -13,7 +13,7 @@ class TransactionsController < ApplicationController
       end
       format.js
       format.json do
-        region = params.fetch(:region, 'all')
+        region = params.fetch(:region, '')
         q = params.fetch(:search, "")
         pg = params.fetch(:page, 1)
         per_pg = params.fetch(:per_page, 10)

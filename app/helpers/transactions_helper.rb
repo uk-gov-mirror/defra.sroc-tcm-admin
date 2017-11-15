@@ -28,10 +28,10 @@ module TransactionsHelper
   end
 
   def available_regions(regime)
-    selected = params.fetch(:region, 'all')
+    selected = params.fetch(:region, '')
 
-    regions = [{ label: 'All', value: 'all', selected: selected == 'all'}]
-    regions + regime.transaction_headers.distinct.pluck(:region).
+    # regions = [{ label: 'All', value: 'all', selected: selected == 'all'}]
+    regime.transaction_headers.distinct.pluck(:region).
       sort.map { |r| { label: r, value: r, selected: selected == r } }
   end
 

@@ -22,7 +22,7 @@
          data-path="<%= regime_transactions_path(@regime) %>"
          data-transactions="<%= @transactions.to_json %>"
          data-regions="<%= available_regions(@regime).to_json %>"
-         data-selected-region="<%= params.fetch(:region, 'all') %>"
+         data-selected-region="<%= params.fetch(:region, '') %>"
          data-search-term="<%= params[:search] %>"
          data-search-placeholder="<%= search_placeholder(@regime) %>"
          data-categories="<%= permit_categories(@regime).to_json %>">

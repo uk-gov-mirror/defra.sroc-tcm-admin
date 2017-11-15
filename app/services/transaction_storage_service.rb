@@ -14,8 +14,9 @@ class TransactionStorageService
     regime.transaction_details.find(id)
   end
 
-  def transactions_to_be_billed(search = '', page = 1, per_page = 10, region = 'all',
+  def transactions_to_be_billed(search = '', page = 1, per_page = 10, region = '',
                                order = :customer_reference, direction = 'asc')
+    region = first_region if region.blank?
     q = regime.transaction_details.region(region).unbilled
     q = q.search(search) unless search.blank?
     order_query(q, order, direction).page(page).per(per_page)
@@ -78,6 +79,10 @@ class TransactionStorageService
       invoice_total:  invoice_total,
       net_total:      invoice_total + credit_total
     }
+  end
+
+  def first_region
+    regime.transaction_headers.distinct.order(:region).pluck(:region).first
   end
 
   def order_query(q, col, dir)

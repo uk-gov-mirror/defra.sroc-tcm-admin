@@ -30,12 +30,13 @@ export default class TransactionsView extends React.Component {
   }
 
   emptyTransactions() {
+    const per_page = 10
     return {
       pagination: {
-        per_page: 10,
-        current_page: 1},
-      transactions: [],
-      summary: {}
+        per_page: per_page,
+        current_page: 1
+      },
+      transactions: new Array(per_page).fill().map((_, i) => { return { id: i }})
     }
   }
 
