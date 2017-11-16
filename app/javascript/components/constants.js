@@ -116,6 +116,11 @@ Constants.WASTE_COLUMNS = [
     sortable: true,
     selectable: false
   }, {
+    name: 'temporary_cessation',
+    label: 'TC',
+    sortable: false,
+    selectable: false
+  }, {
     name: 'period',
     label: 'Period',
     sortable: true,
@@ -135,7 +140,7 @@ Constants.regimeColumns = (regime, history) => {
     cols = Constants.INSTALLATIONS_COLUMNS
   } else if (regime === 'cfd') {
     cols = Constants.WATER_QUALITY_COLUMNS
-  } else if (regime === 'wabs') {
+  } else if (regime === 'wml') {
     cols = Constants.WASTE_COLUMNS
   } else {
     throw 'Unknown regime: ' + regime

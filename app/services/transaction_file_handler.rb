@@ -97,7 +97,6 @@ class TransactionFileHandler
         reference_3: row[Detail::AbsOriginalPermitReference]
       })
     elsif regime.water_quality?
-      period = extract_period(row[Detail::LineAttr3], "%d/%m/%y")
       consent = row[Detail::LineDescription]
       if consent.present?
         consent = consent.split(' ').last.split('/')
@@ -110,6 +109,11 @@ class TransactionFileHandler
           reference_3: consent.last
         })
       end
+    elsif regime.waste?
+      line = row[Detail::LineDescription]
+      data.merge!({
+        reference_1: line.split(':').last.strip
+      })
     end
 
     # Header attrs 1 - 10

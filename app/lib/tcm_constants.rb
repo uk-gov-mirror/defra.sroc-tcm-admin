@@ -9,7 +9,7 @@ module TcmConstants
       format: "%d/%m/%y"
     },
     # WABS not known yet
-    wabs: {
+    wml: {
       attr_name: :header_attr_10,
       format: "%d/%m/%Y"
     }

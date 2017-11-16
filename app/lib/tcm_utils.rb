@@ -37,7 +37,30 @@ class TcmUtils
   def self.extract_csv_period_dates(regime, row)
     info = TcmConstants::PeriodDates[regime.slug.to_sym]
     period_index = "TransactionFile::Detail::#{info[:attr_name].to_s.classify}".constantize 
-    self.extract_period_dates(row[period_index], info[:format])
+    if regime.waste?
+      self.extract_waste_period_dates(row[period_index], info[:format])
+    else
+      self.extract_period_dates(row[period_index], info[:format])
+    end
+  end
+
+  def self.extract_waste_period_dates(period, date_format)
+    # expecting a string with 2 dates matching the date_format
+    # or 'From' and a date matching the date_format
+    # e.g.
+    # '23/06/2017 - 31/03/2017'
+    # 'From 03/10/2017'
+    parts = period.split(' ')
+    if parts[0].downcase == 'from'
+      dates = []
+      start_date = Date.strptime(parts[1], date_format)
+      end_year = start_date.month > 3 ? start_date.year + 1 : start_date.year
+      dates[0] = start_date
+      dates[1] = Date.new(end_year, 3, 31)
+      dates
+    else
+      self.extract_period_dates(period, date_format)
+    end
   end
 
   def self.extract_period_dates(period, date_format)

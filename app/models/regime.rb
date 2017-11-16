@@ -17,7 +17,7 @@ class Regime < ApplicationRecord
   end
 
   def waste?
-    slug == 'wabs'
+    slug == 'wml'
   end
 
   def installations?
