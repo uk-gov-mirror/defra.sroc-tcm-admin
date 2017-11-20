@@ -8,7 +8,7 @@ cfd:
   title: "Water Quality"
   slug: "cfd"
 
-wabs:
-  name: "WABS"
+wml:
+  name: "WML"
   title: "Waste"
-  slug: "wabs"
+  slug: "wml"

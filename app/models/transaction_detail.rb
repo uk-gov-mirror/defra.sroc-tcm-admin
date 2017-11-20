@@ -21,7 +21,7 @@ class TransactionDetail < ApplicationRecord
   end
 
   def charge_calculated?
-    charge_calculation != nil
+    charge_calculation.present?
   end
 
   def charge_calculation_error?

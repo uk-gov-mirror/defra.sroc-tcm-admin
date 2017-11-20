@@ -2,6 +2,7 @@ cfd:
   regime: cfd
   feeder_source_code: "CFD"
   region: "A"
+  file_type_flag: 'I'
   file_sequence_number: 371
   bill_run_id: ""
   generated_at: <%= 2.months.ago %>
@@ -12,6 +13,7 @@ pas:
   regime: pas
   feeder_source_code: "PAS"
   region: "Y"
+  file_type_flag: 'I'
   file_sequence_number: 337
   bill_run_id: "462"
   generated_at: <%= 6.weeks.ago %>

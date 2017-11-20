@@ -10,7 +10,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@presenter.charge_params, {
       permitCategoryRef: @transaction.category,
       percentageAdjustment: clean_variation,
-      temporaryCessation: false,
+      temporaryCessation: @presenter.temporary_cessation,
       compliancePerformanceBand: 'B',
       billableDays: billable_days,
       financialDays: financial_year_days,
@@ -78,7 +78,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       discharge: @presenter.discharge_reference,
       sroc_category: @presenter.category,
       variation: @presenter.variation_percentage,
-      temporary_cessation: @presenter.temporary_cessation,
+      temporary_cessation: @presenter.temporary_cessation_flag,
       period: @presenter.period,
       amount: @presenter.amount
     })

@@ -29,6 +29,7 @@ class TransactionFileHandler
           if file_type == "I"
             source = row[Header::FileSource]
             region = row[Header::Region]
+            file_type_flag = row[Header::FileType]
             file_seq_no = row[Header::FileSequenceNumber]
             bill_run_id = row[Header::BillRunId]
             generated_at = row[Header::FileDate]
@@ -37,6 +38,7 @@ class TransactionFileHandler
               regime: Regime.find_by(name: source),
               feeder_source_code: source,
               region: region,
+              file_type_flag: file_type_flag,
               file_sequence_number: file_seq_no,
               bill_run_id: bill_run_id,
               generated_at: generated_at

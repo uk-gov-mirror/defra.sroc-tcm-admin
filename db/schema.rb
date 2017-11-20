@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171107143627) do
+ActiveRecord::Schema.define(version: 20171116101927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -137,6 +137,7 @@ ActiveRecord::Schema.define(version: 20171107143627) do
     t.integer "credit_total"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "file_type_flag"
     t.index ["regime_id"], name: "index_transaction_headers_on_regime_id"
   end
 
