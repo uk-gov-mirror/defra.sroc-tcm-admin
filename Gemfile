@@ -38,7 +38,7 @@ gem 'redis', '~> 3.2'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-gem "passenger", "~> 5.1", require: false
+# gem "passenger", "~> 5.1", require: false
 gem "whenever", require: false
 # gem "redis"
 gem "resque", require: "resque/server"
