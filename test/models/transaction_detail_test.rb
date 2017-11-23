@@ -48,4 +48,42 @@ class TransactionDetailTest < ActiveSupport::TestCase
     @transaction.charge_calculation = calc
     assert @transaction.charge_calculation_error?, "Error not found!"
   end
+
+  def test_unbilled_scope_returns_unbilled_transactions
+    transactions = TransactionDetail.where(status: 'unbilled')
+    assert_equal transactions, TransactionDetail.unbilled
+  end
+
+  def test_historic_scope_returns_historic_transactions
+    transactions = TransactionDetail.where(status: 'billed')
+    assert_equal transactions, TransactionDetail.historic
+  end
+
+  def test_region_scope_returns_transactions_for_region
+    TransactionHeader.all.distinct.pluck(:region).each do |region|
+      transactions = TransactionDetail.joins(:transaction_header).
+        merge(TransactionHeader.where(region: region))
+      assert_equal transactions, TransactionDetail.region(region.to_param)
+    end
+  end
+
+  def test_search_matches_on_customer_reference
+    check_search(:customer_reference)
+  end
+
+  def test_search_matches_on_reference_1
+    check_search(:reference_1)
+  end
+
+  def test_search_matches_on_transaction_reference
+    check_search(:transaction_reference)
+  end
+
+  def check_search(column)
+    ref = @transaction.send(column)
+    at = TransactionDetail.arel_table
+
+    result = TransactionDetail.where(at[column].matches(ref))
+    assert_equal result.to_a, TransactionDetail.search(ref).to_a
+  end
 end

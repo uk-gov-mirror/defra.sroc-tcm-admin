@@ -8,25 +8,6 @@ class TransactionDetailPresenter < SimpleDelegator
     transaction_detail.transaction_header.file_reference
   end
 
-  def permit_reference
-    "todo"
-  end
-
-  def sroc_category
-    case category
-    when '1'
-      'Category 1'
-    when '2'
-      'Category 2'
-    else
-      ''
-    end
-  end
-
-  def compliance_band
-    "todo"
-  end
-
   def billable_days
     (period_end.to_date - period_start.to_date).to_i + 1
   end

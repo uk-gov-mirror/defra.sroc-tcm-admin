@@ -5,8 +5,7 @@ class Regime < ApplicationRecord
   has_many :permit_categories, inverse_of: :regime, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
-  # this is killing older migration
-  # validates :title, presence: true
+  validates :title, presence: true
   before_save :generate_slug
 
   def to_param

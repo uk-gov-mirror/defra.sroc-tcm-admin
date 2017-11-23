@@ -22,9 +22,11 @@ class FileCheckJob < ApplicationJob
 
         transaction = importer.import(in_file.path)
         if transaction && transaction.valid?
-          importer.export(transaction, out_file.path)
-          out_file.rewind
-          service.store_file_in(:export, out_file.path, f)
+          in_file.rewind
+          service.store_file_in(:import_archive, in_file.path, f)
+          # importer.export(transaction, out_file.path)
+          # out_file.rewind
+          # service.store_file_in(:export, out_file.path, f)
           service.delete_file_from(:import, f)
           success += 1
         else

@@ -4,6 +4,11 @@ SimpleCov.start
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 
+require 'minitest/reporters'
+Minitest::Reporters.use!
+
+require 'mocha/mini_test'
+
 # remove http auth which is only for heroku deployment
 ENV['HEROKU'] = nil
 

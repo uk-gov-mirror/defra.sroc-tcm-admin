@@ -49,7 +49,7 @@ class TransactionsController < ApplicationController
   # PATCH/PUT /regimes/:regimes_id/transactions/1.json
   def update
     respond_to do |format|
-      if update_transaction(@transaction)
+      if update_transaction
         format.html { redirect_to edit_regime_transaction_path(@regime, @transaction),
                       notice: 'Transaction was successfully updated.' }
         format.json { render json: { transaction: presenter.new(@transaction), message: 'Transaction updated' }, status: :ok, location: regime_transaction_path(@regime, @transaction) }
@@ -61,22 +61,30 @@ class TransactionsController < ApplicationController
   end
 
   private
-    def update_transaction(transaction)
-      if transaction.update(transaction_params)
-        transaction.charge_calculation = get_charge_calculation(transaction)
-        transaction.save
+    def update_transaction
+      if @transaction.update(transaction_params)
+        if @transaction.previous_changes.include? :category
+          @transaction.charge_calculation = get_charge_calculation
+          @transaction.save
+        else
+          @transaction.errors.add(:category, "No category data")
+          false
+        end
       else
         false
       end
     end
 
-    def get_charge_calculation(transaction)
-      calculator.calculate_transaction_charge(presenter.new(transaction)) if transaction.category.present?
+    def get_charge_calculation
+      calculator.calculate_transaction_charge(presenter.new(@transaction)) if @transaction.category.present?
     end
 
+    # We'll stub / mock this to prevent WS calls
+    # :nocov:
     def calculator
       @calculator ||= CalculationService.new
     end
+    # :nocov:
 
     def presenter
       name = "#{@regime.slug}_transaction_detail_presenter".camelize
@@ -102,6 +110,7 @@ class TransactionsController < ApplicationController
       }
     end
 
+    # :nocov:
     def str_to_class(name)
       begin
         name.constantize
@@ -120,6 +129,7 @@ class TransactionsController < ApplicationController
         @regime = Regime.first
       end
     end
+    # :nocov:
 
     def set_transaction
       set_regime

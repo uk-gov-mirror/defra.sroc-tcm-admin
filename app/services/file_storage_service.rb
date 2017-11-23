@@ -2,7 +2,14 @@
 
 class FileStorageService
   attr_reader :user
-  STORAGE_ZONES = [:import, :export, :archive, :quarantine].freeze
+  # STORAGE_ZONES = [:import, :export, :archive, :quarantine].freeze
+  STORAGE_ZONES = {
+    import: "import",
+    export: "export",
+    import_archive: "archive/import",
+    export_archive: "archive/export",
+    quarantine: "quarantine"
+  }
 
   def initialize(user = nil)
     # when instantiated from a controller the 'current_user' should
@@ -35,7 +42,7 @@ private
 
   def zone_path(z, path = "")
     raise ArgumentError.new("Unknown zone: #{z}") unless STORAGE_ZONES.include?(z)
-    File.join(z.to_s, path)
+    File.join(STORAGE_ZONES[z], path)
   end
 
   def determine_storage_handler

@@ -4,7 +4,7 @@ class PermitCategoriesControllerTest < ActionDispatch::IntegrationTest
   def setup
     # @regime = FactoryBot.create(:cfd)
     @regime = regimes(:cfd)
-    @permit_category = FactoryBot.create(:permit_category, regime: @regime)
+    @permit_category = permit_categories(:cfd)
   end
 
   def test_it_should_get_index

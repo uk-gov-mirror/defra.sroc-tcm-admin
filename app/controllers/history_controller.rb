@@ -58,6 +58,7 @@ class HistoryController < ApplicationController
       }
     end
 
+    # :nocov:
     def str_to_class(name)
       begin
         name.constantize
@@ -65,8 +66,10 @@ class HistoryController < ApplicationController
         nil
       end
     end
+    # :nocov:
 
     # Use callbacks to share common setup or constraints between actions.
+    # :nocov:
     def set_regime
       # FIXME: this is just to avoid not having a regime set on entry
       # this will be replaced by using user regimes roles/permissions
@@ -76,11 +79,13 @@ class HistoryController < ApplicationController
         @regime = Regime.first
       end
     end
+    # :nocov:
 
-    def set_transaction
-      set_regime
-      @transaction = transaction_store.find(params[:id])
-    end
+    # NOTE: not needed until we're implementing #show
+    # def set_transaction
+    #   set_regime
+    #   @transaction = transaction_store.find(params[:id])
+    # end
 
     def transaction_store
       @transaction_store ||= TransactionStorageService.new(@regime)
