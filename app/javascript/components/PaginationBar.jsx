@@ -4,23 +4,23 @@ import PageSizeSelector from './PageSizeSelector'
 import PageNavigator from './PageNavigator'
 
 export default class PaginationBar extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.onChangePageSize = this.onChangePageSize.bind(this)
     this.onChangePage = this.onChangePage.bind(this)
   }
 
-  onChangePageSize(size) {
+  onChangePageSize (size) {
     this.props.onChangePageSize(size)
   }
 
-  onChangePage(page) {
+  onChangePage (page) {
     this.props.onChangePage(page)
   }
 
-  renderNavigatorOrNot(pagination) {
-    if(pagination.total_pages < 2) {
+  renderNavigatorOrNot (pagination) {
+    if (pagination.total_pages < 2) {
       return null
     }
 
@@ -31,10 +31,10 @@ export default class PaginationBar extends React.Component {
     )
   }
 
-  render() {
+  render () {
     const pagination = this.props.pagination
     const selectedPageSize = this.props.pageSize
-    const pageSizes=[5,10,15,25,50]
+    const pageSizes = [5, 10, 15, 25, 50]
 
     return (
       <div className='row paging-info'>

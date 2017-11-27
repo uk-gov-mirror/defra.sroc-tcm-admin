@@ -3,11 +3,7 @@ import TransactionTableHeader from './TransactionTableHeader'
 import TransactionTableBody from './TransactionTableBody'
 
 export default class TransactionTable extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
-  render() {
+  render () {
     const columns = this.props.columns
     const sortCol = this.props.sortColumn
     const sortDir = this.props.sortDirection
@@ -18,16 +14,19 @@ export default class TransactionTable extends React.Component {
     const onChangeCategory = this.props.onChangeCategory
 
     return (
-      <table className="table table-responsive">
-        <TransactionTableHeader columns={columns}
-                                sortColumn={sortCol}
-                                sortDirection={sortDir}
-                                onChangeSortDirection={onSortDirChange}
-                                onChangeSortColumn={onSortColChange}
+      <table className='table table-responsive'>
+        <TransactionTableHeader
+          columns={columns}
+          sortColumn={sortCol}
+          sortDirection={sortDir}
+          onChangeSortDirection={onSortDirChange}
+          onChangeSortColumn={onSortColChange}
         />
-        <TransactionTableBody columns={columns} data={data}
-                              categories={categories}
-                              onChangeCategory={onChangeCategory}
+        <TransactionTableBody
+          columns={columns}
+          data={data}
+          categories={categories}
+          onChangeCategory={onChangeCategory}
         />
       </table>
     )

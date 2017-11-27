@@ -1,32 +1,32 @@
 import React from 'react'
 
 export class TransactionSearchBox extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.handleSearchBtn = this.handleSearchBtn.bind(this)
     this.handleKeyPress = this.handleKeyPress.bind(this)
   }
 
-  handleSearchBtn(ev) {
+  handleSearchBtn (ev) {
     this.doSearch()
   }
 
-  handleKeyPress(ev) {
-    if(ev.key === 'Enter') {
+  handleKeyPress (ev) {
+    if (ev.key === 'Enter') {
       this.doSearch()
     }
   }
 
-  doSearch() {
+  doSearch () {
     this.props.onSearch(document.getElementById('transaction-search').value)
   }
 
-  render() {
+  render () {
     const searchTerm = this.props.searchTerm
     const placeholder = this.props.placeholder
 
     return (
-      <div className="input-group col-12 col-md-6 ml-4">
+      <div className='input-group col-12 col-md-6 ml-4'>
         <label htmlFor='transaction-search' className='sr-only'>Search</label>
         <input type='search' name='search' id='transaction-search'
           onKeyPress={this.handleKeyPress}

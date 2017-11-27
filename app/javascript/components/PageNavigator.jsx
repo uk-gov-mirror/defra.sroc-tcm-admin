@@ -1,50 +1,46 @@
 import React from 'react'
 
 export default class PageNavigator extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
-  onChangePage(page, ev) {
+  onChangePage (page, ev) {
     console.log('selected page: ' + page)
     ev.preventDefault()
     this.props.onChangePage(page)
   }
 
-  makeItem(label, access_label, value, active = false) {
+  makeItem (label, accessLabel, value, active = false) {
     const clz = (active) ? 'page-item active' : 'page-item'
     return (
       <li key={label} className={clz}>
         <a href='#' className='page-link' onClick={this.onChangePage.bind(this, value)}>
           <span aria-hidden='true'>{label}</span>
-          <span className='sr-only'>{access_label}</span>
-        </a>  
+          <span className='sr-only'>{accessLabel}</span>
+        </a>
       </li>
     )
   }
 
-  makeDisabledItem(label, access_label, key) {
+  makeDisabledItem (label, accessLabel, key) {
     const k = (key === null || key === 'undefined') ? label : key
     return (
       <li key={k} className='page-item'>
         <span className='page-link disabled'>
           <span aria-hidden='true'>{label}</span>
-          <span className='sr-only'>{access_label}</span>
+          <span className='sr-only'>{accessLabel}</span>
         </span>
       </li>
     )
   }
 
-  truncatedBeforeItem() {
+  truncatedBeforeItem () {
     return this.makeDisabledItem('...', 'More items', 'before')
   }
 
-  truncatedAfterItem() {
+  truncatedAfterItem () {
     return this.makeDisabledItem('...', 'More items', 'after')
   }
 
-  firstLink(currentPage, pageCount) {
-    if(currentPage === 1) {
+  firstLink (currentPage, pageCount) {
+    if (currentPage === 1) {
       // &laquo; is \u00ab
       return this.makeDisabledItem('\u00ab', 'First')
     } else {
@@ -52,8 +48,8 @@ export default class PageNavigator extends React.Component {
     }
   }
 
-  prevLink(currentPage, pageCount) {
-    if(currentPage === 1) {
+  prevLink (currentPage, pageCount) {
+    if (currentPage === 1) {
       // &lt; is \u003c
       return this.makeDisabledItem('\u003c', 'Previous')
     } else {
@@ -61,29 +57,29 @@ export default class PageNavigator extends React.Component {
     }
   }
 
-  links(currentPage, pageCount) {
-    const left_truncated = (currentPage > 3) ? this.truncatedBeforeItem(-1) : null
-    const right_truncated = (currentPage < (pageCount - 3)) ? this.truncatedAfterItem(pageCount + 1) : null
+  links (currentPage, pageCount) {
+    const leftTruncated = (currentPage > 3) ? this.truncatedBeforeItem(-1) : null
+    const rightTruncated = (currentPage < (pageCount - 3)) ? this.truncatedAfterItem(pageCount + 1) : null
 
-    const start = Math.max(1, currentPage - 2) 
+    const start = Math.max(1, currentPage - 2)
     const end = Math.min(pageCount, currentPage + 2)
     const pages = this.linkRange(currentPage, start, end)
 
     return (
-      [left_truncated, pages, right_truncated]
+      [leftTruncated, pages, rightTruncated]
     )
   }
 
-  linkRange(current, start, end) {
+  linkRange (current, start, end) {
     let range = []
-    for(var n = start; n <= end; n++) {
+    for (var n = start; n <= end; n++) {
       range[n] = this.makeItem(n, n, n, n === current)
     }
     return range
   }
 
-  nextLink(currentPage, pageCount) {
-    if(currentPage === pageCount) {
+  nextLink (currentPage, pageCount) {
+    if (currentPage === pageCount) {
       // &gt; is \u003e
       return this.makeDisabledItem('\u003e', 'Next')
     } else {
@@ -91,8 +87,8 @@ export default class PageNavigator extends React.Component {
     }
   }
 
-  lastLink(currentPage, pageCount) {
-    if(currentPage === pageCount) {
+  lastLink (currentPage, pageCount) {
+    if (currentPage === pageCount) {
       // &raquo; is \u00bb
       return this.makeDisabledItem('\u00bb', 'Last')
     } else {
@@ -100,7 +96,7 @@ export default class PageNavigator extends React.Component {
     }
   }
 
-  render() {
+  render () {
     const pagination = this.props.pagination
     const currentPage = pagination.current_page
     const lastPage = pagination.total_pages

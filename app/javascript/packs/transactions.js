@@ -1,5 +1,5 @@
 /* eslint no-console:0 */
-
+import 'babel-polyfill'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import TransactionsView from '../components/TransactionsView'
@@ -25,15 +25,19 @@ document.addEventListener(loadEvent, () => {
   const csrfToken = document.querySelector('meta[name=csrf-token]').content
 
   ReactDOM.render(
-    <TransactionsView regime={regime} historic={historic} columns={columns}
-                  showSummary={showSummary}
-                  sortColumn={sortColumn} sortDirection={sortDir}
-                  categories={categories}
-                  path={path}
-                  csrfToken={csrfToken}
-                  regions={regions}
-                  selectedRegion={selectedRegion}
-                  searchTerm={searchTerm} searchPlaceholder={searchPlaceholder} />,
+    <TransactionsView
+      regime={regime}
+      historic={historic}
+      columns={columns}
+      showSummary={showSummary}
+      sortColumn={sortColumn} sortDirection={sortDir}
+      categories={categories}
+      path={path}
+      csrfToken={csrfToken}
+      regions={regions}
+      selectedRegion={selectedRegion}
+      searchTerm={searchTerm} searchPlaceholder={searchPlaceholder}
+    />,
     element
   )
 })

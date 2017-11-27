@@ -1,13 +1,12 @@
 import React from 'react'
 import axios from 'axios'
-import Constants from './constants'
 import TransactionSummary from './TransactionSummary'
 import TransactionTable from './TransactionTable'
 import SearchBar from './SearchBar'
 import PaginationBar from './PaginationBar'
 
 export default class TransactionsView extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const transactions = this.props.transactions || this.emptyTransactions()
     this.state = {
@@ -29,65 +28,60 @@ export default class TransactionsView extends React.Component {
     this.updateTransactionCategory = this.updateTransactionCategory.bind(this)
   }
 
-  emptyTransactions() {
-    const per_page = 10
+  emptyTransactions () {
+    const perPage = 10
     return {
       pagination: {
-        per_page: per_page,
+        per_page: perPage,
         current_page: 1
       },
-      transactions: new Array(per_page).fill().map((_, i) => { return { id: i }})
+      // NOTE: we need a polyfill for Array.prototype.fill on IE
+      transactions: new Array(perPage).fill().map((_, i) => { return { id: i } })
     }
   }
 
-  toggleSortDirection() {
+  toggleSortDirection () {
     const direction = this.state.sortDirection === 'asc' ? 'desc' : 'asc'
-    console.log('sort direction changed - go query for new stuff')
     this.setState({sortDirection: direction, currentPage: 1}, () => {
       this.fetchTableData()
     })
   }
 
-  changeSortColumn(columnName) {
-    console.log('sort column changed - go query for new stuff')
+  changeSortColumn (columnName) {
     this.setState({sortColumn: columnName, sortDirection: 'asc', currentPage: 1}, () => {
       this.fetchTableData()
     })
   }
 
-  changeRegion(region) {
-    console.log('change region to ' + region)
+  changeRegion (region) {
     this.setState({selectedRegion: region, currentPage: 1}, () => {
       this.fetchTableData()
     })
   }
 
-  search(term) {
-    console.log('search for ' + term)
+  search (term) {
     this.setState({searchTerm: term, currentPage: 1}, () => {
       this.fetchTableData()
     })
   }
 
-  changePage(page) {
-    console.log('page changed to: ' + page)
+  changePage (page) {
     this.setState({currentPage: page}, () => {
       this.fetchTableData()
     })
   }
 
-  changePageSize(size) {
-    console.log('page size changed to: ' + size)
+  changePageSize (size) {
     this.setState({pageSize: size}, () => {
       this.fetchTableData()
     })
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchTableData()
   }
 
-  fetchTableData() {
+  fetchTableData () {
     axios.get(this.props.path + '.json', {
       params: {
         sort: this.state.sortColumn,
@@ -99,11 +93,12 @@ export default class TransactionsView extends React.Component {
       }
     })
       .then(res => {
-        this.setState({ transactions: res.data,
-                        pagination: res.data.pagination,
-                        pageSize: res.data.pagination.per_page,
-                        currentPage: res.data.pagination.current_page
-                       })
+        this.setState({
+          transactions: res.data,
+          pagination: res.data.pagination,
+          pageSize: res.data.pagination.per_page,
+          currentPage: res.data.pagination.current_page
+        })
       })
       .catch(error => {
         // TODO: handle this
@@ -112,36 +107,35 @@ export default class TransactionsView extends React.Component {
       })
   }
 
-  updateTransactionCategory(id, value) {
-    console.log('transaction category change: ' + id + ' value: ' + value)
-    axios.patch(this.props.path + '/' + id + '.json', {
+  updateTransactionCategory (id, value) {
+    axios.patch(this.props.path + '/' + id + '.json',
+      {
         transaction_detail: {
           category: value
         }
       },
       {
-      headers: {
-        'X-CSRF-Token': this.props.csrfToken
-      }
-    })
+        headers: {
+          'X-CSRF-Token': this.props.csrfToken
+        }
+      })
     .then(res => {
-      console.log(res.data)
       // update local data
       let data = this.state.transactions
       let idx = data.transactions.findIndex(t => {
         return t.id === id
       })
-      if(idx !== -1) {
+      if (idx !== -1) {
         data.transactions[idx] = res.data.transaction
         this.setState({ transactions: data })
       }
     })
     .catch(error => {
-      console.log("error: " + error)
+      console.log('error: ' + error)
     })
   }
 
-  render() {
+  render () {
     const regime = this.props.regime
     const columns = this.props.columns
     const sortColumn = this.state.sortColumn
@@ -158,7 +152,7 @@ export default class TransactionsView extends React.Component {
     const categories = this.props.categories
 
     let transactionSummary = null
-    if(typeof summary !== 'undefined' && summary !== null) {
+    if (typeof summary !== 'undefined' && summary !== null) {
       transactionSummary = (
         <TransactionSummary summary={summary} />
       )

@@ -1,17 +1,13 @@
 import React from 'react'
 
 export default class TransactionSummary extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
-  formattedPence(value) {
+  formattedPence (value) {
     return (value / 100).toLocaleString('en-GB', {
       style: 'currency', currency: 'GBP'
     })
   }
 
-  render() {
+  render () {
     const summary = this.props.summary
 
     return (

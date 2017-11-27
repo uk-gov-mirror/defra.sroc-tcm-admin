@@ -3,22 +3,22 @@ import { RegionFilter } from './RegionFilter'
 import { TransactionSearchBox } from './TransactionSearchBox'
 
 export default class SearchBar extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.onChangeRegion = this.onChangeRegion.bind(this)
     this.onSearch = this.onSearch.bind(this)
   }
 
-  onChangeRegion(region) {
+  onChangeRegion (region) {
     this.props.onChangeRegion(region)
   }
 
-  onSearch(term) {
+  onSearch (term) {
     this.props.onSearch(term)
   }
 
-  render() {
+  render () {
     const regions = this.props.regions
     const selectedRegion = this.props.selectedRegion
     const searchTerm = this.props.seachTerm

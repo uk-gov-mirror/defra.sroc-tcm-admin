@@ -2,24 +2,28 @@ import React from 'react'
 import SelectionCell from './SelectionCell'
 
 export default class TransactionTableRow extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.onChangeCategory = this.onChangeCategory.bind(this)
   }
 
-  onChangeCategory(value) {
+  onChangeCategory (value) {
     this.props.onChangeCategory(this.props.row.id, value)
   }
 
-  buildCells() {
+  buildCells () {
     const row = this.props.row
     const cells = this.props.columns.map((c) => {
-      if(c.selectable) {
+      if (c.selectable) {
         const categories = this.props.categories
         return (
           <td key={c.name} className={c.rightAlign === true ? 'text-right' : ''}>
-            <SelectionCell name={c.name} value={row[c.name]}
-              options={categories} onChange={this.onChangeCategory} />
+            <SelectionCell
+              name={c.name}
+              value={row[c.name]}
+              options={categories}
+              onChange={this.onChangeCategory}
+            />
           </td>
         )
       } else {
@@ -34,7 +38,7 @@ export default class TransactionTableRow extends React.Component {
     return cells
   }
 
-  render() {
+  render () {
     const row = this.props.row
 
     return (

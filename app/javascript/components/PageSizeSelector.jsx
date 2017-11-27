@@ -1,17 +1,17 @@
 import React from 'react'
 
 export default class PageSizeSelector extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.onChangeSize = this.onChangeSize.bind(this)
   }
 
-  onChangeSize(ev) {
+  onChangeSize (ev) {
     this.props.onChangeSize(ev.target.value)
   }
 
-  render() {
+  render () {
     const selectedPageSize = this.props.selectedPageSize
     const pageSizes = this.props.pageSizes
     const options = pageSizes.map((s) =>

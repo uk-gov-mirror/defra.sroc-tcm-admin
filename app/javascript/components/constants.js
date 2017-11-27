@@ -143,7 +143,7 @@ Constants.regimeColumns = (regime, history) => {
   } else if (regime === 'wml') {
     cols = Constants.WASTE_COLUMNS
   } else {
-    throw 'Unknown regime: ' + regime
+    throw new Error('Unknown regime: ' + regime)
   }
 
   if (history) {
