@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class HistoryController < ApplicationController
+  include RegimeScope
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
 
@@ -57,35 +58,6 @@ class HistoryController < ApplicationController
         transactions: arr
       }
     end
-
-    # :nocov:
-    def str_to_class(name)
-      begin
-        name.constantize
-      rescue NameError => e
-        nil
-      end
-    end
-    # :nocov:
-
-    # Use callbacks to share common setup or constraints between actions.
-    # :nocov:
-    def set_regime
-      # FIXME: this is just to avoid not having a regime set on entry
-      # this will be replaced by using user regimes roles/permissions
-      if params.fetch(:regime_id, nil)
-        @regime = Regime.find_by!(slug: params[:regime_id])
-      else
-        @regime = Regime.first
-      end
-    end
-    # :nocov:
-
-    # NOTE: not needed until we're implementing #show
-    # def set_transaction
-    #   set_regime
-    #   @transaction = transaction_store.find(params[:id])
-    # end
 
     def transaction_store
       @transaction_store ||= TransactionStorageService.new(@regime)

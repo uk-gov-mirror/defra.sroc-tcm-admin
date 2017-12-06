@@ -16,6 +16,8 @@ document.addEventListener(loadEvent, () => {
   const columns = Constants.regimeColumns(regime, historic)
   // const columns = JSON.parse(element.getAttribute('data-columns'))
   const path = element.getAttribute('data-path')
+  const summaryPath = element.getAttribute('data-summary-path')
+  const generateFilePath = element.getAttribute('data-generate-file-path')
   // const transactions = JSON.parse(element.getAttribute('data-transactions'))
   const regions = JSON.parse(element.getAttribute('data-regions'))
   const selectedRegion = element.getAttribute('data-selected-region')
@@ -23,6 +25,7 @@ document.addEventListener(loadEvent, () => {
   const searchTerm = element.getAttribute('data-search-term')
   const categories = JSON.parse(element.getAttribute('data-categories'))
   const csrfToken = document.querySelector('meta[name=csrf-token]').content
+  const generateFiles = element.getAttribute('data-generate-files') === 'true'
 
   ReactDOM.render(
     <TransactionsView
@@ -33,10 +36,13 @@ document.addEventListener(loadEvent, () => {
       sortColumn={sortColumn} sortDirection={sortDir}
       categories={categories}
       path={path}
+      summaryPath={summaryPath}
       csrfToken={csrfToken}
       regions={regions}
       selectedRegion={selectedRegion}
       searchTerm={searchTerm} searchPlaceholder={searchPlaceholder}
+      generateFiles={generateFiles}
+      generateFilePath={generateFilePath}
     />,
     element
   )

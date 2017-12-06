@@ -1,4 +1,5 @@
 class PermitCategoriesController < ApplicationController
+  include RegimeScope
   before_action :set_regime, only: [:index, :new, :create]
   before_action :set_permit_category, only: [:show, :edit, :update, :destroy]
 
@@ -63,17 +64,11 @@ class PermitCategoriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_regime
-      @regime = Regime.find_by!(slug: params[:regime_id])
-    end
-
     def set_permit_category
       set_regime
       @permit_category = @regime.permit_categories.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def permit_category_params
       params.require(:permit_category).permit(:regime, :code, :description, :status, :display_order)
     end

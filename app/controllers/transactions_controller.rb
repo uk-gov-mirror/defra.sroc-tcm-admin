@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
+  include RegimeScope
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show, :edit, :update]
 
@@ -42,7 +43,7 @@ class TransactionsController < ApplicationController
 
   # GET /regimes/:regimes_id/transactions/1/edit
   def edit
-    @related_transactions = transaction_store.transactions_related_to(@transaction)
+    # @related_transactions = transaction_store.transactions_related_to(@transaction)
   end
 
   # PATCH/PUT /regimes/:regimes_id/transactions/1
@@ -86,11 +87,6 @@ class TransactionsController < ApplicationController
     end
     # :nocov:
 
-    def presenter
-      name = "#{@regime.slug}_transaction_detail_presenter".camelize
-      str_to_class(name) || TransactionDetailPresenter
-    end
-
     def present_transactions(transactions, summary)
       arr = Kaminari.paginate_array(presenter.wrap(transactions),
                                     total_count: transactions.total_count,
@@ -106,37 +102,14 @@ class TransactionsController < ApplicationController
           total_count: arr.total_count
         },
         transactions: arr
-        # summary: summary
       }
     end
-
-    # :nocov:
-    def str_to_class(name)
-      begin
-        name.constantize
-      rescue NameError => e
-        nil
-      end
-    end
-
-    # Use callbacks to share common setup or constraints between actions.
-    def set_regime
-      # FIXME: this is just to avoid not having a regime set on entry
-      # this will be replaced by using user regimes roles/permissions
-      if params.fetch(:regime_id, nil)
-        @regime = Regime.find_by!(slug: params[:regime_id])
-      else
-        @regime = Regime.first
-      end
-    end
-    # :nocov:
 
     def set_transaction
       set_regime
       @transaction = transaction_store.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def transaction_params
       params.require(:transaction_detail).permit(:category)
     end

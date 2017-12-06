@@ -4,19 +4,30 @@ import TransactionSummary from './TransactionSummary'
 import TransactionTable from './TransactionTable'
 import SearchBar from './SearchBar'
 import PaginationBar from './PaginationBar'
+import { RegionFilter } from './RegionFilter'
+import { TransactionSearchBox } from './TransactionSearchBox'
 
 export default class TransactionsView extends React.Component {
   constructor (props) {
     super(props)
     const transactions = this.props.transactions || this.emptyTransactions()
+    let region = this.props.selectedRegion
+    if (region === null || typeof region == 'undefined' || region === '') {
+      if(this.props.regions && this.props.regions.length > 0) {
+        region = this.props.regions[0].value
+      }
+    }
+
     this.state = {
       sortColumn: this.props.sortColumn,
       sortDirection: this.props.sortDirection,
       transactions: transactions,
-      selectedRegion: this.props.selectedRegion,
+      selectedRegion: region,
       searchTerm: this.props.searchTerm,
       pageSize: transactions.pagination.per_page,
-      currentPage: transactions.pagination.current_page
+      currentPage: transactions.pagination.current_page,
+      summary: this.emptySummary(),
+      fileSummaryOpen: false
     }
 
     this.toggleSortDirection = this.toggleSortDirection.bind(this)
@@ -26,6 +37,8 @@ export default class TransactionsView extends React.Component {
     this.changePage = this.changePage.bind(this)
     this.changePageSize = this.changePageSize.bind(this)
     this.updateTransactionCategory = this.updateTransactionCategory.bind(this)
+    this.showFileSummary = this.showFileSummary.bind(this)
+    this.hideFileSummary = this.hideFileSummary.bind(this)
   }
 
   emptyTransactions () {
@@ -37,6 +50,16 @@ export default class TransactionsView extends React.Component {
       },
       // NOTE: we need a polyfill for Array.prototype.fill on IE
       transactions: new Array(perPage).fill().map((_, i) => { return { id: i } })
+    }
+  }
+
+  emptySummary () {
+    return {
+      credit_count: 0,
+      credit_total: 0,
+      invoice_count: 0,
+      invoice_total: 0,
+      net_total: 0
     }
   }
 
@@ -77,6 +100,23 @@ export default class TransactionsView extends React.Component {
     })
   }
 
+  showFileSummary () {
+    console.log('show file summary')
+    this.fetchSummaryDataAndShow()
+    // query for all transactions to be billed that have a charge generated for them
+    // but exclude any that have are part of multi-transactions if one or more other
+    // items haven't had charges generated
+  }
+
+  hideFileSummary () {
+    console.log('hide file summary')
+    this.setState({fileSummaryOpen: false})
+  }
+
+  generateFile () {
+    console.log('generate file')
+  }
+
   componentDidMount () {
     this.fetchTableData()
   }
@@ -98,6 +138,26 @@ export default class TransactionsView extends React.Component {
           pagination: res.data.pagination,
           pageSize: res.data.pagination.per_page,
           currentPage: res.data.pagination.current_page
+        })
+      })
+      .catch(error => {
+        // TODO: handle this
+        console.log(error)
+        throw error
+      })
+  }
+
+  fetchSummaryDataAndShow () {
+    axios.get(this.props.summaryPath + '.json', {
+      params: {
+        region: this.state.selectedRegion,
+      }
+    })
+      .then(res => {
+        console.log(res)
+        this.setState({
+          summary: res.data,
+          fileSummaryOpen: true
         })
       })
       .catch(error => {
@@ -148,26 +208,43 @@ export default class TransactionsView extends React.Component {
     const searchPlaceholder = this.props.searchPlaceholder
     const currentPage = this.state.currentPage
     const pageSize = this.state.pageSize
-    const summary = this.state.transactions.summary
+    const summary = this.state.summary
     const categories = this.props.categories
+    const canGenerateFiles = this.props.generateFiles
+    const generateFilePath = this.props.generateFilePath
+    const csrfToken = this.props.csrfToken
 
-    let transactionSummary = null
-    if (typeof summary !== 'undefined' && summary !== null) {
-      transactionSummary = (
-        <TransactionSummary summary={summary} />
+    let fileButton = null
+    let fileDialog = null
+    if (canGenerateFiles) {
+      fileButton = (
+        <button className='btn btn-primary' onClick={this.showFileSummary}>
+          Generate Transaction File
+        </button>
+      )
+      fileDialog = (
+        <TransactionSummary id='summary-dialog2112'
+          show={this.state.fileSummaryOpen}
+          summary={summary}
+          generateFilePath={generateFilePath}
+          region={selectedRegion}
+          csrfToken={csrfToken}
+          onClose={this.hideFileSummary} />
       )
     }
 
     return (
       <div>
-        { transactionSummary }
-        <SearchBar regions={regions}
-          selectedRegion={selectedRegion}
-          onChangeRegion={this.changeRegion}
-          searchPlaceholder={searchPlaceholder}
-          searchTerm={searchTerm}
-          onSearch={this.search}
-        />
+        <SearchBar>
+          <RegionFilter regions={regions}
+            selectedRegion={selectedRegion}
+            onChangeRegion={this.changeRegion}
+          />
+          <TransactionSearchBox placeholder={searchPlaceholder}
+            searchTerm={searchTerm} onSearch={this.search}
+          />
+          {fileButton}
+        </SearchBar>
         <TransactionTable regime={regime}
           columns={columns}
           sortColumn={sortColumn}
@@ -184,6 +261,7 @@ export default class TransactionsView extends React.Component {
           onChangePageSize={this.changePageSize}
           onChangePage={this.changePage}
         />
+        {fileDialog}
       </div>
     )
   }
