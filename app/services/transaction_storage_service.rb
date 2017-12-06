@@ -22,34 +22,34 @@ class TransactionStorageService
     order_query(q, order, direction).page(page).per(per_page)
   end
 
-  def transactions_related_to(transaction)
-    # col = regime.waste_or_installations? ? :reference_3 : :reference_1
-    # val = transaction.send(col)
-    # regime.transaction_details.unbilled.where(col => val).
-    #   where.not(col => nil).
-    #   where.not(col => 'NA').
-    #   order(:reference_1)
-    at = TransactionDetail.arel_table
-    q = regime.transaction_details.unbilled
-    if regime.waste_or_installations?
-      q = q.where.not(reference_3: nil).
-        where.not(reference_3: 'NA').
-        where(reference_3: transaction.reference_3).
-        or(q.where.not(reference_1: 'NA').
-           where.not(reference_1: nil).
-           where(reference_1: transaction.reference_1)
-        ).
-        or(q.where.not(reference_2: 'NA').
-           where.not(reference_2: nil).
-           where(reference_2: transaction.reference_2)
-        )
-    else
-      q = q.where.not(reference_1: nil).
-        where.not(reference_1: 'NA').
-        where(reference_1: transaction.reference_1)
-    end
-    q.order(:reference_1)
-  end
+  # def transactions_related_to(transaction)
+  #   # col = regime.waste_or_installations? ? :reference_3 : :reference_1
+  #   # val = transaction.send(col)
+  #   # regime.transaction_details.unbilled.where(col => val).
+  #   #   where.not(col => nil).
+  #   #   where.not(col => 'NA').
+  #   #   order(:reference_1)
+  #   at = TransactionDetail.arel_table
+  #   q = regime.transaction_details.unbilled
+  #   if regime.waste_or_installations?
+  #     q = q.where.not(reference_3: nil).
+  #       where.not(reference_3: 'NA').
+  #       where(reference_3: transaction.reference_3).
+  #       or(q.where.not(reference_1: 'NA').
+  #          where.not(reference_1: nil).
+  #          where(reference_1: transaction.reference_1)
+  #       ).
+  #       or(q.where.not(reference_2: 'NA').
+  #          where.not(reference_2: nil).
+  #          where(reference_2: transaction.reference_2)
+  #       )
+  #   else
+  #     q = q.where.not(reference_1: nil).
+  #       where.not(reference_1: 'NA').
+  #       where(reference_1: transaction.reference_1)
+  #   end
+  #   q.order(:reference_1)
+  # end
 
   def transaction_history(search = '', page = 1, per_page = 10, region = 'all',
                           order = :file_reference, direction = 'asc')
@@ -59,26 +59,8 @@ class TransactionStorageService
     # q.order(order_args(order, direction)).page(page).per(per_page)
   end
 
-  def transactions_to_be_billed_summary(q = '', region = 'all')
-    credits = regime.transaction_details.region(region).unbilled.credits
-    invoices = regime.transaction_details.region(region).unbilled.invoices
-
-    if q.present?
-      credits = credits.search(q)
-      invoices = invoices.search(q)
-    end
-    credits = credits.pluck(:line_amount)
-    invoices = invoices.pluck(:line_amount)
-    credit_total = credits.sum
-    invoice_total = invoices.sum
-
-    {
-      credit_count:   credits.length,
-      credit_total:   credit_total,
-      invoice_count:  invoices.length,
-      invoice_total:  invoice_total,
-      net_total:      invoice_total + credit_total
-    }
+  def transactions_to_be_billed_summary(region)
+    summary_presenter.summarize(region)
   end
 
   def first_region
@@ -116,6 +98,16 @@ class TransactionStorageService
       q.joins(:transaction_header).
         merge(TransactionHeader.order(region: dir, file_sequence_number: dir)).
         order(transaction_reference: dir, id: dir)
+    end
+  end
+
+  def summary_presenter
+    if regime.water_quality?
+      CfdTransactionSummaryPresenter.new(regime)
+    elsif regime.waste?
+      WmlTransactionSummaryPresenter.new(regime)
+    else
+      PasTransactionSummaryPresenter.new(regime)
     end
   end
 end

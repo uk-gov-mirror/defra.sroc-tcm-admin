@@ -4,6 +4,8 @@ Rails.application.routes.draw do
     resources :permit_categories
     resources :transactions, only: [:index, :show, :edit, :update]
     resources :history, only: [:index, :show]
+    resources :transaction_files, except: [:new, :destroy]
+    resources :transaction_summary, only: [:index]
   end
 
   root to: 'transactions#index'
