@@ -4,7 +4,7 @@ class FileCheckJob < ApplicationJob
   def perform(*args)
     # Look to see whether there are any files that need processing
     service = FileStorageService.new
-    importer = TransactionFileHandler.new
+    importer = TransactionFileImporter.new
 
     files = service.list_files_in(:import)
     return unless files.count.positive?

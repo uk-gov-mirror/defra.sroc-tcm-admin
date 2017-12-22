@@ -41,7 +41,7 @@ gem 'redis', '~> 3.2'
 gem "passenger", "~> 5.1", require: false
 gem "whenever", require: false
 # gem "redis"
-gem "resque", require: "resque/server"
+gem "resque"  #, require: "resque/server"
 gem "aws-sdk", "~> 2"
 
 gem 'rails-i18n'

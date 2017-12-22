@@ -1,21 +1,7 @@
 require "csv"
 
-class TransactionFileHandler
-  include TransactionFile
-
-  def export(transaction, path)
-    presenter = TransactionCsvPresenter.new(transaction)
-
-    CSV.open(path, "wb", { write_headers: false, force_quotes: true }) do |csv|
-      csv << presenter.header
-      presenter.details.each do |d|
-        csv << d
-      end
-      csv << presenter.trailer
-    end
-  rescue => e
-    raise Exceptions::TransactionFileError, e
-  end
+class TransactionFileImporter
+  include TransactionFileFormat
 
   def import(path)
     header = nil

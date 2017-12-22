@@ -3,6 +3,7 @@ class Regime < ApplicationRecord
   has_many :transaction_details, through: :transaction_headers
   has_many :permits, inverse_of: :regime, dependent: :destroy
   has_many :permit_categories, inverse_of: :regime, dependent: :destroy
+  has_many :transaction_files, inverse_of: :regime, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
   validates :title, presence: true

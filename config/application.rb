@@ -28,6 +28,9 @@ module SrocTcmAdmin
     config.i18n.available_locales = ['en-GB', :en]
     config.i18n.default_locale = :'en-GB'
 
+    # resque for activejob
+    config.active_job.queue_adapter = :resque
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end

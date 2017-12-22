@@ -12,6 +12,25 @@ class TransactionDetailPresenter < SimpleDelegator
     (period_end.to_date - period_start.to_date).to_i + 1
   end
 
+  def calculated_amount
+    charge = (charge_calculation['calculation']['chargeValue'] * 100).round
+    charge = -charge if line_amount.negative?
+    charge
+  end
+
+  def category_description
+    PermitCategory.find_by(code: category).description
+  end
+  
+  def baseline_charge
+    (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
+  end
+
+  def transaction_date
+    # called when exporting to file, so charge should've been calculated
+    charge_calculation['generatedAt'].to_date
+  end
+
   def financial_year_days
     year = financial_year
     start_date = Date.new(year, 4, 1)

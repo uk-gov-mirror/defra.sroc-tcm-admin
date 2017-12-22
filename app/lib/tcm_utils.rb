@@ -36,7 +36,7 @@ class TcmUtils
 
   def self.extract_csv_period_dates(regime, row)
     info = TcmConstants::PeriodDates[regime.slug.to_sym]
-    period_index = "TransactionFile::Detail::#{info[:attr_name].to_s.classify}".constantize 
+    period_index = "TransactionFileFormat::Detail::#{info[:attr_name].to_s.classify}".constantize 
     if regime.waste?
       self.extract_waste_period_dates(row[period_index], info[:format])
     else

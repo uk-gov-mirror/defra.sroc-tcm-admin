@@ -1,6 +1,7 @@
 class TransactionDetail < ApplicationRecord
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
+  has_one :transaction_file, inverse_of: :transaction_details
 
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true
@@ -18,6 +19,10 @@ class TransactionDetail < ApplicationRecord
   def self.search(q)
     m = "%#{q}%"
     where(arel_table[:customer_reference].matches(m).or(arel_table[:reference_1].matches(m)).or(arel_table[:transaction_reference].matches(m)))
+  end
+
+  def updateable?
+    status == 'unbilled'
   end
 
   def charge_calculated?

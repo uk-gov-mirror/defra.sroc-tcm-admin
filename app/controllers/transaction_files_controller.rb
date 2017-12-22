@@ -25,8 +25,10 @@ class TransactionFilesController < ApplicationController
 
   # POST /regimes/:regime_id/transaction_files
   def create
+    set_region
+    transaction_file = exporter.export
     # Accept and continue to create transaction file
-    flash[:success] = "Successfully generated transaction file &lt;<b>FILE NAME HERE</b>&gt;"
+    flash[:success] = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
     redirect_to regime_transactions_path(@regime)
   end
 
@@ -46,6 +48,10 @@ class TransactionFilesController < ApplicationController
       @region = params.fetch(:region, '')
     end
     # :nocov:
+
+    def exporter
+      @exporter ||= TransactionFileExporter.new(@regime, @region)
+    end
 
     def transaction_store
       @transaction_store ||= TransactionStorageService.new(@regime)
