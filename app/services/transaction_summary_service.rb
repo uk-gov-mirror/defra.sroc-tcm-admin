@@ -1,9 +1,19 @@
 # frozen_string_literal: true
 
-class TransactionSummaryPresenter < SimpleDelegator
+class TransactionSummaryService
+  include TransactionGroupFilters
+
+  attr_reader :user, :regime
+
+  def initialize(regime, user = nil)
+    # when instantiated from a controller the 'current_user' should
+    # be passed in. This will allow us to audit actions etc. down the line.
+    @regime = regime
+    @user = user
+  end
+
   def summarize(region)
-    q = unbilled_transactions.region(region)
-    q = regime_specific_group_filter(q)
+    q = grouped_unbilled_transactions_by_region(region)
     credits = q.credits.pluck("charge_calculation -> 'calculation' -> 'chargeValue'")
     invoices = q.invoices.pluck("charge_calculation -> 'calculation' -> 'chargeValue'")
     credit_total = credits.sum
@@ -16,14 +26,5 @@ class TransactionSummaryPresenter < SimpleDelegator
       invoice_total:  invoice_total,
       net_total:      invoice_total - credit_total
     }
-  end
-
-  def unbilled_transactions
-    regime.transaction_details.unbilled
-  end
-
-private
-  def regime
-    __getobj__
   end
 end

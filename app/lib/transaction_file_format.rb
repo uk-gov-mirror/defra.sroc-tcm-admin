@@ -1,4 +1,4 @@
-module TransactionFile
+module TransactionFileFormat
   module Common
     RecordType          = 0
     SequenceNumber      = 1

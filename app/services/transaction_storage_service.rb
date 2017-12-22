@@ -59,10 +59,10 @@ class TransactionStorageService
     # q.order(order_args(order, direction)).page(page).per(per_page)
   end
 
-  def transactions_to_be_billed_summary(region)
-    summary_presenter.summarize(region)
-  end
-
+  # def transactions_to_be_billed_summary(region)
+  #   summary_presenter.summarize(region)
+  # end
+  #
   def first_region
     regime.transaction_headers.distinct.order(:region).pluck(:region).first
   end

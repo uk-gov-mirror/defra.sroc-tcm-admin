@@ -63,15 +63,20 @@ class TransactionsController < ApplicationController
 
   private
     def update_transaction
-      if @transaction.update(transaction_params)
-        if @transaction.previous_changes.include? :category
-          @transaction.charge_calculation = get_charge_calculation
-          @transaction.save
+      if @transaction.updateable?
+        if @transaction.update(transaction_params)
+          if @transaction.previous_changes.include? :category
+            @transaction.charge_calculation = get_charge_calculation
+            @transaction.save
+          else
+            @transaction.errors.add(:category, "No category data")
+            false
+          end
         else
-          @transaction.errors.add(:category, "No category data")
           false
         end
       else
+        @transaction.errors.add(:category, "Transaction cannot be updated")
         false
       end
     end

@@ -11,7 +11,7 @@ class TransactionSummaryController < ApplicationController
       format.js
       format.json do
         region = params.fetch(:region, '')
-        @summary = transaction_store.transactions_to_be_billed_summary(region)
+        @summary = transaction_summary.summarize(region)
         render json: @summary
       end
       format.any do
@@ -21,8 +21,7 @@ class TransactionSummaryController < ApplicationController
   end
 
   private
-    def transaction_store
-      @transaction_store ||= TransactionStorageService.new(@regime)
+    def transaction_summary
+      @transaction_summary ||= TransactionSummaryService.new(@regime)
     end
 end
-
