@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  include RegimeScope
+  include RegimeScope, TransactionCharge
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show, :edit, :update]
 
@@ -56,7 +56,7 @@ class TransactionsController < ApplicationController
         format.json { render json: { transaction: presenter.new(@transaction), message: 'Transaction updated' }, status: :ok, location: regime_transaction_path(@regime, @transaction) }
       else
         format.html { render :edit }
-        format.json { render json: @transaction.errors, status: :unprocessable_entity }
+        format.json { render json: @transaction, status: :unprocessable_entity }
       end
     end
   end
@@ -65,8 +65,16 @@ class TransactionsController < ApplicationController
     def update_transaction
       if @transaction.updateable?
         if @transaction.update(transaction_params)
-          if @transaction.previous_changes.include? :category
+          category_changes = @transaction.previous_changes[:category]
+          if category_changes
             @transaction.charge_calculation = get_charge_calculation
+            # restore category if charge calc error
+            if @transaction.charge_calculation_error?
+              @transaction.category = category_changes[0]
+            else
+              # extract charge calculation and correctly sign it
+              @transaction.tcm_charge = extract_correct_charge(@transaction)
+            end
             @transaction.save
           else
             @transaction.errors.add(:category, "No category data")
@@ -83,6 +91,18 @@ class TransactionsController < ApplicationController
 
     def get_charge_calculation
       calculator.calculate_transaction_charge(presenter.new(@transaction)) if @transaction.category.present?
+    #     @transaction.errors.add(:base, res["error"]["message"]) if res && res["error"]
+    #     res
+    #   end
+    # rescue Exceptions::CalculationServiceError => e
+    #   @transaction.errors.add(:base, e.message)
+    #   debugger
+    #   @transaction.errors.add(:base, body.fetch("error", {}).fetch("message", "An error occurred calculating the charge"))
+    #   nil
+    # rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
+    #   Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+    #   debugger
+    #   nil
     end
 
     # We'll stub / mock this to prevent WS calls

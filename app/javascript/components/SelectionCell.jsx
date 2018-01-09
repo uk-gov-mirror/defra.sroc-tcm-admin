@@ -17,6 +17,10 @@ export default class SelectionCell extends React.Component {
     )
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({selectValue: nextProps.value})
+  }
+
   render () {
     const name = this.props.name
     const value = this.state.selectValue

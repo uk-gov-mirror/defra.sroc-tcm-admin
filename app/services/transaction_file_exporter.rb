@@ -36,9 +36,11 @@ class TransactionFileExporter
   end
 
   def generate_output_file(transaction_file)
+    out_file = Tempfile.new
+    assign_invoice_numbers(transaction_file)
+
     tf = present(transaction_file)
 
-    out_file = Tempfile.new
     # create file record
     CSV.open(out_file.path, "wb", force_quotes: true) do |csv|
       csv << tf.header
@@ -64,6 +66,20 @@ class TransactionFileExporter
       CfdTransactionFilePresenter.new(transaction_file)
     elsif regime.waste?
     else
+    end
+  end
+
+  def assign_invoice_numbers(transaction_file)
+    # for CFD group transactions by Customer Reference
+    # generate invoice number and assign to group
+    # calculate overall credit or invoice and assign to group
+    cust_charges = transaction_file.transaction_details.
+      group(:customer_reference).sum(:tcm_charge)
+    cust_charges.each do |k, v|
+      trans_type = v.negative? ? 'C' : 'I'
+      n = SequenceCounter.next_invoice_number(regime, region)
+      trans_ref = "#{n.to_s.rjust(5, '0')}1#{region}T"
+      transaction_file.transaction_details.where(customer_reference: k).update_all(tcm_transaction_type: trans_type, tcm_transaction_reference: trans_ref)
     end
   end
 

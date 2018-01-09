@@ -39,7 +39,8 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
       sroc_category: @presenter.category,
       temporary_cessation: @presenter.temporary_cessation_flag,
       period: @presenter.period,
-      amount: @presenter.amount
+      amount: @presenter.amount,
+      errors: nil
     })
   end
 end

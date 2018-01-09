@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171214104155) do
+ActiveRecord::Schema.define(version: 20180107203345) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,17 @@ ActiveRecord::Schema.define(version: 20171214104155) do
     t.string "slug", null: false
     t.string "title"
     t.index ["name"], name: "index_regimes_on_name", unique: true
+  end
+
+  create_table "sequence_counters", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.string "region", null: false
+    t.integer "file_number", default: 1, null: false
+    t.integer "invoice_number", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["regime_id", "region"], name: "index_sequence_counters_on_regime_id_and_region", unique: true
+    t.index ["regime_id"], name: "index_sequence_counters_on_regime_id"
   end
 
   create_table "transaction_details", force: :cascade do |t|
@@ -121,6 +132,9 @@ ActiveRecord::Schema.define(version: 20171214104155) do
     t.datetime "period_start"
     t.datetime "period_end"
     t.bigint "transaction_file_id"
+    t.bigint "tcm_charge"
+    t.string "tcm_transaction_type"
+    t.string "tcm_transaction_reference"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"

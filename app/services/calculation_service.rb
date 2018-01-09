@@ -21,14 +21,23 @@ class CalculationService
     response = connection.request(build_post_request(payload))
 
     case response
-    when Net::HTTPSuccess
+    when Net::HTTPSuccess, Net::HTTPInternalServerError
+      # successfully completed charge calculation or
+      # an error in the calculation or a ruleset issue
+      # we want to show an error at the front end if there's an issue
       JSON.parse(response.body)
     else
-      response.value
+      # something unexpected happened
+      build_error_response(response.value)
+      # raise Exceptions::CalculationServiceError.new(response.value)
     end
-  rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-    Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-    raise Exceptions::CalculationServiceError.new e
+  rescue => e
+    # something REALLY unexpected happened ...
+    # raise Exceptions::CalculationServiceError.new(e)
+    build_error_response(e.message)
+  # rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
+  #   Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
+  #   raise Exceptions::CalculationServiceError.new e
   end
 
 private
@@ -45,6 +54,10 @@ private
                                   'Content-Type': 'application/json')
     request.body = payload.to_json
     request
+  end
+
+  def build_error_response(text)
+    { "calculation": { "messages": text }}
   end
 
   def charge_service_url

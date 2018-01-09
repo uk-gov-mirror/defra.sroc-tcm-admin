@@ -1,4 +1,5 @@
 class Regime < ApplicationRecord
+  has_many :sequence_counters, inverse_of: :regime, dependent: :destroy
   has_many :transaction_headers, inverse_of: :regime, dependent: :destroy
   has_many :transaction_details, through: :transaction_headers
   has_many :permits, inverse_of: :regime, dependent: :destroy
