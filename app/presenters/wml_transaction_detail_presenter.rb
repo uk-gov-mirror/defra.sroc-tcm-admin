@@ -31,7 +31,20 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
       sroc_category: category,
       temporary_cessation: temporary_cessation_flag,
       period: period,
-      amount: amount
+      amount: amount,
+      errors: extract_errors
     }
+  end
+
+  def extract_errors
+    if errors[:category].any?
+      errors.full_messages_for(:category)
+    elsif errors[:base].any?
+      errors.full_messages_for(:base)
+    elsif charge_calculation_error?
+      charge_calculation["calculation"]["messages"]
+    else
+      nil
+    end
   end
 end

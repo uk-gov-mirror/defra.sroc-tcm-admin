@@ -1,4 +1,18 @@
 class PasTransactionDetailPresenter < TransactionDetailPresenter
+  def charge_params
+    {
+      permitCategoryRef: category,
+      temporaryCessation: temporary_cessation,
+      # percentageAdjustment: 100,
+      compliancePerformanceBand: compliance_band,
+      billableDays: billable_days,
+      financialDays: financial_year_days,
+      chargePeriod: charge_period,
+      preConstruction: false,
+      environmentFlag: 'TEST'
+    }
+  end
+
   def compliance_band
     band = line_attr_11.first if line_attr_11.present?
     band || ""

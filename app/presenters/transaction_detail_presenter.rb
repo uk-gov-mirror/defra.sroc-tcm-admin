@@ -13,13 +13,15 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def calculated_amount
-    charge = (charge_calculation['calculation']['chargeValue'] * 100).round
-    charge = -charge if line_amount.negative?
-    charge
+    tcm_charge
+    # charge = (charge_calculation['calculation']['chargeValue'] * 100).round
+    # charge = -charge if line_amount.negative?
+    # charge
   end
 
   def category_description
-    PermitCategory.find_by(code: category).description
+    desc = PermitCategory.find_by(code: category).description
+    desc.truncate(150, separator: /\s/, ommission: '...')
   end
   
   def baseline_charge

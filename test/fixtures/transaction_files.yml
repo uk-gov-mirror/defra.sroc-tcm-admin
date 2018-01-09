@@ -1,7 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  filename: MyString
+cfd_file_a:
+  regime: cfd
+  region: 'A'
+  file_id: "1234"
 
-two:
-  filename: MyString
+cfd_file_b:
+  regime: cfd
+  region: 'B'
+  file_id: "5678"

@@ -187,10 +187,12 @@ export default class TransactionsView extends React.Component {
       })
       if (idx !== -1) {
         data.transactions[idx] = res.data.transaction
+        console.log(res.data.transaction)
         this.setState({ transactions: data })
       }
     })
     .catch(error => {
+      // problem accessing or executing the rules service
       console.log('error: ' + error)
     })
   }

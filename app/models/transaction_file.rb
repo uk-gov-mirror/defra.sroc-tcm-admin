@@ -10,7 +10,7 @@ class TransactionFile < ApplicationRecord
   end
 
   def filename
-    @filename ||= "#{regime.to_param}#{region}I#{file_id}.dat".upcase
+    @filename ||= "#{regime.to_param}#{region}I#{file_id}T.dat".upcase
   end
 
 private
@@ -19,7 +19,6 @@ private
   end
 
   def generate_file_id
-    # FIXME: use id until the requirements have been confirmed
-    "#{id.to_s.rjust(5, "0")}T"
+    "#{SequenceCounter.next_file_number(regime, region).to_s.rjust(5, "0")}"
   end
 end

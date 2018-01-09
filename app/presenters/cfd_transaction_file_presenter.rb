@@ -32,45 +32,45 @@ class CfdTransactionFilePresenter < SimpleDelegator
       padded_number(idx),
       td.customer_reference,
       fmt_date(td.transaction_date),
-      td.transaction_type,
-      td.transaction_reference,
+      td.tcm_transaction_type,
+      td.tcm_transaction_reference,
       "",
       "GBP",
-      td.header_narrative,
-      fmt_date(td.transaction_date),
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      padded_number(td.calculated_amount, 3),
-      "",
+      "",                     # header_narrative always blank
+      fmt_date(td.transaction_date),  # header_attr_1
+      "",                     # header_attr_2
+      "",                     # header_attr_3
+      "",                     # header_attr_4
+      "",                     # header_attr_5
+      "",                     # header_attr_6
+      "",                     # header_attr_7
+      "",                     # header_attr_8
+      "",                     # header_attr_9
+      "",                     # header_attr_10
+      padded_number(td.tcm_charge, 3),  # line_amount
+      "",                     # line VAT code always blank
       td.line_area_code,
-      td.line_attr_1, # switched with line_description
-      td.line_income_stream_code,
+      "Discharge Location: " + td.line_attr_1, # line_description
+      "CT",                   # line income stream code
       td.line_context_code,
-      td.line_description, # switched with line_attr_1
-      td.line_attr_3, # was line_attr_2
-      td.category,
+      td.line_description,    # line_attr_1
+      td.line_attr_3,         # line_attr_2
+      td.category,            # line_attr_3
       td.line_attr_4,
       td.category_description, # was line_attr_5
-      td.baseline_charge,
-      td.line_attr_9,   # was line_attr_7
-      td.line_attr_8,   # temporary cessation
-      td.line_attr_9,   # compliance band
-      td.line_attr_10,  # compliance adjustment
-      td.line_attr_11,  # performance band
-      td.line_attr_12,  # performance adjustment
-      "",
-      "",
-      "",
-      td.line_quantity,
-      td.unit_of_measure,
-      padded_number(td.calculated_amount, 3)
+      td.baseline_charge,     # line_attr_6
+      td.line_attr_9,         # line_attr_7 (compliance band)
+      td.line_attr_8,         # temporary cessation
+      "",                     # line_attr_9   future - compliance band
+      "",                     # line_attr_10  future - compliance adjustment
+      "",                     # line_attr_11  future - performance band
+      "",                     # line_attr_12  future - performance adjustment
+      "",                     # line_attr_13
+      "",                     # line_attr_14
+      "",                     # line_attr_15
+      "1",                    # line_quantity (always '1')
+      "Each",                 # unit_of_measure (always 'Each')
+      padded_number(td.tcm_charge, 3)   # Line UOM selling price
     ]
   end
 
@@ -93,14 +93,6 @@ private
   def padded_number(val, length = 7)
     val.to_s.rjust(length, "0")
   end
-
-  # def file_id
-  #   if feeder_source_code == "CFD"
-  #     file_sequence_number
-  #   else
-  #     padded_number(file_sequence_number, 5)
-  #   end
-  # end
 
   def record_count
     count = transaction_details.count + 2
