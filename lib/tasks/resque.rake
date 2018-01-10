@@ -11,7 +11,6 @@ namespace :resque do
   end
 
   # From https://gist.github.com/1870642
-  # https://gist.github.com/snikch/2371233
   desc "Restart running workers"
   task :restart_workers => :environment do
     Rake::Task['resque:stop_workers'].invoke
@@ -65,13 +64,36 @@ namespace :resque do
   end
 
   # Start a worker with proper env vars and output redirection
-  def run_worker(queue, count = 1, ops = {})
+  def run_worker(queue, count = 1)
+    puts "Starting #{count} worker(s) with QUEUE: #{queue}"
+
+    ## make sure log/resque_err, log/resque_stdout are writable
+    ops = { :pgroup => true,
+            :err => [Rails.root.join('log', 'resque_err').to_s, "a"],
+            :out => [Rails.root.join('log', 'resque_out').to_s, "a"] }
+    env_vars = { "QUEUE" => queue.to_s, "RAILS_ENV" => Rails.env.to_s }
+
+    pids = []
+    count.times do
+      ## Using Kernel.spawn and Process.detach because regular system() call would
+      ## cause the processes to quit when capistrano finishes
+      pid = spawn(env_vars, "rake resque:work", ops)
+      Process.detach(pid)
+      pids << pid
+    end
+
+    store_pids(pids, :append)
+  end
+
+  # from https://gist.github.com/snikch/2371233
+  # seems to hang capistrano/jenkins
+  def run_worker_fork(queue, count = 1, ops = {})
     puts "Starting #{count} worker(s) with QUEUE: #{queue}"
     
     queues = queue.split(',')
 
     # get the git commit hash for later
-    commit_hash = `cd #{Rails.root} && git rev-parse HEAD`[0,12]
+    commit_hash = `cd #{Rails.root} && cat REVISION`[0,12]
 
     pids = []
     child = false
