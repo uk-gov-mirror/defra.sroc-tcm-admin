@@ -3,7 +3,7 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
-every 1.minute do
+every 15.minutes do
   runner "FileCheckJob.perform_now"
 end
 
