@@ -1,5 +1,3 @@
-require 'bstard'
-
 class AnnualBillingDataFile < ApplicationRecord
   belongs_to :regime, inverse_of: :annual_billing_data_files
   has_many :data_upload_errors, inverse_of: :annual_billing_data_file, dependent: :destroy
