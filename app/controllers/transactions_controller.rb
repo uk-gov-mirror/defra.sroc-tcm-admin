@@ -90,7 +90,8 @@ class TransactionsController < ApplicationController
     end
 
     def get_charge_calculation
-      calculator.calculate_transaction_charge(presenter.new(@transaction)) if @transaction.category.present?
+      invoke_charge_calculation(@transaction) if @transaction.category.present?
+      # calculator.calculate_transaction_charge(presenter.new(@transaction)) if @transaction.category.present?
     #     @transaction.errors.add(:base, res["error"]["message"]) if res && res["error"]
     #     res
     #   end
@@ -107,9 +108,9 @@ class TransactionsController < ApplicationController
 
     # We'll stub / mock this to prevent WS calls
     # :nocov:
-    def calculator
-      @calculator ||= CalculationService.new
-    end
+    # def calculator
+    #   @calculator ||= CalculationService.new
+    # end
     # :nocov:
 
     def present_transactions(transactions, summary)

@@ -24,6 +24,12 @@ module ApplicationHelper
     number_to_currency(value / 100.0)
   end
 
+  def formatted_date(date, include_time = false)
+    fmt = "%d-%b-%Y"
+    fmt = fmt + " %H:%M:%S" if include_time
+    date.strftime(fmt)
+  end
+
   def sortable(name)
     sorted = params[:sort] == name.to_s
     sort_dir = sorted ? params.fetch(:sort_direction, 'asc') : 'desc'

@@ -42,3 +42,14 @@ $pale-blue: #d5e8f3 !default;
   padding-left: 0.5rem;
   margin-bottom: 1.5rem;
 }
+
+.error-banner {
+  border: 6px solid theme-color("danger");
+}
+
+details {
+  summary {
+    color: theme-color("info");
+    margin-bottom: 1em;
+  }
+}

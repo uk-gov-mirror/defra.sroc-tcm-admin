@@ -1,0 +1,47 @@
+<div class="row mb-4">
+  <div class="col">
+    <h1 id="annual-billing-data-heading">Upload Annual Billing Data</h1>
+  </div>
+</div>
+
+<%= form_with(model: [@regime, @upload], local: true,
+              class: "annual-billing-upload",
+              html: { multipart: true } ) do |form| %>
+  <% if @upload.errors.any? %>
+    <div class="row">
+      <div class="col">
+        <div id="error_explanation" class="alert error-banner" role="alert">
+          <h2 class="heading-small">Unable to process the selected file</h2>
+          <ul class="list-unstyled">
+            <% @upload.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <div class="row">
+    <div class="col">
+      <p>Select the annual billing data file to upload (<strong>CSV</strong> format).</p>
+      <%= render partial: 'csv_help', locals: { regime: @regime } %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="form-group">
+        <%= form.file_field :data_file,
+          accept: @upload.file_types,
+          aria: { labelledby: 'annual-billing-data-heading' } %>
+        <%= form.hidden_field :id %>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6 actions">
+      <%= form.submit 'Upload and Import Data',  class: "btn btn-primary" %>
+      <%= link_to 'Cancel', regime_annual_billing_data_files_path(@regime),
+        class: "btn btn-secondary", role: "button" %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+cfd:
+  regime: cfd
+  filename: 'cfd_annual_data.csv'
+  status: 'completed'
+  success_count: 50
+
+pas:
+  regime: pas
+  filename: 'pas_annual_data.csv'
+  status: 'completed'
+  success_count: 10
+
+wml:
+  regime: wml
+  filename: 'wml_annual_data.csv'
+  status: 'completed'
+  success_count: 5

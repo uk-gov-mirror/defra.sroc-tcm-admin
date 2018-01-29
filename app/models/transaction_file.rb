@@ -10,7 +10,7 @@ class TransactionFile < ApplicationRecord
   end
 
   def filename
-    @filename ||= "#{regime.to_param}#{region}I#{file_id}T.dat".upcase
+    @filename ||= "#{regime.to_param}#{region}I#{file_id}T.dat".downcase
   end
 
 private

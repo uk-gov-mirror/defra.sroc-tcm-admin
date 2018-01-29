@@ -35,11 +35,12 @@ export default class PaginationBar extends React.Component {
     const pagination = this.props.pagination
     const selectedPageSize = this.props.pageSize
     const pageSizes = [5, 10, 15, 25, 50]
+    const matching = this.props.useMatchingLabel
 
     return (
       <div className='row paging-info'>
         <div className='col-12 col-md-4'>
-          <PaginationInfo pagination={pagination} />
+          <PaginationInfo pagination={pagination} useMatchingLabel={matching} />
         </div>
         <div className='col-12 col-md-4 justify-content-lg-end mb-4'>
           <PageSizeSelector selectedPageSize={selectedPageSize}

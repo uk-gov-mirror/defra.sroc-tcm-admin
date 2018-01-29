@@ -6,6 +6,7 @@ class FileStorageService
   STORAGE_ZONES = {
     import: "import",
     export: "export",
+    annual_billing_data: "annual_billing_data",
     import_archive: "archive/import",
     export_archive: "archive/export",
     quarantine: "quarantine"

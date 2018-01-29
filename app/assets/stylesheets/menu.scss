@@ -1,3 +1,8 @@
 .main-menu {
   margin-bottom: 1em;
+
+  .dropdown-item:focus, .dropdown-item:hover {
+    background-color: theme-color("secondary");
+    color: $white;
+  }
 }

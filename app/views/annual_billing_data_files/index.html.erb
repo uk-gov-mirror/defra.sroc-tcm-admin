@@ -1,0 +1,39 @@
+<div class="row mb-4">
+  <div class="col">
+    <h1 id="annual-billing-data-heading">Annual Billing Data Files</h1>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col">
+    <%= link_to 'Upload Annual Billing Data',
+      new_regime_annual_billing_data_file_path(@regime),
+      class: 'btn btn-primary', role: 'button' %>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table table-responsive">
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Date Uploaded</th>
+          <th>Status</th>
+          <th>Errors</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @uploads.each do |upload| %>
+          <tr>
+            <td>
+              <%= link_to File.basename(upload.filename),
+                regime_annual_billing_data_file_path(@regime, upload) %>
+            </td>
+            <td><%= formatted_date(upload.created_at, true) %></td>
+            <td><%= upload.status.humanize %></td>
+            <td><%= upload.failed_count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

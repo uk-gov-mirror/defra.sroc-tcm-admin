@@ -258,6 +258,7 @@ export default class TransactionsView extends React.Component {
           onChangeCategory={this.updateTransactionCategory}
         />
         <PaginationBar pagination={pagination}
+          useMatchingLabel={true}
           pageSize={pageSize}
           currentPage={currentPage}
           onChangePageSize={this.changePageSize}

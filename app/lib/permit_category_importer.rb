@@ -9,8 +9,9 @@ class PermitCategoryImporter
       desc = row[1]
       order = n
       if destroy_BOM
-        code = code.force_encoding('utf-8')
-        code.gsub!("\xEF\xBB\xBF".force_encoding('utf-8'), '')
+        code = TcmUtils.strip_bom(code)
+        # code = code.force_encoding('utf-8')
+        # code.gsub!("\xEF\xBB\xBF".force_encoding('utf-8'), '')
         destroy_BOM = false
       end
       n += 1
