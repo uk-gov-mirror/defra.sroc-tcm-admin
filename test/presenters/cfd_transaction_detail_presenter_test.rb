@@ -53,8 +53,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_returns_consent_reference
-    ref = "#{@transaction.reference_1}/#{@transaction.reference_2}/#{@transaction.reference_3}"
-    assert_equal(@presenter.consent_reference, ref)
+    assert_equal(@presenter.consent_reference, @transaction.reference_1)
   end
 
   def test_it_returns_permit_reference
@@ -77,7 +76,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       version: @presenter.version,
       discharge: @presenter.discharge_reference,
       sroc_category: @presenter.category,
-      variation: @presenter.variation_percentage,
+      variation: @presenter.clean_variation_percentage,
       temporary_cessation: @presenter.temporary_cessation_flag,
       period: @presenter.period,
       amount: @presenter.amount

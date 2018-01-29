@@ -9,20 +9,26 @@ export default class PaginationInfo extends React.Component {
 
   one () {
     return (
-      <span>Displaying <b>1</b> matching record</span>
+      <span>Displaying <b>1</b> {this.matching()} record</span>
     )
   }
 
   all (count) {
     return (
-      <span>Displaying <b>all {count}</b> matching records</span>
+      <span>Displaying <b>all {count}</b> {this.matching()}records</span>
     )
   }
 
   entries (start, end, total) {
     return (
-      <span>Displaying <b>{start} - {end}</b> of <b>{total}</b> matching entries</span>
+      <span>Displaying <b>{start} - {end}</b> of <b>{total}</b> {this.matching()} entries</span>
     )
+  }
+
+  matching () {
+    if (this.props.useMatchingLabel) {
+      return 'matching '
+    }
   }
 
   render () {

@@ -10,10 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180107203345) do
+ActiveRecord::Schema.define(version: 20180122110354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "annual_billing_data_files", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.string "filename", null: false
+    t.string "status", default: "new", null: false
+    t.integer "number_of_records", default: 0, null: false
+    t.integer "success_count", default: 0, null: false
+    t.integer "failed_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["regime_id"], name: "index_annual_billing_data_files_on_regime_id"
+  end
+
+  create_table "data_upload_errors", force: :cascade do |t|
+    t.bigint "annual_billing_data_file_id"
+    t.integer "line_number", null: false
+    t.string "message", null: false
+    t.index ["annual_billing_data_file_id"], name: "index_data_upload_errors_on_annual_billing_data_file_id"
+  end
 
   create_table "permit_categories", force: :cascade do |t|
     t.bigint "regime_id"
@@ -135,6 +154,7 @@ ActiveRecord::Schema.define(version: 20180107203345) do
     t.bigint "tcm_charge"
     t.string "tcm_transaction_type"
     t.string "tcm_transaction_reference"
+    t.string "variation"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"

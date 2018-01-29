@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resources :history, only: [:index, :show]
     resources :transaction_files, except: [:new, :destroy]
     resources :transaction_summary, only: [:index]
+    resources :annual_billing_data_files, except: [:destroy]
   end
 
   root to: 'transactions#index'

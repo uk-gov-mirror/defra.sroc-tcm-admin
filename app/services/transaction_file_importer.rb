@@ -87,14 +87,16 @@ class TransactionFileImporter
     elsif regime.water_quality?
       consent = row[Detail::LineDescription]
       if consent.present?
-        consent = consent.split(' ').last.split('/')
+        consent = consent.split(' ').last
+        parts = consent.split('/')
         data.merge!({
           # consent
-          reference_1: consent.take(consent.length - 2).join('/'),
+          # reference_1: consent.take(consent.length - 2).join('/'),
+          reference_1: consent,
           # version
-          reference_2: consent.second_to_last,
+          reference_2: parts.second_to_last,
           # discharge
-          reference_3: consent.last
+          reference_3: parts.last
         })
       end
     elsif regime.waste?

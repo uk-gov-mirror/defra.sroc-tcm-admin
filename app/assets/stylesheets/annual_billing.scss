@@ -1,0 +1,19 @@
+.annual-billing-upload {
+  label {
+    font-weight: bold;
+    display: block;
+  }
+
+  .actions {
+    margin-top: 1em;
+  }
+
+  summary {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  dl {
+    margin-left: 0;
+  }
+}

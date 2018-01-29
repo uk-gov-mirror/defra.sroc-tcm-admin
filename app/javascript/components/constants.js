@@ -134,6 +134,19 @@ Constants.WASTE_COLUMNS = [
   }
 ]
 
+Constants.DATA_FILE_COLUMNS = [
+  { name: 'line_number',
+    label: 'Line No',
+    sortable: true,
+    selectable: false
+  }, {
+    name: 'message',
+    label: 'Description',
+    sortable: true,
+    selectable: false
+  }
+]
+
 Constants.regimeColumns = (regime, history) => {
   let cols = null
   if (regime === 'pas') {

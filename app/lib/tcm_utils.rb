@@ -1,4 +1,8 @@
 class TcmUtils
+  def self.strip_bom(str)
+    str.force_encoding('utf-8').gsub("\xEF\xBB\xBF".force_encoding('utf-8'), '')
+  end
+
   def self.obsfucate_sites
     Regime.all.each do |regime|
       attr = regime.waste_or_installations? ? :header_attr_3 : :line_attr_1

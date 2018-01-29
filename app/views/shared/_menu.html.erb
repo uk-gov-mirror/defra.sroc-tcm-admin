@@ -16,7 +16,18 @@
             Admin
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
-            <%= link_to "Regimes", regimes_path, class: "dropdown-item" %>
+            <% if (defined?(@regime) && @regime) %>
+              <%= link_to "Upload Annual Billing Data",
+                new_regime_annual_billing_data_file_path(@regime),
+                class: "dropdown-item" %>
+              <%= link_to "Review Annual Billing Data",
+                regime_annual_billing_data_files_path(@regime),
+                class: "dropdown-item" %>
+              <div class="dropdown-divider"></div>
+              <%= link_to "Permit Categories",
+                regime_permit_categories_path(@regime), class: "dropdown-item" %>
+            <% end %>
+            <%#= link_to "Regimes", regimes_path, class: "dropdown-item" %>
           </div>
         </li>
       <% end %>
@@ -28,24 +39,11 @@
             Transactions
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
-            <%= link_to "Transactions to be billed", regime_transactions_path(@regime), class: "dropdown-item", data: { turbolinks: false } %>
-            <%= link_to "Transaction history", regime_history_index_path(@regime), class: "dropdown-item", data: { turbolinks: false } %>
+            <%= link_to "Transactions to be billed", regime_transactions_path(@regime), class: "dropdown-item" %>
+            <%= link_to "Transaction history", regime_history_index_path(@regime), class: "dropdown-item" %>
           </div>
         </li>
         <!-- End of Transactions menu -->
-      <% unless ENV.fetch('HEROKU', false) %>
-        <!-- Permits menu -->
-        <li class="nav-item dropdown <%= active_for_current_controller("permits") %>">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarPermitsSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Permits
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarPermitsSelectorLink">
-            <%= link_to "Permits", regime_permits_path(@regime), class: "dropdown-item" %>
-            <%= link_to "Permit Categories", regime_permit_categories_path(@regime), class: "dropdown-item" %>
-          </div>
-        </li>
-        <!-- End of Permits menu -->
-      <% end %>
       <% end %>
     </ul>
     <ul class="navbar-nav">
@@ -56,7 +54,7 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
             <% regime_list.each do |r| %>
-              <%= link_to r.title, menu_path(r, controller_name), class: "dropdown-item", data: { turbolinks: false } %>
+              <%= link_to r.title, menu_path(r, controller_name), class: "dropdown-item" %>
             <% end %>
           <div>
         </li>

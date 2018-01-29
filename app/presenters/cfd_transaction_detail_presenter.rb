@@ -19,11 +19,12 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def variation_percentage
-    line_attr_9
+    variation || line_attr_9
   end
 
   def consent_reference
-    "#{permit_reference}/#{version}/#{discharge_reference}"
+    reference_1
+    # "#{permit_reference}/#{version}/#{discharge_reference}"
   end
 
   def permit_reference
@@ -58,7 +59,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       version: version,
       discharge: discharge_reference,
       sroc_category: category,
-      variation: variation_percentage,
+      variation: clean_variation_percentage,
       temporary_cessation: temporary_cessation_flag,
       period: period,
       amount: amount

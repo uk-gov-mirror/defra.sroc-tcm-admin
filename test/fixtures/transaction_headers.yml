@@ -9,6 +9,17 @@ cfd:
   transaction_count: 61
   invoice_total: 0
   credit_total: -279042
+cfd_b:
+  regime: cfd
+  feeder_source_code: "CFD"
+  region: "B"
+  file_type_flag: 'I'
+  file_sequence_number: 374
+  bill_run_id: ""
+  generated_at: <%= 2.weeks.ago %>
+  transaction_count: 61
+  invoice_total: 123450
+  credit_total: -32455
 pas:
   regime: pas
   feeder_source_code: "PAS"

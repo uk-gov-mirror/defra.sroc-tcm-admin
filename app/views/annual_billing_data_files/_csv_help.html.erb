@@ -1,0 +1,13 @@
+<details>
+  <summary role="button" aria-controls="csv-file-help">
+    <span class="summary">Help with the <strong><%= regime.title %></strong> CSV file format</span>
+  </summary>
+  <div class="panel" id="csv-file-help">
+    <p class="col-lg-8"><em>CSV</em> stands for <em>'Comma Separated Values'</em>.
+    A CSV formatted file contains one record per-row with
+    each field in the record delimited by a comma (',').
+    Each row in the file should contain the following fields:</p>
+
+    <%= annual_billing_csv_column_descriptions_for(regime) %>
+  </div>
+</details>

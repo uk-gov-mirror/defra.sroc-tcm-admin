@@ -40,6 +40,9 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
+    airbrake (5.8.1)
+      airbrake-ruby (~> 1.8)
+    airbrake-ruby (1.8.0)
     ansi (1.5.0)
     arel (8.0.0)
     autoprefixer-rails (7.1.4)
@@ -57,6 +60,7 @@ GEM
       autoprefixer-rails (>= 6.0.3)
       popper_js (~> 1.11.1)
       sass (>= 3.4.19)
+    bstard (0.2.4)
     builder (3.2.3)
     byebug (9.0.6)
     capybara (2.14.0)
@@ -261,9 +265,9 @@ GEM
     thor (0.19.4)
     thread_safe (0.3.6)
     tilt (2.0.7)
-    turbolinks (5.0.1)
-      turbolinks-source (~> 5)
-    turbolinks-source (5.0.3)
+    turbolinks (5.1.0)
+      turbolinks-source (~> 5.1)
+    turbolinks-source (5.1.0)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
     uglifier (3.2.0)
@@ -291,8 +295,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  airbrake (~> 5.0)
   aws-sdk (~> 2)
   bootstrap (~> 4.0.0.beta)
+  bstard
   byebug
   capybara
   coffee-rails (~> 4.2)

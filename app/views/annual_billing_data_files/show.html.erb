@@ -1,0 +1,27 @@
+<% content_for :head do %>
+  <meta name="turbolinks-cache-control000000" content="no-cache">
+  <%= javascript_pack_tag 'transactions' %>
+<% end %>
+<div class="row mb-4">
+  <div class="col">
+    <h1 id="annual-billing-data-heading">Annual Billing Data File Details</h1>
+  </div>
+</div>
+<div id="data-file-view"
+     data-regime="<%= @regime.slug %>"
+     data-sort-col="line_number"
+     data-sort-dir="asc"
+     data-path="<%= regime_annual_billing_data_file_path(@regime, @upload, format: :json) %>"
+     data-filename="<%= File.basename @upload.filename %>"
+     data-upload-date="<%= formatted_date(@upload.created_at, true) %>"
+     data-status="<%= @upload.status.humanize %>"
+     data-success-count="<%= @upload.success_count %>"
+     data-failed-count="<%= @upload.failed_count %>"
+     data-errors="<%= @errors.to_json %>">
+</div>
+<div class="row">
+  <div class="col-lg-6 actions">
+    <%= link_to 'Back', regime_annual_billing_data_files_path(@regime),
+      class: "btn btn-secondary", role: "button" %>
+  </div>
+</div>

@@ -48,6 +48,12 @@ gem 'rails-i18n'
 
 gem 'kaminari'
 
+gem 'bstard'
+
+group :production do
+  gem 'airbrake', "~> 5.0"
+end
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
