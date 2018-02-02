@@ -3,6 +3,7 @@ require 'test_helper.rb'
 class TransactionFilesControllerTest < ActionDispatch::IntegrationTest
   def setup
     @regimes = Regime.all #regimes(:cfd)
+    sign_in users(:billing_admin)
   end
 
   def test_it_should_get_index

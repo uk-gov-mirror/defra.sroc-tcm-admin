@@ -1,0 +1,12 @@
+cfd:
+  regime: cfd
+  enabled: true
+
+pas:
+  regime: pas
+  enabled: true
+
+wml:
+  regime: wml
+  enabled: true
+
