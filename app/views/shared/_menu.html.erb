@@ -7,26 +7,31 @@
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+  <% if user_signed_in? %>
   <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-    <ul class="navbar-nav">
+    <ul class="navbar-nav" role="menubar">
       <!-- Admin menu -->
       <% unless ENV.fetch('HEROKU', false) %>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <li class="nav-item dropdown <%= active_for_current_controller(["annual_billing_data_files", "permit_categories", "users"]) %>" role="none">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" role="menuitem" aria-expanded="false">
             Admin
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
             <% if (defined?(@regime) && @regime) %>
               <%= link_to "Upload Annual Billing Data",
                 new_regime_annual_billing_data_file_path(@regime),
-                class: "dropdown-item" %>
+                class: "dropdown-item", role: "menuitem" %>
               <%= link_to "Review Annual Billing Data",
                 regime_annual_billing_data_files_path(@regime),
-                class: "dropdown-item" %>
+                class: "dropdown-item", role: "menuitem" %>
               <div class="dropdown-divider"></div>
               <%= link_to "Permit Categories",
-                regime_permit_categories_path(@regime), class: "dropdown-item" %>
+                regime_permit_categories_path(@regime),
+                class: "dropdown-item", role: "menuitem" %>
+              <div class="dropdown-divider"></div>
             <% end %>
+              <%= link_to "User Management",
+                users_path, class: "dropdown-item", role: "menuitem" %>
             <%#= link_to "Regimes", regimes_path, class: "dropdown-item" %>
           </div>
         </li>
@@ -60,11 +65,12 @@
         </li>
       <% end %>
       <li class="nav-item navbar-text mr-4">
-        Signed in as <b>Bert Kwouk</b>
+        Signed in as <b><%= current_user.full_name %></b>
       </li>
       <li class="nav-item">
-        <%= link_to "Sign out", "#", class: "navbar-text" %>
+        <%= link_to "Sign out", destroy_user_session_path, method: :delete, class: "navbar-text" %>
       </li>
     </ul>
   </div>
+<% end %>
 </nav>
