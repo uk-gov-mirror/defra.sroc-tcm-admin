@@ -5,6 +5,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     # @regime = FactoryBot.create(:cfd)
     @regime = regimes(:cfd)
     @transaction = transaction_details(:cfd)
+    sign_in users(:billing_admin)
   end
 
   def test_it_should_get_index

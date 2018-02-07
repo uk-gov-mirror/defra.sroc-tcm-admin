@@ -1,4 +1,4 @@
-class PermitCategoriesController < ApplicationController
+class PermitCategoriesController < AdminController
   include RegimeScope
   before_action :set_regime, only: [:index, :new, :create]
   before_action :set_permit_category, only: [:show, :edit, :update, :destroy]

@@ -3,6 +3,7 @@ require 'test_helper.rb'
 class HistoryControllerTest < ActionDispatch::IntegrationTest
   def setup
     @regime = regimes(:cfd)
+    sign_in users(:billing_admin)
   end
 
   def test_it_should_get_index

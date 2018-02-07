@@ -1,0 +1,48 @@
+<div class="row mt-4 mb-4">
+  <div class="col">
+    <h1>Users</h1>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col">
+    <%= link_to 'Add User Account',
+      new_user_path,
+      class: 'btn btn-primary', role: 'button' %>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table table-responsive">
+      <thead>
+        <tr>
+          <th>Last Name</th>
+          <th>First Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Regime(s)</th>
+          <th>Enabled?</th>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= user.last_name %></td>
+            <td><%= user.first_name %></td>
+            <td><%= user.email %></td>
+            <td><%= role_label(user.role) %></td>
+            <td><%= regime_names(user) %></td>
+            <td><%= user.enabled? ? 'Y' : 'N' %></td>
+            <td>
+              <%= link_to edit_user_path(user),
+                class: 'btn btn-sm btn-outline-primary',
+                role: 'button' do %>
+                Edit<span class='sr-only'> <%= user.full_name %></span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

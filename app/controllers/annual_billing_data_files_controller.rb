@@ -2,6 +2,7 @@
 
 class AnnualBillingDataFilesController < ApplicationController
   include RegimeScope
+
   before_action :set_regime, only: [:index, :new, :create]
   before_action :set_upload, only: [:show, :edit, :update]
 

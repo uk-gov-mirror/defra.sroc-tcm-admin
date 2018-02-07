@@ -1,0 +1,18 @@
+<li class="nav-item dropdown <%= active_for_current_controller(["transactions", "history"]) %>">
+  <a class="nav-link dropdown-toggle"
+     href="#"
+     id="navbarTransactionsSelectorLink"
+     data-toggle="dropdown"
+     aria-haspopup="true"
+     aria-expanded="false">
+    Transactions
+  </a>
+  <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
+    <%= link_to "Transactions to be billed",
+      regime_transactions_path(@regime),
+      class: "dropdown-item" %>
+    <%= link_to "Transaction history",
+      regime_history_index_path(@regime),
+      class: "dropdown-item" %>
+  </div>
+</li>

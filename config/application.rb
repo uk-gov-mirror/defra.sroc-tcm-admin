@@ -27,6 +27,7 @@ module SrocTcmAdmin
 
     config.i18n.available_locales = ['en-GB', :en]
     config.i18n.default_locale = :'en-GB'
+    config.i18n.fallbacks = [:en]
 
     # resque for activejob
     config.active_job.queue_adapter = :resque

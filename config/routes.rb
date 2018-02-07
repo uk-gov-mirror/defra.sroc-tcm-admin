@@ -1,4 +1,29 @@
 Rails.application.routes.draw do
+  # get 'users/index'
+  #
+  # get 'users/show'
+  #
+  # get 'users/new'
+  #
+  # get 'users/create'
+  #
+  # get 'users/edit'
+  #
+  # get 'users/update'
+  #
+  # get 'users/destroy'
+
+  devise_for :users, path: 'auth', skip: [:registrations]
+
+  as :user do
+    get 'change_password/edit' => 'devise/registrations#edit', as: 'edit_user_registration'
+    put 'change_password' => 'devise/registrations#update', as: 'user_registration'
+  end
+
+  resources :users do
+    get 'reinvite', on: :member 
+  end
+
   resources :regimes do
     resources :permits
     resources :permit_categories

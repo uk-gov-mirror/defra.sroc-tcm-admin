@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180122110354) do
+ActiveRecord::Schema.define(version: 20180201102024) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,16 @@ ActiveRecord::Schema.define(version: 20180122110354) do
     t.datetime "updated_at", null: false
     t.index ["permit_reference"], name: "index_permits_on_permit_reference"
     t.index ["regime_id"], name: "index_permits_on_regime_id"
+  end
+
+  create_table "regime_users", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.bigint "user_id"
+    t.boolean "enabled", default: false, null: false
+    t.string "working_region"
+    t.index ["regime_id", "user_id"], name: "index_regime_users_on_regime_id_and_user_id", unique: true
+    t.index ["regime_id"], name: "index_regime_users_on_regime_id"
+    t.index ["user_id"], name: "index_regime_users_on_user_id"
   end
 
   create_table "regimes", force: :cascade do |t|
@@ -190,6 +200,44 @@ ActiveRecord::Schema.define(version: 20180122110354) do
     t.datetime "updated_at", null: false
     t.string "file_type_flag"
     t.index ["regime_id"], name: "index_transaction_headers_on_regime_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
+    t.integer "role", default: 0, null: false
+    t.integer "active_regime"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invitations_count"], name: "index_users_on_invitations_count"
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by_type_and_invited_by_id"
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
 end

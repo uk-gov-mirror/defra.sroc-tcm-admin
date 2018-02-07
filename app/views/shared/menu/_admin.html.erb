@@ -1,0 +1,14 @@
+<li class="nav-item dropdown <%= active_for_current_controller(["permit_categories", "users"]) %>" role="none">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" role="menuitem" aria-expanded="false">
+    Admin
+  </a>
+  <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
+    <%= link_to "Permit Categories",
+      regime_permit_categories_path(@regime),
+      class: "dropdown-item", role: "menuitem" %>
+    <div class="dropdown-divider"></div>
+    <%= link_to "User Management",
+      users_path, class: "dropdown-item", role: "menuitem" %>
+  </div>
+</li>
+

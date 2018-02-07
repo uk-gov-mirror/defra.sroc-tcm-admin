@@ -16,12 +16,13 @@ module RegimeScope
   end
 
   def set_regime
-    # FIXME: this is just to avoid not having a regime set on entry
-    # this will be replaced by using user regimes roles/permissions
-    if params.fetch(:regime_id, nil)
-      @regime = Regime.find_by!(slug: params[:regime_id])
+    r_id = params.fetch(:regime_id, nil)
+
+    if r_id
+      @regime = current_user.set_selected_regime(r_id)
+      redirect_to root_path unless @regime.to_param == r_id
     else
-      @regime = Regime.first
+      @regime = current_user.selected_regime
     end
   end
   # :nocov:

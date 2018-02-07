@@ -1,0 +1,20 @@
+<li class="nav-item dropdown mr-4">
+  <a class="nav-link dropdown-toggle"
+     href="#"
+     id="navbarUserMenuLink"
+     data-toggle="dropdown"
+     aria-haspopup="true"
+     aria-expanded="false">
+      Signed in as <b><%= current_user.full_name %></b>
+  </a>
+  <div class="dropdown-menu" aria-labelledby="navbarUserMenuLink">
+    <%= link_to "Change Password",
+      edit_user_registration_path,
+      class: "dropdown-item" %>
+    <div class="dropdown-divider"></div>
+    <%= link_to "Sign out",
+      destroy_user_session_path,
+      method: :delete,
+      class: "dropdown-item" %>
+  </div>
+</li>

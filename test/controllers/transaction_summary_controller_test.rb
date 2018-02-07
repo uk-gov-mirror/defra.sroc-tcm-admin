@@ -4,6 +4,7 @@ class TransactionSummaryControllerTest < ActionDispatch::IntegrationTest
   def setup
     @regime = regimes(:cfd)
     @transaction = transaction_details(:cfd)
+    sign_in users(:billing_admin)
   end
 
   def test_index_should_return_406_if_not_json_request
