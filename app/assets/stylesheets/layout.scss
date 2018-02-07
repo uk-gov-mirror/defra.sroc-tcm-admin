@@ -1,4 +1,3 @@
-
 $pale-blue: #d5e8f3 !default;
 
 .content {
@@ -41,10 +40,6 @@ $pale-blue: #d5e8f3 !default;
   border-left: 0.75rem solid $gray-400;
   padding-left: 0.5rem;
   margin-bottom: 1.5rem;
-}
-
-.error-banner {
-  border: 6px solid theme-color("danger");
 }
 
 details {

@@ -1,0 +1,23 @@
+<% if current_user.regimes.count > 1 %>
+  <li class="nav-item dropdown mr-4">
+    <a class="nav-link dropdown-toggle"
+       href="#"
+       id="navbarRegimeSelectorLink"
+       data-toggle="dropdown"
+       aria-haspopup="true"
+       aria-expanded="false">
+      Regime: <%= @regime.title %>
+  </a>
+  <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
+    <% current_user.regimes.order(:title).each do |r| %>
+      <%= link_to r.title,
+        menu_path(r, controller_name),
+        class: "dropdown-item" %>
+    <% end %>
+    <div>
+  </li>
+<% else %>
+  <li class="nav-item navbar-text mr-4">
+    Regime: <%= @regime.title %>
+  </li>
+<% end %>

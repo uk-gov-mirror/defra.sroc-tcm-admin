@@ -20,5 +20,5 @@ class ActiveSupport::TestCase
 end
 
 class ActionDispatch::IntegrationTest
-  include Devise::Test::IntegrationHelpers
+  include Devise::Test::IntegrationHelpers, ActiveJob::TestHelper
 end

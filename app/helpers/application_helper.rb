@@ -1,4 +1,17 @@
 module ApplicationHelper
+  def tcm_form_with(*args, &block)
+    options = args.extract_options!
+
+    content_tag(:div,
+                form_with(*(args << options.merge(builder: TcmFormBuilder)),
+                         &block),
+                         class: "tcm_form")
+  end
+
+  def make_page_title(title)
+    "#{title} - Tactical Charging Module - DEFRA"
+  end
+
   def active_for_current_controller(target_controller_name)
     if target_controller_name.include?(controller_name)
       "active"

@@ -1,0 +1,31 @@
+$error-col: theme-color("danger");
+
+#error-header {
+  .error-banner {
+    border: 6px solid $error-col;
+  }
+
+  .error-summary-list {
+    li {
+      color: $error-col;
+      font-size: 1em;
+      font-weight: bold;
+    }
+  }
+}
+
+.form-error {
+  border: 4px solid $error-col;
+  margin-bottom: 0.5em;
+
+  .form-group {
+    margin-bottom: 0;
+  }
+
+  .error-item {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: $error-col;
+    margin-bottom: 0.5em;
+  }
+}

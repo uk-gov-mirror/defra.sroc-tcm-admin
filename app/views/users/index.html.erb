@@ -18,6 +18,8 @@
           <th>Last Name</th>
           <th>First Name</th>
           <th>Email</th>
+          <th>Role</th>
+          <th>Regime(s)</th>
           <th>Enabled?</th>
           <td></td>
         </tr>
@@ -28,6 +30,8 @@
             <td><%= user.last_name %></td>
             <td><%= user.first_name %></td>
             <td><%= user.email %></td>
+            <td><%= role_label(user.role) %></td>
+            <td><%= regime_names(user) %></td>
             <td><%= user.enabled? ? 'Y' : 'N' %></td>
             <td>
               <%= link_to edit_user_path(user),

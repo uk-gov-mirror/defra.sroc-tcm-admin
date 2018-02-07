@@ -74,7 +74,6 @@ ActiveRecord::Schema.define(version: 20180201102024) do
     t.bigint "regime_id"
     t.bigint "user_id"
     t.boolean "enabled", default: false, null: false
-    t.boolean "selected", default: false, null: false
     t.string "working_region"
     t.index ["regime_id", "user_id"], name: "index_regime_users_on_regime_id_and_user_id", unique: true
     t.index ["regime_id"], name: "index_regime_users_on_regime_id"
@@ -231,6 +230,7 @@ ActiveRecord::Schema.define(version: 20180201102024) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.integer "role", default: 0, null: false
+    t.integer "active_regime"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invitations_count"], name: "index_users_on_invitations_count"

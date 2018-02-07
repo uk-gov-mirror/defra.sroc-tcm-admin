@@ -27,6 +27,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to users_path
     assert_equal 'User account created', flash[:notice]
+    assert_enqueued_jobs 1
   end
 
   test "should get edit" do

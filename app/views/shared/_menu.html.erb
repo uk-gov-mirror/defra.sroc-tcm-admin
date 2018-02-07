@@ -1,6 +1,8 @@
 <%
-    regime_list = Regime.all.order(:title)
-    @regime = regime_list.first if (defined?(@regime)).nil?
+    if user_signed_in?
+      regime_list = current_user.regimes.order(:title)
+      @regime = current_user.selected_regime
+    end
 %>
 <nav class="main-menu navbar navbar-expand-lg navbar-dark bg-dark">
   <%= link_to "Tactical Charging Module", root_path, class: "navbar-brand" %>
@@ -8,69 +10,16 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <% if user_signed_in? %>
-  <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-    <ul class="navbar-nav" role="menubar">
-      <!-- Admin menu -->
-      <% unless ENV.fetch('HEROKU', false) %>
-        <li class="nav-item dropdown <%= active_for_current_controller(["annual_billing_data_files", "permit_categories", "users"]) %>" role="none">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" role="menuitem" aria-expanded="false">
-            Admin
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
-            <% if (defined?(@regime) && @regime) %>
-              <%= link_to "Upload Annual Billing Data",
-                new_regime_annual_billing_data_file_path(@regime),
-                class: "dropdown-item", role: "menuitem" %>
-              <%= link_to "Review Annual Billing Data",
-                regime_annual_billing_data_files_path(@regime),
-                class: "dropdown-item", role: "menuitem" %>
-              <div class="dropdown-divider"></div>
-              <%= link_to "Permit Categories",
-                regime_permit_categories_path(@regime),
-                class: "dropdown-item", role: "menuitem" %>
-              <div class="dropdown-divider"></div>
-            <% end %>
-              <%= link_to "User Management",
-                users_path, class: "dropdown-item", role: "menuitem" %>
-            <%#= link_to "Regimes", regimes_path, class: "dropdown-item" %>
-          </div>
-        </li>
-      <% end %>
-      <!-- End of Admin menu -->
-      <% if (defined?(@regime) && @regime) %>
-        <!-- Transactions menu -->
-        <li class="nav-item dropdown <%= active_for_current_controller(["transactions", "history"]) %>">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarTransactionsSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Transactions
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
-            <%= link_to "Transactions to be billed", regime_transactions_path(@regime), class: "dropdown-item" %>
-            <%= link_to "Transaction history", regime_history_index_path(@regime), class: "dropdown-item" %>
-          </div>
-        </li>
-        <!-- End of Transactions menu -->
-      <% end %>
-    </ul>
-    <ul class="navbar-nav">
-      <% if (defined?(@regime) && @regime) %>
-        <li class="nav-item dropdown mr-4">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarRegimeSelectorLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Regime: <%= @regime.title %>
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
-            <% regime_list.each do |r| %>
-              <%= link_to r.title, menu_path(r, controller_name), class: "dropdown-item" %>
-            <% end %>
-          <div>
-        </li>
-      <% end %>
-      <li class="nav-item navbar-text mr-4">
-        Signed in as <b><%= current_user.full_name %></b>
-      </li>
-      <li class="nav-item">
-        <%= link_to "Sign out", destroy_user_session_path, method: :delete, class: "navbar-text" %>
-      </li>
-    </ul>
-  </div>
-<% end %>
+    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+      <ul class="navbar-nav" role="menubar">
+        <%= render partial: 'shared/menu/admin' if current_user.admin? %>
+        <%= render partial: 'shared/menu/transactions' %>
+        <%= render partial: 'shared/menu/annual_billing' %>
+      </ul>
+      <ul class="navbar-nav" role="menubar">
+        <%= render partial: 'shared/menu/regime_selector' unless devise_controller? %>
+        <%= render partial: 'shared/menu/user' %>
+      </ul>
+    </div>
+  <% end %>
 </nav>

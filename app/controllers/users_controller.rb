@@ -18,7 +18,6 @@ class UsersController < AdminController
     @user = User.create(p)
 
     if @user.valid?
-      #invite the user
       invite_user(@user)
       redirect_to users_path, notice: 'User account created'
     else
@@ -40,7 +39,7 @@ class UsersController < AdminController
 
   def reinvite
     invite_user(@user)
-    redirect_to edit_user_path(@user)
+    redirect_to edit_user_path(@user), notice: 'User reinvited'
   end
 
 private

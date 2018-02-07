@@ -1,6 +1,6 @@
 module UsersHelper
   def user_submit_button(form)
-    title = action_name == 'edit' ? 'Update User' : 'Add and Invite User'
+    title = form.object.new_record? ? 'Add and Invite User' : 'Update User'
     form.submit(title, class: 'btn btn-primary')
   end
 
@@ -12,5 +12,9 @@ module UsersHelper
     else
       raise ArgumentError, "Unknown role '#{name}'"
     end
+  end
+
+  def regime_names(user)
+    user.regimes.map { |r| r.title }.join(', ')
   end
 end

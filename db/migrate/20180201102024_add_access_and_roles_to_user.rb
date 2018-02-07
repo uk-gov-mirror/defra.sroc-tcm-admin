@@ -1,12 +1,12 @@
 class AddAccessAndRolesToUser < ActiveRecord::Migration[5.1]
   def change
     add_column :users, :role, :integer, null: false, default: 0
+    add_column :users, :active_regime, :integer
 
     create_table :regime_users do |t|
       t.references :regime
       t.references :user
       t.boolean :enabled, null:false, default: false
-      t.boolean :selected, null: false, default: false
       t.string :working_region
     end
     
