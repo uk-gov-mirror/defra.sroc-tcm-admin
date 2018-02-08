@@ -1,12 +1,19 @@
-cfd:
+cfd_sys:
   regime: cfd
+  user: system_admin
   enabled: true
 
-pas:
+pas_sys:
   regime: pas
+  user: system_admin
   enabled: true
 
-wml:
+wml_sys:
   regime: wml
+  user: system_admin
   enabled: true
 
+cfd_bill:
+  regime: cfd
+  user: billing_admin
+  enabled: true

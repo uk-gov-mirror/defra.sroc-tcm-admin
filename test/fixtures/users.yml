@@ -11,7 +11,9 @@ system_admin:
   last_name: "Adams"
   encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
   enabled: true
-  regimes: cfd, pas, wml
+
+  # had to move this to regime_users in order to ensure the enabled flag was set
+  #  regimes: cfd, pas, wml
 
 billing_admin:
   role: 'billing'
@@ -20,4 +22,3 @@ billing_admin:
   last_name: "Armstrong"
   encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
   enabled: true
-  regimes: cfd
