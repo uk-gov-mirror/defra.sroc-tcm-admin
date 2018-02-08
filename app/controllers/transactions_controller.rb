@@ -91,27 +91,7 @@ class TransactionsController < ApplicationController
 
     def get_charge_calculation
       invoke_charge_calculation(@transaction) if @transaction.category.present?
-      # calculator.calculate_transaction_charge(presenter.new(@transaction)) if @transaction.category.present?
-    #     @transaction.errors.add(:base, res["error"]["message"]) if res && res["error"]
-    #     res
-    #   end
-    # rescue Exceptions::CalculationServiceError => e
-    #   @transaction.errors.add(:base, e.message)
-    #   debugger
-    #   @transaction.errors.add(:base, body.fetch("error", {}).fetch("message", "An error occurred calculating the charge"))
-    #   nil
-    # rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-    #   Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-    #   debugger
-    #   nil
     end
-
-    # We'll stub / mock this to prevent WS calls
-    # :nocov:
-    # def calculator
-    #   @calculator ||= CalculationService.new
-    # end
-    # :nocov:
 
     def present_transactions(transactions, summary)
       arr = Kaminari.paginate_array(presenter.wrap(transactions),

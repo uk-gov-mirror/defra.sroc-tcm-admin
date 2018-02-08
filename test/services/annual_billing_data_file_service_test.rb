@@ -65,6 +65,20 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     assert_not_nil transaction.charge_calculation
   end
 
+  def test_import_extracts_and_converts_calculated_charge_amount
+    file = file_fixture('cfd_abd.csv')
+    transaction = transaction_details(:cfd)
+    assert_nil transaction.charge_calculation
+
+    upload = prepare_upload(file)
+    @service.import(upload, file)
+
+    transaction.reload
+    amt = (transaction.charge_calculation['calculation']['chargeValue'] * 100).round
+    amt = -amt if transaction.line_amount.negative?
+    assert_equal amt, transaction.tcm_charge
+  end
+
   def test_import_does_not_update_transactions_outside_regime
     file = file_fixture('cfd_abd.csv')
 

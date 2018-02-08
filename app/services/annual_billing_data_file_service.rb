@@ -158,6 +158,7 @@ class AnnualBillingDataFileService
                                extract_calculation_error(transaction))
               failed = true
             else
+              transaction.tcm_charge = extract_correct_charge(transaction)
               if transaction.save
                 upload.success_count += 1
               else
