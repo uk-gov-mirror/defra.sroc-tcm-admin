@@ -1,0 +1,5 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+config:
+  importing: false
+  import_started_at: <%= 1.hour.ago %>
