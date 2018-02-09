@@ -57,12 +57,12 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date created_at
   end
 
-  def temporary_cessation
-    transaction_detail.temporary_cessation? ? 'Y' : ''
+  def temporary_cessation_file
+    temporary_cessation? ? 'Y' : ''
   end
 
   def temporary_cessation_flag
-    transaction_detail.temporary_cessation? ? 'Y' : 'N'
+    temporary_cessation? ? 'Y' : 'N'
   end
 
   def period

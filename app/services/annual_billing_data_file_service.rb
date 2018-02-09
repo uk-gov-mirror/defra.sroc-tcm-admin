@@ -135,6 +135,8 @@ class AnnualBillingDataFileService
                 v = val.downcase
                 if v != 'y' && v != 'n'
                   failed = true
+                else
+                  val = (v == 'y')
                 end
               end
 
