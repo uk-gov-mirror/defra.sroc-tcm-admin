@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180201102024) do
+ActiveRecord::Schema.define(version: 20180209143456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,6 +98,13 @@ ActiveRecord::Schema.define(version: 20180201102024) do
     t.datetime "updated_at", null: false
     t.index ["regime_id", "region"], name: "index_sequence_counters_on_regime_id_and_region", unique: true
     t.index ["regime_id"], name: "index_sequence_counters_on_regime_id"
+  end
+
+  create_table "system_configs", force: :cascade do |t|
+    t.boolean "importing", default: false, null: false
+    t.datetime "import_started_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "transaction_details", force: :cascade do |t|
