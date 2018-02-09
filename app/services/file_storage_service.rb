@@ -47,7 +47,7 @@ private
   end
 
   def determine_storage_handler
-    if ENV.fetch("USE_LOCAL_FILE_STORAGE", false)
+    if Rails.env.development? || Rails.env.test?
       LocalFileStore.new
     else
       AwsFileStore.new

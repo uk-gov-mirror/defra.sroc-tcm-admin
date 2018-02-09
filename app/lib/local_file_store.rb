@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 require "fileutils"
 
-class LocalFileStorage
+class LocalFileStore
   def list(path = "")
-    Dir.glob(File.join(file_path(path), "**", "*")).select { |f| File.file?(f) }
+    file_root = Pathname.new(file_path(""))
+    Dir.glob(File.join(file_path(path), "**", "*")).select { |f| File.file?(f) }.map {|f| Pathname.new(f).relative_path_from(file_root).to_s }
   end
 
   # to_path can be file path or io object
