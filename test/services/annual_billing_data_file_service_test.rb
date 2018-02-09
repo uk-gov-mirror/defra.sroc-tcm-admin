@@ -94,6 +94,18 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     refute transaction.temporary_cessation
   end
 
+  def test_import_correctly_set_temporary_cessation
+    file = file_fixture('cfd_abd.csv')
+    upload = prepare_upload(file)
+
+    @service.import(upload, file)
+    transaction = transaction_details(:cfd)
+    assert_equal(true, transaction.temporary_cessation)
+
+    transaction = transaction_details(:cfd_b)
+    assert_equal(false, transaction.temporary_cessation)
+  end
+
   def test_import_records_total_and_errors
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
