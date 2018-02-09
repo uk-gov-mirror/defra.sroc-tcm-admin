@@ -60,7 +60,7 @@ class CfdTransactionFilePresenter < SimpleDelegator
       td.category_description, # was line_attr_5
       td.baseline_charge,     # line_attr_6
       td.line_attr_9,         # line_attr_7 (compliance band)
-      td.line_attr_8,         # temporary cessation
+      td.temporary_cessation, # temporary cessation
       "",                     # line_attr_9   future - compliance band
       "",                     # line_attr_10  future - compliance adjustment
       "",                     # line_attr_11  future - performance band
