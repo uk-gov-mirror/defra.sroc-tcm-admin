@@ -22,7 +22,7 @@ class FileCheckJob < ApplicationJob
             service.fetch_file_from(:import, f, in_file.path)
             in_file.rewind
 
-            transaction = importer.import(in_file.path)
+            transaction = importer.import(in_file.path, File.basename(f))
             if transaction && transaction.valid?
               in_file.rewind
               service.store_file_in(:import_archive, in_file.path, f)

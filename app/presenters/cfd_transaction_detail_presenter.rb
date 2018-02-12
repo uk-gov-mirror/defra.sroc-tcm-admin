@@ -13,6 +13,14 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     }
   end
 
+  def original_file_date
+    transaction_detail.original_file_date.strftime("%d/%m/%y")
+  end
+
+  def transaction_date
+    transaction_detail.transaction_date.strftime("%d/%m/%y")
+  end
+
   def clean_variation_percentage
     return 100 if variation_percentage.blank?
     variation_percentage.gsub(/%/,'')
@@ -55,6 +63,10 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     {
       id: id,
       customer_reference: customer_reference,
+      transaction_reference: transaction_reference,
+      transaction_date: transaction_date,
+      # original_filename: original_filename,
+      # original_file_date: original_file_date,
       consent_reference: consent_reference,
       version: version,
       discharge: discharge_reference,
