@@ -3,7 +3,7 @@ require "csv"
 class TransactionFileImporter
   include TransactionFileFormat
 
-  def import(path)
+  def import(path, original_filename)
     header = nil
 
     CSV.foreach(path) do |row|
@@ -18,7 +18,7 @@ class TransactionFileImporter
             file_type_flag = row[Header::FileType]
             file_seq_no = row[Header::FileSequenceNumber]
             bill_run_id = row[Header::BillRunId]
-            generated_at = row[Header::FileDate]
+            generated_at = sanitize_date(row[Header::FileDate])
 
             header = TransactionHeader.create!(
               regime: Regime.find_by(name: source),
@@ -27,7 +27,8 @@ class TransactionFileImporter
               file_type_flag: file_type_flag,
               file_sequence_number: file_seq_no,
               bill_run_id: bill_run_id,
-              generated_at: generated_at
+              generated_at: generated_at,
+              filename: original_filename
             )
           else
             raise Exceptions::TransactionFileError, "Not a transaction file!"
@@ -38,7 +39,7 @@ class TransactionFileImporter
       elsif record_type == "D"
         # detail record
         raise Exceptions::TransactionFileError, "Detail record but no header record" if header.nil?
-        header.transaction_details.create(extract_detail(header.regime, row))
+        header.transaction_details.create(extract_detail(header, row))
       elsif record_type == "T"
         # trailer record
         raise Exceptions::TransactionFileError, "Trailer record but no header record" if header.nil?
@@ -54,7 +55,7 @@ class TransactionFileImporter
     header
   end
 
-  def extract_detail(regime, row)
+  def extract_detail(header, row)
     data = {
       sequence_number: row[Common::SequenceNumber].to_i,
       customer_reference: row[Detail::CustomerReference],
@@ -76,7 +77,7 @@ class TransactionFileImporter
     }
 
     period = nil
-
+    regime = header.regime
     if regime.installations?
       data.merge!({
         filename: row[Detail::Filename],
@@ -123,6 +124,17 @@ class TransactionFileImporter
       data["period_end"] = period[1]
     end
 
+    # original file details
+    data["original_filename"] = header.filename
+    data["original_file_date"] = header.generated_at
+
     data
+  end
+
+  def sanitize_date(d)
+    Date.parse(d)
+  rescue ArguementError => e
+    Rails.logger.warn("Invalid date in transaction file: #{d}") 
+    nil
   end
 end

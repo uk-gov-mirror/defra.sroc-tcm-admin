@@ -73,8 +73,14 @@ class TransactionStorageService
     case col.to_sym
     when :customer_reference
       q.order(customer_reference: dir, id: dir)
+    when :original_filename
+      q.order(original_filename: dir, customer_reference: dir)
+    when :original_file_date
+      q.order(original_file_date: dir, original_filename: dir)
     when :transaction_reference
       q.order(transaction_reference: dir, id: dir)
+    when :transaction_date
+      q.order(transaction_date: dir, id: dir)
     when :permit_reference
       q.order(reference_1: dir, id: dir)
     when :original_permit_reference
@@ -82,7 +88,6 @@ class TransactionStorageService
     when :consent_reference
       q.order(reference_1: dir, reference_2: dir, reference_3: dir, id: dir)
     when :sroc_category
-      # FIXME: not implemented this one yet
       q.order(category: dir, id: dir)
     when :compliance_band
       q.order(line_attr_11: dir, id: dir)

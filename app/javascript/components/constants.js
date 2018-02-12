@@ -47,7 +47,17 @@ Constants.INSTALLATIONS_COLUMNS = [
 ]
 
 Constants.WATER_QUALITY_COLUMNS = [
-  { name: 'customer_reference',
+  { name: 'transaction_reference',
+    label: 'Transaction Reference',
+    sortable: true,
+    selectable: false
+  }, {
+    name: 'transaction_date',
+    label: 'Generated Date',
+    sortable: true,
+    selectable: false
+  }, {
+    name: 'customer_reference',
     label: 'Customer',
     sortable: true,
     selectable: false
