@@ -21,6 +21,10 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     transaction_detail.transaction_date.strftime("%d/%m/%y")
   end
 
+  def file_transaction_date
+    transaction_detail.transaction_date.strftime("%-d-%^b-%Y")
+  end
+
   def clean_variation_percentage
     return 100 if variation_percentage.blank?
     variation_percentage.gsub(/%/,'')

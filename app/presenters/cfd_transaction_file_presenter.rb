@@ -31,13 +31,13 @@ class CfdTransactionFilePresenter < SimpleDelegator
       "D",
       padded_number(idx),
       td.customer_reference,
-      fmt_date(td.transaction_date),
+      td.file_transaction_date,
       td.tcm_transaction_type,
       td.tcm_transaction_reference,
       "",
       "GBP",
       "",                     # header_narrative always blank
-      fmt_date(td.transaction_date),  # header_attr_1
+      td.file_transaction_date,  # header_attr_1
       "",                     # header_attr_2
       "",                     # header_attr_3
       "",                     # header_attr_4
