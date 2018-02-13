@@ -5,6 +5,7 @@ class TransactionFileImporter
 
   def import(path, original_filename)
     header = nil
+    process_retrospectives = SystemConfig.config.process_retrospectives?
 
     CSV.foreach(path) do |row|
       record_type = row[Common::RecordType]
@@ -39,7 +40,7 @@ class TransactionFileImporter
       elsif record_type == "D"
         # detail record
         raise Exceptions::TransactionFileError, "Detail record but no header record" if header.nil?
-        header.transaction_details.create(extract_detail(header, row))
+        header.transaction_details.create(extract_detail(header, row, process_retrospectives))
       elsif record_type == "T"
         # trailer record
         raise Exceptions::TransactionFileError, "Trailer record but no header record" if header.nil?
@@ -55,11 +56,11 @@ class TransactionFileImporter
     header
   end
 
-  def extract_detail(header, row)
+  def extract_detail(header, row, process_retrospectives)
     data = {
       sequence_number: row[Common::SequenceNumber].to_i,
       customer_reference: row[Detail::CustomerReference],
-      transaction_date: row[Detail::TransactionDate],
+      transaction_date: sanitize_date(row[Detail::TransactionDate]),
       transaction_type: row[Detail::TransactionType],
       transaction_reference: row[Detail::TransactionReference],
       related_reference: row[Detail::RelatedReference],
@@ -122,10 +123,14 @@ class TransactionFileImporter
     if period.present?
       data["period_start"] = period[0]
       data["period_end"] = period[1]
+
+      if process_retrospectives && TcmUtils.retrospective_date?(period[1])
+        data["status"] = 'retrospective'
+      end
     end
 
     # original file details
-    data["original_filename"] = header.filename
+    data["original_filename"] = header.file_reference
     data["original_file_date"] = header.generated_at
 
     data

@@ -9,16 +9,22 @@ class TransactionDetail < ApplicationRecord
   validates :unit_of_measure_price, presence: true
 
   scope :unbilled, -> { where(status: 'unbilled') }
+  scope :retrospective, -> { where(status: 'retrospective') }
   scope :historic, -> { where(status: 'billed') }
 
   scope :with_charge_errors, -> { where("charge_calculation -> 'calculation' ->> 'messages' != null") }
   scope :credits, -> { where(arel_table[:line_amount].lt 0) }
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
-  scope :region, ->(region) { joins(:transaction_header).merge(TransactionHeader.in_region(region)) }
-  scope :without_charge, -> { where(charge_calculation: nil).or(TransactionDetail.with_charge_errors) }
+  scope :region, ->(region) { joins(:transaction_header).
+                              merge(TransactionHeader.in_region(region)) }
+  scope :without_charge, -> { where(charge_calculation: nil).
+                              or(TransactionDetail.with_charge_errors) }
+
   def self.search(q)
     m = "%#{q}%"
-    where(arel_table[:customer_reference].matches(m).or(arel_table[:reference_1].matches(m)).or(arel_table[:transaction_reference].matches(m)))
+    where(arel_table[:customer_reference].matches(m).
+          or(arel_table[:reference_1].matches(m)).
+          or(arel_table[:transaction_reference].matches(m)))
   end
 
   def updateable?
