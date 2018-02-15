@@ -56,7 +56,11 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def site
-    line_attr_1
+    line_attr_1 || ""
+  end
+
+  def discharge_location
+    "Discharge Location: #{site}" unless site.blank?
   end
 
   # def period

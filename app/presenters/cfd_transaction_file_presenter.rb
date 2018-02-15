@@ -50,7 +50,7 @@ class CfdTransactionFilePresenter < SimpleDelegator
       padded_number(td.tcm_charge, 3),  # line_amount
       "",                     # line VAT code always blank
       td.line_area_code,
-      "Discharge Location: " + td.line_attr_1, # line_description
+      td.discharge_location,  # line_description
       "CT",                   # line income stream code
       td.line_context_code,
       td.line_description,    # line_attr_1
