@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180213101835) do
+ActiveRecord::Schema.define(version: 20180213133939) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -191,6 +191,7 @@ ActiveRecord::Schema.define(version: 20180213101835) do
     t.bigint "credit_total"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "retrospective", default: false, null: false
     t.index ["regime_id"], name: "index_transaction_files_on_regime_id"
     t.index ["region"], name: "index_transaction_files_on_region"
     t.index ["state"], name: "index_transaction_files_on_state"
