@@ -5,7 +5,7 @@ cfd:
   file_type_flag: 'I'
   file_sequence_number: 371
   bill_run_id: ""
-  generated_at: <%= 2.months.ago %>
+  generated_at: <%= 2.months.ago.to_date %>
   transaction_count: 61
   invoice_total: 0
   credit_total: -279042
@@ -16,7 +16,7 @@ cfd_b:
   file_type_flag: 'I'
   file_sequence_number: 374
   bill_run_id: ""
-  generated_at: <%= 2.weeks.ago %>
+  generated_at: <%= 2.weeks.ago.to_date %>
   transaction_count: 61
   invoice_total: 123450
   credit_total: -32455
@@ -27,7 +27,7 @@ pas:
   file_type_flag: 'I'
   file_sequence_number: 337
   bill_run_id: "462"
-  generated_at: <%= 6.weeks.ago %>
+  generated_at: <%= 6.weeks.ago.to_date %>
   transaction_count: 11
   invoice_total: 9851959
   credit_total: -9454762
