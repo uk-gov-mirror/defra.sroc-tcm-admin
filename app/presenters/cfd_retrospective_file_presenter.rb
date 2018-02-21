@@ -1,7 +1,9 @@
 class CfdRetrospectiveFilePresenter < CfdTransactionFilePresenter
   def details
     records = []
-    transactions = CfdRetrospectiveTransactionPresenter.wrap(transaction_details.order(:id))
+    transactions = CfdTransactionDetailPresenter.wrap(
+      cfd_sorter(transaction_details))
+
     transactions.each.with_index(1) do |td, idx|
       row = detail_row(td, idx)
       if block_given?
@@ -35,7 +37,7 @@ class CfdRetrospectiveFilePresenter < CfdTransactionFilePresenter
       td.header_attr_9,
       td.header_attr_10,
       padded_number(td.line_amount, 3),
-      td.lina_vat_code,
+      td.line_vat_code,
       td.line_area_code,
       td.line_description,
       td.line_income_stream_code,

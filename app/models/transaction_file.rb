@@ -19,6 +19,8 @@ private
   end
 
   def generate_file_id
-    "#{SequenceCounter.next_file_number(regime, region).to_s.rjust(5, "0")}T"
+    fid = "#{SequenceCounter.next_file_number(regime, region).to_s.rjust(5, "0")}"
+    fid += 'T' unless retrospective?
+    fid
   end
 end

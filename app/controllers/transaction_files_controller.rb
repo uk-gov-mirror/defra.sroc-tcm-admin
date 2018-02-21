@@ -27,8 +27,16 @@ class TransactionFilesController < ApplicationController
   def create
     set_region
     transaction_file = exporter.export
+
+    # just to enable testing
+    retro_file = exporter.export_retrospectives
+
     # Accept and continue to create transaction file
-    flash[:success] = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
+    msg = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
+    msg += " and retrospective file <b>#{retro_file.filename}</b>" unless retro_file.nil?
+
+    # flash[:success] = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
+    flash[:success] = msg
     redirect_to regime_transactions_path(@regime)
   end
 

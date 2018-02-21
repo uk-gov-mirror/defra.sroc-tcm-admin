@@ -72,6 +72,8 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@presenter.as_json, {
       id: @transaction.id,
       customer_reference: @presenter.customer_reference,
+      original_filename: @presenter.original_filename,
+      original_file_date: @presenter.original_file_date,
       consent_reference: @presenter.consent_reference,
       version: @presenter.version,
       discharge: @presenter.discharge_reference,

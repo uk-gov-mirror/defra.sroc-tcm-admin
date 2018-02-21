@@ -1,4 +1,6 @@
 class CfdTransactionFilePresenter < SimpleDelegator
+  include FormattingUtils, TransactionGroupFilters
+
   def header
     [
       "H",
@@ -14,7 +16,9 @@ class CfdTransactionFilePresenter < SimpleDelegator
 
   def details
     records = []
-    transactions = CfdTransactionDetailPresenter.wrap(transaction_details.order(:id))
+    transactions = CfdTransactionDetailPresenter.wrap(
+      cfd_sorter(transaction_details))
+
     transactions.each.with_index(1) do |td, idx|
       row = detail_row(td, idx)
       if block_given?
@@ -85,13 +89,9 @@ class CfdTransactionFilePresenter < SimpleDelegator
     ]
   end
 
-private
+protected
   def transaction_file
     __getobj__
-  end
-
-  def padded_number(val, length = 7)
-    val.to_s.rjust(length, "0")
   end
 
   def record_count
@@ -105,9 +105,5 @@ private
 
   def feeder_source_code
     regime.name
-  end
-
-  def fmt_date(dt)
-    dt.strftime("%-d-%^b-%Y")
   end
 end

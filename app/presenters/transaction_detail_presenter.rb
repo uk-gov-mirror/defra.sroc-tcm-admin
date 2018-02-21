@@ -1,4 +1,5 @@
 class TransactionDetailPresenter < SimpleDelegator
+  include FormattingUtils
 
   def self.wrap(collection)
     collection.map { |o| new o }
@@ -108,16 +109,8 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date transaction_detail.transaction_header.generated_at
   end
 
-private
+protected
   def transaction_detail
     __getobj__
-  end
-
-  def padded_number(val, length = 7)
-    val.to_s.rjust(length, "0")
-  end
-
-  def fmt_date(dt)
-    dt.strftime("%-d-%^b-%Y")
   end
 end
