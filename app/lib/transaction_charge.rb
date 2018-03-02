@@ -10,7 +10,7 @@ module TransactionCharge
   end
 
   def extract_calculation_error(transaction)
-    if transaction_charge_calculation
+    if transaction.charge_calculation
       transaction.charge_calculation["calculation"]["messages"]
     end
   end
