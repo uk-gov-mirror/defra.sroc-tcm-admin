@@ -1,6 +1,6 @@
 import React from 'react'
 
-export class RegionFilter extends React.Component {
+export default class RegionFilter extends React.Component {
   constructor (props) {
     super(props)
     this.handleChangeRegion = this.handleChangeRegion.bind(this)

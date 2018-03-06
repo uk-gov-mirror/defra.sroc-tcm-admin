@@ -71,7 +71,8 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     {
       id: id,
       customer_reference: customer_reference,
-      # transaction_reference: transaction_reference,
+      tcm_transaction_reference: tcm_transaction_reference,
+      generated_filename: generated_filename,
       # transaction_date: transaction_date,
       original_filename: original_filename,
       original_file_date: original_file_date,
@@ -81,6 +82,8 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       sroc_category: category,
       variation: clean_variation_percentage,
       temporary_cessation: temporary_cessation_flag,
+      financial_year: charge_period,
+      region: region_from_ref,
       period: period,
       amount: amount
     }

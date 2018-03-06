@@ -27,6 +27,17 @@ class TransactionDetail < ApplicationRecord
           or(arel_table[:transaction_reference].matches(m)))
   end
 
+  def self.history_search(q)
+    m = "%#{q}%"
+    where(arel_table[:customer_reference].matches(m).
+          or(arel_table[:reference_1].matches(m)).
+          or(arel_table[:transaction_reference].matches(m)).
+          or(arel_table[:category].matches(m)).
+          or(arel_table[:original_filename].matches(m)).
+          or(arel_table[:generated_filename].matches(m)).
+          or(arel_table[:tcm_transaction_reference].matches(m)))
+  end
+
   def updateable?
     status == 'unbilled'
   end

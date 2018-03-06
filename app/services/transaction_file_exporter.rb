@@ -28,10 +28,10 @@ class TransactionFileExporter
 
       # link transactions and update status
       q.update_all(transaction_file_id: f.id, status: 'exporting')
-
-      # queue the background job to create the file
-      FileExportJob.perform_later(f.id)
     end
+
+    # queue the background job to create the file
+    FileExportJob.perform_later(f.id) unless f.nil?
     f
   end
 
@@ -55,11 +55,11 @@ class TransactionFileExporter
 
         # link transactions and update status
         q.update_all(transaction_file_id: f.id, status: 'retro_exporting')
-
-        # queue the background job to create the file
-        FileExportJob.perform_later(f.id)
       end
     end
+
+    # queue the background job to create the file
+    FileExportJob.perform_later(f.id) unless f.nil?
     f
   end
 
@@ -83,11 +83,18 @@ class TransactionFileExporter
     storage.store_file_in(:export, out_file.path, tf.path)
     storage.store_file_in(:export_archive, out_file.path, tf.path)
 
+    attrs = {
+      generated_filename: tf.base_filename,
+      generated_file_at: tf.generated_at
+    }
+
     if tf.retrospective?
-      tf.transaction_details.update_all(status: 'retro_billed')
+      attrs[:status] = 'retro_billed'
     else
-      tf.transaction_details.update_all(status: 'billed')
+      attrs[:status] = 'billed'
     end
+
+    tf.transaction_details.update_all(attrs)
     tf.update_attributes(state: 'exported')
   ensure
     out_file.close

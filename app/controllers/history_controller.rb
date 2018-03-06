@@ -8,26 +8,32 @@ class HistoryController < ApplicationController
   # GET /regimes/:regime_id/history
   # GET /regimes/:regime_id/history.json
   def index
+    regions = transaction_store.history_regions
+    @region = params.fetch(:region, '')
+    @region = regions.first unless @region.blank? || regions.include?(@region)
+
     respond_to do |format|
       format.html do
         render
       end
       format.js
       format.json do
-        region = params.fetch(:region, 'all')
         q = params.fetch(:search, "")
+        fy = params.fetch(:fy, '')
         pg = params.fetch(:page, 1)
         per_pg = params.fetch(:per_page, 10)
 
         @transactions = transaction_store.transaction_history(
           q,
+          fy,
           pg,
           per_pg,
-          region,
+          @region,
           params.fetch(:sort, :customer_reference),
           params.fetch(:sort_direction, 'asc'))
 
-        @transactions = present_transactions(@transactions)
+        financial_years = transaction_store.history_financial_years.reject { |r| r.blank? }
+        @transactions = present_transactions(@transactions, @region, regions, financial_years)
         render json: @transactions
       end
     end
@@ -39,7 +45,7 @@ class HistoryController < ApplicationController
   end
 
   private
-    def present_transactions(transactions)
+    def present_transactions(transactions, selected_region, regions, financial_years)
       name = "#{@regime.slug}_transaction_detail_presenter".camelize
       presenter = str_to_class(name) || TransactionDetailPresenter
       arr = Kaminari.paginate_array(presenter.wrap(transactions),
@@ -55,8 +61,23 @@ class HistoryController < ApplicationController
           total_pages: arr.total_pages,
           total_count: arr.total_count
         },
-        transactions: arr
+        transactions: arr,
+        selected_region: selected_region,
+        regions: region_options(regions),
+        financial_years: financial_year_options(financial_years)
       }
+    end
+
+    def region_options(regions)
+      opts = regions.map { |r| { label: r, value: r } }
+      opts = [{label: 'All', value: ''}] + opts if opts.count > 1
+      opts
+    end
+
+    def financial_year_options(fy_list)
+      fys = fy_list.map { |fy| { label: fy[0..1] + '/' + fy[2..3], value: fy } }
+      fys = [{label: 'All', value: ''}] + fys if fys.count > 1
+      fys
     end
 
     def transaction_store

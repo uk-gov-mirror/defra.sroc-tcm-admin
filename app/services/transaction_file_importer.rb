@@ -123,6 +123,7 @@ class TransactionFileImporter
     if period.present?
       data["period_start"] = period[0]
       data["period_end"] = period[1]
+      data["tcm_financial_year"] = determine_financial_year(period[0])
 
       if process_retrospectives && TcmUtils.retrospective_date?(period[1])
         data["status"] = 'retrospective'
@@ -134,6 +135,12 @@ class TransactionFileImporter
     data["original_file_date"] = header.generated_at
 
     data
+  end
+
+  def determine_financial_year(date)
+    y = date.month < 4 ? date.year - 1 : date.year
+    y -= 2000 if y > 2000
+    sprintf('%02d%02d', y, y + 1)
   end
 
   def sanitize_date(d)

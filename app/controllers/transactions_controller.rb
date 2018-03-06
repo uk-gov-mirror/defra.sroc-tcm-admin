@@ -8,13 +8,21 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions
   # GET /regimes/:regime_id/transactions.json
   def index
+    regions = transaction_store.unbilled_regions
+    mode = params.fetch(:view_mode, '0')
+    if mode == '0'
+      @region = params.fetch(:region, regions.first)
+      @region = regions.first unless regions.include? @region
+    else
+      @region = params.fetch(:region, '')
+    end
+
     respond_to do |format|
       format.html do
         render
       end
       format.js
       format.json do
-        region = params.fetch(:region, '')
         q = params.fetch(:search, "")
         pg = params.fetch(:page, 1)
         per_pg = params.fetch(:per_page, 10)
@@ -23,14 +31,14 @@ class TransactionsController < ApplicationController
           q,
           pg,
           per_pg,
-          region,
+          @region,
           params.fetch(:sort, :customer_reference),
           params.fetch(:sort_direction, 'asc'))
 
         # don't want to display these here for now
         # summary = transaction_store.transactions_to_be_billed_summary(q, region)
         summary = nil
-        @transactions = present_transactions(@transactions, summary)
+        @transactions = present_transactions(@transactions, @region, regions, summary)
         render json: @transactions
       end
     end
@@ -93,7 +101,7 @@ class TransactionsController < ApplicationController
       invoke_charge_calculation(@transaction) if @transaction.category.present?
     end
 
-    def present_transactions(transactions, summary)
+    def present_transactions(transactions, selected_region, regions, summary)
       arr = Kaminari.paginate_array(presenter.wrap(transactions),
                                     total_count: transactions.total_count,
                                     limit: transactions.limit_value,
@@ -107,8 +115,14 @@ class TransactionsController < ApplicationController
           total_pages: arr.total_pages,
           total_count: arr.total_count
         },
-        transactions: arr
+        transactions: arr,
+        selected_region: selected_region,
+        regions: region_options(regions)
       }
+    end
+
+    def region_options(regions)
+      regions.map { |r| { label: r, value: r } }
     end
 
     def set_transaction
