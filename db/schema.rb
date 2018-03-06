@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180213133939) do
+ActiveRecord::Schema.define(version: 20180228104951) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -175,6 +175,7 @@ ActiveRecord::Schema.define(version: 20180213133939) do
     t.string "variation"
     t.string "original_filename"
     t.datetime "original_file_date"
+    t.string "tcm_financial_year"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"

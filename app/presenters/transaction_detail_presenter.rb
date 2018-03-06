@@ -29,6 +29,14 @@ class TransactionDetailPresenter < SimpleDelegator
     (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
   end
 
+  def region_from_ref
+    if tcm_transaction_reference.present?
+      tcm_transaction_reference[-2]
+    else
+      transaction_header.region
+    end
+  end
+
   def transaction_date
     # called when exporting to file, so charge should've been calculated
     charge_calculation['generatedAt'].to_date
@@ -46,8 +54,9 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def charge_period
-    year = financial_year - 2000
-    "FY#{year}#{year + 1}"
+    # year = financial_year - 2000
+    # "FY#{year}#{year + 1}"
+    "FY#{tcm_financial_year}"
   end
 
   def credit_debit_indicator
@@ -77,7 +86,7 @@ class TransactionDetailPresenter < SimpleDelegator
         credit_debit
       else
         ActiveSupport::NumberHelper.number_to_currency(
-          sprintf('%.2f', value), unit: "")
+          sprintf('%.2f', value/100.0), unit: "")
       end
     else
       credit_debit
@@ -93,15 +102,16 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def charge_amount
-    charge = transaction_detail.charge_calculation
-    if charge && charge["calculation"] && charge["calculation"]["messages"].nil?
-      amt = charge["calculation"]["chargeValue"]
-      # FIXME: is this the /best/ way to determine a credt?
-      amt *= -1 if !amt.nil? && line_amount.negative?
-      amt
-    else
-      nil
-    end
+    tcm_charge
+    # charge = transaction_detail.charge_calculation
+    # if charge && charge["calculation"] && charge["calculation"]["messages"].nil?
+    #   amt = charge["calculation"]["chargeValue"]
+    #   # FIXME: is this the /best/ way to determine a credt?
+    #   amt *= -1 if !amt.nil? && line_amount.negative?
+    #   amt
+    # else
+    #   nil
+    # end
   end
 
   def generated_at
