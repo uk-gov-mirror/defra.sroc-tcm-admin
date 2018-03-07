@@ -106,6 +106,18 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     assert_equal(false, transaction.temporary_cessation)
   end
 
+  def test_import_stores_variation_with_an_percent_suffix
+    file = file_fixture('cfd_abd.csv')
+    upload = prepare_upload(file)
+
+    @service.import(upload, file)
+    transaction = transaction_details(:cfd)
+    assert transaction.variation.end_with?('%')
+
+    transaction = transaction_details(:cfd_b)
+    assert transaction.variation.end_with?('%')
+  end
+
   def test_import_records_total_and_errors
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)

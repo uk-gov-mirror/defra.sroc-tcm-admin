@@ -58,6 +58,7 @@ cfd:
   period_end: "10-Aug-2017"
   original_filename: 'CFDAI00371'
   original_file_date: <%= 2.months.ago.to_date %>
+  tcm_financial_year: "1718"
 
 cfd_b:
   transaction_header: cfd_b
@@ -119,6 +120,7 @@ cfd_b:
   period_end: "10-Aug-2017"
   original_filename: 'CFDBI00374'
   original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
 
 cfd_historic:
   transaction_header: cfd
@@ -180,6 +182,7 @@ cfd_historic:
   period_end: "10-Aug-2017"
   original_filename: 'CFDAI00371'
   original_file_date: <%= 2.months.ago.to_date %>
+  tcm_financial_year: "1718"
 
 pas:
   transaction_header: pas
@@ -241,6 +244,7 @@ pas:
   period_end: "31 Mar 2018"
   original_filename: 'PASYI00337'
   original_file_date: <%= 6.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
 
 pas_historic:
   transaction_header: pas
@@ -302,3 +306,4 @@ pas_historic:
   period_end: "31 Mar 2018"
   original_filename: 'PASYI00337'
   original_file_date: <%= 6.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
