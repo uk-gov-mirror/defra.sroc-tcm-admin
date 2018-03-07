@@ -7,17 +7,20 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_returns_charge_params
-    assert_equal(@presenter.charge_params, {
-      permitCategoryRef: @transaction.category,
-      percentageAdjustment: clean_variation,
-      temporaryCessation: @presenter.temporary_cessation,
-      compliancePerformanceBand: 'B',
-      billableDays: billable_days,
-      financialDays: financial_year_days,
-      chargePeriod: charge_period,
-      preConstruction: false,
-      environmentFlag: 'TEST'
-    })
+    assert_equal(
+      {
+        permitCategoryRef: @transaction.category,
+        percentageAdjustment: clean_variation,
+        temporaryCessation: @presenter.temporary_cessation,
+        compliancePerformanceBand: 'B',
+        billableDays: billable_days,
+        financialDays: financial_year_days,
+        chargePeriod: charge_period,
+        preConstruction: false,
+        environmentFlag: 'TEST'
+      },
+      @presenter.charge_params
+    )
   end
 
   def test_it_returns_discharge_description
@@ -72,6 +75,8 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@presenter.as_json, {
       id: @transaction.id,
       customer_reference: @presenter.customer_reference,
+      tcm_transaction_reference: @presenter.tcm_transaction_reference,
+      generated_filename: @presenter.generated_filename,
       original_filename: @presenter.original_filename,
       original_file_date: @presenter.original_file_date,
       consent_reference: @presenter.consent_reference,
@@ -80,14 +85,17 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       sroc_category: @presenter.category,
       variation: @presenter.clean_variation_percentage,
       temporary_cessation: @presenter.temporary_cessation_flag,
+      financial_year: @presenter.charge_period,
+      region: @presenter.region_from_ref,
       period: @presenter.period,
       amount: @presenter.amount
     })
   end
 
   def clean_variation
-    return 100 if @transaction.line_attr_9.blank?
-    @transaction.line_attr_9.gsub(/%/, '')
+    v = @transaction.variation || @transaction.line_attr_9
+    return 100 if v.blank?
+    v.gsub(/%/, '')
   end
 
   def financial_year_days
@@ -106,7 +114,6 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def charge_period
-    year = financial_year - 2000
-    "FY#{year}#{year + 1}"
+    "FY#{@transaction.tcm_financial_year}"
   end
 end
