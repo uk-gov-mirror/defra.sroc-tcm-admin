@@ -84,14 +84,22 @@ class CfdTransactionFilePresenter < SimpleDelegator
       "T",
       padded_number(count + 1),
       padded_number(count + 2),
-      invoice_total,
-      credit_total
+      trailer_invoice_total,
+      trailer_credit_total
     ]
   end
 
 protected
   def transaction_file
     __getobj__
+  end
+
+  def trailer_invoice_total
+    transaction_details.where(tcm_transaction_type: 'I').sum(:tcm_charge).to_i
+  end
+
+  def trailer_credit_total
+    transaction_details.where(tcm_transaction_type: 'C').sum(:tcm_charge).to_i
   end
 
   def record_count

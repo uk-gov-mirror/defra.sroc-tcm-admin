@@ -5,9 +5,11 @@ cfd_retro_file:
   region: 'A'
   retrospective: true
   file_id: "00123"
+  generated_at: <%= 1.month.ago %>
 
 cfd_sroc_file:
   regime: cfd
   region: 'B'
   retrospective: false
   file_id: "05678T"
+  generated_at: <%= 1.hour.ago %>
