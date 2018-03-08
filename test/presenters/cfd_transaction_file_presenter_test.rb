@@ -46,6 +46,17 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     end
   end
 
+  def test_detail_records_have_correct_temporary_cessation_value
+    @presenter.transaction_details.each_with_index do |td, i|
+      td.temporary_cessation = i.odd?
+      expected_value = i.odd? ? '50%' : ''
+
+      p = CfdTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal expected_value, row[32]
+    end
+  end
+
   def test_is_returns_a_trailer_record
     count = @presenter.transaction_details.count
     assert_equal(

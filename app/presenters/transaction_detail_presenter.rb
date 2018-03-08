@@ -68,7 +68,7 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def temporary_cessation_file
-    temporary_cessation? ? 'Y' : ''
+    temporary_cessation? ? '50%' : ''
   end
 
   def temporary_cessation_flag
