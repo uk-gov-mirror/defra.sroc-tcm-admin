@@ -57,6 +57,16 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     end
   end
 
+  def test_detail_record_has_correct_transaction_date
+    expected_value = @file.generated_at.strftime("%d-%^b-%Y") # DD-MMM-YYYY format
+    @presenter.transaction_details.each_with_index do |td, i|
+      p = CfdTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal expected_value, row[3]
+      assert_equal expected_value, row[9]
+    end
+  end
+
   def test_is_returns_a_trailer_record
     count = @presenter.transaction_details.count
     assert_equal(
