@@ -86,6 +86,13 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@presenter.discharge_reference, @transaction.reference_3)
   end
 
+  def test_temporary_cessation_file_returns_50_percent_or_blank
+    @presenter.temporary_cessation = true
+    assert_equal('50%', @presenter.temporary_cessation_file)
+    @presenter.temporary_cessation = false
+    assert_equal('', @presenter.temporary_cessation_file)
+  end
+
   def test_it_transforms_into_json
     assert_equal(@presenter.as_json, {
       id: @transaction.id,
