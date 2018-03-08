@@ -31,12 +31,27 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@presenter.site, @transaction.line_attr_1)
   end
 
+  def test_pro_rata_days_is_correctly_formatted
+    days = @presenter.line_attr_4.split('/')
+    assert_equal("#{days[1]}/#{days[0]}", @presenter.pro_rata_days)
+  end
+
   def test_it_returns_billable_days
     assert_equal(@presenter.billable_days, billable_days)
   end
 
+  def test_billable_days_match_line_attr_4_part
+    days = @presenter.line_attr_4.split('/')
+    assert_equal(days[1].to_i, @presenter.billable_days)
+  end
+
   def test_it_returns_financial_year_days
     assert_equal(@presenter.financial_year_days, financial_year_days)
+  end
+
+  def test_financial_year_days_match_line_attr_4_part
+    days = @presenter.line_attr_4.split('/')
+    assert_equal(days[0].to_i, @presenter.financial_year_days)
   end
 
   def test_it_returns_financial_year

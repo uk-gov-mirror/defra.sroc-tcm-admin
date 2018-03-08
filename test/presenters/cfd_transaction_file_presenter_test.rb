@@ -38,6 +38,14 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     assert_equal(2, rows.count)
   end
 
+  def test_detail_records_have_correct_line_attr_4_pro_rata_days
+    @presenter.transaction_details.each_with_index do |td, i|
+      p = CfdTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal(p.pro_rata_days, row[28])
+    end
+  end
+
   def test_is_returns_a_trailer_record
     count = @presenter.transaction_details.count
     assert_equal(

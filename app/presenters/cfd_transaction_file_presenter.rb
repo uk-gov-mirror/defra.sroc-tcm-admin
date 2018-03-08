@@ -60,7 +60,7 @@ class CfdTransactionFilePresenter < SimpleDelegator
       td.line_description,    # line_attr_1
       td.line_attr_3,         # line_attr_2
       td.category,            # line_attr_3
-      td.line_attr_4,
+      td.pro_rata_days,       # line_attr_4
       td.category_description, # was line_attr_5
       td.baseline_charge,     # line_attr_6
       td.variation_percentage,     # line_attr_7 (compliance band)
