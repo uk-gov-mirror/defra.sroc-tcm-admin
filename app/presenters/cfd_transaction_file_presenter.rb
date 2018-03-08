@@ -35,13 +35,13 @@ class CfdTransactionFilePresenter < SimpleDelegator
       "D",
       padded_number(idx),
       td.customer_reference,
-      td.file_transaction_date,
+      file_generated_at,
       td.tcm_transaction_type,
       td.tcm_transaction_reference,
       "",
       "GBP",
       "",                     # header_narrative always blank
-      td.file_transaction_date,  # header_attr_1
+      file_generated_at,      # header_attr_1
       "",                     # header_attr_2
       "",                     # header_attr_3
       "",                     # header_attr_4
@@ -100,6 +100,10 @@ protected
 
   def trailer_credit_total
     transaction_details.where(tcm_transaction_type: 'C').sum(:tcm_charge).to_i
+  end
+  
+  def file_generated_at
+    generated_at.strftime("%d-%^b-%Y")
   end
 
   def record_count
