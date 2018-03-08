@@ -67,6 +67,17 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     end
   end
 
+  def test_detail_record_consent_number_not_prefixed
+    # consent no. shouldn't be prefixed with 'Consent No - ' or 
+    # 'Authorization No ' as per the incoming file value
+    @presenter.transaction_details.each_with_index do |td, i|
+      expected_value = td.reference_1
+      p = CfdTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal expected_value, row[25]
+    end
+  end
+
   def test_is_returns_a_trailer_record
     count = @presenter.transaction_details.count
     assert_equal(

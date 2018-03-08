@@ -57,7 +57,7 @@ class CfdTransactionFilePresenter < SimpleDelegator
       td.discharge_location,  # line_description
       "CT",                   # line income stream code
       td.line_context_code,
-      td.line_description,    # line_attr_1
+      td.consent_reference,   # line_attr_1
       td.line_attr_3,         # line_attr_2
       td.category,            # line_attr_3
       td.pro_rata_days,       # line_attr_4
