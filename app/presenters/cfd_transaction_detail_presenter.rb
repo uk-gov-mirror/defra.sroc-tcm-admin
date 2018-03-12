@@ -22,7 +22,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def transaction_date
-    transaction_detail.transaction_date.strftime("%d/%m/%y")
+    transaction_detail.transaction_date.strftime("%d-%^b-%Y")
   end
 
   def clean_variation_percentage
@@ -73,7 +73,6 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       customer_reference: customer_reference,
       tcm_transaction_reference: tcm_transaction_reference,
       generated_filename: generated_filename,
-      # transaction_date: transaction_date,
       original_filename: original_filename,
       original_file_date: original_file_date,
       consent_reference: consent_reference,
@@ -85,6 +84,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       financial_year: charge_period,
       region: region_from_ref,
       period: period,
+      line_amount: original_charge,
       amount: amount
     }
   end

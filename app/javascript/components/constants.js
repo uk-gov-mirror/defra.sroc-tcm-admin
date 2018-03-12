@@ -3,7 +3,7 @@
 const Constants = module.exports = {}
 
 Constants.PAS_COLUMNS = { 
-  '0': [
+  unbilled: [
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
@@ -46,7 +46,7 @@ Constants.PAS_COLUMNS = {
       rightAlign: true
     }
   ],
-  '1': [
+  historic: [
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
@@ -88,11 +88,44 @@ Constants.PAS_COLUMNS = {
       selectable: false,
       rightAlign: true
     }
+  ],
+  retrospective: [
+    { name: 'customer_reference',
+      label: 'Customer',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'permit_reference',
+      label: 'Permit',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'original_permit_reference',
+      label: 'Original Permit',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'compliance_band',
+      label: 'Compliance Band',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'period',
+      label: 'Period',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'amount',
+      label: 'Amount (£)',
+      sortable: false,
+      selectable: false,
+      rightAlign: true
+    }
   ]
 }
 
 Constants.CFD_COLUMNS = {
-  '0': [
+  unbilled: [
     { name: 'original_filename',
       label: 'File Reference',
       sortable: true,
@@ -150,7 +183,7 @@ Constants.CFD_COLUMNS = {
       rightAlign: true
     }
   ],
-  '1': [
+  historic: [
     {
       name: 'customer_reference',
       label: 'Customer',
@@ -213,11 +246,59 @@ Constants.CFD_COLUMNS = {
       sortable: true,
       selectable: false
     }
+  ],
+  retrospective: [
+    { name: 'original_filename',
+      label: 'File Reference',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'original_file_date',
+      label: 'File Date',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'customer_reference',
+      label: 'Customer',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'consent_reference',
+      label: 'Consent',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'version',
+      label: 'Ver',
+      sortable: false,
+      selectable: false
+    }, {
+      name: 'discharge',
+      label: 'Dis',
+      sortable: false,
+      selectable: false
+    }, {
+      name: 'variation',
+      label: '%',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'period',
+      label: 'Period',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'line_amount',
+      label: 'Amount (£)',
+      sortable: false,
+      selectable: false,
+      rightAlign: true
+    }
   ]
 }
 
 Constants.WML_COLUMNS = {
-  '0': [
+  unbilled: [
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
@@ -255,7 +336,7 @@ Constants.WML_COLUMNS = {
       rightAlign: true
     }
   ],
-  '1': [
+  historic: [
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
@@ -292,6 +373,34 @@ Constants.WML_COLUMNS = {
       selectable: false,
       rightAlign: true
     }
+  ],
+  retrospective: [
+    { name: 'customer_reference',
+      label: 'Customer',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'permit_reference',
+      label: 'Permit',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'compliance_band',
+      label: 'Compliance Band',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'period',
+      label: 'Period',
+      sortable: true,
+      selectable: false
+    }, {
+      name: 'amount',
+      label: 'Amount (£)',
+      sortable: false,
+      selectable: false,
+      rightAlign: true
+    }
   ]
 }
 
@@ -308,44 +417,57 @@ Constants.DATA_FILE_COLUMNS = [
   }
 ]
 
-Constants.VIEW_MODES = [
-  { name: 'transactions',
+Constants.VIEW_MODE_NAMES = [
+  'unbilled',
+  'historic',
+  'retrospective'
+]
+
+Constants.VIEW_MODES = {
+  unbilled: {
+    name: 'transactions',
     label: 'Transactions to be billed',
-    path: '/transactions'
+    path: '/transactions',
+    summaryPath: '/transaction_summary',
+    generatePath: '/transaction_files'
   },
-  { name: 'history',
+  historic: {
+    name: 'history',
     label: 'Transaction History',
     path: '/history'
+  },
+  retrospective: {
+    name: 'retrospective',
+    label: 'Retrospectives to be billed',
+    path: '/retrospectives',
+    summaryPath: '/retrospective_summary',
+    generatePath: '/retrospective_files'
   }//,
-  // { name: 'retrospective',
-  //   label: 'Retrospectives to be billed',
-  //   path: '/retrospectives'
-  // },
   // { name: 'retrospective_history',
   //   label: 'Retrospective History',
   //   path: '/retrospective_history'
   // }
-]
-
-Constants.regimeColumns = (regime, history) => {
-  let cols = null
-  if (regime === 'pas') {
-    cols = Constants.INSTALLATIONS_COLUMNS
-  } else if (regime === 'cfd') {
-    cols = Constants.WATER_QUALITY_COLUMNS
-  } else if (regime === 'wml') {
-    cols = Constants.WASTE_COLUMNS
-  } else {
-    throw new Error('Unknown regime: ' + regime)
-  }
-
-  if (history) {
-    // if historic data the remove the selectable flag to prevent modification
-    cols = cols.map(c => {
-      c.selectable = false
-      return c
-    })
-  }
-
-  return cols
 }
+
+// Constants.regimeColumns = (regime, history) => {
+//   let cols = null
+//   if (regime === 'pas') {
+//     cols = Constants.INSTALLATIONS_COLUMNS
+//   } else if (regime === 'cfd') {
+//     cols = Constants.WATER_QUALITY_COLUMNS
+//   } else if (regime === 'wml') {
+//     cols = Constants.WASTE_COLUMNS
+//   } else {
+//     throw new Error('Unknown regime: ' + regime)
+//   }
+//
+//   if (history) {
+//     // if historic data the remove the selectable flag to prevent modification
+//     cols = cols.map(c => {
+//       c.selectable = false
+//       return c
+//     })
+//   }
+//
+//   return cols
+// }

@@ -26,7 +26,7 @@ export default class TransactionSearchBox extends React.Component {
     const placeholder = this.props.placeholder
 
     return (
-      <div className='input-group col-12 col-md-6 mr-2'>
+      <div className='input-group col-12 col-md-5 mr-2'>
         <label htmlFor='transaction-search' className='sr-only'>Search</label>
         <input type='search' name='search' id='transaction-search'
           onKeyPress={this.handleKeyPress}

@@ -1,32 +1,16 @@
 class CfdRetrospectiveFilePresenter < CfdTransactionFilePresenter
-  def details
-    records = []
-    transactions = CfdTransactionDetailPresenter.wrap(
-      cfd_sorter(transaction_details))
-
-    transactions.each.with_index(1) do |td, idx|
-      row = detail_row(td, idx)
-      if block_given?
-        yield row
-      else
-        records << row
-      end
-    end
-    records
-  end
-
   def detail_row(td, idx)
     [
       "D",
       padded_number(idx),
       td.customer_reference,
-      td.file_transaction_date,
+      td.transaction_date,
       td.tcm_transaction_type,
       td.tcm_transaction_reference,
       td.related_reference,
       td.currency_code,
       td.header_narrative,
-      td.file_transaction_date,
+      td.transaction_date,
       td.header_attr_2,
       td.header_attr_3,
       td.header_attr_4,
@@ -61,5 +45,13 @@ class CfdRetrospectiveFilePresenter < CfdTransactionFilePresenter
       td.unit_of_measure,
       td.padded_number(td.line_amount, 3)
     ]
+  end
+protected
+  def trailer_invoice_total
+    transaction_details.where(transaction_type: 'I').sum(:line_amount).to_i
+  end
+
+  def trailer_credit_total
+    transaction_details.where(transaction_type: 'C').sum(:line_amount).to_i
   end
 end

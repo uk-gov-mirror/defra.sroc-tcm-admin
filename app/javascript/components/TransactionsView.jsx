@@ -14,7 +14,7 @@ export default class TransactionsView extends React.Component {
 
     const selectedRegion = this.props.selectedRegion || ''
     const selectedFinancialYear = this.props.selectedFinancialYear || ''
-    const viewMode = this.props.viewMode || '0'
+    const viewMode = this.props.viewMode || Constants.VIEW_MODE_NAMES[0]
     const columns = this.tableColumns(viewMode)
 
     this.state = {
@@ -74,7 +74,7 @@ export default class TransactionsView extends React.Component {
 
   changeViewMode(mode) {
     const columns = this.tableColumns(mode)
-    // switch between TTBB and History (and Retrospective?) views of the data
+    // switch between TTBB, History and Retrospective views of the data
     this.setState({
       viewMode: mode,
       currentPage: 1,
@@ -147,7 +147,7 @@ export default class TransactionsView extends React.Component {
   }
 
   fetchTableData () {
-    axios.get(this.transactionPath() + '.json', {
+    axios.get(this.transactionPath('path') + '.json', {
       params: {
         sort: this.state.sortColumn,
         sort_direction: this.state.sortDirection,
@@ -186,7 +186,7 @@ export default class TransactionsView extends React.Component {
   }
 
   fetchSummaryDataAndShow () {
-    axios.get(this.props.summaryPath + '.json', {
+    axios.get(this.transactionPath('summaryPath') + '.json', {
       params: {
         region: this.state.selectedRegion
       }
@@ -203,7 +203,7 @@ export default class TransactionsView extends React.Component {
   }
 
   updateTransactionCategory (id, value) {
-    axios.patch(this.transactionPath() + '/' + id + '.json',
+    axios.patch(this.transactionPath('path') + '/' + id + '.json',
       {
         transaction_detail: {
           category: value
@@ -230,11 +230,14 @@ export default class TransactionsView extends React.Component {
     })
   }
 
-  transactionPath () {
-    const viewMode = this.state.viewMode
+  currentViewMode () {
+    return Constants.VIEW_MODES[this.state.viewMode]
+  }
+
+  transactionPath (key) {
     const regime = this.props.regime
-    const mode = Constants.VIEW_MODES[viewMode]
-    return '/regimes/' + regime + mode.path
+    const mode = this.currentViewMode()
+    return '/regimes/' + regime + mode[key]
   }
 
   render () {
@@ -253,18 +256,21 @@ export default class TransactionsView extends React.Component {
     const pageSize = this.state.pageSize
     const summary = this.state.summary
     const categories = this.props.categories
-    const canGenerateFiles = this.props.generateFiles && viewMode === '0'
-    const generateFilePath = this.props.generateFilePath
+    const canGenerateFiles = this.props.generateFiles && (viewMode === 'unbilled' || viewMode === 'retrospective')
+    const generateFilePath = this.transactionPath('generatePath')
     const csrfToken = this.props.csrfToken
     const financialYearOptions = this.state.financialYearOptions
     const selectedFinancialYear = this.state.selectedFinancialYear
+    const fileType = (viewMode === 'retrospective' ? 'Retrospective' : 'Transaction')
+    const fileDialogTitle = fileType + ' File'
+    const generateButtonLabel = 'Generate ' + fileType + ' File'
 
     let fileButton = null
     let fileDialog = null
     if (canGenerateFiles) {
       fileButton = (
         <button className='btn btn-primary' onClick={this.showFileSummary}>
-          Generate Transaction File
+          {generateButtonLabel}
         </button>
       )
       fileDialog = (
@@ -274,17 +280,19 @@ export default class TransactionsView extends React.Component {
           generateFilePath={generateFilePath}
           region={selectedRegion}
           csrfToken={csrfToken}
+          title={fileDialogTitle}
+          buttonLabel={generateButtonLabel}
           onClose={this.hideFileSummary} />
       )
     }
 
-    const modes = Constants.VIEW_MODES.map((m,i) => {
-      return {label: m.label, value: i}
+    const modes = Constants.VIEW_MODE_NAMES.map((name, i) => {
+      return {label: Constants.VIEW_MODES[name].label, value: name}
     })
 
     let financialYearSelector = null
     // history view only
-    if(viewMode === '1') {
+    if(viewMode === 'historic') {
       financialYearSelector = (
         <div className='mr-4'>
           <OptionSelector selectedValue={selectedFinancialYear}
@@ -303,7 +311,7 @@ export default class TransactionsView extends React.Component {
       <div>
         <div className="row mb-4">
           <div className="col">
-            <h1>{Constants.VIEW_MODES[viewMode].label}</h1>
+            <h1>{this.currentViewMode().label}</h1>
           </div>
         </div>
         <div className='row search-bar'>

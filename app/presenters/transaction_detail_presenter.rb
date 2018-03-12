@@ -20,6 +20,11 @@ class TransactionDetailPresenter < SimpleDelegator
     # charge
   end
 
+  def original_charge
+    ActiveSupport::NumberHelper.number_to_currency(
+          sprintf('%.2f', line_amount/100.0), unit: "")
+  end
+
   def category_description
     desc = PermitCategory.find_by(code: category).description
     desc.truncate(150, separator: /\s/, ommission: '...')

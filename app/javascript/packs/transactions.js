@@ -16,17 +16,17 @@ document.addEventListener(loadEvent, () => {
     const showSummary = element.getAttribute('data-with-summary') === 'true'
     const sortColumn = element.getAttribute('data-sort-col')
     const sortDir = element.getAttribute('data-sort-dir')
-    const viewModes = Constants.VIEW_MODES
+    // const viewModes = Constants.VIEW_MODES
 
-    const summaryPath = element.getAttribute('data-summary-path')
-    const generateFilePath = element.getAttribute('data-generate-file-path')
+    // const summaryPath = element.getAttribute('data-summary-path')
+    // const generateFilePath = element.getAttribute('data-generate-file-path')
     const selectedRegion = element.getAttribute('data-selected-region')
     const searchPlaceholder = element.getAttribute('data-search-placeholder')
     const searchTerm = element.getAttribute('data-search-term')
     const categories = JSON.parse(element.getAttribute('data-categories'))
     const csrfToken = document.querySelector('meta[name=csrf-token]').content
     const generateFiles = element.getAttribute('data-generate-files') === 'true'
-    const viewMode = element.getAttribute('data-view-mode') || '0'
+    const viewMode = element.getAttribute('data-view-mode') 
 
     ReactDOM.render(
       <TransactionsView
@@ -35,13 +35,11 @@ document.addEventListener(loadEvent, () => {
         sortColumn={sortColumn}
         sortDirection={sortDir}
         categories={categories}
-        summaryPath={summaryPath}
         csrfToken={csrfToken}
         selectedRegion={selectedRegion}
         searchTerm={searchTerm}
         searchPlaceholder={searchPlaceholder}
         generateFiles={generateFiles}
-        generateFilePath={generateFilePath}
         viewMode={viewMode}
       />,
       element

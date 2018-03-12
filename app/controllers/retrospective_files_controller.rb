@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TransactionFilesController < ApplicationController
+class RetrospectiveFilesController < ApplicationController
   include RegimeScope
   before_action :set_regime, only: [:index, :create]
 
@@ -26,10 +26,14 @@ class TransactionFilesController < ApplicationController
   # POST /regimes/:regime_id/transaction_files
   def create
     set_region
-    transaction_file = exporter.export
+    retro_file = exporter.export_retrospectives
 
-    flash[:success] = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
-    redirect_to regime_transactions_path(@regime)
+    # Accept and continue to create transaction file
+    msg = "Successfully generated retrospective file <b>#{retro_file.filename}</b>"
+
+    # flash[:success] = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
+    flash[:success] = msg
+    redirect_to regime_transactions_path(@regime, view_mode: 'retrospective')
   end
 
   # GET /regimes/:regimes_id/transaction_files/1/edit
