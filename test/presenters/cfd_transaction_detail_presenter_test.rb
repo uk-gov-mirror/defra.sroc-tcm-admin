@@ -94,7 +94,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_transforms_into_json
-    assert_equal(@presenter.as_json, {
+    assert_equal({
       id: @transaction.id,
       customer_reference: @presenter.customer_reference,
       tcm_transaction_reference: @presenter.tcm_transaction_reference,
@@ -110,8 +110,9 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       financial_year: @presenter.charge_period,
       region: @presenter.region_from_ref,
       period: @presenter.period,
+      line_amount: @presenter.original_charge,
       amount: @presenter.amount
-    })
+    }, @presenter.as_json)
   end
 
   def clean_variation

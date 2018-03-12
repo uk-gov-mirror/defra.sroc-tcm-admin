@@ -9,8 +9,8 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions.json
   def index
     regions = transaction_store.unbilled_regions
-    mode = params.fetch(:view_mode, '0')
-    if mode == '0'
+    mode = params.fetch(:view_mode, 'unbilled')
+    if mode == 'unbilled'
       @region = params.fetch(:region, regions.first)
       @region = regions.first unless regions.include? @region
     else

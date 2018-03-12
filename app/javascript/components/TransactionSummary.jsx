@@ -8,7 +8,7 @@ export default class TransactionSummary extends React.Component {
   }
 
   formattedPence (value) {
-    return (value).toLocaleString('en-GB', {
+    return (value / 100.0).toLocaleString('en-GB', {
       style: 'currency', currency: 'GBP'
     })
   }
@@ -35,6 +35,8 @@ export default class TransactionSummary extends React.Component {
     const action = this.props.generateFilePath
     const region = this.props.region
     const csrfToken = this.props.csrfToken
+    const title = this.props.title
+    const buttonLabel = this.props.buttonLabel
 
     return (
       <form method='post' action={action}>
@@ -45,7 +47,7 @@ export default class TransactionSummary extends React.Component {
         <div className='modal-dialog' role='document'>
           <div className='modal-content'>
             <div className='modal-header'>
-              <h5 className='modal-title'>Transaction Summary</h5>
+              <h5 className='modal-title'>{title}</h5>
               <button type='button' className='close' data-dismiss='modal'
                 aria-label='Close'>
                 <span aria-hidden='true'>&times;</span>
@@ -78,7 +80,7 @@ export default class TransactionSummary extends React.Component {
             </div>
             <div className='modal-footer'>
               <input type='submit' className='btn btn-primary' disabled={disabled}
-                value='Generate Transaction File'/>
+                value={buttonLabel} />
               <button type='button' className='btn btn-secondary'
                 data-dismiss='modal'>
                 Cancel

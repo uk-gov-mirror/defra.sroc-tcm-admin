@@ -27,8 +27,17 @@ class TransactionStorageService
                                order = :customer_reference, direction = 'asc')
     q = regime.transaction_details.historic
     q = q.region(region) unless region.blank?
-    q = q.historic.history_search(search) unless search.blank?
+    q = q.history_search(search) unless search.blank?
     q = q.where(tcm_financial_year: fy) unless fy.blank?
+    order_query(q, order, direction).page(page).per(per_page)
+  end
+
+  def retrospective_transactions(search = '', page = 1, per_page = 10,
+                                 region = '', order = :customer_reference,
+                                 direction = 'asc')
+    region = first_retrospective_region if region.blank?
+    q = regime.transaction_details.region(region).retrospective
+    q = q.retrospective_search(search) unless search.blank?
     order_query(q, order, direction).page(page).per(per_page)
   end
 
@@ -38,6 +47,10 @@ class TransactionStorageService
 
   def history_regions
     regions_for('billed')
+  end
+  
+  def retrospective_regions
+    regions_for('retrospective')
   end
 
   def regions_for(status)
@@ -54,6 +67,10 @@ class TransactionStorageService
     financial_years_for('billed')
   end
 
+  def retrospective_financial_years
+    financial_years_for('retrospective')
+  end
+
   def financial_years_for(status)
     regime.transaction_details.where(status: status).
       distinct.order(:tcm_financial_year).pluck(:tcm_financial_year)
@@ -65,6 +82,10 @@ class TransactionStorageService
 
   def first_history_region
     history_regions.first
+  end
+
+  def first_retrospective_region
+    retrospective_regions.first
   end
 
   def order_query(q, col, dir)

@@ -6,7 +6,7 @@
   <div class="col">
     <div id="transaction-table"
          data-regime="<%= @regime.slug %>"
-         data-view-mode="<%= params.fetch(:view_mode, '0') %>"
+         data-view-mode="<%= params.fetch(:view_mode, 'unbilled') %>"
          data-sort-col="customer_reference"
          data-sort-dir="asc"
          data-summary-path="<%= regime_transaction_summary_index_path(@regime) %>"
