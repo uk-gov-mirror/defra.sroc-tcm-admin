@@ -32,9 +32,10 @@ export default class OptionSelector extends React.Component {
         </label>
       )
     }
-    
+    const clz = label ? 'form-group' : ''
+
     return (
-      <div className='form-group'>
+      <div className={clz}>
         {labelControl}
         <select name={name}
           id={id}

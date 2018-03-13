@@ -86,6 +86,16 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@presenter.discharge_reference, @transaction.reference_3)
   end
 
+  def test_temporary_cessation_flag_returns_Y_when_true
+    @presenter.temporary_cessation = true
+    assert_equal('Y', @presenter.temporary_cessation_flag)
+  end
+
+  def test_temporary_cessation_flag_returns_N_when_false
+    @presenter.temporary_cessation = false
+    assert_equal('N', @presenter.temporary_cessation_flag)
+  end
+
   def test_temporary_cessation_file_returns_50_percent_or_blank
     @presenter.temporary_cessation = true
     assert_equal('50%', @presenter.temporary_cessation_file)

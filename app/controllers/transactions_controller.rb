@@ -74,7 +74,19 @@ class TransactionsController < ApplicationController
       if @transaction.updateable?
         if @transaction.update(transaction_params)
           category_changes = @transaction.previous_changes[:category]
-          if category_changes
+          tc_changes = @transaction.previous_changes[:temporary_cessation]
+          if tc_changes 
+            if @transaction.category.present?
+              @transaction.charge_calculation = get_charge_calculation
+              if @transaction.charge_calculation_error?
+                @transaction.temporary_cessation = tc_changes[0]
+              else
+                @transaction.tcm_charge = extract_correct_charge(@transaction)
+              end
+            end
+            @transaction.save
+          elsif category_changes
+            # always get charge when category changes unless blank
             @transaction.charge_calculation = get_charge_calculation
             # restore category if charge calc error
             if @transaction.charge_calculation_error?
@@ -131,7 +143,7 @@ class TransactionsController < ApplicationController
     end
 
     def transaction_params
-      params.require(:transaction_detail).permit(:category)
+      params.require(:transaction_detail).permit(:category, :temporary_cessation)
     end
 
     def transaction_store

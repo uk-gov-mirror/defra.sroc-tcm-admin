@@ -43,6 +43,7 @@ export default class TransactionsView extends React.Component {
     this.changePage = this.changePage.bind(this)
     this.changePageSize = this.changePageSize.bind(this)
     this.updateTransactionCategory = this.updateTransactionCategory.bind(this)
+    this.updateTemporaryCessation = this.updateTemporaryCessation.bind(this)
     this.showFileSummary = this.showFileSummary.bind(this)
     this.hideFileSummary = this.hideFileSummary.bind(this)
   }
@@ -203,11 +204,36 @@ export default class TransactionsView extends React.Component {
   }
 
   updateTransactionCategory (id, value) {
+    this.updateRowForSlowNetwork(id, 'sroc_category', value)
+    this.doUpdate(id, {
+      category: value
+    })
+  }
+
+  updateTemporaryCessation (id, value) {
+    const showVal = (value === '1') ? 'Y' : 'N'
+    this.updateRowForSlowNetwork(id, 'temporary_cessation', showVal)
+    this.doUpdate(id, {
+      temporary_cessation: value
+    })
+  }
+
+  updateRowForSlowNetwork(id, attr, value) {
+    let data = this.state.transactions
+    let idx = data.transactions.findIndex(t => {
+      return t.id === id
+    })
+    if (idx !== -1) {
+      data.transactions[idx][attr] = value
+      data.transactions[idx].amount = 'Working...'
+      this.setState({ transactions: data })
+    }
+  }
+
+  doUpdate(id, value) {
     axios.patch(this.transactionPath('path') + '/' + id + '.json',
       {
-        transaction_detail: {
-          category: value
-        }
+        transaction_detail: value
       },
       {
         headers: {
@@ -352,6 +378,7 @@ export default class TransactionsView extends React.Component {
           onChangeSortDirection={this.toggleSortDirection}
           onChangeSortColumn={this.changeSortColumn}
           onChangeCategory={this.updateTransactionCategory}
+          onChangeTemporaryCessation={this.updateTemporaryCessation}
         />
         <PaginationBar pagination={pagination}
           useMatchingLabel={true}
