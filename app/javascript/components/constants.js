@@ -7,42 +7,42 @@ Constants.PAS_COLUMNS = {
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'permit_reference',
       label: 'Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'original_permit_reference',
       label: 'Original Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
       sortable: true,
-      selectable: true
+      editable: true
     }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ],
@@ -50,42 +50,42 @@ Constants.PAS_COLUMNS = {
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'permit_reference',
       label: 'Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'original_permit_reference',
       label: 'Original Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ],
@@ -93,32 +93,32 @@ Constants.PAS_COLUMNS = {
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'permit_reference',
       label: 'Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'original_permit_reference',
       label: 'Original Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ]
@@ -129,57 +129,57 @@ Constants.CFD_COLUMNS = {
     { name: 'original_filename',
       label: 'File Reference',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'original_file_date',
       label: 'File Date',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'consent_reference',
       label: 'Consent',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'version',
       label: 'Ver',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'discharge',
       label: 'Dis',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
       sortable: true,
-      selectable: true
+      editable: true
     }, {
       name: 'variation',
       label: '%',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: false,
-      selectable: false
+      editable: true
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ],
@@ -188,110 +188,110 @@ Constants.CFD_COLUMNS = {
       name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'consent_reference',
       label: 'Consent',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'version',
       label: 'Ver',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'discharge',
       label: 'Dis',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'variation',
       label: '%',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: true,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }, {
       name: 'original_filename',
       label: 'File (Src)',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'generated_filename',
       label: 'File (TCM)',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'tcm_transaction_reference',
       label: 'Transaction Ref',
       sortable: true,
-      selectable: false
+      editable: false
     }
   ],
   retrospective: [
     { name: 'original_filename',
       label: 'File Reference',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'original_file_date',
       label: 'File Date',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'consent_reference',
       label: 'Consent',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'version',
       label: 'Ver',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'discharge',
       label: 'Dis',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'variation',
       label: '%',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'line_amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ]
@@ -302,37 +302,37 @@ Constants.WML_COLUMNS = {
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'permit_reference',
       label: 'Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
       sortable: true,
-      selectable: true
+      editable: true
     }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ],
@@ -340,37 +340,37 @@ Constants.WML_COLUMNS = {
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'permit_reference',
       label: 'Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: false,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ],
@@ -378,27 +378,27 @@ Constants.WML_COLUMNS = {
     { name: 'customer_reference',
       label: 'Customer',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'permit_reference',
       label: 'Permit',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'period',
       label: 'Period',
       sortable: true,
-      selectable: false
+      editable: false
     }, {
       name: 'amount',
       label: 'Amount (£)',
       sortable: false,
-      selectable: false,
+      editable: false,
       rightAlign: true
     }
   ]
@@ -408,12 +408,12 @@ Constants.DATA_FILE_COLUMNS = [
   { name: 'line_number',
     label: 'Line No',
     sortable: true,
-    selectable: false
+    editable: false
   }, {
     name: 'message',
     label: 'Description',
     sortable: true,
-    selectable: false
+    editable: false
   }
 ]
 
@@ -462,9 +462,9 @@ Constants.VIEW_MODES = {
 //   }
 //
 //   if (history) {
-//     // if historic data the remove the selectable flag to prevent modification
+//     // if historic data the remove the editable flag to prevent modification
 //     cols = cols.map(c => {
-//       c.selectable = false
+//       c.editable = false
 //       return c
 //     })
 //   }

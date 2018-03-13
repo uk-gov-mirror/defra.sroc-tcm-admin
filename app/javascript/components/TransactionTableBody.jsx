@@ -6,6 +6,7 @@ export default class TransactionTableBody extends React.Component {
     const columns = this.props.columns
     const categories = this.props.categories
     const onChangeCategory = this.props.onChangeCategory
+    const onChangeTemporaryCessation = this.props.onChangeTemporaryCessation
 
     const rows = this.props.data.map((r) =>
       <TransactionTableRow
@@ -14,6 +15,7 @@ export default class TransactionTableBody extends React.Component {
         row={r}
         categories={categories}
         onChangeCategory={onChangeCategory}
+        onChangeTemporaryCessation={onChangeTemporaryCessation}
       />)
 
     return (
