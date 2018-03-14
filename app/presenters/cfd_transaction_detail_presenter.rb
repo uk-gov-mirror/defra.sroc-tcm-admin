@@ -18,7 +18,14 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def pro_rata_days
-    "#{billable_days}/#{financial_year_days}"
+    bd = billable_days
+    fyd = financial_year_days
+
+    if bd == fyd
+      ''
+    else
+      "#{bd}/#{fyd}"
+    end
   end
 
   def transaction_date
