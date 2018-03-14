@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180314084500) do
+ActiveRecord::Schema.define(version: 20180314110836) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(version: 20180314084500) do
     t.datetime "updated_at", null: false
     t.string "slug", null: false
     t.string "title"
+    t.datetime "retrospective_cut_off_date", default: "2018-04-01 00:00:00", null: false
     t.index ["name"], name: "index_regimes_on_name", unique: true
   end
 
@@ -106,7 +107,6 @@ ActiveRecord::Schema.define(version: 20180314084500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "process_retrospectives", default: true, null: false
-    t.datetime "retrospective_cut_off_date", default: "2018-04-01 00:00:00", null: false
   end
 
   create_table "transaction_details", force: :cascade do |t|

@@ -80,8 +80,4 @@ class TcmUtils
     end
     dates
   end
-
-  def self.retrospective_date?(end_date)
-    end_date < SystemConfig.config.retrospective_cut_off_date
-  end
 end
