@@ -36,6 +36,12 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal("#{days[1]}/#{days[0]}", @presenter.pro_rata_days)
   end
 
+  def test_pro_rata_days_returns_empty_when_full_year
+    @transaction.period_start = Time.zone.parse('1-APR-2018 00:00:00')
+    @transaction.period_end = Time.zone.parse('31-MAR-2019 23:59:59')
+    assert_empty(@presenter.pro_rata_days)
+  end
+
   def test_it_returns_billable_days
     assert_equal(@presenter.billable_days, billable_days)
   end
