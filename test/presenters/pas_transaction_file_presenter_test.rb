@@ -1,29 +1,29 @@
 require 'test_helper.rb'
 
-class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
+class PasTransactionFilePresenterTest < ActiveSupport::TestCase
   def setup
-    @transaction_1 = transaction_details(:cfd)
+    @transaction_1 = transaction_details(:pas)
     @transaction_2 = @transaction_1.dup
 
-    @transaction_2.customer_reference ='A1234000A'
+    @transaction_2.customer_reference ='A223344123P'
+    @transaction_2.transaction_reference ='PAS00055512Y'
     @transaction_2.transaction_type = 'C'
-    @transaction_2.line_description = 'Consent No - ABCD/9999/1/2'
-    @transaction_2.reference_1 = 'ABCD/9999/1/2'
+    @transaction_2.reference_1 = 'VP1234AA'
     @transaction_2.line_amount = -1234
     @transaction_2.unit_of_measure_price = -1234
 
     [@transaction_1, @transaction_2].each do |t|
-      t.category = '2.3.4'
+      t.category = '2.4.4'
       t.status = 'billed'
       t.tcm_charge = t.line_amount
       set_charge_calculation(t)
     end
 
-    @file = transaction_files(:cfd_sroc_file)
+    @file = transaction_files(:pas_sroc_file)
     @file.transaction_details << @transaction_1
     @file.transaction_details << @transaction_2
 
-    @presenter = CfdTransactionFilePresenter.new(@file)
+    @presenter = PasTransactionFilePresenter.new(@file)
   end
 
   def test_it_returns_a_header_record
@@ -31,7 +31,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
       [
         "H",
         "0000000",
-        "CFD",
+        "PAS",
         "B",
         "I",
         @file.file_id,
@@ -50,9 +50,17 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     assert_equal(2, rows.count)
   end
 
+  def test_detail_records_transaction_type_is_same_as_source_record
+    @presenter.transaction_details.each_with_index do |td, i|
+      p = PasTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal(p.transaction_type, row[4])
+    end
+  end
+
   def test_detail_records_have_correct_line_attr_4_pro_rata_days
     @presenter.transaction_details.each_with_index do |td, i|
-      p = CfdTransactionDetailPresenter.new(td)
+      p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
       assert_equal(p.pro_rata_days, row[28])
     end
@@ -63,30 +71,38 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
       td.temporary_cessation = i.odd?
       expected_value = i.odd? ? '50%' : ''
 
-      p = CfdTransactionDetailPresenter.new(td)
+      p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[32]
+      assert_equal expected_value, row[36]
     end
   end
 
   def test_detail_record_has_correct_transaction_date
     expected_value = @file.generated_at.strftime("%d-%^b-%Y") # DD-MMM-YYYY format
     @presenter.transaction_details.each_with_index do |td, i|
-      p = CfdTransactionDetailPresenter.new(td)
+      p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
       assert_equal expected_value, row[3]
       assert_equal expected_value, row[9]
     end
   end
 
-  def test_detail_record_consent_number_not_prefixed
-    # consent no. shouldn't be prefixed with 'Consent No - ' or 
-    # 'Authorization No ' as per the incoming file value
+  def test_detail_record_permit_reference_not_prefixed
+    # permit ref. shouldn't be prefixed with original text
     @presenter.transaction_details.each_with_index do |td, i|
       expected_value = td.reference_1
-      p = CfdTransactionDetailPresenter.new(td)
+      p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
       assert_equal expected_value, row[25]
+    end
+  end
+
+  def test_detail_record_includes_percentage_adjustment
+    @presenter.transaction_details.each_with_index do |td, i|
+      expected_value = td.charge_calculation['calculation']['decisionPoints']['percentageAdjustment'].to_s + '%'
+      p = PasTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal expected_value, row[32]
     end
   end
 
@@ -110,7 +126,6 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
         'chargeAmount' => transaction.tcm_charge.abs,
         'decisionPoints' => {
           'baselineCharge' => 196803
-          'percentageAdjustment' => 0
         }
       },
       'generatedAt' => '10-AUG-2017'

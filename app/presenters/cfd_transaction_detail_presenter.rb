@@ -17,17 +17,6 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     transaction_detail.original_file_date.strftime("%d/%m/%y")
   end
 
-  def pro_rata_days
-    bd = billable_days
-    fyd = financial_year_days
-
-    if bd == fyd
-      ''
-    else
-      "#{bd}/#{fyd}"
-    end
-  end
-
   def transaction_date
     transaction_detail.transaction_date.strftime("%d-%^b-%Y")
   end

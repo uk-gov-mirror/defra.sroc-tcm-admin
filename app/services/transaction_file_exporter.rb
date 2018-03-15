@@ -119,6 +119,31 @@ class TransactionFileExporter
     # end
   end
 
+  def pas_assign_invoice_numbers(transaction_file)
+    # All transactions which are subject to a common permit reference and a
+    # common sign in the line amount in the TCM-generated transaction file
+    # should also be subject to a common invoice number in that file.
+    # For SRoC transactions, this number should take the format PASNNNNNNNNRT,
+    # where:
+    # - ‘NNNNNNNN’ is an 8-digit sequential number
+    # - ‘R’ is the region indicator from header field 4
+    # - ‘T’ is a fixed digit
+    # E.g. the first invoice number for region A would be PAS00000001AT, and so on.
+    # The ‘T’ suffix should ensure that there will never be any duplication with
+    # invoice numbers previously generated in PAS  
+    atab = TransactionDetail.arel_table
+    positives = transaction_file.transaction_details.distinct.
+      where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
+    negatives = transaction_file.transaction_details.distinct.
+      where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
+
+    positives.each do |ref|
+      transaction_file.transaction_details.where(reference_1: ref).
+        where(atab[:tcm_charge].gteq(0)).
+        update_all(tcm_transaction_reference: next_pas_reference)
+    end
+  end
+
   def assign_invoice_numbers(transaction_file)
     # for CFD group transactions by Customer Reference
     # generate invoice number and assign to group

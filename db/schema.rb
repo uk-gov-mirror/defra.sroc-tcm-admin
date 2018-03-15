@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180314110836) do
+ActiveRecord::Schema.define(version: 20180315091216) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,7 +93,7 @@ ActiveRecord::Schema.define(version: 20180314110836) do
   create_table "sequence_counters", force: :cascade do |t|
     t.bigint "regime_id"
     t.string "region", null: false
-    t.integer "file_number", default: 1, null: false
+    t.integer "file_number", default: 50001, null: false
     t.integer "invoice_number", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

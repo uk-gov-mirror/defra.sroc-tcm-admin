@@ -4,12 +4,26 @@ cfd_retro_file:
   regime: cfd
   region: 'A'
   retrospective: true
-  file_id: "00123"
+  file_id: "50124"
   generated_at: <%= 1.month.ago %>
 
 cfd_sroc_file:
   regime: cfd
   region: 'B'
   retrospective: false
-  file_id: "05678T"
+  file_id: "50677T"
+  generated_at: <%= 1.hour.ago %>
+
+pas_retro_file:
+  regime: pas
+  region: 'A'
+  retrospective: true
+  file_id: "50123"
+  generated_at: <%= 1.month.ago %>
+
+pas_sroc_file:
+  regime: pas
+  region: 'B'
+  retrospective: false
+  file_id: "50678T"
   generated_at: <%= 1.hour.ago %>

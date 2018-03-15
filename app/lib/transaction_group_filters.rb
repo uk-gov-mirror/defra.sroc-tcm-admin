@@ -1,4 +1,9 @@
 module TransactionGroupFilters
+  def regime_specific_detail_presenter_class
+    name = "#{regime.slug}_transaction_detail_presenter".camelize
+    str_to_class(name) || TransactionDetailPresenter
+  end
+
   def grouped_unbilled_transactions_by_region(region)
     regime_specific_group_filter(unbilled_transactions.region(region))
   end
@@ -27,8 +32,13 @@ module TransactionGroupFilters
     send "#{regime.to_param}_sorter", base_query
   end
 
+  def regime_specific_sorter(base_query)
+    send "#{regime.to_param}_sorter", base_query
+  end
+
   def cfd_group_filter(base_query)
     incomplete_records = base_query.without_charge.distinct.pluck(:reference_1)
+    return base_query if incomplete_records.empty?
     base_query.where.not(reference_1: incomplete_records)
   end
 
@@ -41,6 +51,8 @@ module TransactionGroupFilters
   def pas_group_filter(base_query)
     incomplete_records = base_query.without_charge.distinct.
       pluck(:reference_1, :reference_2, :reference_3).transpose
+
+    return base_query if incomplete_records.empty?
 
     base_query.where.not(reference_1: incomplete_records[0].reject(&:blank?)).
       where.not(reference_2: incomplete_records[1].reject(&:blank?)).
@@ -64,5 +76,13 @@ module TransactionGroupFilters
     base_query.order(transaction_reference: :asc,
                      reference_1: :asc,
                      line_amount: :asc)
+  end
+
+  def str_to_class(name)
+    begin
+      name.constantize
+    rescue NameError => e
+      nil
+    end
   end
 end

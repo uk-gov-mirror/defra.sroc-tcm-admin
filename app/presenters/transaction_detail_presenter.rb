@@ -13,6 +13,17 @@ class TransactionDetailPresenter < SimpleDelegator
     (period_end.to_date - period_start.to_date).to_i + 1
   end
 
+  def pro_rata_days
+    bd = billable_days
+    fyd = financial_year_days
+
+    if bd == fyd
+      ''
+    else
+      "#{bd}/#{fyd}"
+    end
+  end
+
   def calculated_amount
     tcm_charge
     # charge = (charge_calculation['calculation']['chargeValue'] * 100).round
