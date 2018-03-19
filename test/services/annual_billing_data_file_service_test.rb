@@ -98,30 +98,37 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
 
-    @service.import(upload, file)
     transaction = transaction_details(:cfd)
-    assert_equal(true, transaction.temporary_cessation)
+    transaction_2 = transaction.dup
+    transaction_2.reference_1 = "ANNF/1754/1/1"
+    transaction_2.save
 
-    transaction = transaction_details(:cfd_b)
-    assert_equal(false, transaction.temporary_cessation)
+    @service.import(upload, file)
+    assert_equal(true, transaction.reload.temporary_cessation)
+    assert_equal(false, transaction_2.reload.temporary_cessation)
   end
 
   def test_import_stores_variation_with_an_percent_suffix
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
 
-    @service.import(upload, file)
     transaction = transaction_details(:cfd)
-    assert transaction.variation.end_with?('%')
+    transaction_2 = transaction.dup
+    transaction_2.reference_1 = "ANNF/1754/1/1"
+    transaction_2.save
 
-    transaction = transaction_details(:cfd_b)
-    assert transaction.variation.end_with?('%')
+    @service.import(upload, file)
+    assert transaction.reload.variation.end_with?('%')
+    assert transaction_2.reload.variation.end_with?('%')
   end
 
   def test_import_records_total_and_errors
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
     transaction = transaction_details(:cfd)
+    transaction_2 = transaction.dup
+    transaction_2.reference_1 = "ANNF/1754/1/1"
+    transaction_2.save
 
     @service.import(upload, file)
     assert_equal 2, upload.success_count

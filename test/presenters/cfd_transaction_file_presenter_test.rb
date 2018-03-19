@@ -109,7 +109,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
       'calculation' => {
         'chargeAmount' => transaction.tcm_charge.abs,
         'decisionPoints' => {
-          'baselineCharge' => 196803
+          'baselineCharge' => 196803,
           'percentageAdjustment' => 0
         }
       },

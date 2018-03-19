@@ -65,7 +65,7 @@ class TransactionFileExporter
 
   def generate_output_file(transaction_file)
     out_file = Tempfile.new
-    assign_invoice_numbers(transaction_file)
+    assign_transaction_references(transaction_file)
 
     tf = present(transaction_file)
 
@@ -119,7 +119,11 @@ class TransactionFileExporter
     # end
   end
 
-  def pas_assign_invoice_numbers(transaction_file)
+  def assign_transaction_references(transaction_file)
+    send "assign_#{regime.to_param}_transaction_references", transaction_file
+  end
+
+  def assign_pas_transaction_references(transaction_file)
     # All transactions which are subject to a common permit reference and a
     # common sign in the line amount in the TCM-generated transaction file
     # should also be subject to a common invoice number in that file.
@@ -138,13 +142,31 @@ class TransactionFileExporter
       where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
 
     positives.each do |ref|
+      trans_ref = next_pas_transaction_reference(transaction_file.retrospective?)
       transaction_file.transaction_details.where(reference_1: ref).
         where(atab[:tcm_charge].gteq(0)).
-        update_all(tcm_transaction_reference: next_pas_reference)
+        update_all(tcm_transaction_type: 'I',
+                   tcm_transaction_reference: trans_ref)
+    end
+    negatives.each do |ref|
+      trans_ref = next_pas_transaction_reference(transaction_file.retrospective?)
+      transaction_file.transaction_details.where(reference_1: ref).
+        where(atab[:tcm_charge].lt(0)).
+        update_all(tcm_transaction_type: 'C',
+                   tcm_transaction_reference: trans_ref)
     end
   end
 
-  def assign_invoice_numbers(transaction_file)
+  def next_pas_transaction_reference(retrospective)
+    n = SequenceCounter.next_invoice_number(regime, region)
+    if retrospective
+      "PAS#{n.to_s.rjust(8, '0')}#{region}"
+    else
+      "PAS#{n.to_s.rjust(8, '0')}#{region}T"
+    end
+  end
+
+  def assign_cfd_transaction_references(transaction_file)
     # for CFD group transactions by Customer Reference
     # generate invoice number and assign to group
     # calculate overall credit or invoice and assign to group

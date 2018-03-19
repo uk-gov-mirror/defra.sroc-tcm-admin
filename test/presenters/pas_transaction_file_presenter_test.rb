@@ -16,6 +16,8 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
       t.category = '2.4.4'
       t.status = 'billed'
       t.tcm_charge = t.line_amount
+      t.tcm_transaction_type = t.transaction_type
+      t.tcm_transaction_reference = generate_reference(t)
       set_charge_calculation(t)
     end
 
@@ -125,11 +127,16 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
       'calculation' => {
         'chargeAmount' => transaction.tcm_charge.abs,
         'decisionPoints' => {
-          'baselineCharge' => 196803
+          'baselineCharge' => 196803,
+          'percentageAdjustment' => 0
         }
       },
       'generatedAt' => '10-AUG-2017'
     }
     transaction.save
+  end
+
+  def generate_reference(transaction)
+    "PAS#{transaction.id.to_s.rjust(8, '0')}#{transaction.transaction_header.region}T"
   end
 end
