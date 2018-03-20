@@ -1,25 +1,17 @@
 <% content_for :head do %>
-  <%#  <link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css"> %>
   <%= javascript_pack_tag 'transactions' %>
   <%= stylesheet_pack_tag 'transactions' %>
 <% end %>
-<div class="row mb-4">
-  <div class="col">
-    <h1>Transactions to be billed</h1>
-  </div>
-</div>
 <div class="row">
   <div class="col">
     <div id="transaction-table"
          data-regime="<%= @regime.slug %>"
+         data-view-mode="<%= params.fetch(:view_mode, 'unbilled') %>"
          data-sort-col="customer_reference"
          data-sort-dir="asc"
-         data-path="<%= regime_transactions_path(@regime) %>"
          data-summary-path="<%= regime_transaction_summary_index_path(@regime) %>"
          data-generate-file-path="<%= regime_transaction_files_path(@regime) %>"
-         data-transactions="<%= @transactions.to_json %>"
-         data-regions="<%= available_regions(@regime).to_json %>"
-         data-selected-region="<%= params.fetch(:region, '') %>"
+         data-selected-region="<%= @region %>"
          data-search-term="<%= params[:search] %>"
          data-search-placeholder="<%= search_placeholder(@regime) %>"
          data-categories="<%= permit_categories(@regime).to_json %>"

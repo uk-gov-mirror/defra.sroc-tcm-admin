@@ -34,6 +34,10 @@ class Regime < ApplicationRecord
     slug == 'cfd'
   end
 
+  def retrospective_date?(end_date)
+    end_date < retrospective_cut_off_date
+  end
+
 private
   def generate_slug
     self.slug = name.parameterize.downcase

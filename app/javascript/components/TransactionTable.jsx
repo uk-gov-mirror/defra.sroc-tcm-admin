@@ -12,6 +12,7 @@ export default class TransactionTable extends React.Component {
     const onSortColChange = this.props.onChangeSortColumn
     const onSortDirChange = this.props.onChangeSortDirection
     const onChangeCategory = this.props.onChangeCategory
+    const onChangeTemporaryCessation = this.props.onChangeTemporaryCessation
 
     return (
       <table className='table table-responsive'>
@@ -27,6 +28,7 @@ export default class TransactionTable extends React.Component {
           data={data}
           categories={categories}
           onChangeCategory={onChangeCategory}
+          onChangeTemporaryCessation={onChangeTemporaryCessation}
         />
       </table>
     )

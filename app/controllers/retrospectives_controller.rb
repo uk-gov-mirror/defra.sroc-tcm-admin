@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class HistoryController < ApplicationController
+class RetrospectivesController < ApplicationController
   include RegimeScope
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
@@ -8,9 +8,9 @@ class HistoryController < ApplicationController
   # GET /regimes/:regime_id/history
   # GET /regimes/:regime_id/history.json
   def index
-    regions = transaction_store.history_regions
-    @region = params.fetch(:region, '')
-    @region = regions.first unless @region.blank? || regions.include?(@region)
+    regions = transaction_store.retrospective_regions
+    @region = params.fetch(:region, regions.first)
+    @region = regions.first unless regions.include? @region
 
     respond_to do |format|
       format.html do
@@ -19,21 +19,18 @@ class HistoryController < ApplicationController
       format.js
       format.json do
         q = params.fetch(:search, "")
-        fy = params.fetch(:fy, '')
         pg = params.fetch(:page, 1)
         per_pg = params.fetch(:per_page, 10)
 
-        @transactions = transaction_store.transaction_history(
+        @transactions = transaction_store.retrospective_transactions(
           q,
-          fy,
           pg,
           per_pg,
           @region,
           params.fetch(:sort, :customer_reference),
           params.fetch(:sort_direction, 'asc'))
 
-        financial_years = transaction_store.history_financial_years.reject { |r| r.blank? }
-        @transactions = present_transactions(@transactions, @region, regions, financial_years)
+        @transactions = present_transactions(@transactions, @region, regions)
         render json: @transactions
       end
     end
@@ -45,7 +42,7 @@ class HistoryController < ApplicationController
   end
 
   private
-    def present_transactions(transactions, selected_region, regions, financial_years)
+    def present_transactions(transactions, selected_region, regions)
       name = "#{@regime.slug}_transaction_detail_presenter".camelize
       presenter = str_to_class(name) || TransactionDetailPresenter
       arr = Kaminari.paginate_array(presenter.wrap(transactions),
@@ -63,15 +60,12 @@ class HistoryController < ApplicationController
         },
         transactions: arr,
         selected_region: selected_region,
-        regions: region_options(regions),
-        financial_years: financial_year_options(financial_years)
+        regions: region_options(regions)
       }
     end
 
     def region_options(regions)
-      opts = regions.map { |r| { label: r, value: r } }
-      opts = [{label: 'All', value: ''}] + opts if opts.count > 1
-      opts
+      regions.map { |r| { label: r, value: r } }
     end
 
     def financial_year_options(fy_list)

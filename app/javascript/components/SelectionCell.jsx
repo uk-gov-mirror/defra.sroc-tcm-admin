@@ -12,7 +12,6 @@ export default class SelectionCell extends React.Component {
   }
 
   onChange (val) {
-    console.log('select changed [' + JSON.stringify(val) + ']')
     this.setState({selectValue: val}, () =>
       this.props.onChange(val)
     )

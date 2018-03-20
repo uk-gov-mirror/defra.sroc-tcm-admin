@@ -126,6 +126,8 @@ class AnnualBillingDataFileService
                   i = Integer(val.to_s, 10)
                   if i < 0 || i > 100
                     raise ArgumentError
+                  else
+                    val += '%' unless val.include?('%')
                   end
                 rescue ArgumentError => e
                   failed = true

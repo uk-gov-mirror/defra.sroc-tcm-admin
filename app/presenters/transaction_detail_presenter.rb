@@ -1,4 +1,5 @@
 class TransactionDetailPresenter < SimpleDelegator
+  include FormattingUtils
 
   def self.wrap(collection)
     collection.map { |o| new o }
@@ -19,6 +20,11 @@ class TransactionDetailPresenter < SimpleDelegator
     # charge
   end
 
+  def original_charge
+    ActiveSupport::NumberHelper.number_to_currency(
+          sprintf('%.2f', line_amount/100.0), unit: "")
+  end
+
   def category_description
     desc = PermitCategory.find_by(code: category).description
     desc.truncate(150, separator: /\s/, ommission: '...')
@@ -26,6 +32,14 @@ class TransactionDetailPresenter < SimpleDelegator
   
   def baseline_charge
     (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
+  end
+
+  def region_from_ref
+    if tcm_transaction_reference.present?
+      tcm_transaction_reference[-2]
+    else
+      transaction_header.region
+    end
   end
 
   def transaction_date
@@ -45,8 +59,9 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def charge_period
-    year = financial_year - 2000
-    "FY#{year}#{year + 1}"
+    # year = financial_year - 2000
+    # "FY#{year}#{year + 1}"
+    "FY#{tcm_financial_year}"
   end
 
   def credit_debit_indicator
@@ -58,7 +73,7 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def temporary_cessation_file
-    temporary_cessation? ? 'Y' : ''
+    temporary_cessation? ? '50%' : ''
   end
 
   def temporary_cessation_flag
@@ -76,7 +91,7 @@ class TransactionDetailPresenter < SimpleDelegator
         credit_debit
       else
         ActiveSupport::NumberHelper.number_to_currency(
-          sprintf('%.2f', value), unit: "")
+          sprintf('%.2f', value/100.0), unit: "")
       end
     else
       credit_debit
@@ -92,15 +107,16 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def charge_amount
-    charge = transaction_detail.charge_calculation
-    if charge && charge["calculation"] && charge["calculation"]["messages"].nil?
-      amt = charge["calculation"]["chargeValue"]
-      # FIXME: is this the /best/ way to determine a credt?
-      amt *= -1 if !amt.nil? && line_amount.negative?
-      amt
-    else
-      nil
-    end
+    tcm_charge
+    # charge = transaction_detail.charge_calculation
+    # if charge && charge["calculation"] && charge["calculation"]["messages"].nil?
+    #   amt = charge["calculation"]["chargeValue"]
+    #   # FIXME: is this the /best/ way to determine a credt?
+    #   amt *= -1 if !amt.nil? && line_amount.negative?
+    #   amt
+    # else
+    #   nil
+    # end
   end
 
   def generated_at
@@ -108,16 +124,8 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date transaction_detail.transaction_header.generated_at
   end
 
-private
+protected
   def transaction_detail
     __getobj__
-  end
-
-  def padded_number(val, length = 7)
-    val.to_s.rjust(length, "0")
-  end
-
-  def fmt_date(dt)
-    dt.strftime("%-d-%^b-%Y")
   end
 end

@@ -10,50 +10,41 @@ const loadEvent = (typeof Turbolinks !== 'undefined') ? 'turbolinks:load' : 'DOM
 const unloadEvent = (typeof Turbolinks !== 'undefined') ? 'turbolinks:before-render' : 'beforeunload'
 
 document.addEventListener(loadEvent, () => {
-  console.log('load event')
   if (document.getElementById('transaction-table')) {
-    console.log('mount TransactionsView')
     const element = document.getElementById('transaction-table')
     const regime = element.getAttribute('data-regime')
-    const historic = element.getAttribute('data-historic') === 'true'
     const showSummary = element.getAttribute('data-with-summary') === 'true'
     const sortColumn = element.getAttribute('data-sort-col')
     const sortDir = element.getAttribute('data-sort-dir')
-    const columns = Constants.regimeColumns(regime, historic)
-    // const columns = JSON.parse(element.getAttribute('data-columns'))
-    const path = element.getAttribute('data-path')
-    const summaryPath = element.getAttribute('data-summary-path')
-    const generateFilePath = element.getAttribute('data-generate-file-path')
-    // const transactions = JSON.parse(element.getAttribute('data-transactions'))
-    const regions = JSON.parse(element.getAttribute('data-regions'))
+    // const viewModes = Constants.VIEW_MODES
+
+    // const summaryPath = element.getAttribute('data-summary-path')
+    // const generateFilePath = element.getAttribute('data-generate-file-path')
     const selectedRegion = element.getAttribute('data-selected-region')
     const searchPlaceholder = element.getAttribute('data-search-placeholder')
     const searchTerm = element.getAttribute('data-search-term')
     const categories = JSON.parse(element.getAttribute('data-categories'))
     const csrfToken = document.querySelector('meta[name=csrf-token]').content
     const generateFiles = element.getAttribute('data-generate-files') === 'true'
+    const viewMode = element.getAttribute('data-view-mode') 
 
     ReactDOM.render(
       <TransactionsView
         regime={regime}
-        historic={historic}
-        columns={columns}
         showSummary={showSummary}
-        sortColumn={sortColumn} sortDirection={sortDir}
+        sortColumn={sortColumn}
+        sortDirection={sortDir}
         categories={categories}
-        path={path}
-        summaryPath={summaryPath}
         csrfToken={csrfToken}
-        regions={regions}
         selectedRegion={selectedRegion}
-        searchTerm={searchTerm} searchPlaceholder={searchPlaceholder}
+        searchTerm={searchTerm}
+        searchPlaceholder={searchPlaceholder}
         generateFiles={generateFiles}
-        generateFilePath={generateFilePath}
+        viewMode={viewMode}
       />,
       element
     )
   } else if (document.getElementById('data-file-view')) {
-    console.log('mount DataFileView')
     const element = document.getElementById('data-file-view')
     const regime = element.getAttribute('data-regime')
     const columns = Constants.DATA_FILE_COLUMNS
@@ -90,11 +81,9 @@ document.addEventListener(loadEvent, () => {
 })
 
 document.addEventListener(unloadEvent, () => {
-  console.log('unload event')
   const element = document.getElementById('transaction-table') || document.getElementById('data-file-view')
 
   if(element) {
-    console.log('top level unmount')
     ReactDOM.unmountComponentAtNode(element)
   }
 })

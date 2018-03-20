@@ -1,105 +1,139 @@
-﻿2.4.1,"Section 4.1 Organic; Organic single chemical <2,000 tonnes/year"
-2.4.2,"Section 4.1 Organic; Organic single chemical >2,000 tonnes/year"
-2.4.3,Section 4.1 Organic; Organic multiple chemical
-2.4.4,Section 4.1 Organic; Organic other
-2.4.5,Section 4.2 Inorganic; Inorganic single chemical <100 tonnes/year
-2.4.6,Section 4.2 Inorganic; Inorganic single chemical >100 tonnes/year
-2.4.7,Section 4.2 Inorganic; Inorganic multiple chemical
-2.4.8,Section 4.2 Inorganic; Inorganic other
-2.4.9,"Chemicals. Anaerobic digestion (crop-fed, non-waste) (Zero plants constructed as of September 2017 )"
-2.4.10,Section 4.3 Fertilizer; Fertilizer
-2.4.11,Section 4.3 Fertilizer; Fertilizer dry process only
-2.4.12,"Section 4.4, 4.5, 4.6, 4.7 other chemicals; Other chemical biochemical/pharmaceutical/explosives <2,000 tonnes/year"
-2.4.13,"Section 4.4, 4.5, 4.6, 4.7 other chemicals; Other chemical biochemical/pharmaceutical/explosives >2,000 tonnes/year"
-2.4.14,"Section 4.4, 4.5, 4.6, 4.7 other chemicals; Other chemical carbon disulphide/ammonia"
-2.2.15,Chemical production incidental to the primary purpose of the installation. Not for commercial purposes.
-2.5.1,Oil refineries
-2.5.2,Gas refineries
-2.5.3,Petroleum distillers
-2.5.4,Crude oil storage greater than 200 tonnes
-2.5.5,Gathering stations
-2.5.6,Synthetic fuels and carbonisation
-2.5.7,Refineries & Fuels. Crude oil storage less than 200 tonnes
-2.6.1,Combustion EfW. New mass-burn incinerator or co-incinerator - 1 line
-2.6.2,Combustion EfW. New mass-burn incinerator or co-incinerator - 2 lines
-2.6.3,Combustion EfW. New mass-burn incinerator or co-incinerator - 3 lines
-2.6.4,Combustion EfW. New mass-burn incinerator or co-incinerator - 4 lines
-2.6.5,Combustion EfW. New mass-burn incinerator or co-incinerator - 5 lines
-2.6.6,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 1 line
-2.6.7,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 2 lines
-2.6.8,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 3 lines
-2.6.9,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 4 lines
-2.6.10,Combustion EfW. New gasification or pyrolysis incinerator or co-incinerator - 5 lines
-2.6.11,Combustion EfW. Existing incinerator or co-incinerator - 1 line
-2.6.12,Combustion EfW. Existing incinerator or co-incinerator - 2 lines
-2.6.13,Combustion EfW. Existing incinerator or co-incinerator - 3 lines
-2.6.14,Combustion EfW. Existing incinerator or co-incinerator - 4 lines
-2.6.15,Combustion EfW. Existing incinerator or co-incinerator - 5 lines
-2.6.16,Combustion EfW. New S1.2 waste gasification or pyrolysis plant
-2.6.17,Combustion EfW. Existing S1.2 waste gasification or pyrolysis plant
-2.6.18,Combustion EfW. New or existing non-Ch4 biomass co-incinerator
-2.6.19,R1 Monitoring*
-2.6.20,Pre-construction charge
-2.7.1,Food and Drink activity with no additional components
-2.7.2,Food and Drink activity with 1 additional component
-2.7.3,Food and Drink activity with 2 additional components
-2.7.4,Food and Drink activity with 3 -4 additional components
-2.7.5,Food and Drink activity with 5-6 additional components
-2.7.6,Food and Drink activity with 7-8 additional components
-2.7.7,Food and Drink activity with 9-13 additional components
-2.7.8,Food and Drink activity with 14+ additional components
-2.8.1,Mining waste Standard Rule 2014 No2
-2.8.2,Mining waste Standard Rule 2015 No1
-2.8.3,Mining Waste Operation
-2.8.4,Mining Waste Operation + Non-hazardous facility
-2.8.5,Mining Waste Operation + Hazardous facility with or without a Non-hazardous facility
-2.8.6,Mining Waste Flare or IED Flare component
-2.8.7,Groundwater activity
-2.8.8,Oil storage Standard Rule 2015 No2
-2.8.9,Bespoke oil storage permit
-2.8.10,Hydraulic Fracturing Plan (hourly charge rate)
-2.9.1,Textiles. Dye houses & finishing sites
-2.9.2,Textiles. Wool scourers
-2.9.3,Textiles. Carpet manufacturers
-2.9.4,Paper & Pulp. Integrated or multi product mill plus two components
-2.9.5,Paper & Pulp. Integrated or multi product mill plus three components
-2.9.6,Paper & Pulp. Integrated or multi product mill plus four components
-2.9.7,Paper & Pulp. With discharge to surface water
-2.9.8,Paper & Pulp. With discharge to surface water plus 1 component
-2.9.9,Paper & Pulp. With discharge to surface water plus 3 components
-2.9.10,Paper & Pulp. With discharge to surface water plus 5 components
-2.9.11,Paper & Pulp. Discharge to sewer.
-2.9.12,Paper & Pulp. Discharge to sewer plus one component
-2.9.13,Paper & Pulp. Discharge to sewer plus two components
-2.9.14,Paper & Pulp. Discharge to sewer plus three components
-2.10.1,Combustion Power. Coal
-2.10.2,Combustion Power. Biomass
-2.10.3,"Combustion Power. GTs, CHP and engines"
-2.10.4,"Combustion Power. GTs, CHP and engines non-CSG"
-2.10.5,Combustion Power. Compressors and boilers
-2.10.6,Combustion Power. Landfill
-2.10.7,Combustion Power. Odorisation
-2.10.8,Combustion Power. MCPD bespoke permit
-2.10.9,Combustion Power. MCPD simple permit
-2.12.1,"Ferrous Metals. Producing, melting or refining iron or steel in an integrated works"
-2.12.2,"Ferrous Metals. Producing, melting or refining iron or steel in an EAF with a holding capacity of more than 7 tonnes and high complexity non-ferrous metals"
-2.12.3,"Ferrous Metals. Producing, melting or refining iron or steel in an EAF with a holding capacity of less than 7 tonnes"
-2.12.4,Ferrous metals. Medium complexity processing ferrous and alloys using hot rolling
-2.12.5,Ferrous metals. Low complexity processing ferrous and alloys using hot rolling
-2.12.6,"Ferrous Metals. Loading, unloading and handling of more than 500,000 tonnes in total in any period of 12 months of iron ore, except during mining operations, or burnt pyrites"
-2.12.7,Non Ferrous metals & surface treatment. Medium complexity producing non-ferrous metals
-2.12.8,Non Ferrous metals & surface treatment. Low-medium complexity producing non-ferrous metals
-2.12.9,Non Ferrous metals & surface treatment. Melting non-ferrous metals
-2.12.10,Non Ferrous metals & surface treatment. High complexity surface treatment of metals and plastics
-2.12.11,Non Ferrous metals & surface treatment. Medium complexity surface treatment of metals and plastics
-2.12.12,Non Ferrous metals & surface treatment. Low complexity surface treatment of metals and plastics
-2.13.1,Section 3.1 A(1)(a). Production of cement clinker in line with descriptions in activity 3.1 without the use of waste derived fuels
-2.13.2,Section 3.1 A(1)(a). Production of cement clinker in line with descriptions in activity 3.1 including the use of waste derived fuels
-2.13.3,Section 3.1 A(1)(b). Production of lime in line with descriptions in activity 3.1 without the use of waste derived fuels
-2.13.4,Section 3.1 A(1)(b). Production of lime in line with descriptions in activity 3.1 including the use of waste derived fuels
-2.13.5,Section 3.1 A(1)(a)and (b). Production of cement clinker and production of lime in line with descriptions in activity 3.1 including the use of waste derived fuels
-2.13.6,Section 3.3 A(1)(a). Manufacturing glass fibre in line with descriptions in activity 3.3
-2.13.7,Section 1.1 Combustion activity. Manufacture of plasterboard where the rated thermal input is greater than 50 MW as described in Section 1.1
-2.13.8,CML Brickworks
-2.14.1,"Section 6.9. Intensive rearing of poultry or pigs: (a) with more than 40,000 places for poultry; (b) with more than 2,000 places for production pigs (over 30kg), or (c) with more than 750 places for sows."
-2.14.2,"Section 6.9. Intensive rearing of poultry or pigs: (a) with more than 40,000 places for poultry; (b) with more than 2,000 places for production pigs (over 30kg), or (c) with more than 750 places for sows. Farms in the Environment Agency Pig and Poultry Assurance Scheme."
+﻿2.4.1,Chemical or fertiliser production discharging to water course via on-site effluent plant inc. incineration/combustion/treatment of hazardous waste.
+2.4.2,Chemical or fertiliser production discharging to a water course via on-site effluent treatment plant and including no more than one combustion plant.
+2.4.3,Chemical/fertiliser or pharmaceutical production discharging to a water course via an on-site effluent treatment plant.
+2.4.4,"Chemical production or chemical fertiliser production, involving large scale continuous operations and discharging to sewer."
+2.4.5,"Chemical/fertiliser or pharmaceutical production, batch or semi-continuous operations, discharging to sewer, inc. more than two Chapter 4 activities."
+2.4.6,"Chemical production, or chemical fertiliser or pharmaceutical production, involving batch or semi-continuous operations and discharging to sewer."
+2.4.7,"Chemical production, or chemical fertiliser or pharmaceutical production, involving small scale or simple batch operations."
+2.4.8,Section 4.1 or 4.2 - anaerobic digestion (designed to be fed with non-waste crops).
+2.4.9,Section 4.4 - large scale plant health products & biocides - production of 2000 tonnes or more a year.
+2.4.10,Section 4.4 - plant health products and biocides - production of less than 2000 tonnes a year.
+2.4.11,Section 4.6 or 4.7 - explosives production or activities involving carbon disulphide or ammonia.
+2.4.12,Chemical production incidental to the primary purpose of the installation and not for commercial purposes.
+2.5.1,"Oil refining; inc. refinery combustion plant, incineration of refinery waste, production of petroleum coke, effluent treatment and cooling water."
+2.5.2,"Gas refining; including refinery combustion plant, incineration of refinery waste, on site effluent treatment and cooling water activities."
+2.5.3,"Petroleum distillation; inc. plant for refining of liquid petroleum residues and bitumen distillation, effluent treatment and cooling water."
+2.5.4,Crude oil storage with a tank storage capacity of 500 tonnes or more; including any on site effluent treatment and cooling water activities.
+2.5.5,Section 1.2A(1)(a) or (f) - gathering station; including any on site effluent treatment plant and cooling water activities.
+2.5.6,Production of synthetic fuels and carbonisation plant; including any on site effluent treatment plant and cooling water activities.
+2.6.1,Section 5.1 - new mass-burn incineration or co-incineration plant - 1 line.
+2.6.2,Section 5.1 - new mass-burn incineration or co-incineration plant - 2 lines.
+2.6.3,Section 5.1 - new mass-burn incineration or co-incineration plant - 3 lines.
+2.6.4,Section 5.1 - new mass-burn incineration or co-incineration plant - 4 lines.
+2.6.5,Section 5.1 - new mass-burn incineration or co-incineration plant - 5 lines.
+2.6.6,Section 5.1 - new gasification or pyrolysis incineration or co-incineration plant - 1 line.
+2.6.7,Section 5.1 - new gasification or pyrolysis incineration or co-incineration plant - 2 lines.
+2.6.8,Section 5.1 - new gasification or pyrolysis incineration or co-incineration plant - 3 lines.
+2.6.9,Section 5.1 - new gasification or pyrolysis incineration or co-incineration plant - 4 lines.
+2.6.10,Section 5.1 - new gasification or pyrolysis incineration or co-incineration plant - 5 lines.
+2.6.11,Section 5.1 - existing incineration or co-incineration plant - 1 line.
+2.6.12,Section 5.1 - existing incineration or co-incineration plant - 2 lines.
+2.6.13,Section 5.1 - existing incineration or co-incineration plant - 3 lines.
+2.6.14,Section 5.1 - existing incineration or co-incineration plant - 4 lines.
+2.6.15,Section 5.1 - existing incineration or co-incineration plant - 5 lines.
+2.6.16,Section 1.2 - new waste gasification or pyrolysis plant not subject to Chapter IV of the IED because the syngas meets end-of-waste requirements.
+2.6.17,Section 1.2 - existing waste gasification or pyrolysis plant not subject to Chapter IV of the IED because the syngas meets end-of-waste requirements.
+2.6.18,Section 5.1 - new or existing biomass co-incineration plant which is not subject to Chapter IV of the Industrial Emissions Directive.
+2.6.19,Any activity falling in references 2.6.1 to 2.6.10  in Table 2.16 where construction has not commenced.
+2.7.1,Section 6.8 - food and Drink activity with no additional components.
+2.7.2,Section 6.8 - food and Drink activity with 1 additional component.
+2.7.3,Section 6.8 - food and Drink activity with 2 additional components.
+2.7.4,Section 6.8 - food and Drink activity with 3 or 4 additional components.
+2.7.5,Section 6.8 - food and Drink activity with 5 or 6 additional components.
+2.7.6,Section 6.8 - food and Drink activity with 7 or 8 additional components.
+2.7.7,Section 6.8 - food and Drink activity with 9 to13 additional components.
+2.7.8,Section 6.8 - food and Drink activity with 14 or more additional components.
+2.8.1,SR 2014 No.2 - the management of extractive waste.
+2.8.2,SR 2015 No.1 - onshore oil exploration.
+2.8.3,Mining waste operation.
+2.8.4,Mining waste operation with a non-hazardous extractive waste facility.
+2.8.5,Mining waste operation with a hazardous extractive waste facility.
+2.8.6,"Mining waste flare, whether or not an installation."
+2.8.7,Groundwater activity which is part of a mining waste operation.
+2.8.8,SR 2015 No. 2 - storage and handling of up to 500 tonnes crude oil.
+2.8.9,Storage and handling of crude oil or petroleum with a capacity of less than 500 tonnes.
+2.9.1,Section 6.4 - dye house and/ or finishing site including any on site effluent treatment plant and cooling water activities.
+2.9.2,Section 6.4 - wool scouring including any on site effluent treatment plant and cooling water activities.
+2.9.3,Section 6.4 - carpet manufacturing with integrated dye house including any on site effluent treatment plant and cooling water activities.
+2.9.4,Section 6.1 - integrated or multi product mill with 2 additional components.
+2.9.5,Section 6.1 - integrated or multi product mill with 3 additional components.
+2.9.6,Section 6.1 - integrated or multi product mill with 4 four additional components.
+2.9.7,Section 6.1 - paper and pulp activity including a discharge to surface water.
+2.9.8,Section 6.1 - paper and pulp activity including a discharge to surface water and 1 additional component.
+2.9.9,Section 6.1 - paper and pulp activity including a discharge to surface water and 3 additional components.
+2.9.10,Section 6.1 - paper and pulp activity including a discharge to surface water and more than 4 additional components.
+2.9.11,Section 6.1 - paper and pulp activity including a discharge to sewer.
+2.9.12,Section 6.1 - paper and pulp activity including a discharge to sewer and 1 additional component.
+2.9.13,Section 6.1 - paper and pulp activity including a discharge to sewer and 2 additional components.
+2.9.14,Section 6.1 - paper and pulp activity including a discharge to sewer and more than 3 additional components.
+2.10.1,"Coal fired combustion; inc. fuel storage, gas abatement, effluent treatment and cooling water, combined heat and power, gas turbines and boilers."
+2.10.2,"Biomass combustion; inc. fuel storage, gas abatement and effluent treatment and cooling water, combined heat and power, gas turbines and boilers."
+2.10.3,"Gas turbine, combined heat and power plant; inc. fuel storage, gas abatement, effluent treatment and cooling water, gas turbines and boilers."
+2.10.4,"Section 1.1 - compressor or boiler; including any fuel storage and gas abatement, effluent treatment plant and cooling water activities."
+2.10.5,Landfill only serving and associated with an operating and permitted combustion plant; inc. effluent treatment or sludge lagoon activities.
+2.10.6,Section 1.1 - odorisation plant.
+2.11.1,"SR 2009 No.8 - management of inert extractive waste; OR Management inert extractive waste, inc. with a point source discharge or by passive treatment."
+2.11.2,Management of non-inert non-hazardous extractive waste.
+2.11.3,Management of any extractive waste in a Category A mining waste facility; OR Management of hazardous extractive waste.
+2.12.1,"Producing, melting or refining iron or steel in an integrated works; including all activities which are part of the installation."
+2.12.2,"Producing, melting or refining iron or steel; producing non-ferrous metals; OR integrated installations using lead, zinc or precious metals."
+2.12.3,Processing ferrous metals and their alloys by using hot-rolling mills with a production capacity of more than 30 tonnes of crude steel per hour.
+2.12.4,Processing ferrous metals and their alloys by using hot-rolling mills with a production capacity of >20t and ≤30t of crude steel per hour.
+2.12.5,"Loading, unloading and handling of more than 500,000 tonnes a year of iron ore; inc. effluent treatment plant and cooling water activities."
+2.12.6,Production of a range of different non-ferrous metals from complex raw materials; inc. effluent treatment plant and cooling water activities.
+2.12.7,Production of non-ferrous metals not described in this reference 2.12.7; inc. any on site effluent treatment plant and cooling water activities.
+2.12.8,"Melting non-ferrous metals, including recovered products, the alloyage of non-ferrous metals and the operation of non-ferrous metals foundries."
+2.12.9,"Surface treatment of metals and plastics; Pt 2 of Sch. 1 activities; or Sect. 2.3 Pt A(1)(a) activity and waste operation, over 3 treatment techniques."
+2.12.10,Surface treatment of metals and plastics; more than one Section 2.3 Part A(1)(a) activity and using 2-3 surface treatment of metals techniques.
+2.12.11,Surface treatment of metals and plastics; one Section 2.3 Part A(1)(a) activity and using no more than 1 surface treatment technique.
+2.13.1,Section 3.1 - production of cement clinker.
+2.13.2,Section 3.1 - production of cement clinker utilising waste derived fuel.
+2.13.3,Section 3.1 - production of lime and lime products.
+2.13.4,Section 3.1 - production of lime (dolime).
+2.13.5,Section 3.1 - production of cement and lime.
+2.13.6,Section 3.3 and 3.4 - manufacturing glass or mineral fibre.
+2.13.7,Section 1.1 - manufacture of plasterboard utilising combustion plant with a heating capacity of more than 50 MW.
+2.13.8,Section 3.6 - brick manufacture.
+2.14.1,Section 6.9 - farming installation; excluding small waste incineration plant.
+2.14.2,Section 6.9 - farming installation authorised to participate in the pig and poultry assurance scheme; excluding small waste incineration plant.
+2.16.1,Waste Transfer and Treatment: Hazardous Waste Transfer and Treatment Category 1.
+2.16.2,Waste Transfer and Treatment: Hazardous Waste Transfer and Treatment Category 2.
+2.16.3,Waste Transfer and Treatment: Hazardous Waste Transfer and Treatment Category 3.
+2.16.4,Waste Transfer and Treatment: Hazardous Waste Transfer and Treatment Category 4.
+2.16.5,Waste Transfer and Treatment: Hazardous Waste Transfer and Treatment Category 5.
+2.16.6,Waste Transfer and Treatment: Non-hazardous and inert waste Category 1.
+2.16.7,Waste Transfer and Treatment: Non-hazardous and inert waste Category 2.
+2.16.8,Waste Transfer and Treatment: Non-hazardous and inert waste Category 3.
+2.16.9,Waste Transfer and Treatment: Non-hazardous and inert waste Category 4.
+2.16.10,Waste Transfer and Treatment: Non-hazardous and inert waste Category 5.
+2.16.11,Waste Transfer and Treatment: Biowaste Treatment Category 1.
+2.16.13,Waste Transfer and Treatment: Biowaste Treatment Category 2.
+2.16.14,Waste Transfer and Treatment: Biowaste Treatment Category 3.
+2.16.15,Waste Transfer and Treatment: Biowaste Treatment Category 4.
+2.16.16,Waste Transfer and Treatment: Biowaste Treatment Category 5.
+2.16.17,Waste Transfer and Treatment: Biowaste Treatment Category 6.
+2.16.18,Waste Transfer and Treatment: Metal Recycling Category 1.
+2.16.19,Waste Transfer and Treatment: Metal Recycling Category 2.
+2.16.20,Waste Transfer and Treatment: Metal Recycling Category 3.
+2.16.21,Waste Transfer and Treatment: Metal Recycling Category 4.
+2.16.22,Waste Transfer and Treatment: Metal Recycling Category 5.
+2.17.1,"Landfill for non-hazardous waste with a separate cell for stable non-reactive hazardous waste, asbestos or gypsum."
+2.17.2,"Landfill for non-hazardous waste and dredging sites; inc. landfill gas and leachate management, storage/treatment and landfill restoration."
+2.17.3,"Section 5.2 - landfill for hazardous waste; including leachate management, storage and/ or treatment and landfill restoration."
+2.17.4,Leachate treatment with capacity of 50t or more a day where not authorised by a landfill permit or permit authorising the discharge of trade effluent.
+2.17.5,Leachate treatment plant with a capacity of less than 50 tonnes a day where not authorised by a landfill permit or trade effluent discharge consent.
+2.17.6,Landfill gas plant at a landfill for hazardous waste and where not authorised by a landfill permit.
+2.17.7,Landfill for inert waste; including restoration.
+2.17.8,Lagoon or dredging site excluded from the Landfill Directive.
+2.17.9,Deposit of waste for recovery and landfill restoration where not authorised by a landfill permit.
+2.17.10,SR 2015 No.39 - deposit of waste for recovery.
+2.17.11,"Closed landfill that accepted hazardous or non-hazardous waste; inc. landfill gas and leachate management, storage/treatment and landfill restoration."
+2.17.12,Closed landfill hazardous or non-hazardous waste with low potential for pollution; OR Closed landfill other non-inert wastes inc. landfill restoration
+2.17.13,"Closed landfill that accepted hazardous, non-hazardous or other non-inert waste shown to have a very low potential for pollution."
+2.17.14,Closed landfill that accepted inert waste including restoration.
+2.17.15,Closed landfill that accepted inert waste shown by a risk assessment approved by the Agency to have a very low potential for pollution.
+2.18.1,Stand-alone directly associated activity.
+2.18.2,Low impact installation.
+2.18.3,Local authority activity - Part B activity.
+2.18.4,Local authority activity - Part A2 activity.
+2.18.5,Local authority activity - small waste incineration plant.

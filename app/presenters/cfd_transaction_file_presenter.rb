@@ -1,4 +1,6 @@
 class CfdTransactionFilePresenter < SimpleDelegator
+  include FormattingUtils, TransactionGroupFilters
+
   def header
     [
       "H",
@@ -14,7 +16,9 @@ class CfdTransactionFilePresenter < SimpleDelegator
 
   def details
     records = []
-    transactions = CfdTransactionDetailPresenter.wrap(transaction_details.order(:id))
+    transactions = CfdTransactionDetailPresenter.wrap(
+      cfd_sorter(transaction_details))
+
     transactions.each.with_index(1) do |td, idx|
       row = detail_row(td, idx)
       if block_given?
@@ -31,13 +35,13 @@ class CfdTransactionFilePresenter < SimpleDelegator
       "D",
       padded_number(idx),
       td.customer_reference,
-      td.file_transaction_date,
+      file_generated_at,
       td.tcm_transaction_type,
       td.tcm_transaction_reference,
       "",
       "GBP",
       "",                     # header_narrative always blank
-      td.file_transaction_date,  # header_attr_1
+      file_generated_at,      # header_attr_1
       "",                     # header_attr_2
       "",                     # header_attr_3
       "",                     # header_attr_4
@@ -53,13 +57,13 @@ class CfdTransactionFilePresenter < SimpleDelegator
       td.discharge_location,  # line_description
       "CT",                   # line income stream code
       td.line_context_code,
-      td.line_description,    # line_attr_1
+      td.consent_reference,   # line_attr_1
       td.line_attr_3,         # line_attr_2
       td.category,            # line_attr_3
-      td.line_attr_4,
+      td.pro_rata_days,       # line_attr_4
       td.category_description, # was line_attr_5
       td.baseline_charge,     # line_attr_6
-      td.line_attr_9,         # line_attr_7 (compliance band)
+      td.variation_percentage,     # line_attr_7 (compliance band)
       td.temporary_cessation_file, # temporary cessation
       "",                     # line_attr_9   future - compliance band
       "",                     # line_attr_10  future - compliance adjustment
@@ -80,18 +84,26 @@ class CfdTransactionFilePresenter < SimpleDelegator
       "T",
       padded_number(count + 1),
       padded_number(count + 2),
-      invoice_total,
-      credit_total
+      trailer_invoice_total,
+      trailer_credit_total
     ]
   end
 
-private
+protected
   def transaction_file
     __getobj__
   end
 
-  def padded_number(val, length = 7)
-    val.to_s.rjust(length, "0")
+  def trailer_invoice_total
+    transaction_details.where(tcm_transaction_type: 'I').sum(:tcm_charge).to_i
+  end
+
+  def trailer_credit_total
+    transaction_details.where(tcm_transaction_type: 'C').sum(:tcm_charge).to_i
+  end
+  
+  def file_generated_at
+    generated_at.strftime("%d-%^b-%Y")
   end
 
   def record_count
@@ -105,9 +117,5 @@ private
 
   def feeder_source_code
     regime.name
-  end
-
-  def fmt_date(dt)
-    dt.strftime("%-d-%^b-%Y")
   end
 end

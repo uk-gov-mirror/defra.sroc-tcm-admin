@@ -1,5 +1,5 @@
 class TcmUtils
-  RetrospectiveCutoffDate = Time.zone.parse("31-MAR-2018 23:59:59")
+  # RetrospectiveCutoffDate = Time.zone.parse("31-MAR-2018 23:59:59")
 
   def self.strip_bom(str)
     str.force_encoding('utf-8').gsub("\xEF\xBB\xBF".force_encoding('utf-8'), '')
@@ -79,9 +79,5 @@ class TcmUtils
       dates << Date.strptime(d, date_format)
     end
     dates
-  end
-
-  def self.retrospective_date?(end_date)
-    end_date < RetrospectiveCutoffDate
   end
 end

@@ -12,11 +12,10 @@ class TransactionFilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  def test_create_should_redirect_to_transactions_to_be_billed
-    skip("needs reworking")
+  # def test_create_should_redirect_to_transactions_to_be_billed
     # @regimes.each do |regime|
     #   post regime_transaction_files_url(regime), params: { region: 'A' }
     #   assert_redirected_to regime_transactions_path(regime)
     # end
-  end
+  # end
 end

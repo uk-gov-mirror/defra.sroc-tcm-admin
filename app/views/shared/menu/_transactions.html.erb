@@ -12,7 +12,10 @@
       regime_transactions_path(@regime),
       class: "dropdown-item" %>
     <%= link_to "Transaction history",
-      regime_history_index_path(@regime),
+      regime_transactions_path(@regime, view_mode: 'historic'),
+      class: "dropdown-item" %>
+    <%= link_to "Retrospectives to be billed",
+      regime_transactions_path(@regime, view_mode: 'retrospective'),
       class: "dropdown-item" %>
   </div>
 </li>

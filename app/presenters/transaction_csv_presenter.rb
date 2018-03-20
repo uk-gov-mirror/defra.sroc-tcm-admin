@@ -1,4 +1,6 @@
 class TransactionCsvPresenter < SimpleDelegator
+  include FormattingUtils
+
   def header
     [
       "H",
@@ -80,10 +82,6 @@ private
     __getobj__
   end
 
-  def padded_number(val, length = 7)
-    val.to_s.rjust(length, "0")
-  end
-
   def file_id
     if feeder_source_code == "CFD"
       file_sequence_number
@@ -99,9 +97,5 @@ private
     else
       padded_number(count, 8)
     end
-  end
-
-  def fmt_date(dt)
-    dt.strftime("%-d-%^b-%Y")
   end
 end

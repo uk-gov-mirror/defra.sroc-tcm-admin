@@ -1,18 +1,4 @@
 Rails.application.routes.draw do
-  # get 'users/index'
-  #
-  # get 'users/show'
-  #
-  # get 'users/new'
-  #
-  # get 'users/create'
-  #
-  # get 'users/edit'
-  #
-  # get 'users/update'
-  #
-  # get 'users/destroy'
-
   devise_for :users, path: 'auth', skip: [:registrations]
 
   as :user do
@@ -29,8 +15,11 @@ Rails.application.routes.draw do
     resources :permit_categories
     resources :transactions, only: [:index, :show, :edit, :update]
     resources :history, only: [:index, :show]
+    resources :retrospectives, only: [:index, :show]
     resources :transaction_files, except: [:new, :destroy]
     resources :transaction_summary, only: [:index]
+    resources :retrospective_files, except: [:new, :destroy]
+    resources :retrospective_summary, only: [:index]
     resources :annual_billing_data_files, except: [:destroy]
   end
 

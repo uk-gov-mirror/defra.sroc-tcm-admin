@@ -17,12 +17,19 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     transaction_detail.original_file_date.strftime("%d/%m/%y")
   end
 
-  def transaction_date
-    transaction_detail.transaction_date.strftime("%d/%m/%y")
+  def pro_rata_days
+    bd = billable_days
+    fyd = financial_year_days
+
+    if bd == fyd
+      ''
+    else
+      "#{bd}/#{fyd}"
+    end
   end
 
-  def file_transaction_date
-    transaction_detail.transaction_date.strftime("%-d-%^b-%Y")
+  def transaction_date
+    transaction_detail.transaction_date.strftime("%d-%^b-%Y")
   end
 
   def clean_variation_percentage
@@ -71,8 +78,8 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     {
       id: id,
       customer_reference: customer_reference,
-      # transaction_reference: transaction_reference,
-      # transaction_date: transaction_date,
+      tcm_transaction_reference: tcm_transaction_reference,
+      generated_filename: generated_filename,
       original_filename: original_filename,
       original_file_date: original_file_date,
       consent_reference: consent_reference,
@@ -81,7 +88,10 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       sroc_category: category,
       variation: clean_variation_percentage,
       temporary_cessation: temporary_cessation_flag,
+      financial_year: charge_period,
+      region: region_from_ref,
       period: period,
+      line_amount: original_charge,
       amount: amount
     }
   end

@@ -3,12 +3,28 @@ module TransactionGroupFilters
     regime_specific_group_filter(unbilled_transactions.region(region))
   end
 
+  def grouped_retrospective_transactions_by_region(region)
+    regime_specific_retrospective_sorter(retrospective_transactions.region(region))
+  end
+
+  def retrospective_transactions_by_region(region)
+    retrospective_transactions.region(region)
+  end
+
   def unbilled_transactions
     regime.transaction_details.unbilled
   end
 
+  def retrospective_transactions
+    regime.transaction_details.retrospective
+  end
+
   def regime_specific_group_filter(base_query)
     send "#{regime.to_param}_group_filter", base_query
+  end
+
+  def regime_specific_retrospective_sorter(base_query)
+    send "#{regime.to_param}_sorter", base_query
   end
 
   def cfd_group_filter(base_query)
@@ -16,16 +32,37 @@ module TransactionGroupFilters
     base_query.where.not(reference_1: incomplete_records)
   end
 
+  def cfd_sorter(base_query)
+    base_query.order(tcm_transaction_reference: :asc,
+                     reference_1: :asc,
+                     line_amount: :asc)
+  end
+
   def pas_group_filter(base_query)
-    incomplete_records = base_query.without_charge.distinct.pluck(:reference_1, :reference_2, :reference_3).transpose
+    incomplete_records = base_query.without_charge.distinct.
+      pluck(:reference_1, :reference_2, :reference_3).transpose
 
     base_query.where.not(reference_1: incomplete_records[0].reject(&:blank?)).
       where.not(reference_2: incomplete_records[1].reject(&:blank?)).
       where.not(reference_3: incomplete_records[2].reject(&:blank?))
   end
 
+  def pas_sorter(base_query)
+    # TODO: make this PAS specific
+    base_query.order(transaction_reference: :asc,
+                     reference_1: :asc,
+                     line_amount: :asc)
+  end
+
   def wml_group_filter(base_query)
     incomplete_records = base_query.without_charge.distinct.pluck(:reference_1)
     base_query.where.not(reference_1: incomplete_records)
+  end
+
+  def wml_sorter(base_query)
+    # TODO: make this WML specific
+    base_query.order(transaction_reference: :asc,
+                     reference_1: :asc,
+                     line_amount: :asc)
   end
 end

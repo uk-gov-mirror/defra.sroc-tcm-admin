@@ -1,11 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-cfd_file_a:
+cfd_retro_file:
   regime: cfd
   region: 'A'
-  file_id: "1234"
+  retrospective: true
+  file_id: "00123"
+  generated_at: <%= 1.month.ago %>
 
-cfd_file_b:
+cfd_sroc_file:
   regime: cfd
   region: 'B'
-  file_id: "5678"
+  retrospective: false
+  file_id: "05678T"
+  generated_at: <%= 1.hour.ago %>

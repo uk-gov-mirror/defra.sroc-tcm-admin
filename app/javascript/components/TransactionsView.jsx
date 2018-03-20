@@ -2,34 +2,40 @@ import React from 'react'
 import axios from 'axios'
 import TransactionSummary from './TransactionSummary'
 import TransactionTable from './TransactionTable'
-import SearchBar from './SearchBar'
 import PaginationBar from './PaginationBar'
-import { RegionFilter } from './RegionFilter'
-import { TransactionSearchBox } from './TransactionSearchBox'
+import OptionSelector from './OptionSelector'
+import Constants from './constants'
+import TransactionSearchBox from './TransactionSearchBox'
 
 export default class TransactionsView extends React.Component {
   constructor (props) {
     super(props)
     const transactions = this.props.transactions || this.emptyTransactions()
-    let region = this.props.selectedRegion
-    if (region === null || typeof region == 'undefined' || region === '') {
-      if(this.props.regions && this.props.regions.length > 0) {
-        region = this.props.regions[0].value
-      }
-    }
+
+    const selectedRegion = this.props.selectedRegion || ''
+    const selectedFinancialYear = this.props.selectedFinancialYear || ''
+    const viewMode = this.props.viewMode || Constants.VIEW_MODE_NAMES[0]
+    const columns = this.tableColumns(viewMode)
 
     this.state = {
+      viewMode: viewMode,
+      tableColumns: columns,
       sortColumn: this.props.sortColumn,
       sortDirection: this.props.sortDirection,
       transactions: transactions,
-      selectedRegion: region,
+      selectedRegion: selectedRegion,
+      selectedFinancialYear: selectedFinancialYear,
       searchTerm: this.props.searchTerm,
       pageSize: transactions.pagination.per_page,
       currentPage: transactions.pagination.current_page,
       summary: this.emptySummary(),
-      fileSummaryOpen: false
+      fileSummaryOpen: false,
+      regionOptions: [{label: 'All', value: ''}],
+      financialYearOptions: [{label: 'All', value: ''}]
     }
 
+    this.changeViewMode = this.changeViewMode.bind(this)
+    this.changeFinancialYear = this.changeFinancialYear.bind(this)
     this.toggleSortDirection = this.toggleSortDirection.bind(this)
     this.changeSortColumn = this.changeSortColumn.bind(this)
     this.changeRegion = this.changeRegion.bind(this)
@@ -37,8 +43,13 @@ export default class TransactionsView extends React.Component {
     this.changePage = this.changePage.bind(this)
     this.changePageSize = this.changePageSize.bind(this)
     this.updateTransactionCategory = this.updateTransactionCategory.bind(this)
+    this.updateTemporaryCessation = this.updateTemporaryCessation.bind(this)
     this.showFileSummary = this.showFileSummary.bind(this)
     this.hideFileSummary = this.hideFileSummary.bind(this)
+  }
+
+  tableColumns (viewMode) {
+    return Constants[this.props.regime.toUpperCase() + '_COLUMNS'][viewMode]
   }
 
   emptyTransactions () {
@@ -48,8 +59,7 @@ export default class TransactionsView extends React.Component {
         per_page: perPage,
         current_page: 1
       },
-      // NOTE: we need a polyfill for Array.prototype.fill on IE
-      transactions: new Array(perPage).fill().map((_, i) => { return { id: i } })
+      transactions: [{id: 1}]
     }
   }
 
@@ -61,6 +71,24 @@ export default class TransactionsView extends React.Component {
       invoice_total: 0,
       net_total: 0
     }
+  }
+
+  changeViewMode(mode) {
+    const columns = this.tableColumns(mode)
+    // switch between TTBB, History and Retrospective views of the data
+    this.setState({
+      viewMode: mode,
+      currentPage: 1,
+      tableColumns: columns
+    }, () => {
+      this.fetchTableData()
+    })
+  }
+
+  changeFinancialYear (fy) {
+    this.setState({selectedFinancialYear: fy}, () => {
+      this.fetchTableData()
+    })
   }
 
   toggleSortDirection () {
@@ -101,7 +129,6 @@ export default class TransactionsView extends React.Component {
   }
 
   showFileSummary () {
-    console.log('show file summary')
     this.fetchSummaryDataAndShow()
     // query for all transactions to be billed that have a charge generated for them
     // but exclude any that have are part of multi-transactions if one or more other
@@ -109,7 +136,6 @@ export default class TransactionsView extends React.Component {
   }
 
   hideFileSummary () {
-    console.log('hide file summary')
     this.setState({fileSummaryOpen: false})
   }
 
@@ -122,11 +148,12 @@ export default class TransactionsView extends React.Component {
   }
 
   fetchTableData () {
-    axios.get(this.props.path + '.json', {
+    axios.get(this.transactionPath('path') + '.json', {
       params: {
         sort: this.state.sortColumn,
         sort_direction: this.state.sortDirection,
         region: this.state.selectedRegion,
+        fy: this.state.selectedFinancialYear,
         search: this.state.searchTerm,
         page: this.state.currentPage,
         per_page: this.state.pageSize
@@ -137,42 +164,76 @@ export default class TransactionsView extends React.Component {
           transactions: res.data,
           pagination: res.data.pagination,
           pageSize: res.data.pagination.per_page,
-          currentPage: res.data.pagination.current_page
+          currentPage: res.data.pagination.current_page,
+          selectedRegion: res.data.selected_region,
+          regionOptions: res.data.regions,
+          financialYearOptions: res.data.financial_years
         })
       })
       .catch(error => {
-        // TODO: handle this
-        console.log(error)
-        throw error
+        this.handleXhrError(error)
       })
   }
 
+  handleXhrError(error) {
+    // more than likely we've got a 401 because our session has timed-out
+    if (error.response.status === 401) {
+      // force reauthentication
+      window.location.reload(true)
+    } else {
+      console.log(error)
+      throw error
+    }
+  }
+
   fetchSummaryDataAndShow () {
-    axios.get(this.props.summaryPath + '.json', {
+    axios.get(this.transactionPath('summaryPath') + '.json', {
       params: {
-        region: this.state.selectedRegion,
+        region: this.state.selectedRegion
       }
     })
       .then(res => {
-        console.log(res)
         this.setState({
           summary: res.data,
           fileSummaryOpen: true
         })
       })
       .catch(error => {
-        // TODO: handle this
-        console.log(error)
-        throw error
+        this.handleXhrError(error)
       })
   }
 
   updateTransactionCategory (id, value) {
-    axios.patch(this.props.path + '/' + id + '.json',
+    this.updateRowForSlowNetwork(id, 'sroc_category', value)
+    this.doUpdate(id, {
+      category: value
+    })
+  }
+
+  updateTemporaryCessation (id, value) {
+    const showVal = (value === '1') ? 'Y' : 'N'
+    this.updateRowForSlowNetwork(id, 'temporary_cessation', showVal)
+    this.doUpdate(id, {
+      temporary_cessation: value
+    })
+  }
+
+  updateRowForSlowNetwork(id, attr, value) {
+    let data = this.state.transactions
+    let idx = data.transactions.findIndex(t => {
+      return t.id === id
+    })
+    if (idx !== -1) {
+      data.transactions[idx][attr] = value
+      data.transactions[idx].amount = 'Working...'
+      this.setState({ transactions: data })
+    }
+  }
+
+  doUpdate(id, value) {
+    axios.patch(this.transactionPath('path') + '/' + id + '.json',
       {
-        transaction_detail: {
-          category: value
-        }
+        transaction_detail: value
       },
       {
         headers: {
@@ -187,24 +248,33 @@ export default class TransactionsView extends React.Component {
       })
       if (idx !== -1) {
         data.transactions[idx] = res.data.transaction
-        console.log(res.data.transaction)
         this.setState({ transactions: data })
       }
     })
     .catch(error => {
-      // problem accessing or executing the rules service
-      console.log('error: ' + error)
+      this.handleXhrError(error)
     })
   }
 
-  render () {
+  currentViewMode () {
+    return Constants.VIEW_MODES[this.state.viewMode]
+  }
+
+  transactionPath (key) {
     const regime = this.props.regime
-    const columns = this.props.columns
+    const mode = this.currentViewMode()
+    return '/regimes/' + regime + mode[key]
+  }
+
+  render () {
+    const viewMode = this.state.viewMode
+    const regime = this.props.regime
+    const columns = this.state.tableColumns
     const sortColumn = this.state.sortColumn
     const sortDirection = this.state.sortDirection
     const transactions = this.state.transactions.transactions
     const pagination = this.state.transactions.pagination
-    const regions = this.props.regions
+    const regions = this.state.regionOptions
     const selectedRegion = this.state.selectedRegion
     const searchTerm = this.state.seachTerm
     const searchPlaceholder = this.props.searchPlaceholder
@@ -212,16 +282,21 @@ export default class TransactionsView extends React.Component {
     const pageSize = this.state.pageSize
     const summary = this.state.summary
     const categories = this.props.categories
-    const canGenerateFiles = this.props.generateFiles
-    const generateFilePath = this.props.generateFilePath
+    const canGenerateFiles = this.props.generateFiles && (viewMode === 'unbilled' || viewMode === 'retrospective')
+    const generateFilePath = this.transactionPath('generatePath')
     const csrfToken = this.props.csrfToken
+    const financialYearOptions = this.state.financialYearOptions
+    const selectedFinancialYear = this.state.selectedFinancialYear
+    const fileType = (viewMode === 'retrospective' ? 'Retrospective' : 'Transaction')
+    const fileDialogTitle = fileType + ' File'
+    const generateButtonLabel = 'Generate ' + fileType + ' File'
 
     let fileButton = null
     let fileDialog = null
     if (canGenerateFiles) {
       fileButton = (
         <button className='btn btn-primary' onClick={this.showFileSummary}>
-          Generate Transaction File
+          {generateButtonLabel}
         </button>
       )
       fileDialog = (
@@ -231,22 +306,69 @@ export default class TransactionsView extends React.Component {
           generateFilePath={generateFilePath}
           region={selectedRegion}
           csrfToken={csrfToken}
+          title={fileDialogTitle}
+          buttonLabel={generateButtonLabel}
           onClose={this.hideFileSummary} />
+      )
+    }
+
+    const modes = Constants.VIEW_MODE_NAMES.map((name, i) => {
+      return {label: Constants.VIEW_MODES[name].label, value: name}
+    })
+
+    let financialYearSelector = null
+    // history view only
+    if(viewMode === 'historic') {
+      financialYearSelector = (
+        <div className='mr-4'>
+          <OptionSelector selectedValue={selectedFinancialYear}
+            label='FY'
+            className='form-control'
+            options={financialYearOptions}
+            name='financial-year'
+            id='financial-year'
+            onChange={this.changeFinancialYear}
+          />
+        </div>
       )
     }
 
     return (
       <div>
-        <SearchBar>
-          <RegionFilter regions={regions}
-            selectedRegion={selectedRegion}
-            onChangeRegion={this.changeRegion}
-          />
-          <TransactionSearchBox placeholder={searchPlaceholder}
-            searchTerm={searchTerm} onSearch={this.search}
-          />
-          {fileButton}
-        </SearchBar>
+        <div className="row mb-4">
+          <div className="col">
+            <h1>{this.currentViewMode().label}</h1>
+          </div>
+        </div>
+        <div className='row search-bar'>
+          <div className='col mb-2 form-inline'>
+            <div className='mr-4'>
+              <OptionSelector selectedValue={viewMode}
+                label='View'
+                className='form-control'
+                options={modes}
+                name='mode'
+                id='mode-select'
+                onChange={this.changeViewMode}
+              />
+            </div>
+            <div className='mr-4'>
+              <OptionSelector selectedValue={selectedRegion}
+                label='Region'
+                className='form-control'
+                options={regions}
+                name='region'
+                id='regions'
+                onChange={this.changeRegion}
+              />
+            </div>
+            {financialYearSelector}
+            <TransactionSearchBox placeholder={searchPlaceholder}
+              searchTerm={searchTerm} onSearch={this.search}
+            />
+            {fileButton}
+          </div>
+        </div>
         <TransactionTable regime={regime}
           columns={columns}
           sortColumn={sortColumn}
@@ -256,6 +378,7 @@ export default class TransactionsView extends React.Component {
           onChangeSortDirection={this.toggleSortDirection}
           onChangeSortColumn={this.changeSortColumn}
           onChangeCategory={this.updateTransactionCategory}
+          onChangeTemporaryCessation={this.updateTemporaryCessation}
         />
         <PaginationBar pagination={pagination}
           useMatchingLabel={true}
