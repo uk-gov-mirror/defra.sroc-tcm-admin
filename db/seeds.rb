@@ -5,6 +5,7 @@ if Regime.count.zero?
 end
 
 r = Regime.find_by!(slug: 'pas')
+r.permit_categories.destroy_all
 PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'installations.csv'))
 
 %w[ A B E N S Y ].each do |region|
@@ -12,6 +13,7 @@ PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'installati
 end
 
 r = Regime.find_by!(slug: 'cfd')
+r.permit_categories.destroy_all
 PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_quality.csv'))
 
 %w[ A B E N S T Y ].each do |region|
@@ -19,6 +21,7 @@ PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_qual
 end
 
 r = Regime.find_by!(slug: 'wml')
+r.permit_categories.destroy_all
 PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'))
 
 %w[ A B E N S T U Y ].each do |region|
