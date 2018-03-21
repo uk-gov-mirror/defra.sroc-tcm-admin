@@ -4,7 +4,8 @@
   </div>
 </div>
 <%= form_for resource, :as => resource_name, :url => invitation_path(resource_name), :html => { :method => :put } do |f| %>
-  <%= devise_error_messages! %>
+  <%#= devise_error_messages! %>
+  <%= error_header(resource) %>
   <%= f.hidden_field :invitation_token %>
   <% if f.object.class.require_password_on_accepting %>
     <%= render partial: 'shared/password_help' %>

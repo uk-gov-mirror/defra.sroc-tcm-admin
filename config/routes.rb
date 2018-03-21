@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   as :user do
     get 'change_password/edit' => 'devise/registrations#edit', as: 'edit_user_registration'
-    put 'change_password' => 'devise/registrations#update', as: 'user_registration'
+    patch 'change_password' => 'devise/registrations#update', as: 'user_registration'
   end
 
   resources :users do

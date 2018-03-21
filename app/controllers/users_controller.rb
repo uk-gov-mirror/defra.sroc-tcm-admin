@@ -30,7 +30,7 @@ class UsersController < AdminController
   end
 
   def update
-    if @user.update(user_params)
+    if @user.update(user_params.except(:email))
       redirect_to users_path, notice: 'User account updated'
     else
       render :edit
