@@ -13,10 +13,6 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     }
   end
 
-  def original_file_date
-    transaction_detail.original_file_date.strftime("%d/%m/%y")
-  end
-
   def transaction_date
     transaction_detail.transaction_date.strftime("%d-%^b-%Y")
   end

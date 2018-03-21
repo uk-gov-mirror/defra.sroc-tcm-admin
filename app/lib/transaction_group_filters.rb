@@ -52,7 +52,8 @@ module TransactionGroupFilters
     incomplete_records = base_query.without_charge.distinct.
       pluck(:reference_1, :reference_2, :reference_3).transpose
 
-    return base_query if incomplete_records.empty?
+    return base_query if incomplete_records.empty? ||
+      incomplete_records.flatten.reject { |v| v.nil? }.empty?
 
     base_query.where.not(reference_1: incomplete_records[0].reject(&:blank?)).
       where.not(reference_2: incomplete_records[1].reject(&:blank?)).
@@ -68,6 +69,7 @@ module TransactionGroupFilters
 
   def wml_group_filter(base_query)
     incomplete_records = base_query.without_charge.distinct.pluck(:reference_1)
+    return base_query if incomplete_records.empty?
     base_query.where.not(reference_1: incomplete_records)
   end
 

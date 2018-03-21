@@ -13,6 +13,10 @@ class TransactionDetailPresenter < SimpleDelegator
     (period_end.to_date - period_start.to_date).to_i + 1
   end
 
+  def original_file_date
+    transaction_detail.original_file_date.strftime("%d/%m/%y")
+  end
+
   def pro_rata_days
     bd = billable_days
     fyd = financial_year_days

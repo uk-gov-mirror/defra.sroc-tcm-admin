@@ -4,7 +4,17 @@ const Constants = module.exports = {}
 
 Constants.PAS_COLUMNS = { 
   unbilled: [
-    { name: 'customer_reference',
+    { name: 'original_filename',
+      label: 'File Reference',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'original_file_date',
+      label: 'File Date',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'customer_reference',
       label: 'Customer',
       sortable: true,
       editable: false
@@ -32,7 +42,7 @@ Constants.PAS_COLUMNS = {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: false,
-      editable: false
+      editable: true
     }, {
       name: 'period',
       label: 'Period',
@@ -299,7 +309,17 @@ Constants.CFD_COLUMNS = {
 
 Constants.WML_COLUMNS = {
   unbilled: [
-    { name: 'customer_reference',
+    { name: 'original_filename',
+      label: 'File Reference',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'original_file_date',
+      label: 'File Date',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'customer_reference',
       label: 'Customer',
       sortable: true,
       editable: false
