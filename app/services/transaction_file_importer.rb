@@ -89,20 +89,8 @@ class TransactionFileImporter
         reference_3: row[Detail::AbsOriginalPermitReference]
       })
     elsif regime.water_quality?
-      consent = row[Detail::LineDescription]
-      if consent.present?
-        consent = consent.split(' ').last
-        parts = consent.split('/')
-        data.merge!({
-          # consent
-          # reference_1: consent.take(consent.length - 2).join('/'),
-          reference_1: consent,
-          # version
-          reference_2: parts.second_to_last,
-          # discharge
-          reference_3: parts.last
-        })
-      end
+      consent_parts = extract_consent_fields(row[Detail::LineDescription])
+      data.merge!(consent_parts) unless consent_parts.empty?
     elsif regime.waste?
       line = row[Detail::LineDescription]
       data.merge!({
@@ -137,6 +125,35 @@ class TransactionFileImporter
     data["original_file_date"] = header.generated_at
 
     data
+  end
+
+  def extract_consent_fields(consent_data)
+    parts = {}
+    if consent_data.present?
+      # Consent data field could look like this:
+      # Consent No - 1008/2/1
+      # - or -
+      # Authorisation No - WQD005215/1/1
+      # - or -
+      # Consent No - WIG 0226/1/1
+      # - or -
+      # Consent No - T/40/00817/O */1/2
+
+      tokens = consent_data.split(' ')
+      # remove string prefix and join again
+      consent = tokens[3...tokens.length].join(' ')
+      # split to extract discharge and version numbers (always the last 2)
+      data = consent.split('/')
+      parts = {
+        # consent
+        reference_1: consent,
+        # version
+        reference_2: data.second_to_last,
+        # discharge
+        reference_3: data.last
+      }
+    end
+    parts
   end
 
   def determine_financial_year(date)
