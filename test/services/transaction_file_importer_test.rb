@@ -40,7 +40,7 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
 
   def test_import_creates_detail_records_with_correct_consent_info
     @header.transaction_details.each do |td|
-      assert_equal("071919/1/1", td.reference_1)
+      assert_equal("071919/1/3", td.reference_1)
       assert_equal("1", td.reference_2)
       assert_equal("3", td.reference_3)
     end
