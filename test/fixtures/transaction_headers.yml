@@ -27,6 +27,17 @@ pas:
   file_type_flag: 'I'
   file_sequence_number: 337
   bill_run_id: "462"
+  generated_at: <%= 2.weeks.ago.to_date %>
+  transaction_count: 11
+  invoice_total: 9851959
+  credit_total: -9454762
+pas_b:
+  regime: pas
+  feeder_source_code: "PAS"
+  region: "B"
+  file_type_flag: 'I'
+  file_sequence_number: 337
+  bill_run_id: "462"
   generated_at: <%= 6.weeks.ago.to_date %>
   transaction_count: 11
   invoice_total: 9851959

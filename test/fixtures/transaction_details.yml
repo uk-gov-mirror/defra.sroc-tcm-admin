@@ -1,5 +1,10 @@
-defaults: &defaults
+cfd:
+  transaction_header: cfd
   sequence_number: 1
+  customer_reference: "A60425822C"
+  transaction_date: <%= 2.months.ago %>
+  transaction_type: "I"
+  transaction_reference: "826951A"
   related_reference: ""
   currency_code: "GBP"
   header_narrative: ""
@@ -13,11 +18,13 @@ defaults: &defaults
   header_attr_8: ""
   header_attr_9: ""
   header_attr_10: ""
+  line_amount: 23747
   line_vat_code: ""
   line_area_code: "3"
+  line_description: "Consent No - ANQA/1234/1/1"
   line_income_stream_code: "C"
   line_context_code: "D"
-  line_attr_1: "Blue Rd. Haystack Disposal"
+  line_attr_1: "Green Rd. Pig Disposal"
   line_attr_2: "STORM SEWAGE OVERFLOW"
   line_attr_3: "01/04/17 - 10/08/17"
   line_attr_4: "365/132"
@@ -34,6 +41,11 @@ defaults: &defaults
   line_attr_15: ""
   line_quantity: 1
   unit_of_measure: "Each"
+  unit_of_measure_price: 23747
+  status: "unbilled"
+  reference_1: "ANQA/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
   generated_filename:
   generated_file_at:
   temporary_cessation: false
@@ -45,155 +57,6 @@ defaults: &defaults
   period_end: "10-Aug-2017"
   original_filename: 'CFDBI00123'
   original_file_date: <%= 2.weeks.ago.to_date %>
-  tcm_financial_year: "1718"
-
-cfd:
-  <<: *defaults
-  transaction_header: cfd
-  customer_reference: "A60425822C"
-  transaction_date: <%= 2.months.ago %>
-  transaction_type: "C"
-  transaction_reference: "826951A"
-  line_amount: 23747
-  line_description: "Consent No - ANQA/1234/1/1"
-  line_attr_1: "Green Rd. Pig Disposal"
-  unit_of_measure_price: 23747
-  status: "unbilled"
-  reference_1: "ANQA/1234/1/1"
-  reference_2: "1"
-  reference_3: "1"
-  temporary_cessation: false
-
-cfd_b:
-  <<: *defaults
-  transaction_header: cfd_b
-  customer_reference: "A232211C"
-  transaction_date: <%= 2.months.ago %>
-  transaction_type: "C"
-  transaction_reference: "826951A"
-  line_amount: 23747
-  line_description: "Consent No - ANNF/1754/1/1"
-  line_attr_1: "Green Rd. Pig Disposal"
-  unit_of_measure_price: 23747
-  status: "unbilled"
-  reference_1: "ANNF/1754/1/1"
-  reference_2: "1"
-  reference_3: "1"
-  temporary_cessation: false
-  original_filename: 'CFDBI00374'
-
-cfd_charged_1:
-  <<: *defaults
-  transaction_header: cfd_b
-  customer_reference: "A220368M"
-  transaction_date: <%= 2.months.ago %>
-  transaction_type: "C"
-  transaction_reference: "123429A"
-  header_attr_1: "20-AUG-2017"
-  line_amount: -12345
-  line_description: "Consent No - TONY/1234/1/1"
-  line_attr_1: "Blue Rd. Haystack Disposal"
-  unit_of_measure_price: -12345
-  status: "unbilled"
-  reference_1: "TONY/1234/1/1"
-  reference_2: "1"
-  reference_3: "1"
-  temporary_cessation: false
-  category: "2.3.4"
-  period_start: "01-Apr-2017"
-  period_end: "10-Aug-2017"
-  original_filename: 'CFDBI00123'
-  original_file_date: <%= 2.weeks.ago.to_date %>
-  tcm_financial_year: "1718"
-  tcm_charge: -96803
-  tcm_transaction_type: 'I'
-
-cfd_charged_2:
-  <<: *defaults
-  transaction_header: cfd_b
-  customer_reference: "A220368M"
-  transaction_date: <%= 2.months.ago %>
-  transaction_type: "I"
-  transaction_reference: "123429A"
-  header_attr_1: "20-AUG-2017"
-  line_amount: 23747
-  line_description: "Consent No - TONY/1234/1/1"
-  line_attr_1: "Blue Rd. Haystack Disposal"
-  unit_of_measure_price: 23747
-  status: "unbilled"
-  reference_1: "TONY/1234/1/1"
-  reference_2: "1"
-  reference_3: "1"
-  temporary_cessation: false
-  category: "2.3.4"
-  period_start: "01-Apr-2017"
-  period_end: "10-Aug-2017"
-  original_filename: 'CFDBI00123'
-  original_file_date: <%= 2.weeks.ago.to_date %>
-  tcm_financial_year: "1718"
-  tcm_charge: 196803
-  tcm_transaction_type: 'I'
-
-cfd_historic:
-  transaction_header: cfd
-  sequence_number: 1
-  customer_reference: "A60425820C"
-  transaction_date: <%= 2.weeks.ago %>
-  transaction_type: "C"
-  transaction_reference: "120334A"
-  related_reference: ""
-  currency_code: "GBP"
-  header_narrative: ""
-  header_attr_1: "29-AUG-2017"
-  header_attr_2: ""
-  header_attr_3: ""
-  header_attr_4: ""
-  header_attr_5: ""
-  header_attr_6: ""
-  header_attr_7: ""
-  header_attr_8: ""
-  header_attr_9: ""
-  header_attr_10: ""
-  line_amount: 23747
-  line_vat_code: ""
-  line_area_code: "3"
-  line_description: "Consent No - ANNNF/1751/1/1"
-  line_income_stream_code: "C"
-  line_context_code: "D"
-  line_attr_1: "Green Rd. Pig Disposal"
-  line_attr_2: "STORM SEWAGE OVERFLOW"
-  line_attr_3: "01/04/17 - 10/08/17"
-  line_attr_4: "365/132"
-  line_attr_5: "C 1"
-  line_attr_6: "E 1"
-  line_attr_7: "S 1"
-  line_attr_8: "684"
-  line_attr_9: "96%"
-  line_attr_10: ""
-  line_attr_11: ""
-  line_attr_12: ""
-  line_attr_13: ""
-  line_attr_14: ""
-  line_attr_15: ""
-  line_quantity: 1
-  unit_of_measure: "Each"
-  unit_of_measure_price: 23747
-  status: "billed"
-  filename:
-  reference_1: "BVF99/990022"
-  reference_2: "1"
-  reference_3: "1"
-  generated_filename:
-  generated_file_at:
-  temporary_cessation: false
-  temporary_cessation_start:
-  temporary_cessation_end:
-  category: "2.3.1"
-  charge_calculation:
-  period_start: "01-Apr-2017"
-  period_end: "10-Aug-2017"
-  original_filename: 'CFDAI00371'
-  original_file_date: <%= 2.months.ago.to_date %>
   tcm_financial_year: "1718"
 
 pas:
@@ -241,68 +104,6 @@ pas:
   unit_of_measure: "Each"
   unit_of_measure_price: 323260
   status: "unbilled"
-  filename: "PASYI00337.dat.transfered-19062017"
-  reference_1: "VP3839DA"
-  reference_2: "NA"
-  reference_3: "NA"
-  generated_filename:
-  generated_file_at:
-  temporary_cessation: false
-  temporary_cessation_start:
-  temporary_cessation_end:
-  category:
-  charge_calculation:
-  period_start: "21-Apr-2017"
-  period_end: "31 Mar 2018"
-  original_filename: 'PASYI00337'
-  original_file_date: <%= 6.weeks.ago.to_date %>
-  tcm_financial_year: "1718"
-
-pas_historic:
-  transaction_header: pas
-  sequence_number: 1
-  customer_reference: "A22210812P"
-  transaction_date: <%= 2.weeks.ago %>
-  transaction_type: "I"
-  transaction_reference: "PAS00058533Y"
-  related_reference:
-  currency_code: "GBP"
-  header_narrative:
-  header_attr_1: "23-JUN-2017"
-  header_attr_2: "Site"
-  header_attr_3: "Red St. Hill Farm"
-  header_attr_4: ""
-  header_attr_5: ""
-  header_attr_6: ""
-  header_attr_7: ""
-  header_attr_8: ""
-  header_attr_9: "Charge Period: "
-  header_attr_10: "21/04/2017 - 31/03/2018"
-  line_amount: 323260
-  line_vat_code: ""
-  line_area_code: "Y05"
-  line_description: "Subsistence Charge Permit No: VP3839DA"
-  line_income_stream_code: "P"
-  line_context_code: "P1"
-  line_attr_1: ""
-  line_attr_2: ""
-  line_attr_3: ""
-  line_attr_4: ""
-  line_attr_5: ""
-  line_attr_6: ""
-  line_attr_7: ""
-  line_attr_8: ""
-  line_attr_9: ""
-  line_attr_10: ""
-  line_attr_11: "F 3.0"
-  line_attr_12: ""
-  line_attr_13: ""
-  line_attr_14: ""
-  line_attr_15: "Directly Associated Activity only"
-  line_quantity: 1
-  unit_of_measure: "Each"
-  unit_of_measure_price: 323260
-  status: "billed"
   filename: "PASYI00337.dat.transfered-19062017"
   reference_1: "VP3839DA"
   reference_2: "NA"

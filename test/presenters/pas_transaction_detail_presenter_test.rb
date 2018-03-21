@@ -39,17 +39,27 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_transforms_into_json
-    assert_equal(@presenter.as_json, {
-      id: @transaction.id,
-      customer_reference: @presenter.customer_reference,
-      permit_reference: @presenter.permit_reference,
-      original_permit_reference: @presenter.original_permit_reference,
-      compliance_band: @presenter.compliance_band,
-      site: @presenter.site,
-      sroc_category: @presenter.category,
-      temporary_cessation: @presenter.temporary_cessation_flag,
-      period: @presenter.period,
-      amount: @presenter.amount
-    })
+    assert_equal(
+      {
+        id: @transaction.id,
+        customer_reference: @presenter.customer_reference,
+        tcm_transaction_reference: @presenter.tcm_transaction_reference,
+        generated_filename: @presenter.generated_filename,
+        original_filename: @presenter.original_filename,
+        original_file_date: @presenter.original_file_date,
+        permit_reference: @presenter.permit_reference,
+        original_permit_reference: @presenter.original_permit_reference,
+        compliance_band: @presenter.compliance_band,
+        site: @presenter.site,
+        sroc_category: @presenter.category,
+        temporary_cessation: @presenter.temporary_cessation_flag,
+        financial_year: @presenter.charge_period,
+        region: @presenter.region_from_ref,
+        period: @presenter.period,
+        line_amount: @presenter.original_charge,
+        amount: @presenter.amount
+      },
+      @presenter.as_json
+    )
   end
 end
