@@ -342,7 +342,7 @@ Constants.WML_COLUMNS = {
       name: 'temporary_cessation',
       label: 'TC',
       sortable: false,
-      editable: false
+      editable: true
     }, {
       name: 'period',
       label: 'Period',
