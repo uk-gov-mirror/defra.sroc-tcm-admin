@@ -1,6 +1,7 @@
 import React from 'react'
 import SelectionCell from './SelectionCell'
 import OptionSelector from './OptionSelector'
+import ErrorPopup from './ErrorPopup'
 
 export default class TransactionTableRow extends React.Component {
   constructor (props) {
@@ -18,7 +19,7 @@ export default class TransactionTableRow extends React.Component {
   }
 
   mapYN (value) {
-    return (value === 'Y' || value === 'y') ? 1 : 0
+    return (value === 'Y' || value === 'y') ? '1' : '0'
   }
 
   buildCells () {
@@ -33,7 +34,7 @@ export default class TransactionTableRow extends React.Component {
       }
     ]
 
-    const cells = this.props.columns.map((c) => {
+    let cells = this.props.columns.map((c) => {
       const clz = 'align-middle' + (c.rightAlign === true ? ' text-right' : '')
       if (c.editable) {
         if (c.name === 'sroc_category') {
@@ -71,15 +72,26 @@ export default class TransactionTableRow extends React.Component {
         )
       }
     })
+      
+    if (row.error_message) {
+      cells.push(
+        <td key='error' className='error-popup align-middle'>
+          <ErrorPopup message={row.error_message} open={false} />
+        </td>
+      )
+    }
 
     return cells
   }
 
   render () {
     const row = this.props.row
-
+    let clz = null;
+    if (row.error_message) {
+      clz = 'alert-danger'
+    }
     return (
-      <tr key={row.id}>
+      <tr key={row.id} className={clz}>
         { this.buildCells() }
       </tr>
     )

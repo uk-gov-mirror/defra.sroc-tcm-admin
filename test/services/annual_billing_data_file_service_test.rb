@@ -4,7 +4,10 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
   def setup
     @regime = regimes(:cfd)
     @service = AnnualBillingDataFileService.new(@regime)
-    @service.stubs(:invoke_charge_calculation).returns(dummy_charge)
+    # @service.stubs(:invoke_charge_calculation).returns(dummy_charge)
+    @calculator = mock('calculator')
+    @calculator.stubs(:calculate_transaction_charge).returns(dummy_charge)
+    @service.stubs(:calculator).returns(@calculator)
   end
 
   def test_new_upload_returns_instance_of_AnnualBillingDataFile

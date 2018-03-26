@@ -127,7 +127,8 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       region: @presenter.region_from_ref,
       period: @presenter.period,
       line_amount: @presenter.original_charge,
-      amount: @presenter.amount
+      amount: @presenter.amount,
+      error_message: @presenter.error_message
     }, @presenter.as_json)
   end
 

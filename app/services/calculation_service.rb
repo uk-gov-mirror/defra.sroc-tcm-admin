@@ -21,20 +21,27 @@ class CalculationService
     response = connection.request(build_post_request(payload))
 
     case response
-    when Net::HTTPSuccess, Net::HTTPInternalServerError
+    when Net::HTTPSuccess
       # successfully completed charge calculation or
       # an error in the calculation or a ruleset issue
       # we want to show an error at the front end if there's an issue
       JSON.parse(response.body)
+    when Net::HTTPInternalServerError
+      TcmLogger.error("Calculate charge problem: #{JSON.parse(response.body)}")
+      # some kind of server error at the charging service
+      build_error_response("Unable to calculate charge due to an unexpected error "\
+                           "at the Charge Service.\nPlease try again later")
     else
       # something unexpected happened
-      build_error_response(response.value)
-      # raise Exceptions::CalculationServiceError.new(response.value)
+      TcmLogger.notify(CalculationServiceError.new(response.value))
+      build_error_response("Unable to calculate charge due to an unexpected error."\
+                           "\nPlease try again later")
     end
   rescue => e
     # something REALLY unexpected happened ...
-    # raise Exceptions::CalculationServiceError.new(e)
-    build_error_response(e.message)
+    TcmLogger.notify(e)
+    build_error_response("Unable to calculate charge due to a network problem.\n"\
+                         "Please try again later")
   # rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
   #   Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
   #   raise Exceptions::CalculationServiceError.new e

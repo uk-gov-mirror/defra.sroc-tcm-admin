@@ -28,11 +28,12 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_it_should_return_an_error_if_update_category_fails
+    stub_calculator_error
     put regime_transaction_url(@regime, @transaction, format: :json),
-      params: { transaction_detail: { windmill: 'Windy' }}
-    assert_response :unprocessable_entity
+      params: { transaction_detail: { category: 'Windy' }}
+    assert_response :success
     assert_nil @transaction.reload.category
-    assert_nil @transaction.charge_calculation
+    assert_not_nil @transaction.charge_calculation['calculation']['messages']
   end
 
   # def test_it_should_show_transaction
@@ -43,6 +44,12 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   def stub_calculator
     calculator = mock()
     calculator.expects(:calculate_transaction_charge).returns({ calculation: { chargeValue: 12345.67 }})
+    TransactionsController.any_instance.stubs(:calculator).returns(calculator)
+  end
+
+  def stub_calculator_error
+    calculator = mock()
+    calculator.expects(:calculate_transaction_charge).returns({ calculation: { messages: 'Error message' }})
     TransactionsController.any_instance.stubs(:calculator).returns(calculator)
   end
 end

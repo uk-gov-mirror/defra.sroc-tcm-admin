@@ -139,6 +139,10 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date transaction_detail.transaction_header.generated_at
   end
 
+  def error_message
+    TransactionCharge.extract_calculation_error(transaction_detail)
+  end
+
 protected
   def transaction_detail
     __getobj__
