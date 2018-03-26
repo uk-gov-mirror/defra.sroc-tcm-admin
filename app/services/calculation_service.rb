@@ -40,8 +40,9 @@ class CalculationService
   rescue => e
     # something REALLY unexpected happened ...
     TcmLogger.notify(e)
-    build_error_response("Unable to calculate charge due to a network problem.\n"\
-                         "Please try again later")
+    build_error_response("Unable to calculate charge due to the rules service "\
+                         "being unavailable. Please log a call with the "\
+                         "service desk.")
   # rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
   #   Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
   #   raise Exceptions::CalculationServiceError.new e
