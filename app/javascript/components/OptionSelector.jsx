@@ -20,7 +20,7 @@ export default class OptionSelector extends React.Component {
   }
 
   render () {
-    const selectedValue = this.props.selectedValue
+    const selectedValue = this.props.selectedValue || ''
     const name = this.props.name
     const id = this.props.id
     const label = this.props.label

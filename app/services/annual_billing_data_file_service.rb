@@ -1,7 +1,7 @@
 require "csv"
 
 class AnnualBillingDataFileService
-  include AnnualBillingDataFileFormat, TransactionCharge
+  include AnnualBillingDataFileFormat, RegimeScope
 
   attr_reader :regime
 
@@ -154,15 +154,15 @@ class AnnualBillingDataFileService
         if !failed
           if transaction.changed?
             # (re)calculate the charge if the transaction has changed
-            transaction.charge_calculation = invoke_charge_calculation(transaction)
+            transaction.charge_calculation = TransactionCharge.invoke_charge_calculation(calculator, presenter.new(transaction))
             if transaction.charge_calculation_error?
               # what should we do here? revoke the changes and mark as an error?
               upload.log_error(counter,
                                "Calculation error: " +
-                               extract_calculation_error(transaction))
+                               TransactionCharge.extract_calculation_error(transaction))
               failed = true
             else
-              transaction.tcm_charge = extract_correct_charge(transaction)
+              transaction.tcm_charge = TransactionCharge.extract_correct_charge(transaction)
               if transaction.save
                 upload.success_count += 1
               else
@@ -208,5 +208,9 @@ class AnnualBillingDataFileService
   def regions_for_transactions(list)
     TransactionHeader.where(id: list.pluck(:transaction_header_id).uniq).
       pluck(:region).uniq.sort
+  end
+
+  def calculator
+    @calculator ||= CalculationService.new
   end
 end

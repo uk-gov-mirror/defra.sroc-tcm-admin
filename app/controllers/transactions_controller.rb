@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  include RegimeScope, TransactionCharge
+  include RegimeScope
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show, :edit, :update]
 
@@ -61,7 +61,13 @@ class TransactionsController < ApplicationController
       if update_transaction
         format.html { redirect_to edit_regime_transaction_path(@regime, @transaction),
                       notice: 'Transaction was successfully updated.' }
-        format.json { render json: { transaction: presenter.new(@transaction), message: 'Transaction updated' }, status: :ok, location: regime_transaction_path(@regime, @transaction) }
+        format.json {
+          render json: { transaction: presenter.new(@transaction),
+                         message: 'Transaction updated'
+                        },
+                        status: :ok,
+                        location: regime_transaction_path(@regime, @transaction)
+        }
       else
         format.html { render :edit }
         format.json { render json: @transaction, status: :unprocessable_entity }
@@ -80,9 +86,13 @@ class TransactionsController < ApplicationController
               @transaction.charge_calculation = get_charge_calculation
               if @transaction.charge_calculation_error?
                 @transaction.temporary_cessation = tc_changes[0]
+                @transaction.tcm_charge = nil
               else
-                @transaction.tcm_charge = extract_correct_charge(@transaction)
+                @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
               end
+            else
+              # we might have an error from a previous interaction so remove it
+              @transaction.charge_calculation = nil
             end
             @transaction.save
           elsif category_changes
@@ -91,14 +101,15 @@ class TransactionsController < ApplicationController
             # restore category if charge calc error
             if @transaction.charge_calculation_error?
               @transaction.category = category_changes[0]
+              @transaction.tcm_charge = nil
             else
               # extract charge calculation and correctly sign it
-              @transaction.tcm_charge = extract_correct_charge(@transaction)
+              @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
             end
             @transaction.save
           else
-            @transaction.errors.add(:category, "No category data")
-            false
+            # nothing changing but don't want to generate an error
+            true
           end
         else
           false
@@ -110,7 +121,8 @@ class TransactionsController < ApplicationController
     end
 
     def get_charge_calculation
-      invoke_charge_calculation(@transaction) if @transaction.category.present?
+      TransactionCharge.invoke_charge_calculation(calculator,
+                                                  presenter.new(@transaction)) if @transaction.category.present?
     end
 
     def present_transactions(transactions, selected_region, regions, summary)
@@ -148,5 +160,9 @@ class TransactionsController < ApplicationController
 
     def transaction_store
       @transaction_store ||= TransactionStorageService.new(@regime)
+    end
+
+    def calculator
+      @calculator ||= CalculationService.new
     end
 end

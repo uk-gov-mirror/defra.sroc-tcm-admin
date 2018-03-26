@@ -12,7 +12,9 @@ class TransactionDetail < ApplicationRecord
   scope :retrospective, -> { where(status: 'retrospective') }
   scope :historic, -> { where(status: 'billed') }
 
-  scope :with_charge_errors, -> { where("charge_calculation -> 'calculation' ->> 'messages' != null") }
+  scope :with_charge_errors, -> {
+    where("charge_calculation -> 'calculation' ->> 'messages' is not null")
+  }
   scope :credits, -> { where(arel_table[:line_amount].lt 0) }
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
   scope :region, ->(region) { joins(:transaction_header).
