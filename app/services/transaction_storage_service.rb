@@ -90,6 +90,8 @@ class TransactionStorageService
 
   def order_query(q, col, dir)
     dir = dir == 'desc' ? :desc : :asc
+    txt_dir = (dir == :asc) ? 'asc' : 'desc'
+
     # lookup col value
     case col.to_sym
     when :customer_reference
@@ -112,8 +114,10 @@ class TransactionStorageService
       q.order(category: dir, id: dir)
     when :compliance_band
       q.order(line_attr_11: dir, id: dir)
+    # when :variation
+    #   q.order(line_attr_9: dir, id: dir)
     when :variation
-      q.order(line_attr_9: dir, id: dir)
+      q.order("to_number(variation, '999%') #{txt_dir}")
     when :period
       q.order(period_start: dir, period_end: dir, id: dir)
     when :tcm_transaction_reference

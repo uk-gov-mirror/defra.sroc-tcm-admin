@@ -46,6 +46,12 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
     end
   end
 
+  def test_populates_variation_field
+    @header.transaction_details.each do |transaction|
+      assert_not_nil(transaction.variation)
+    end
+  end
+
   def test_imported_transactions_have_default_temporary_cessation_value
     @header.transaction_details.each do |transaction|
       assert_equal(false, transaction.temporary_cessation)

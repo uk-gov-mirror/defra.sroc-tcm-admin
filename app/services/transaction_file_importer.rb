@@ -91,6 +91,9 @@ class TransactionFileImporter
     elsif regime.water_quality?
       consent_parts = extract_consent_fields(row[Detail::LineDescription])
       data.merge!(consent_parts) unless consent_parts.empty?
+      data.merge!({
+        variation: extract_variation(row)
+      })
     elsif regime.waste?
       line = row[Detail::LineDescription]
       data.merge!({
@@ -154,6 +157,15 @@ class TransactionFileImporter
       }
     end
     parts
+  end
+
+  def extract_variation(row)
+    v = row[Detail::LineAttr9]
+    if v.blank?
+      "100%"
+    else
+      "#{v}%"
+    end
   end
 
   def determine_financial_year(date)
