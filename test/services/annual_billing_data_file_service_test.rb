@@ -111,6 +111,24 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     assert_equal(false, transaction_2.reload.temporary_cessation)
   end
 
+  def test_import_handles_zero_variation
+    file = file_fixture('cfd_abd_zero_variation.csv')
+    upload = prepare_upload(file)
+
+    transaction = transaction_details(:cfd)
+    transaction_2 = transaction.dup
+    transaction_2.reference_1 = "ANNF/1754/1/1"
+    transaction_2.save
+    transaction_3 = transaction.dup
+    transaction_3.reference_1 = "ZNNNF/1754/1/1"
+    transaction_3.save
+
+    @service.import(upload, file)
+    assert_equal("22%", transaction.reload.variation)
+    assert_equal("0%", transaction_2.reload.variation)
+    assert_equal("84%", transaction_3.reload.variation)
+  end
+
   def test_import_stores_variation_with_an_percent_suffix
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
