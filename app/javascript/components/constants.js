@@ -77,14 +77,14 @@ Constants.PAS_COLUMNS = {
       sortable: true,
       editable: false
     }, {
-      name: 'compliance_band',
-      label: 'Compliance Band',
+      name: 'temporary_cessation',
+      label: 'TC',
       sortable: true,
       editable: false
     }, {
-      name: 'temporary_cessation',
-      label: 'TC',
-      sortable: false,
+      name: 'compliance_band',
+      label: 'Compliance Band',
+      sortable: true,
       editable: false
     }, {
       name: 'period',
@@ -94,9 +94,24 @@ Constants.PAS_COLUMNS = {
     }, {
       name: 'amount',
       label: 'Amount (£)',
-      sortable: false,
+      sortable: true,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'original_filename',
+      label: 'File (Src)',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'generated_filename',
+      label: 'File (TCM)',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'tcm_transaction_reference',
+      label: 'Transaction Ref',
+      sortable: true,
+      editable: false
     }
   ],
   retrospective: [
@@ -367,19 +382,24 @@ Constants.WML_COLUMNS = {
       sortable: true,
       editable: false
     }, {
+      name: 'original_permit_reference',
+      label: 'Original Permit',
+      sortable: true,
+      editable: false
+    }, {
       name: 'sroc_category',
       label: 'SRoC Category',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'temporary_cessation',
+      label: 'TC',
       sortable: true,
       editable: false
     }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
-      editable: false
-    }, {
-      name: 'temporary_cessation',
-      label: 'TC',
-      sortable: false,
       editable: false
     }, {
       name: 'period',
@@ -389,9 +409,24 @@ Constants.WML_COLUMNS = {
     }, {
       name: 'amount',
       label: 'Amount (£)',
-      sortable: false,
+      sortable: true,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'original_filename',
+      label: 'File (Src)',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'generated_filename',
+      label: 'File (TCM)',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'tcm_transaction_reference',
+      label: 'Transaction Ref',
+      sortable: true,
+      editable: false
     }
   ],
   retrospective: [

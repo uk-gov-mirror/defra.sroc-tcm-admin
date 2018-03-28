@@ -33,6 +33,7 @@ class TransactionDetail < ApplicationRecord
     m = "%#{q}%"
     where(arel_table[:customer_reference].matches(m).
           or(arel_table[:reference_1].matches(m)).
+          or(arel_table[:reference_2].matches(m)).
           or(arel_table[:transaction_reference].matches(m)).
           or(arel_table[:category].matches(m)).
           or(arel_table[:original_filename].matches(m)).
