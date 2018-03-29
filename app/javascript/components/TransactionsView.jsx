@@ -123,7 +123,19 @@ export default class TransactionsView extends React.Component {
   }
 
   changePageSize (size) {
-    this.setState({pageSize: size}, () => {
+    // need to ensure we don't fall off the end into no-man's land by being on
+    // the last page and making the page size larger
+    const pagination = this.state.transactions.pagination
+    const total = pagination.total_count
+    const pageSize = this.state.pageSize
+    let currentPage = this.state.currentPage
+    const numPages = (total / size) + 1
+
+    if (numPages < currentPage) {
+      currentPage = Math.max(1, numPages)
+    }
+
+    this.setState({pageSize: size, currentPage: currentPage}, () => {
       this.fetchTableData()
     })
   }
