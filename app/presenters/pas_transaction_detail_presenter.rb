@@ -42,7 +42,7 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
       tcm_transaction_reference: tcm_transaction_reference,
       generated_filename: generated_filename,
       original_filename: original_filename,
-      original_file_date: original_file_date,
+      original_file_date: original_file_date_table,
       permit_reference: permit_reference,
       original_permit_reference: original_permit_reference,
       compliance_band: compliance_band,

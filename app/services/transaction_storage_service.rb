@@ -23,6 +23,13 @@ class TransactionStorageService
     order_query(q, order, direction).page(page).per(per_page)
   end
 
+  def transactions_to_be_billed_for_export(search = '', region = '')
+    region = first_region if region.blank?
+    q = regime.transaction_details.region(region).unbilled
+    q = q.search(search) unless search.blank?
+    order_query(q, :customer_reference, 'asc').limit(500)
+  end
+
   def transaction_history(search = '', fy = '', page = 1, per_page = 10, region = '',
                                order = :customer_reference, direction = 'asc')
     q = regime.transaction_details.historic
