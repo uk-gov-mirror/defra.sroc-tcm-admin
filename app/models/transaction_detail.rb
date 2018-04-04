@@ -13,7 +13,7 @@ class TransactionDetail < ApplicationRecord
   scope :historic, -> { where(status: 'billed') }
 
   scope :with_charge_errors, -> {
-    where("charge_calculation -> 'calculation' ->> 'messages' is not null")
+    where("(charge_calculation -> 'calculation' ->> 'messages') is not null")
   }
   scope :credits, -> { where(arel_table[:line_amount].lt 0) }
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
