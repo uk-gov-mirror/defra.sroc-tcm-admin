@@ -53,7 +53,8 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
       region: region_from_ref,
       period: period,
       line_amount: original_charge,
-      amount: amount
+      amount: amount,
+      error_message: error_message
     }
   end
 end
