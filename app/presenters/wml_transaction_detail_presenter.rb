@@ -32,7 +32,7 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
       temporary_cessation: temporary_cessation_flag,
       period: period,
       amount: amount,
-      errors: extract_errors
+      error_message: error_message
     }
   end
 
