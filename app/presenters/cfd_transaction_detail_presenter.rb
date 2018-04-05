@@ -66,7 +66,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       tcm_transaction_reference: tcm_transaction_reference,
       generated_filename: generated_filename,
       original_filename: original_filename,
-      original_file_date: original_file_date,
+      original_file_date: original_file_date_table,
       consent_reference: consent_reference,
       version: version,
       discharge: discharge_reference,

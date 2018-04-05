@@ -2,6 +2,7 @@
   margin-top: 2rem;
 
   .page-info {
+    display: inline-block;
     margin-top: 0;
     margin-bottom: 1em;
     @include media-breakpoint-up(lg) {

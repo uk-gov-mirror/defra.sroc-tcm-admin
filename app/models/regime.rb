@@ -38,6 +38,18 @@ class Regime < ApplicationRecord
     end_date < retrospective_cut_off_date
   end
 
+  def regions
+    if water_quality?
+      %w[ A B E N S T Y]
+    elsif installations?
+      %w[ A B E N S Y]
+    elsif waste?
+      %w[ A B E N S T U Y]
+    else
+      raise "Unknown regime #{slug}"
+    end
+  end
+
 private
   def generate_slug
     self.slug = name.parameterize.downcase

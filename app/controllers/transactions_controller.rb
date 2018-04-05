@@ -17,13 +17,11 @@ class TransactionsController < ApplicationController
       @region = params.fetch(:region, '')
     end
 
+    q = params.fetch(:search, "")
+
     respond_to do |format|
-      format.html do
-        render
-      end
-      format.js
+      format.html
       format.json do
-        q = params.fetch(:search, "")
         pg = params.fetch(:page, 1)
         per_pg = params.fetch(:per_page, 10)
 
@@ -40,6 +38,13 @@ class TransactionsController < ApplicationController
         summary = nil
         @transactions = present_transactions(@transactions, @region, regions, summary)
         render json: @transactions
+      end
+      format.csv do
+        @transactions = transaction_store.transactions_to_be_billed_for_export(
+          q,
+          @region
+        )
+        send_data csv.export(presenter.wrap(@transactions)), csv_opts
       end
     end
   end
@@ -76,6 +81,14 @@ class TransactionsController < ApplicationController
   end
 
   private
+    def csv_opts
+      ts = Time.zone.now.strftime("%Y%m%d%H%M%S")
+      {
+        filename: "transactions_to_be_billed_#{ts}.csv",
+        type: :csv
+      }
+    end
+
     def update_transaction
       if @transaction.updateable?
         if @transaction.update(transaction_params)
@@ -164,5 +177,9 @@ class TransactionsController < ApplicationController
 
     def calculator
       @calculator ||= CalculationService.new
+    end
+
+    def csv
+      @csv ||= TransactionExportService.new(@regime)
     end
 end

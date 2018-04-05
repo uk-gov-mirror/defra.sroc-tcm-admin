@@ -46,6 +46,7 @@ export default class TransactionsView extends React.Component {
     this.updateTemporaryCessation = this.updateTemporaryCessation.bind(this)
     this.showFileSummary = this.showFileSummary.bind(this)
     this.hideFileSummary = this.hideFileSummary.bind(this)
+    this.exportTransactions = this.exportTransactions.bind(this)
   }
 
   tableColumns (viewMode) {
@@ -149,6 +150,14 @@ export default class TransactionsView extends React.Component {
 
   hideFileSummary () {
     this.setState({fileSummaryOpen: false})
+  }
+
+  exportTransactions () {
+    let uri = this.transactionPath('path') + '.csv'
+    uri += '?region=' + encodeURIComponent(this.state.selectedRegion)
+    uri += '&search=' + encodeURIComponent(this.state.searchTerm)
+    console.log("do export:" + uri)
+    window.location.replace(uri)
   }
 
   generateFile () {
@@ -302,12 +311,13 @@ export default class TransactionsView extends React.Component {
     const fileType = (viewMode === 'retrospective' ? 'Retrospective' : 'Transaction')
     const fileDialogTitle = fileType + ' File'
     const generateButtonLabel = 'Generate ' + fileType + ' File'
+    const showExportButton = (viewMode === 'unbilled')
 
     let fileButton = null
     let fileDialog = null
     if (canGenerateFiles) {
       fileButton = (
-        <button className='btn btn-primary' onClick={this.showFileSummary}>
+        <button className='btn btn-primary mr-4' onClick={this.showFileSummary}>
           {generateButtonLabel}
         </button>
       )
@@ -396,8 +406,10 @@ export default class TransactionsView extends React.Component {
           useMatchingLabel={true}
           pageSize={pageSize}
           currentPage={currentPage}
+          showExportButton={showExportButton}
           onChangePageSize={this.changePageSize}
           onChangePage={this.changePage}
+          onExportTransactions={this.exportTransactions}
         />
         {fileDialog}
       </div>

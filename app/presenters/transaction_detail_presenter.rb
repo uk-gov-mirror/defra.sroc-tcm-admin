@@ -10,11 +10,15 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def billable_days
-    (period_end.to_date - period_start.to_date).to_i + 1
+    (transaction_detail.period_end.to_date - transaction_detail.period_start.to_date).to_i + 1
+  end
+
+  def original_file_date_table
+    transaction_detail.original_file_date.strftime("%d/%m/%y")
   end
 
   def original_file_date
-    transaction_detail.original_file_date.strftime("%d/%m/%y")
+    fmt_date transaction_detail.original_file_date
   end
 
   def pro_rata_days
@@ -41,12 +45,16 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def category_description
-    desc = PermitCategory.find_by(code: category).description
-    desc.truncate(150, separator: /\s/, ommission: '...')
+    if category.present?
+      desc = PermitCategory.find_by(code: category).description
+      desc.truncate(150, separator: /\s/, ommission: '...')
+    end
   end
   
   def baseline_charge
-    (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
+    if charge_calculated? && !charge_calculation_error?
+      (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
+    end
   end
 
   def region_from_ref
@@ -58,8 +66,10 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def transaction_date
-    # called when exporting to file, so charge should've been calculated
-    charge_calculation['generatedAt'].to_date
+    # called when exporting to file
+    if charge_calculation && charge_calculation['generatedAt']
+      charge_calculation['generatedAt'].to_date
+    end
   end
 
   def financial_year_days
@@ -70,13 +80,22 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def financial_year
-    period_start.month < 4 ? period_start.year - 1 : period_start.year
+    dt = transaction_detail.period_start
+    dt.month < 4 ? dt.year - 1 : dt.year
   end
 
   def charge_period
     # year = financial_year - 2000
-    # "FY#{year}#{year + 1}"
+    #sik76mzz iFY#{year}#{year + 1}"
     "FY#{tcm_financial_year}"
+  end
+
+  def period_start
+    fmt_date transaction_detail.period_start
+  end
+
+  def period_end
+    fmt_date transaction_detail.period_end
   end
 
   def credit_debit_indicator
@@ -96,7 +115,7 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def period
-    "#{period_start.strftime("%d/%m/%y")} - #{period_end.strftime("%d/%m/%y")}"
+    "#{transaction_detail.period_start.strftime("%d/%m/%y")} - #{transaction_detail.period_end.strftime("%d/%m/%y")}"
   end
 
   def amount

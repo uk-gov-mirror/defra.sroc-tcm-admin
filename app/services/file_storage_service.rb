@@ -9,6 +9,7 @@ class FileStorageService
     annual_billing_data: "annual_billing_data",
     import_archive: "archive/import",
     export_archive: "archive/export",
+    csv_export: "csv",
     quarantine: "quarantine"
   }
 
