@@ -45,12 +45,16 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def category_description
-    desc = PermitCategory.find_by(code: category).description
-    desc.truncate(150, separator: /\s/, ommission: '...')
+    if category.present?
+      desc = PermitCategory.find_by(code: category).description
+      desc.truncate(150, separator: /\s/, ommission: '...')
+    end
   end
   
   def baseline_charge
-    (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
+    if charge_calculated? && !charge_calculation_error?
+      (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
+    end
   end
 
   def region_from_ref

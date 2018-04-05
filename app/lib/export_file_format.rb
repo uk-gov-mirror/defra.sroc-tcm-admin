@@ -45,11 +45,16 @@ module ExportFileFormat
     :reference_2,
     :reference_3,
     :variation,
+    :temporary_cessation_flag,
+    :category,
+    :category_description,
     :period_start,
     :period_end,
     :tcm_financial_year,
     :original_filename,
     :original_file_date,
+    :pro_rata_days,
+    :baseline_charge,
     :tcm_charge
   ].freeze
 end
