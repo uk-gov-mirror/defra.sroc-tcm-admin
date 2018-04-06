@@ -13,9 +13,9 @@
 2.3.13,Sewage effluent discharge with a volume greater than 100m3 a day and up to and including 500m3 a day with OSM.
 2.3.14,Sewage effluent discharge with a volume greater than 50m3 a day and up to and including 100m3 a day.
 2.3.15,Sewage effluent discharge with a volume greater than 50m3 a day and up to and including 100m3 a day with OSM.
-2.3.16,Sewage effluent discharge with a volume >20m3 a day and ≤50m3 a day; OR Specified discharge consisting of sewage effluent.
-2.3.17,Sewage effluent discharge with a volume >20m3 a day and ≤50m3 a day with OSM; OR Specified discharge consisting of sewage effluent with OSM.
-2.3.18,Sewage effluent discharge >5m3 a day and ≤20m3 a day; OR discharge to surface water: secondary treated domestic sewage between 5 and 20m3 a day.
+2.3.16,Sewage effluent discharge with a volume >20m3 a day and <=50m3 a day; OR Specified discharge consisting of sewage effluent.
+2.3.17,Sewage effluent discharge with a volume >20m3 a day and <=50m3 a day with OSM; OR Specified discharge consisting of sewage effluent with OSM.
+2.3.18,Sewage effluent discharge >5m3 a day and <=20m3 a day; OR discharge to surface water: secondary treated domestic sewage between 5 and 20m3 a day.
 2.3.19,Sewage effluent discharge with a volume greater than 5m3 a day and up to and including 20m3 a day with OSM.
 2.3.20,Sewage effluent discharge with a volume up to 5m3 a day.
 2.3.21,"Trade effluent and/or non-sewage effluent (including cooling water) discharge with specific substances with a volume greater than 50,000m3 a day."
@@ -24,36 +24,36 @@
 2.3.24,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 50,000m3 a day with OSM."
 2.3.25,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 50,000m3 a day with no numeric permit conditions."
 2.3.26,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 50,000m3 a day with no numeric permit conditions with OSM."
-2.3.27,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >10,000m3 a day and ≤50,000m3 a day."
-2.3.28,"Trade effluent/non-sewage effluent (inc. cooling water) discharge with specific substances with a volume >10,000m3 a day and ≤50,000m3 a day with OSM."
+2.3.27,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >10,000m3 a day and <=50,000m3 a day."
+2.3.28,"Trade effluent/non-sewage effluent (inc. cooling water) discharge with specific substances with a volume >10,000m3 a day and <=50,000m3 a day with OSM"
 2.3.29,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 10,000m3 a day and up to and including 50,000m3 a day."
 2.3.30,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 10,000m3 a day and up to and including 50,000m3 a day with OSM."
-2.3.31,"Trade effluent/non-sewage effluent discharge with a volume >10,000m3 a day and ≤50,000m3 a day with no numeric permit conditions."
-2.3.32,"Trade effluent/non-sewage effluent discharge with a volume >10,000m3 a day and ≤50,000m3 a day with no numeric permit conditions with OSM."
-2.3.33,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >1,000m3 a day and ≤10,000m3 a day."
-2.3.34,"Trade effluent/non-sewage effluent (inc. cooling water) discharge with specific substances with a volume >1,000m3 a day and ≤10,000m3 a day with OSM."
+2.3.31,"Trade effluent/non-sewage effluent discharge with a volume >10,000m3 a day and <=50,000m3 a day with no numeric permit conditions."
+2.3.32,"Trade effluent/non-sewage effluent discharge with a volume >10,000m3 a day and <=50,000m3 a day with no numeric permit conditions with OSM."
+2.3.33,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >1,000m3 a day and <=10,000m3 a day."
+2.3.34,"Trade effluent/non-sewage effluent (inc. cooling water) discharge with specific substances with a volume >1,000m3 a day and <=10,000m3 a day with OSM."
 2.3.35,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 1,000m3 a day and up to and including 10,000 m3 a day."
 2.3.36,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 1,000m3 a day  and up to and including 10,000m3 a day with OSM."
-2.3.37,"Trade effluent and/or non-sewage effluent discharge with a volume >1,000m3 a day and ≤10,000m3 a day with no numeric permit conditions."
-2.3.38,"Trade effluent and/or non-sewage effluent discharge with a volume >1,000m3 a day and ≤10,000m3 a day with no numeric permit conditions with OSM."
-2.3.39,"Trade effluent and/or non-sewage effluent (including cooling water) discharge with specific substances with a volume >100m3 a day and ≤1,000m3 a day."
-2.3.40,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >100m3a day and ≤1,000m3 a day with OSM."
+2.3.37,"Trade effluent and/or non-sewage effluent discharge with a volume >1,000m3 a day and <=10,000m3 a day with no numeric permit conditions."
+2.3.38,"Trade effluent and/or non-sewage effluent discharge with a volume >1,000m3 a day and <=10,000m3 a day with no numeric permit conditions with OSM."
+2.3.39,"Trade effluent and/or non-sewage effluent (including cooling water) discharge with specific substances with a volume >100m3 a day and <=1,000m3 a day."
+2.3.40,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >100m3a day and <=1,000m3 a day with OSM"
 2.3.41,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 100m3 a day and up to and including 1,000m3 a day."
 2.3.42,"Trade effluent and/or non-sewage effluent discharge with a volume greater than 100m3 a day and up to and including 1,000 m3 a day with OSM."
-2.3.43,"Trade and/or non-sewage effluent discharge with a volume >100m3 a day and ≤1,000m3 a day with no numeric permit conditions."
-2.3.44,"Trade and/or non-sewage effluent discharge with a volume >100m3 a day and ≤1,000 m3 a day with no numeric permit conditions with OSM."
-2.3.45,Trade and/or non-sewage effluent (including cooling water) discharge with specific substances with a volume >20m3 a day and ≤100 m3/day.
-2.3.46,Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >20m3 a day and ≤100m3 a day with OSM.
-2.3.47,Trade effluent/non-sewage effluent discharge with volume >20m3 a day and ≤100m3 a day; OR Specified discharge of trade effluent or non-sewage effluent.
-2.3.48,Trade/non-sewage effluent discharge with volume >20m3 and ≤100m3 a day with OSM; OR Specified discharge of trade effluent/no-sewage effluent with OSM.
-2.3.49,"Trade/non-sewage effluent specified discharge OR discharge with vol. >20m3 and ≤100m3 a day, with no numeric permit conditions."
-2.3.50,"Trade/non-sewage effluent specified discharge OR discharge with vol. >20m3 and ≤100m3 a day, with no numeric permit conditions with OSM."
-2.3.51,Trade effluent and/or non-sewage effluent (including cooling water) discharge with specific substances with a volume >5m3 a day and ≤20m3 a day.
-2.3.52,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >5m3 a day and ≤20m3 a day, with OSM."
+2.3.43,"Trade and/or non-sewage effluent discharge with a volume >100m3 a day and <=1,000m3 a day with no numeric permit conditions."
+2.3.44,"Trade and/or non-sewage effluent discharge with a volume >100m3 a day and <=1,000 m3 a day with no numeric permit conditions with OSM."
+2.3.45,Trade and/or non-sewage effluent (including cooling water) discharge with specific substances with a volume >20m3 a day and <=100 m3/day.
+2.3.46,Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >20m3 a day and <=100m3 a day with OSM.
+2.3.47,Trade effluent/non-sewage effluent discharge with vol. >20m3 a day and <=100m3 a day; OR Specified discharge of trade effluent or non-sewage effluent
+2.3.48,Trade/non-sewage effluent discharge with volume >20m3 and <=100m3 a day with OSM; OR Specified discharge of trade effluent/no-sewage effluent with OSM
+2.3.49,"Trade/non-sewage effluent specified discharge OR discharge with vol. >20m3 and <=100m3 a day, with no numeric permit conditions."
+2.3.50,"Trade/non-sewage effluent specified discharge OR discharge with vol. >20m3 and <=100m3 a day, with no numeric permit conditions with OSM."
+2.3.51,Trade effluent and/or non-sewage effluent (including cooling water) discharge with specific substances with a volume >5m3 a day and <=20m3 a day.
+2.3.52,"Trade effluent/non-sewage effluent (including cooling water) discharge with specific substances with a volume >5m3 a day and <=20m3 a day, with OSM."
 2.3.53,Trade effluent and/or non-sewage effluent discharge with a volume greater than 5m3 a day and up to and including 20m3 a day.
 2.3.54,Trade effluent and/or non-sewage effluent discharge with a volume greater than 5m3 a day and up to and including 20m3 a day with OSM.
-2.3.55,Trade effluent and/or non-sewage effluent discharge with a volume >5m3 a day and ≤20m3 a day with no numeric permit conditions.
-2.3.56,"Trade effluent and/or non-sewage effluent discharge with a volume >5m3 a day and ≤20m3 a day with no numeric permit conditions, with OSM."
+2.3.55,Trade effluent and/or non-sewage effluent discharge with a volume >5m3 a day and <=20m3 a day with no numeric permit conditions.
+2.3.56,"Trade effluent and/or non-sewage effluent discharge with a volume >5m3 a day and <=20m3 a day with no numeric permit conditions, with OSM."
 2.3.57,Trade effluent and/or non-sewage effluent discharge with specific substances with a volume up to 5 m3 a day.
 2.3.58,Trade effluent and/or non-sewage effluent discharge with a volume up to 5 m3 a day.
 2.3.59,Trade effluent and/or non-sewage effluent discharge with a volume up to 5 m3 a day with no numeric permit conditions.
@@ -67,13 +67,13 @@
 2.3.67,Emergency overflow discharge.
 2.3.68,"Rainfall related discharge with no specific substances with a volume greater than 50,000m3 a day."
 2.3.69,"Rainfall related discharge with no specific substances with a volume greater than 1,000m3 a day and up to and including 50,000m3 a day."
-2.3.70,"Rainfall related discharges with no specific substances with a volume >20m3 a day and ≤1,000m3 a day; OR Specified discharge which is rainfall related"
+2.3.70,"Rainfall related discharges with no specific substances with a vol. >20m3 a day and <=1,000m3 a day; OR Specified discharge which is rainfall related"
 2.3.71,Rainfall related discharge with no specific substances with a volume up to and including 20 m3 a day.
 2.3.72,"Aquaculture discharge with a volume greater than 50,000 m3 a day."
 2.3.73,"Aquaculture discharge with a volume greater than 100m3 a day and up to and including 50,000m3 a day."
 2.3.74,Aquaculture discharge with a volume up to and including 100m3 a day; OR Specified discharge consisting of aquaculture discharge.
 2.3.75,"Cooling water discharge with a volume greater than 10,000m3 a day."
-2.3.76,"Cooling water discharge with a volume >100m3 a day and ≤10,000m3 a day; OR discharge to surface water: cooling water and heat exchangers."
+2.3.76,"Cooling water discharge with a volume >100m3 a day and <=10,000m3 a day; OR discharge to surface water: cooling water and heat exchangers."
 2.3.77,Cooling water discharge with a volume up to 100m3 a day; OR Specified discharge consisting of cooling water.
 2.3.78,Thermal discharges with a volume greater than 100m3 a day.
 2.8.7,Groundwater activity which is part of a mining waste operation.

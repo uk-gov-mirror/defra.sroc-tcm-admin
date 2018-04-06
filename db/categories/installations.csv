@@ -2,7 +2,7 @@
 2.4.2,Chemical or fertiliser production discharging to a water course via on-site effluent treatment plant and including no more than one combustion plant.
 2.4.3,Chemical/fertiliser or pharmaceutical production discharging to a water course via an on-site effluent treatment plant.
 2.4.4,"Chemical production or chemical fertiliser production, involving large scale continuous operations and discharging to sewer."
-2.4.5,"Chemical/fertiliser or pharmaceutical production, batch or semi-continuous operations, discharging to sewer, inc. more than two Chapter 4 activities."
+2.4.5,"Chemical/fertiliser or pharmaceutical production, batch or semi-continuous operations, discharging to sewer, inc. more than three Chapter 4 activities"
 2.4.6,"Chemical production, or chemical fertiliser or pharmaceutical production, involving batch or semi-continuous operations and discharging to sewer."
 2.4.7,"Chemical production, or chemical fertiliser or pharmaceutical production, involving small scale or simple batch operations."
 2.4.8,Section 4.1 or 4.2 - anaerobic digestion (designed to be fed with non-waste crops).
@@ -35,14 +35,14 @@
 2.6.17,Section 1.2 - existing waste gasification or pyrolysis plant not subject to Chapter IV of the IED because the syngas meets end-of-waste requirements.
 2.6.18,Section 5.1 - new or existing biomass co-incineration plant which is not subject to Chapter IV of the Industrial Emissions Directive.
 2.6.19,Any activity falling in references 2.6.1 to 2.6.10  in Table 2.16 where construction has not commenced.
-2.7.1,Section 6.8 - food and Drink activity with no additional components.
-2.7.2,Section 6.8 - food and Drink activity with 1 additional component.
-2.7.3,Section 6.8 - food and Drink activity with 2 additional components.
-2.7.4,Section 6.8 - food and Drink activity with 3 or 4 additional components.
-2.7.5,Section 6.8 - food and Drink activity with 5 or 6 additional components.
-2.7.6,Section 6.8 - food and Drink activity with 7 or 8 additional components.
-2.7.7,Section 6.8 - food and Drink activity with 9 to13 additional components.
-2.7.8,Section 6.8 - food and Drink activity with 14 or more additional components.
+2.7.1,Section 6.8 - food and drink activity with no additional components.
+2.7.2,Section 6.8 - food and drink activity with 1 additional component.
+2.7.3,Section 6.8 - food and drink activity with 2 additional components.
+2.7.4,Section 6.8 - food and drink activity with 3 or 4 additional components.
+2.7.5,Section 6.8 - food and drink activity with 5 or 6 additional components.
+2.7.6,Section 6.8 - food and drink activity with 7 or 8 additional components.
+2.7.7,Section 6.8 - food and drink activity with 9 to13 additional components.
+2.7.8,Section 6.8 - food and drink activity with 14 or more additional components.
 2.8.1,SR 2014 No.2 - the management of extractive waste.
 2.8.2,SR 2015 No.1 - onshore oil exploration.
 2.8.3,Mining waste operation.
@@ -71,19 +71,19 @@
 2.10.3,"Gas turbine, combined heat and power plant; inc. fuel storage, gas abatement, effluent treatment and cooling water, gas turbines and boilers."
 2.10.4,"Section 1.1 - compressor or boiler; including any fuel storage and gas abatement, effluent treatment plant and cooling water activities."
 2.10.5,Landfill only serving and associated with an operating and permitted combustion plant; inc. effluent treatment or sludge lagoon activities.
-2.10.6,Section 1.1 - odorisation plant.
+2.10.6,Section 1.1 - odourisation plant.
 2.11.1,"SR 2009 No.8 - management of inert extractive waste; OR Management inert extractive waste, inc. with a point source discharge or by passive treatment."
 2.11.2,Management of non-inert non-hazardous extractive waste.
 2.11.3,Management of any extractive waste in a Category A mining waste facility; OR Management of hazardous extractive waste.
 2.12.1,"Producing, melting or refining iron or steel in an integrated works; including all activities which are part of the installation."
 2.12.2,"Producing, melting or refining iron or steel; producing non-ferrous metals; OR integrated installations using lead, zinc or precious metals."
 2.12.3,Processing ferrous metals and their alloys by using hot-rolling mills with a production capacity of more than 30 tonnes of crude steel per hour.
-2.12.4,Processing ferrous metals and their alloys by using hot-rolling mills with a production capacity of >20t and ≤30t of crude steel per hour.
+2.12.4,Processing ferrous metals and their alloys by using hot-rolling mills with a production capacity of >20t and <=30t of crude steel per hour.
 2.12.5,"Loading, unloading and handling of more than 500,000 tonnes a year of iron ore; inc. effluent treatment plant and cooling water activities."
 2.12.6,Production of a range of different non-ferrous metals from complex raw materials; inc. effluent treatment plant and cooling water activities.
 2.12.7,Production of non-ferrous metals not described in this reference 2.12.7; inc. any on site effluent treatment plant and cooling water activities.
 2.12.8,"Melting non-ferrous metals, including recovered products, the alloyage of non-ferrous metals and the operation of non-ferrous metals foundries."
-2.12.9,"Surface treatment of metals and plastics; Pt 2 of Sch. 1 activities; or Sect. 2.3 Pt A(1)(a) activity and waste operation, over 3 treatment techniques."
+2.12.9,"Surface treatment of metals and plastics; Pt 2 of Sch. 1 activities; or Sect. 2.3 Pt A(1)(a) activity and waste operation, over 3 treatment techniques"
 2.12.10,Surface treatment of metals and plastics; more than one Section 2.3 Part A(1)(a) activity and using 2-3 surface treatment of metals techniques.
 2.12.11,Surface treatment of metals and plastics; one Section 2.3 Part A(1)(a) activity and using no more than 1 surface treatment technique.
 2.13.1,Section 3.1 - production of cement clinker.
