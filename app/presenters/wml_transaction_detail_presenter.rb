@@ -22,6 +22,25 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
     reference_1
   end
 
+  def credit_line_description
+    if transaction_detail.line_description.present?
+      txt = transaction_detail.line_description
+      pos = txt.index /\sdue\s/
+      if pos
+        "Credit of subsistence charge for permit category #{category}" +
+          txt[pos..-1].gsub(/Permit Ref:/, 'EPR Ref:')
+      else
+        ""
+      end
+    end
+  end
+
+  def credit_line_attr_2
+  end
+
+  def credit_line_attr_3
+  end
+
   def as_json(options = {})
     {
       id: id,

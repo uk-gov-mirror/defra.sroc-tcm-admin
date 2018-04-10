@@ -18,6 +18,7 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def percentage_adjustment
+    # FIXME: this is wrong - this is not a percentage value
     # charge calculation adjustment as a percentage - ie. 95%
     val = charge_calculation['calculation']['decisionPoints']['percentageAdjustment']
     "#{val}%"

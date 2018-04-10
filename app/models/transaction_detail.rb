@@ -59,4 +59,12 @@ class TransactionDetail < ApplicationRecord
   def charge_calculation_error?
     charge_calculated? && charge_calculation["calculation"] && charge_calculation["calculation"]["messages"]
   end
+
+  def credit?
+    line_amount.negative?
+  end
+
+  def invoice?
+    line_amount.positive?
+  end
 end
