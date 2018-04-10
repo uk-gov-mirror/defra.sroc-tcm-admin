@@ -122,6 +122,16 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal('', @presenter.temporary_cessation_file)
   end
 
+  def test_discharge_location_has_correct_prefix
+    val = "Discharge Location: #{@transaction.line_attr_1}"
+    assert_equal(val, @presenter.discharge_location)
+  end
+
+  def test_discharge_location_has_prefix_when_blank
+    @presenter.line_attr_1 = nil
+    assert_equal("Discharge Location: ", @presenter.discharge_location)
+  end
+
   def test_it_transforms_into_json
     assert_equal({
       id: @transaction.id,

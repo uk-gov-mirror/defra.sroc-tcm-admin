@@ -58,7 +58,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def discharge_location
-    "Discharge Location: #{site}" unless site.blank?
+    "Discharge Location: #{site}"
   end
 
   # def period
