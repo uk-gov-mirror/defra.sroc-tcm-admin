@@ -26,6 +26,12 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     variation || line_attr_9
   end
 
+  def variation_percentage_file
+    val = variation_percentage
+    return "" if val == '100%'
+    val
+  end
+
   def consent_reference
     reference_1
     # "#{permit_reference}/#{version}/#{discharge_reference}"
