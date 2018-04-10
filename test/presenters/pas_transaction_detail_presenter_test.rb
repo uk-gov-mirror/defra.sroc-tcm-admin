@@ -46,7 +46,7 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
         tcm_transaction_reference: @presenter.tcm_transaction_reference,
         generated_filename: @presenter.generated_filename,
         original_filename: @presenter.original_filename,
-        original_file_date: @presenter.original_file_date,
+        original_file_date: @presenter.original_file_date_table,
         permit_reference: @presenter.permit_reference,
         original_permit_reference: @presenter.original_permit_reference,
         compliance_band: @presenter.compliance_band,
@@ -57,7 +57,8 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
         region: @presenter.region_from_ref,
         period: @presenter.period,
         line_amount: @presenter.original_charge,
-        amount: @presenter.amount
+        amount: @presenter.amount,
+        error_message: @presenter.error_message
       },
       @presenter.as_json
     )

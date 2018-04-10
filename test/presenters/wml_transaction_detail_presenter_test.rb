@@ -31,7 +31,7 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_transforms_into_json
-    assert_equal(@presenter.as_json, {
+    assert_equal({
       id: @transaction.id,
       customer_reference: @presenter.customer_reference,
       permit_reference: @presenter.permit_reference,
@@ -40,7 +40,7 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
       temporary_cessation: @presenter.temporary_cessation_flag,
       period: @presenter.period,
       amount: @presenter.amount,
-      errors: nil
-    })
+      error_message: nil
+    }, @presenter.as_json)
   end
 end
