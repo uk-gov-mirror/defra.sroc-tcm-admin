@@ -42,3 +42,14 @@ pas_b:
   transaction_count: 11
   invoice_total: 9851959
   credit_total: -9454762
+wml:
+  regime: wml
+  feeder_source_code: "WML"
+  region: "E"
+  file_type_flag: 'I'
+  file_sequence_number: 7892
+  bill_run_id:
+  generated_at: <%= 2.weeks.ago.to_date %>
+  transaction_count: 3
+  invoice_total: 10822
+  credit_total: -5556

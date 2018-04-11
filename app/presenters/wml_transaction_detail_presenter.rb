@@ -35,16 +35,38 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
     end
   end
 
-  def credit_line_attr_2
+  def invoice_line_description
+    if transaction_detail.line_description.present?
+      txt = transaction_detail.line_description
+      # remove leading text either "Compliance Adjustment at " or "Charge code n at "
+      pos = txt.index /\sat\s/
+      if pos
+        "Site: " + txt[(pos + 4)..-1].gsub(/Permit Ref:/, 'EPR Ref:')
+      else
+        ""
+      end
+    end
   end
 
-  def credit_line_attr_3
+  def compliance_band_with_percent
+    # FIXME: this should be built using data returned from rules engine
+    # in the form "B (100%)"
+    "#{compliance_band} (x%)"
+  end
+
+  def temporary_cessation_adjustment
+    # FIXME: this should be built using data returned from rules engine
+    temporary_cessation ? "50%" : ""
   end
 
   def as_json(options = {})
     {
       id: id,
       customer_reference: customer_reference,
+      tcm_transaction_reference: tcm_transaction_reference,
+      generated_filename: generated_filename,
+      original_filename: original_filename,
+      original_file_date: original_file_date_table,
       permit_reference: permit_reference,
       compliance_band: compliance_band,
       sroc_category: category,

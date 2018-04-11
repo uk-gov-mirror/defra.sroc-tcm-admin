@@ -7,52 +7,54 @@ class TransactionFileImporter
     header = nil
     process_retrospectives = SystemConfig.config.process_retrospectives?
 
-    CSV.foreach(path) do |row|
-      record_type = row[Common::RecordType]
+    TransactionHeader.transaction do
+      CSV.foreach(path) do |row|
+        record_type = row[Common::RecordType]
 
-      if record_type == "H"
-        if header.nil?
-          file_type = row[Header::FileType]
-          if file_type == "I"
-            source = row[Header::FileSource]
-            region = row[Header::Region]
-            file_type_flag = row[Header::FileType]
-            file_seq_no = row[Header::FileSequenceNumber]
-            bill_run_id = row[Header::BillRunId]
-            generated_at = sanitize_date(row[Header::FileDate])
+        if record_type == "H"
+          if header.nil?
+            file_type = row[Header::FileType]
+            if file_type == "I"
+              source = row[Header::FileSource]
+              region = row[Header::Region]
+              file_type_flag = row[Header::FileType]
+              file_seq_no = row[Header::FileSequenceNumber]
+              bill_run_id = row[Header::BillRunId]
+              generated_at = sanitize_date(row[Header::FileDate])
 
-            header = TransactionHeader.create!(
-              regime: Regime.find_by(name: source),
-              feeder_source_code: source,
-              region: region,
-              file_type_flag: file_type_flag,
-              file_sequence_number: file_seq_no,
-              bill_run_id: bill_run_id,
-              generated_at: generated_at,
-              filename: original_filename
-            )
+              header = TransactionHeader.create!(
+                regime: Regime.find_by(name: source),
+                feeder_source_code: source,
+                region: region,
+                file_type_flag: file_type_flag,
+                file_sequence_number: file_seq_no,
+                bill_run_id: bill_run_id,
+                generated_at: generated_at,
+                filename: original_filename
+              )
+            else
+              raise Exceptions::TransactionFileError, "Not a transaction file!"
+            end
           else
-            raise Exceptions::TransactionFileError, "Not a transaction file!"
+            raise Exceptions::TransactionFileError, "Header record already exists?!"
           end
+        elsif record_type == "D"
+          # detail record
+          raise Exceptions::TransactionFileError, "Detail record but no header record" if header.nil?
+          detail = extract_detail(header, row, process_retrospectives)
+          raise Exceptions::TransactionFileError, "Detail record has no reference_1" if detail[:reference_1].nil?
+          header.transaction_details.create(detail)
+        elsif record_type == "T"
+          # trailer record
+          raise Exceptions::TransactionFileError, "Trailer record but no header record" if header.nil?
+          # pull totals from trailer record
+          header.transaction_count = row[Trailer::RecordCount].to_i
+          header.invoice_total = row[Trailer::DebitTotal].to_i
+          header.credit_total = row[Trailer::CreditTotal].to_i
+          header.save!
         else
-          raise Exceptions::TransactionFileError, "Header record already exists?!"
+          raise Exceptions::TransactionFileError, "Unknown record type (expected 'H', 'D' or 'T'): [#{record_type}]"
         end
-      elsif record_type == "D"
-        # detail record
-        raise Exceptions::TransactionFileError, "Detail record but no header record" if header.nil?
-        detail = extract_detail(header, row, process_retrospectives)
-        raise Exceptions::TransactionFileError, "Detail record has no reference_1" if detail[:reference_1].nil?
-        header.transaction_details.create(detail)
-      elsif record_type == "T"
-        # trailer record
-        raise Exceptions::TransactionFileError, "Trailer record but no header record" if header.nil?
-        # pull totals from trailer record
-        header.transaction_count = row[Trailer::RecordCount].to_i
-        header.invoice_total = row[Trailer::DebitTotal].to_i
-        header.credit_total = row[Trailer::CreditTotal].to_i
-        header.save!
-      else
-        raise Exceptions::TransactionFileError, "Unknown record type (expected 'H', 'D' or 'T'): [#{record_type}]"
       end
     end
     header
@@ -96,8 +98,15 @@ class TransactionFileImporter
       })
     elsif regime.waste?
       line = row[Detail::LineDescription]
+      ref = if row[Detail::TransactionType] == 'C'
+              row[Detail::LineAttr2]
+            else
+              row[Detail::LineAttr3]
+            end
+
       data.merge!({
-        reference_1: line.split(':').last.strip
+        reference_1: ref,
+        reference_2: line.split(':').last.strip
       })
     end
 

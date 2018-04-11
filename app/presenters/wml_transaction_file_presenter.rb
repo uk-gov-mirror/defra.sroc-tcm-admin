@@ -35,8 +35,8 @@ class WmlTransactionFilePresenter < TransactionFilePresenter
       "JT",                   # line income stream code
       "",                     # line_context_code
       "",                     # line_attr_1
-      td.credit_line_attr_2,  # line_attr_2
-      td.credit_line_attr_3,  # line_attr_3
+      td.line_attr_2,         # line_attr_2
+      td.line_attr_3,         # line_attr_3
       "",                     # line_attr_4
       "",                     # was line_attr_5
       "",                     # line_attr_6

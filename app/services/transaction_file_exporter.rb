@@ -11,28 +11,35 @@ class TransactionFileExporter
   end
 
   def export
-    f = nil
+    files = []
     # lock transactions for regime / region
     # get list of exportable transactions
     TransactionDetail.transaction do
       q = grouped_unbilled_transactions_by_region(region).lock(true)
-      credit_total = q.credits.
-        pluck("charge_calculation -> 'calculation' -> 'chargeValue'").sum
-      invoice_total = q.invoices.
-        pluck("charge_calculation -> 'calculation' -> 'chargeValue'").sum
 
-      f = regime.transaction_files.create!(region: region,
-                                           generated_at: Time.zone.now,
-                                           credit_total: (-credit_total * 100).round,
-                                           invoice_total: (invoice_total * 100).round)
+      # can't do a distinct query once locked for update, so have to do it locally
+      # q.order(:tcm_financial_year).distinct.pluck(:tcm_financial_year).each do |fy|
+      q.pluck(:tcm_financial_year).uniq.sort.each do |fy|
+        fy_q = q.financial_year(fy)
+        credit_total = fy_q.credits.pluck(:tcm_charge).sum
+        invoice_total = fy_q.invoices.pluck(:tcm_charge).sum
 
-      # link transactions and update status
-      q.update_all(transaction_file_id: f.id, status: 'exporting')
+        f = regime.transaction_files.create!(region: region,
+                                             generated_at: Time.zone.now,
+                                             credit_total: credit_total,
+                                             invoice_total: invoice_total)
+
+        # link transactions and update status
+        fy_q.update_all(transaction_file_id: f.id, status: 'exporting')
+        files << f
+      end
     end
 
     # queue the background job to create the file
-    FileExportJob.perform_later(f.id) unless f.nil?
-    f
+    files.each do |file|
+      FileExportJob.perform_later(file.id)
+    end
+    files
   end
 
   def export_retrospectives
@@ -41,8 +48,8 @@ class TransactionFileExporter
     # get list of exportable transactions
     TransactionDetail.transaction do
       q = retrospective_transactions_by_region(region).lock(true)
-      credits = q.credits.pluck(:line_amount)
-      invoices = q.invoices.pluck(:line_amount)
+      credits = q.credits.pluck(:line_amount).sum
+      invoices = q.invoices.pluck(:line_amount).sum
       credit_total = credits.sum
       invoice_total = invoices.sum
 
@@ -102,25 +109,52 @@ class TransactionFileExporter
 
   def present(transaction_file)
     file_type = transaction_file.retrospective? ? 'Retrospective' : 'Transaction'
-    "#{regime.to_param.titlecase}#{file_type}FilePresenter".constantize.new(transaction_file)
-    #
-    # if transaction_file.retrospective?
-    #   if regime.water_quality?
-    #     CfdRetrospectiveFilePresenter.new(transaction_file)
-    #   elsif regime.waste?
-    #   else
-    #   end
-    # else
-    #   if regime.water_quality?
-    #     CfdTransactionFilePresenter.new(transaction_file)
-    #   elsif regime.waste?
-    #   else
-    #   end
-    # end
+    "#{regime.to_param.titlecase}#{file_type}FilePresenter".constantize.
+      new(transaction_file)
   end
 
   def assign_transaction_references(transaction_file)
     send "assign_#{regime.to_param}_transaction_references", transaction_file
+  end
+
+  def assign_wml_transaction_references(transaction_file)
+    # All transactions which are subject to a common permit reference and
+    # a common sign in the line amount in the TCM-generated transaction file
+    # should also be subject to a common invoice number in that file.
+    # For SRoC transactions, this number should take the format RNNNNNNNNT, where:
+    #
+    # o ‘R’ is the region indicator from header field 4
+    # o ‘NNNNNNNN’ is an 8-digit sequential number
+    # o ‘T’ is a fixed digit
+    #
+    # E.g. the first invoice number for region A would be A00000001T, and so on.
+    # The ‘T’ suffix should ensure that there will never be any duplication with
+    # invoice numbers previously generated in WaBS
+    atab = TransactionDetail.arel_table
+    positives = transaction_file.transaction_details.distinct.
+      where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
+    negatives = transaction_file.transaction_details.distinct.
+      where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
+
+    positives.each do |ref|
+      trans_ref = next_wml_transaction_reference
+      transaction_file.transaction_details.where(reference_1: ref).
+        where(atab[:tcm_charge].gteq(0)).
+        update_all(tcm_transaction_type: 'I',
+                   tcm_transaction_reference: trans_ref)
+    end
+    negatives.each do |ref|
+      trans_ref = next_wml_transaction_reference
+      transaction_file.transaction_details.where(reference_1: ref).
+        where(atab[:tcm_charge].lt(0)).
+        update_all(tcm_transaction_type: 'C',
+                   tcm_transaction_reference: trans_ref)
+    end
+  end
+
+  def next_wml_transaction_reference
+    n = SequenceCounter.next_invoice_number(regime, region)
+    "#{region}#{n.to_s.rjust(8, '0')}T"
   end
 
   def assign_pas_transaction_references(transaction_file)

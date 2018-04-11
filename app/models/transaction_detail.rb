@@ -21,6 +21,7 @@ class TransactionDetail < ApplicationRecord
                               merge(TransactionHeader.in_region(region)) }
   scope :without_charge, -> { where(charge_calculation: nil).
                               or(TransactionDetail.with_charge_errors) }
+  scope :financial_year, ->(fy) { where(tcm_financial_year: fy) }
 
   def self.search(q)
     m = "%#{q}%"
