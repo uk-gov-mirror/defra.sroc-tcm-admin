@@ -39,6 +39,24 @@ class TransactionDetailPresenter < SimpleDelegator
     # charge
   end
 
+  def currency_line_amount
+    pence_to_currency(transaction_detail.line_amount)
+  end
+
+  def currency_unit_of_measure_price
+    pence_to_currency(transaction_detail.unit_of_measure_price)
+  end
+
+  def currency_baseline_charge
+    return "" if baseline_charge.nil?
+    pence_to_currency(baseline_charge)
+  end
+
+  def currency_tcm_charge
+    return "" if transaction_detail.tcm_charge.nil?
+    pence_to_currency(transaction_detail.tcm_charge)
+  end
+
   def original_charge
     ActiveSupport::NumberHelper.number_to_currency(
           sprintf('%.2f', line_amount/100.0), unit: "")

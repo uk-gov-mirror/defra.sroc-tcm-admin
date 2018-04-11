@@ -156,6 +156,8 @@ export default class TransactionsView extends React.Component {
     let uri = this.transactionPath('path') + '.csv'
     uri += '?region=' + encodeURIComponent(this.state.selectedRegion)
     uri += '&search=' + encodeURIComponent(this.state.searchTerm)
+    uri += '&sort=' + encodeURIComponent(this.state.sortColumn)
+    uri += '&sort_direction=' + encodeURIComponent(this.state.sortDirection)
     console.log("do export:" + uri)
     window.location.replace(uri)
   }
