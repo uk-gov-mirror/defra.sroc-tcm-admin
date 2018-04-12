@@ -79,6 +79,20 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     end
   end
 
+  def test_detail_record_variation_is_blank_when_100_percent
+    @presenter.transaction_details.each_with_index do |td, i|
+      p = CfdTransactionDetailPresenter.new(td)
+      if i.odd?
+        p.line_attr_9 = '100%'
+        p.variation = nil
+      else
+        p.variation = '100%'
+      end
+      row = @presenter.detail_row(p, i)
+      assert row[31].blank?
+    end
+  end
+
   def test_detail_record_consent_number_not_prefixed
     # consent no. shouldn't be prefixed with 'Consent No - ' or 
     # 'Authorization No ' as per the incoming file value
