@@ -163,6 +163,8 @@ class TransactionFileImporter
     v = row[Detail::LineAttr9]
     if v.blank?
       "100%"
+    elsif v.ends_with?('%')
+      v
     else
       "#{v}%"
     end
