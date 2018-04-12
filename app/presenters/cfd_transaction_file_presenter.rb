@@ -32,7 +32,7 @@ class CfdTransactionFilePresenter < TransactionFilePresenter
       td.pro_rata_days,       # line_attr_4
       td.category_description, # was line_attr_5
       td.baseline_charge,     # line_attr_6
-      td.variation_percentage,     # line_attr_7 (compliance band)
+      td.variation_percentage_file,     # line_attr_7 (compliance band)
       td.temporary_cessation_file, # temporary cessation
       "",                     # line_attr_9   future - compliance band
       "",                     # line_attr_10  future - compliance adjustment
