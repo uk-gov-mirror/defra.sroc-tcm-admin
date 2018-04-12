@@ -23,7 +23,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def variation_percentage
-    variation || line_attr_9
+    variation # || line_attr_9
   end
 
   def variation_percentage_file
