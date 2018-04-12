@@ -18,6 +18,8 @@ class TransactionsController < ApplicationController
     end
 
     q = params.fetch(:search, "")
+    sort_col = params.fetch(:sort, :customer_reference)
+    sort_dir = params.fetch(:sort_direction, 'asc')
 
     respond_to do |format|
       format.html
@@ -30,8 +32,9 @@ class TransactionsController < ApplicationController
           pg,
           per_pg,
           @region,
-          params.fetch(:sort, :customer_reference),
-          params.fetch(:sort_direction, 'asc'))
+          sort_col,
+          sort_dir
+        )
 
         # don't want to display these here for now
         # summary = transaction_store.transactions_to_be_billed_summary(q, region)
@@ -42,8 +45,10 @@ class TransactionsController < ApplicationController
       format.csv do
         @transactions = transaction_store.transactions_to_be_billed_for_export(
           q,
-          @region
-        )
+          @region,
+          sort_col,
+          sort_dir
+        ).limit(500)
         send_data csv.export(presenter.wrap(@transactions)), csv_opts
       end
     end

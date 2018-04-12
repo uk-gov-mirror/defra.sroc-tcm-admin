@@ -17,7 +17,7 @@ module ExportFileFormat
     :header_attr_8,
     :header_attr_9,
     :header_attr_10,
-    :line_amount,
+    :currency_line_amount,
     :line_vat_code,
     :line_area_code,
     :line_description,
@@ -40,7 +40,7 @@ module ExportFileFormat
     :line_attr_15,
     :line_quantity,
     :unit_of_measure,
-    :unit_of_measure_price,
+    :currency_unit_of_measure_price,
     :reference_1,
     :reference_2,
     :reference_3,
@@ -54,7 +54,7 @@ module ExportFileFormat
     :original_filename,
     :original_file_date,
     :pro_rata_days,
-    :baseline_charge,
-    :tcm_charge
+    :currency_baseline_charge,
+    :currency_tcm_charge
   ].freeze
 end
