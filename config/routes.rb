@@ -29,4 +29,6 @@ Rails.application.routes.draw do
   authenticate(:user, ->(u) { u.admin? }) do
     mount Resque::Server, at: '/jobs'
   end
+
+  match '(errors)/:status', to: 'errors#show', via: :all, constraints: { status: /\d{3}/ }
 end

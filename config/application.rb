@@ -34,5 +34,10 @@ module SrocTcmAdmin
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # exception handling
+    config.exceptions_app = ->(env) do
+      ErrorsController.action(:show).call(env)
+    end
   end
 end

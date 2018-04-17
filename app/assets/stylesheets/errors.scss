@@ -29,3 +29,16 @@ $error-col: theme-color("danger");
     margin-bottom: 0.5em;
   }
 }
+
+.error-page {
+  padding: 10em 0;
+  text-align: center;
+
+  .message1 {
+    margin-top: 1.5em;
+  }
+
+  .message2 {
+    margin-bottom: 2em;
+  }
+}
