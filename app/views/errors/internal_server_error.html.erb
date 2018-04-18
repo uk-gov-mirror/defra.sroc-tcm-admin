@@ -1,0 +1,7 @@
+<% scope = "errors.500_internal_server_error" %>
+
+<%= render partial: "error_page", locals: {
+  heading: t("heading", scope: scope),
+  message1: t("message1", scope: scope),
+  message2: t("message2", scope: scope)
+} %>

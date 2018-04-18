@@ -8,7 +8,7 @@ require "active_record/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_view/railtie"
-require "action_cable/engine"
+# require "action_cable/engine"
 require "sprockets/railtie"
 require "rails/test_unit/railtie"
 
@@ -34,5 +34,8 @@ module SrocTcmAdmin
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # exception handling
+    config.exceptions_app = self.routes
   end
 end

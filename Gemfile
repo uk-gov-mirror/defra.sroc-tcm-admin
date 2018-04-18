@@ -53,6 +53,8 @@ gem 'bstard'
 gem 'devise'
 gem 'devise_invitable'
 
+gem 'secure_headers'
+
 group :production do
   gem 'airbrake', "~> 5.0"
 end
