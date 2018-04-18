@@ -36,8 +36,6 @@ module SrocTcmAdmin
     config.generators.system_tests = nil
 
     # exception handling
-    config.exceptions_app = ->(env) do
-      ErrorsController.action(:show).call(env)
-    end
+    config.exceptions_app = self.routes
   end
 end

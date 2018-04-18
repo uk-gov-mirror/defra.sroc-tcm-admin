@@ -1,7 +1,7 @@
-<% scope = "errors.500_system_error" %>
+<% scope = "errors.404_not_found" %>
 
 <%= render partial: "error_page", locals: {
   heading: t("heading", scope: scope),
   message1: t("message1", scope: scope),
-  status_code: 500
+  message2: t("message2", scope: scope)
 } %>

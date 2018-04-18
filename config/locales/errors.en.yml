@@ -1,9 +1,14 @@
 en:
   errors:
     404_not_found:
-      heading: Page not found
-      message1: If you entered a web address, please check it was correct.
-      message2: If you clicked a link and got here, please contact the support desk.
+      heading: "Unfortunately we could not find that page"
+      message1: "If you entered a URL, please check it was correct."
+      message2: "If you clicked on a link and got here, please contact the CIS Helpdesk on 8080."
     422_unprocessable_entity:
       heading: "We encountered a problem saving your data"
-      message1: "Please check your data and try again."
+      message1: "Unfortunately we had a problem saving your request. Please check your data and try again."
+      message2: "If the problem persists please contact the CIS Helpdesk on 8080"
+    500_internal_server_error:
+      heading: "Sorry, there seems to be a problem  :-("
+      message1: "Please try again in a few minutes."
+      message2: "If the problem persists please contact the CIS Helpdesk on 8080"
