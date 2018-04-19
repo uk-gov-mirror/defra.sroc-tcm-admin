@@ -39,9 +39,15 @@ export default class TransactionTableRow extends React.Component {
       if (c.editable) {
         if (c.name === 'sroc_category') {
           const categories = this.props.categories
+          const myId = 'category-' + row['id']
+
           return (
             <td key={c.name} className={clz}>
+              <label htmlFor={myId} className='sr-only'>
+                <span>Permit Category for xx</span>
+              </label>
               <SelectionCell
+                id={myId}
                 name={c.name}
                 value={row[c.name]}
                 options={categories}

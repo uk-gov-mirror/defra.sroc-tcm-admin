@@ -6,7 +6,7 @@ SecureHeaders::Configuration.default do |config|
     font_src: %w('self'),
     form_action: %w('self'),
     frame_ancestors: %w('none'),
-    img_src: %w('self'),
+    img_src: %w('self' data:),
     script_src: %w('self' 'unsafe-eval'),
     style_src: %w('self' 'unsafe-inline')
   }
