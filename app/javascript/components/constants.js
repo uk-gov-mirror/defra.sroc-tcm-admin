@@ -31,6 +31,8 @@ Constants.PAS_COLUMNS = {
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
+      accessHelp: 'SRoC Category for Permit ',
+      accessHelpColumn: 'permit_reference',
       sortable: true,
       editable: true
     }, {
@@ -41,6 +43,9 @@ Constants.PAS_COLUMNS = {
     }, {
       name: 'temporary_cessation',
       label: 'TC',
+      accessLabel: 'Temporary Cessation',
+      accessHelp: 'Temporary cessation flag for Permit ',
+      accessHelpColumn: 'permit_reference',
       sortable: false,
       editable: true
     }, {
@@ -79,6 +84,7 @@ Constants.PAS_COLUMNS = {
     }, {
       name: 'temporary_cessation',
       label: 'TC',
+      accessLabel: 'Temporary Cessation',
       sortable: true,
       editable: false
     }, {
@@ -110,6 +116,7 @@ Constants.PAS_COLUMNS = {
     }, {
       name: 'tcm_transaction_reference',
       label: 'Transaction Ref',
+      accessLabel: 'Transaction Reference',
       sortable: true,
       editable: false
     }
@@ -173,26 +180,34 @@ Constants.CFD_COLUMNS = {
     }, {
       name: 'version',
       label: 'Ver',
+      accessLabel: 'Version',
       sortable: false,
       editable: false
     }, {
       name: 'discharge',
       label: 'Dis',
+      accessLabel: 'Discharge',
       sortable: false,
       editable: false
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
+      accessHelp: 'SRoC Category for Consent ',
+      accessHelpColumn: 'consent_reference',
       sortable: true,
       editable: true
     }, {
       name: 'variation',
       label: '%',
+      accessLabel: 'Variation Percentage',
       sortable: true,
       editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
+      accessLabel: 'Temporary Cessation',
+      accessHelp: 'Temporary cessation flag for Consent ',
+      accessHelpColumn: 'consent_reference',
       sortable: false,
       editable: true
     }, {
@@ -222,11 +237,13 @@ Constants.CFD_COLUMNS = {
     }, {
       name: 'version',
       label: 'Ver',
+      accessLabel: 'Version',
       sortable: true,
       editable: false
     }, {
       name: 'discharge',
       label: 'Dis',
+      accessLabel: 'Discharge',
       sortable: true,
       editable: false
     }, {
@@ -237,11 +254,13 @@ Constants.CFD_COLUMNS = {
     }, {
       name: 'variation',
       label: '%',
+      accessLabel: 'Variation Percentage',
       sortable: true,
       editable: false
     }, {
       name: 'temporary_cessation',
       label: 'TC',
+      accessLabel: 'Temporary Cessation',
       sortable: true,
       editable: false
     }, {
@@ -268,6 +287,7 @@ Constants.CFD_COLUMNS = {
     }, {
       name: 'tcm_transaction_reference',
       label: 'Transaction Ref',
+      accessLabel: 'Transaction Reference',
       sortable: true,
       editable: false
     }
@@ -295,16 +315,19 @@ Constants.CFD_COLUMNS = {
     }, {
       name: 'version',
       label: 'Ver',
+      accessLabel: 'Version',
       sortable: false,
       editable: false
     }, {
       name: 'discharge',
       label: 'Dis',
+      accessLabel: 'Discharge',
       sortable: false,
       editable: false
     }, {
       name: 'variation',
       label: '%',
+      accessLabel: 'Variation Percentage',
       sortable: true,
       editable: false
     }, {
@@ -346,6 +369,8 @@ Constants.WML_COLUMNS = {
     }, {
       name: 'sroc_category',
       label: 'SRoC Category',
+      accessHelp: 'SRoC Category for Permit ',
+      accessHelpColumn: 'permit_reference',
       sortable: true,
       editable: true
     }, {
@@ -356,6 +381,9 @@ Constants.WML_COLUMNS = {
     }, {
       name: 'temporary_cessation',
       label: 'TC',
+      accessLabel: 'Temporary Cessation',
+      accessHelp: 'Temporary cessation flag for Permit ',
+      accessHelpColumn: 'permit_reference',
       sortable: false,
       editable: true
     }, {
@@ -394,6 +422,7 @@ Constants.WML_COLUMNS = {
     }, {
       name: 'temporary_cessation',
       label: 'TC',
+      accessLabel: 'Temporary Cessation',
       sortable: true,
       editable: false
     }, {
@@ -425,6 +454,7 @@ Constants.WML_COLUMNS = {
     }, {
       name: 'tcm_transaction_reference',
       label: 'Transaction Ref',
+      accessLabel: 'Transaction Reference',
       sortable: true,
       editable: false
     }

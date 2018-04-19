@@ -36,9 +36,20 @@ export default class TransactionTableHeader extends React.Component {
         />
       )
     } else {
+      let title = null
+      if (col.accessLabel) {
+        title = (
+          <span>
+            <span aria-hidden='true'>{col.label}</span>
+            <span className='sr-only'>{col.accessLabel}</span>
+          </span>
+        )
+      } else {
+        title = col.label
+      }
       return (
         <th key={col.name} className={col.rightAlign === true ? 'text-right' : ''}>
-          {col.label}
+          {title}
         </th>
       )
     }
