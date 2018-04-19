@@ -37,11 +37,11 @@ export default class TransactionTableHeader extends React.Component {
       )
     } else {
       let title = null
-      if (col.access_label) {
+      if (col.accessLabel) {
         title = (
           <span>
             <span aria-hidden='true'>{col.label}</span>
-            <span className='sr-only'>{col.access_label}</span>
+            <span className='sr-only'>{col.accessLabel}</span>
           </span>
         )
       } else {
