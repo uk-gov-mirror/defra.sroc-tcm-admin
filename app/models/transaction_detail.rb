@@ -3,6 +3,8 @@ class TransactionDetail < ApplicationRecord
   has_one :regime, through: :transaction_header
   has_one :transaction_file, inverse_of: :transaction_details
 
+  has_many :audit_logs, as: :auditable
+
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true
   validates :line_amount, presence: true
