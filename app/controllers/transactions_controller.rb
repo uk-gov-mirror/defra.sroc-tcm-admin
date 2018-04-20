@@ -4,6 +4,7 @@ class TransactionsController < ApplicationController
   include RegimeScope
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show, :edit, :update]
+  before_action :set_current_user, only: [:update]
 
   # GET /regimes/:regime_id/transactions
   # GET /regimes/:regime_id/transactions.json
@@ -97,6 +98,10 @@ class TransactionsController < ApplicationController
     def update_transaction
       if @transaction.updateable?
         if @transaction.update(transaction_params)
+        # @transaction.assign_attributes(transaction_params)
+        # if @transaction.valid?
+          # category_changes = @transaction.changes[:category]
+          # tc_changes = @transaction.changes[:temporary_cessation]
           category_changes = @transaction.previous_changes[:category]
           tc_changes = @transaction.previous_changes[:temporary_cessation]
           if tc_changes 
@@ -113,6 +118,12 @@ class TransactionsController < ApplicationController
               @transaction.charge_calculation = nil
             end
             @transaction.save
+            # if @transaction.save
+            #   auditor.log_modify(@transaction)
+            #   true
+            # else
+            #   false
+            # end
           elsif category_changes
             # always get charge when category changes unless blank
             @transaction.charge_calculation = get_charge_calculation
@@ -124,7 +135,14 @@ class TransactionsController < ApplicationController
               # extract charge calculation and correctly sign it
               @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
             end
+            # auditor.log_modify(@transaction)
             @transaction.save
+            # if @transaction.save
+            #   auditor.log_modify(@transaction)
+            #   true
+            # else
+            #   false
+            # end
           else
             # nothing changing but don't want to generate an error
             true
@@ -186,5 +204,13 @@ class TransactionsController < ApplicationController
 
     def csv
       @csv ||= TransactionExportService.new(@regime)
+    end
+
+    def auditor
+      @auditor ||= AuditService.new(current_user)
+    end
+
+    def set_current_user
+      Thread.current[:current_user] = current_user
     end
 end

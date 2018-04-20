@@ -3,7 +3,8 @@ require 'test_helper.rb'
 class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
   def setup
     @regime = regimes(:cfd)
-    @service = AnnualBillingDataFileService.new(@regime)
+    @user = users(:billing_admin) 
+    @service = AnnualBillingDataFileService.new(@regime, @user)
     # @service.stubs(:invoke_charge_calculation).returns(dummy_charge)
     @calculator = mock('calculator')
     @calculator.stubs(:calculate_transaction_charge).returns(dummy_charge)

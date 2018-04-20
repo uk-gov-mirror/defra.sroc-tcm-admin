@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20180419123501) do
     t.string "auditable_type"
     t.integer "auditable_id"
     t.string "action", null: false
-    t.json "changes"
+    t.json "payload"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["action"], name: "index_audit_logs_on_action"

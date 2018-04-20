@@ -3,10 +3,11 @@ require "csv"
 class AnnualBillingDataFileService
   include AnnualBillingDataFileFormat, RegimeScope
 
-  attr_reader :regime
+  attr_reader :regime, :user
 
-  def initialize(regime)
+  def initialize(regime, user)
     @regime = regime
+    @user = user
   end
 
   def new_upload(params = {})
@@ -83,6 +84,7 @@ class AnnualBillingDataFileService
   end
 
   def import(upload, path)
+    set_current_user
     headers = regime_headers
     key_header = headers.select { |h| h.fetch(:unique_reference, false) }.first
     key_column = key_header[:header]
@@ -208,6 +210,11 @@ class AnnualBillingDataFileService
   def regions_for_transactions(list)
     TransactionHeader.where(id: list.pluck(:transaction_header_id).uniq).
       pluck(:region).uniq.sort
+  end
+
+  def set_current_user
+    # so we can pick up the user for auditing changes
+    Thread.current[:current_user] = user
   end
 
   def calculator

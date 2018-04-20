@@ -1,4 +1,6 @@
 class TransactionDetail < ApplicationRecord
+  include Auditable
+
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
   has_one :transaction_file, inverse_of: :transaction_details

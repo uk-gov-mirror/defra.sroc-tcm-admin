@@ -59,7 +59,7 @@ class AnnualBillingDataFilesController < ApplicationController
 
     if @upload.errors.empty? && @upload.save
       # start background job
-      AnnualBillingDataImportJob.perform_later(@upload.id)
+      AnnualBillingDataImportJob.perform_later(current_user.id, @upload.id)
       # the show page will display progress while importing
       redirect_to regime_annual_billing_data_file_path(@regime, @upload)
     else
@@ -110,6 +110,6 @@ class AnnualBillingDataFilesController < ApplicationController
     end
 
     def data_service
-      @data_service ||= AnnualBillingDataFileService.new(@regime)
+      @data_service ||= AnnualBillingDataFileService.new(@regime, current_user)
     end
 end

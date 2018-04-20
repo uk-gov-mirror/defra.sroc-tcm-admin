@@ -5,7 +5,7 @@ class CreateAuditLog < ActiveRecord::Migration[5.1]
       t.string :auditable_type
       t.integer :auditable_id
       t.string :action, null: false, index: true
-      t.json :changes
+      t.json :payload
       t.timestamps
     end
 
