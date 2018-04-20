@@ -27,3 +27,13 @@ PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'
 %w[ A B E N S T U Y ].each do |region|
   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
 end
+
+if User.count.zero?
+  u = User.new(first_name: 'Tony',
+               last_name: 'Headford',
+               email: 'tony@binarycircus.com',
+               role: 'admin',
+               password: "Ab0#{Devise.friendly_token.first(8)}")
+  u.regime_users.build(regime_id: Regime.first.id, enabled: true) 
+  u.save!
+end
