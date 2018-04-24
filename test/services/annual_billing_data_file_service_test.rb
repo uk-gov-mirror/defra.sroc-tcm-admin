@@ -158,6 +158,37 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     assert_equal 2, upload.data_upload_errors.count
   end
 
+  def test_import_creates_audit_records
+    file = file_fixture('cfd_abd.csv')
+    upload = prepare_upload(file)
+    transaction = transaction_details(:cfd)
+    transaction_2 = transaction.dup
+    transaction_2.reference_1 = "ANNF/1754/1/1"
+    transaction_2.save
+
+    assert_difference('AuditLog.count', 2) do
+      @service.import(upload, file)
+    end
+    assert_equal(@user, AuditLog.last.user)
+  end
+
+  def test_import_creates_audit_log_of_changes
+    file = file_fixture('cfd_abd.csv')
+    upload = prepare_upload(file)
+    transaction = transaction_details(:cfd)
+
+    @service.import(upload, file)
+
+    log = transaction.reload.audit_logs.last
+    changes = log.payload['modifications']
+
+    assert_equal([nil, '2.3.4'], changes['category'])
+    assert_equal([false, true], changes['temporary_cessation'])
+    assert_equal([nil, '88%'], changes['variation'])
+    assert_not_nil(changes['charge_calculation'])
+    assert_not_nil(changes['tcm_charge'])
+  end
+
   def prepare_upload(file)
     upload = @service.new_upload(filename: File.basename(file))
     upload.state.upload!

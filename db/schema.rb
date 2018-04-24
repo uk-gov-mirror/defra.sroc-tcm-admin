@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180419123501) do
+ActiveRecord::Schema.define(version: 20180424113158) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -207,9 +207,11 @@ ActiveRecord::Schema.define(version: 20180419123501) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "retrospective", default: false, null: false
+    t.bigint "user_id"
     t.index ["regime_id"], name: "index_transaction_files_on_regime_id"
     t.index ["region"], name: "index_transaction_files_on_region"
     t.index ["state"], name: "index_transaction_files_on_state"
+    t.index ["user_id"], name: "index_transaction_files_on_user_id"
   end
 
   create_table "transaction_headers", force: :cascade do |t|
@@ -267,4 +269,5 @@ ActiveRecord::Schema.define(version: 20180419123501) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "transaction_files", "users"
 end

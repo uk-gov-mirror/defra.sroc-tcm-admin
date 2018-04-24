@@ -1,8 +1,11 @@
 class TransactionFile < ApplicationRecord
   belongs_to :regime, inverse_of: :transaction_files
   has_many :transaction_details, inverse_of: :transaction_file
+  belongs_to :user, inverse_of: :transaction_files
 
   validates :region, presence: true
+  validates :user_id, presence: true
+
   after_create :set_file_id
 
   def path

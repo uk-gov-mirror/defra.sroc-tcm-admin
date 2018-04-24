@@ -26,6 +26,6 @@ class TransactionFilesController < ApplicationController
     # :nocov:
 
     def exporter
-      @exporter ||= TransactionFileExporter.new(@regime, @region)
+      @exporter ||= TransactionFileExporter.new(@regime, @region, current_user)
     end
 end

@@ -2,6 +2,9 @@ require 'test_helper.rb'
 
 class PasTransactionFilePresenterTest < ActiveSupport::TestCase
   def setup
+    @user = users(:billing_admin)
+    Thread.current[:current_user] = @user
+
     @transaction_1 = transaction_details(:pas)
     @transaction_2 = @transaction_1.dup
 
@@ -133,7 +136,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
       },
       'generatedAt' => '10-AUG-2017'
     }
-    transaction.save
+    transaction.save!
   end
 
   def generate_reference(transaction)
