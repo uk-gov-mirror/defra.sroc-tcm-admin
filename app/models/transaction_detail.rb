@@ -1,11 +1,14 @@
 class TransactionDetail < ApplicationRecord
   include Auditable
+  audit_attributes [ :category,
+                     :temporary_cessation,
+                     :charge_calculation,
+                     :tcm_charge,
+                     :variation ]
 
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
   has_one :transaction_file, inverse_of: :transaction_details
-
-  has_many :audit_logs, as: :auditable
 
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true

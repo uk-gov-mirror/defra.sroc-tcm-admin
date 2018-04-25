@@ -2,9 +2,14 @@ require 'test_helper'
 
 class TransactionFileTest < ActiveSupport::TestCase
   def setup
+    @user = users(:billing_admin)
     @regime = regimes(:cfd)
-    @sroc_file = @regime.transaction_files.create!(region: 'A', retrospective: false)
-    @retro_file = @regime.transaction_files.create!(region: 'B', retrospective: true)
+    @sroc_file = @regime.transaction_files.create!(user: @user,
+                                                   region: 'A',
+                                                   retrospective: false)
+    @retro_file = @regime.transaction_files.create!(user: @user,
+                                                    region: 'B',
+                                                    retrospective: true)
   end
 
   def test_file_id_ends_with_t_for_sroc_charges

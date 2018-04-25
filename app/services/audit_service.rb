@@ -10,7 +10,8 @@ class AuditService
   end
 
   def log_modify(entity)
-    add_entry(:modify, entity, extract_changes(entity))
+    data = extract_changes(entity)
+    add_entry(:modify, entity, data) unless data[:modifications].empty?
   end
 
   def log_delete
@@ -24,11 +25,12 @@ class AuditService
 
   def extract_changes(entity)
     mods = {}
-    [ :category,
-      :temporary_cessation,
-      :charge_calculation,
-      :tcm_charge,
-      :variation ].each do |attr|
+    entity.audit_attributes.each do |attr|
+    # [ :category,
+    #   :temporary_cessation,
+    #   :charge_calculation,
+    #   :tcm_charge,
+    #   :variation ].each do |attr|
       if entity.send("saved_change_to_#{attr}?")
         mods[attr] = [entity.send("#{attr}_before_last_save"),
                       entity.send(attr)]
