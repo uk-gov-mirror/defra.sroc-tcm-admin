@@ -4,6 +4,8 @@ class User < ApplicationRecord
 
   has_many :regime_users, inverse_of: :user, dependent: :destroy
   has_many :regimes, -> { merge(RegimeUser.enabled) }, through: :regime_users
+  has_many :audit_logs, inverse_of: :user
+  has_many :transaction_files, inverse_of: :user
 
   after_save :ensure_a_default_regime_is_set
 

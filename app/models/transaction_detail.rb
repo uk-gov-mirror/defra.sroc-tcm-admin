@@ -1,4 +1,13 @@
 class TransactionDetail < ApplicationRecord
+  include Auditable
+
+  audit_events :update
+  audit_attributes [ :category,
+                     :temporary_cessation,
+                     :charge_calculation,
+                     :tcm_charge,
+                     :variation ]
+
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
   has_one :transaction_file, inverse_of: :transaction_details

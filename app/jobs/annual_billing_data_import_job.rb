@@ -1,13 +1,14 @@
 class AnnualBillingDataImportJob < ApplicationJob
   queue_as :default
 
-  def perform(upload_id)
+  def perform(user_id, upload_id)
     ActiveRecord::Base.connection_pool.with_connection do
       upload = AnnualBillingDataFile.includes(:regime).find(upload_id)
+      user = User.find(user_id)
 
       regime = upload.regime
       storage = FileStorageService.new
-      data_service = AnnualBillingDataFileService.new(regime)
+      data_service = AnnualBillingDataFileService.new(regime, user)
 
       # fetch stored file
       file = Tempfile.new

@@ -3,7 +3,8 @@ require 'test_helper.rb'
 class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
   def setup
     @regime = regimes(:cfd)
-    @service = AnnualBillingDataFileService.new(@regime)
+    @user = users(:billing_admin) 
+    @service = AnnualBillingDataFileService.new(@regime, @user)
     # @service.stubs(:invoke_charge_calculation).returns(dummy_charge)
     @calculator = mock('calculator')
     @calculator.stubs(:calculate_transaction_charge).returns(dummy_charge)
@@ -155,6 +156,37 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     assert_equal 2, upload.success_count
     assert_equal 2, upload.failed_count
     assert_equal 2, upload.data_upload_errors.count
+  end
+
+  def test_import_creates_audit_records
+    file = file_fixture('cfd_abd.csv')
+    upload = prepare_upload(file)
+    transaction = transaction_details(:cfd)
+    transaction_2 = transaction.dup
+    transaction_2.reference_1 = "ANNF/1754/1/1"
+    transaction_2.save
+
+    assert_difference('AuditLog.count', 2) do
+      @service.import(upload, file)
+    end
+    assert_equal(@user, AuditLog.last.user)
+  end
+
+  def test_import_creates_audit_log_of_changes
+    file = file_fixture('cfd_abd.csv')
+    upload = prepare_upload(file)
+    transaction = transaction_details(:cfd)
+
+    @service.import(upload, file)
+
+    log = transaction.reload.audit_logs.last
+    changes = log.payload['modifications']
+
+    assert_equal([nil, '2.3.4'], changes['category'])
+    assert_equal([false, true], changes['temporary_cessation'])
+    assert_equal([nil, '88%'], changes['variation'])
+    assert_not_nil(changes['charge_calculation'])
+    assert_not_nil(changes['tcm_charge'])
   end
 
   def prepare_upload(file)

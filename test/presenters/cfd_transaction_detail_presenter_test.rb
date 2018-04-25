@@ -72,18 +72,6 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@presenter.clean_variation_percentage, clean_variation)
   end
 
-  def test_variation_percentage_when_not_updated_is_original_value
-    @presenter.line_attr_9 = "95%"
-    @presenter.variation = nil
-    assert_equal("95%", @presenter.variation_percentage)
-  end
-
-  def test_variation_percentage_when_updated_is_new_value
-    @presenter.line_attr_9 = "95%"
-    @presenter.variation = "24%"
-    assert_equal("24%", @presenter.variation_percentage)
-  end
-
   def test_variation_percentage_file_returns_blank_when_100
     @presenter.variation = "100%"
     assert_equal("", @presenter.variation_percentage_file) 
@@ -156,7 +144,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def clean_variation
-    v = @transaction.variation || @transaction.line_attr_9
+    v = @transaction.variation
     return 100 if v.blank?
     v.gsub(/%/, '')
   end

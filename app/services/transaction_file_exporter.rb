@@ -3,11 +3,12 @@ require "csv"
 class TransactionFileExporter
   include TransactionFileFormat, TransactionGroupFilters
 
-  attr_reader :regime, :region
+  attr_reader :regime, :region, :user
 
-  def initialize(regime, region)
+  def initialize(regime, region, user)
     @regime = regime
     @region = region
+    @user = user
   end
 
   def export
@@ -25,6 +26,7 @@ class TransactionFileExporter
         invoice_total = fy_q.invoices.pluck(:tcm_charge).sum
 
         f = regime.transaction_files.create!(region: region,
+                                             user: user,
                                              generated_at: Time.zone.now,
                                              credit_total: credit_total,
                                              invoice_total: invoice_total)
@@ -32,6 +34,7 @@ class TransactionFileExporter
         # link transactions and update status
         fy_q.update_all(transaction_file_id: f.id, status: 'exporting')
         files << f
+        # auditor.log_create(f)
       end
     end
 
@@ -233,4 +236,8 @@ class TransactionFileExporter
   def storage
     @storage ||= FileStorageService.new
   end
+
+  # def auditor
+  #   @auditor ||= AuditService.new(user)
+  # end
 end
