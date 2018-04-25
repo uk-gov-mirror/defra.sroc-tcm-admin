@@ -34,7 +34,7 @@ class TransactionFileExporter
         # link transactions and update status
         fy_q.update_all(transaction_file_id: f.id, status: 'exporting')
         files << f
-        auditor.log_create(f)
+        # auditor.log_create(f)
       end
     end
 
@@ -237,7 +237,7 @@ class TransactionFileExporter
     @storage ||= FileStorageService.new
   end
 
-  def auditor
-    @auditor ||= AuditService.new(user)
-  end
+  # def auditor
+  #   @auditor ||= AuditService.new(user)
+  # end
 end

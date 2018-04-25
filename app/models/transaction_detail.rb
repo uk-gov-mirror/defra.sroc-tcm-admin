@@ -1,5 +1,7 @@
 class TransactionDetail < ApplicationRecord
   include Auditable
+
+  audit_events :update
   audit_attributes [ :category,
                      :temporary_cessation,
                      :charge_calculation,
