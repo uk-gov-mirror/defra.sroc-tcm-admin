@@ -26,6 +26,16 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(band, @presenter.compliance_band)
   end
 
+  def test_it_formats_compliance_band_with_percentage
+    set_charge_calculation_compliance(@transaction, "A(95%)")
+    assert_equal("A (95%)", @presenter.compliance_band_with_percent)
+
+    set_charge_calculation_compliance(@transaction,
+                                      "Significant Improvement Needed(100%)")
+    assert_equal("Significant Improvement Needed (100%)",
+                 @presenter.compliance_band_with_percent)
+  end
+
   def test_credit_line_description_modifies_the_line_description
     @presenter.category = "2.15.2"
     val = "Credit of subsistence charge for permit category 2.15.2 due to the "\
@@ -63,5 +73,14 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
       amount: @presenter.amount,
       error_message: nil
     }, @presenter.as_json)
+  end
+
+  def set_charge_calculation_compliance(transaction, band)
+    transaction.charge_calculation = {
+      "calculation": {
+        "compliancePerformanceBand": band
+      }
+    }
+    transaction.save!
   end
 end
