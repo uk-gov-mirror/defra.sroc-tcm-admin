@@ -23,7 +23,7 @@ class PasTransactionFilePresenter < TransactionFilePresenter
       padded_number(td.tcm_charge, 3),  # line_amount
       "",                     # line VAT code always blank
       td.line_area_code,
-      td.line_description,  # line_description
+      td.site_address,        # line_description
       "PT",                   # line income stream code
       td.line_context_code,
       td.permit_reference,   # line_attr_1

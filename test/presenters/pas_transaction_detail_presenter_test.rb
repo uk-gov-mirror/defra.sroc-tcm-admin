@@ -38,6 +38,12 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(@transaction.header_attr_3, @presenter.site)
   end
 
+  def test_it_builds_site_address
+    @transaction.header_attr_8 = 'AB12 1AB'
+    addr = "Site: Red St. Hill Farm, , , , ,AB12 1AB"
+    assert_equal(addr, @presenter.site_address)
+  end
+
   def test_it_transforms_into_json
     assert_equal(
       {

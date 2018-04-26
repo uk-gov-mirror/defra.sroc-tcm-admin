@@ -55,6 +55,14 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     assert_equal(2, rows.count)
   end
 
+  def test_line_description_is_site_address
+    @presenter.transaction_details.each_with_index do |td, i|
+      p = PasTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal(p.site_address, row[22])
+    end
+  end
+
   def test_detail_records_transaction_type_is_same_as_source_record
     @presenter.transaction_details.each_with_index do |td, i|
       p = PasTransactionDetailPresenter.new(td)
