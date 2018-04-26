@@ -2,6 +2,7 @@ require 'test_helper.rb'
 
 class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
   def setup
+    set_audit_user
     @transaction = transaction_details(:pas)
     @presenter = PasTransactionDetailPresenter.new(@transaction)
   end
@@ -24,6 +25,11 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
     band = @transaction.line_attr_11
     band = band.present? ? band.first : ""
     assert_equal(band, @presenter.compliance_band)
+  end
+
+  def test_it_returns_calculated_compliance_adjustment
+    set_charge_calculation_compliance(@transaction, "A (110%)")
+    assert_equal("110%", @presenter.compliance_band_adjustment)
   end
 
   def test_it_returns_permit_reference
@@ -68,5 +74,14 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
       },
       @presenter.as_json
     )
+  end
+
+  def set_charge_calculation_compliance(transaction, band)
+    transaction.charge_calculation = {
+      "calculation": {
+        "compliancePerformanceBand": band
+      }
+    }
+    transaction.save!
   end
 end

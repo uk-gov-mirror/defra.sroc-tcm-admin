@@ -2,6 +2,7 @@ require 'test_helper.rb'
 
 class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
   def setup
+    set_audit_user
     @transaction = transaction_details(:wml)
     @presenter = WmlTransactionDetailPresenter.new(@transaction)
   end

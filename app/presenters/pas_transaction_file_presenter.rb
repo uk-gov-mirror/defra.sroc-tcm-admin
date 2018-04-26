@@ -33,7 +33,7 @@ class PasTransactionFilePresenter < TransactionFilePresenter
       td.category_description, # was line_attr_5
       td.baseline_charge,     # line_attr_6
       td.compliance_band,     # line_attr_7 (compliance band)
-      td.percentage_adjustment, # line_attr_8
+      td.compliance_band_adjustment, # line_attr_8
       "",                     # line_attr_9   future - performance band
       "",                     # line_attr_10  future - performance adjustment
       "",                     # line_attr_11  future - pre-construction flag

@@ -21,7 +21,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
       t.tcm_charge = t.line_amount
       t.tcm_transaction_type = t.transaction_type
       t.tcm_transaction_reference = generate_reference(t, 100 - i)
-      set_charge_calculation(t)
+      set_charge_calculation(t, "A(#{rand(50..100)}%)")
     end
 
     @file = transaction_files(:pas_sroc_file)
@@ -126,10 +126,9 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
 
   def test_detail_record_includes_percentage_adjustment
     @presenter.transaction_details.each_with_index do |td, i|
-      expected_value = td.charge_calculation['calculation']['decisionPoints']['percentageAdjustment'].to_s + '%'
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[32]
+      assert_equal p.compliance_band_adjustment, row[32]
     end
   end
 
@@ -147,10 +146,11 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     )
   end
 
-  def set_charge_calculation(transaction)
+  def set_charge_calculation(transaction, band)
     transaction.charge_calculation = {
       'calculation' => {
         'chargeAmount' => transaction.tcm_charge.abs,
+        'compliancePerformanceBand' => band,
         'decisionPoints' => {
           'baselineCharge' => 196803,
           'percentageAdjustment' => 0
