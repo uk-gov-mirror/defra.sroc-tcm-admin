@@ -15,13 +15,13 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     @transaction_2.line_amount = -1234
     @transaction_2.unit_of_measure_price = -1234
 
-    [@transaction_1, @transaction_2].each do |t|
+    [@transaction_1, @transaction_2].each_with_index do |t, i|
       t.category = '2.4.4'
       t.status = 'billed'
       t.tcm_charge = t.line_amount
       t.tcm_transaction_type = t.transaction_type
-      t.tcm_transaction_reference = generate_reference(t)
-      set_charge_calculation(t)
+      t.tcm_transaction_reference = generate_reference(t, 100 - i)
+      set_charge_calculation(t, "A(#{rand(50..100)}%)")
     end
 
     @file = transaction_files(:pas_sroc_file)
@@ -53,6 +53,28 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
       rows << row
     end
     assert_equal(2, rows.count)
+  end
+
+  def test_it_sorts_detail_rows_by_tcm_transaction_reference
+    rows = []
+    @presenter.details do |row|
+      rows << row
+    end
+    sorted_rows = [@transaction_1, @transaction_2].sort do |a,b|
+      a.tcm_transaction_reference <=> b.tcm_transaction_reference
+    end
+
+    rows.each_with_index do |r, i|
+      assert_equal(sorted_rows[i].tcm_transaction_reference, r[5])
+    end
+  end
+
+  def test_line_description_is_site_address
+    @presenter.transaction_details.each_with_index do |td, i|
+      p = PasTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal(p.site_address, row[22])
+    end
   end
 
   def test_detail_records_transaction_type_is_same_as_source_record
@@ -104,10 +126,9 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
 
   def test_detail_record_includes_percentage_adjustment
     @presenter.transaction_details.each_with_index do |td, i|
-      expected_value = td.charge_calculation['calculation']['decisionPoints']['percentageAdjustment'].to_s + '%'
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[32]
+      assert_equal p.compliance_band_adjustment, row[32]
     end
   end
 
@@ -125,10 +146,11 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     )
   end
 
-  def set_charge_calculation(transaction)
+  def set_charge_calculation(transaction, band)
     transaction.charge_calculation = {
       'calculation' => {
         'chargeAmount' => transaction.tcm_charge.abs,
+        'compliancePerformanceBand' => band,
         'decisionPoints' => {
           'baselineCharge' => 196803,
           'percentageAdjustment' => 0
@@ -139,7 +161,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     transaction.save!
   end
 
-  def generate_reference(transaction)
-    "PAS#{transaction.id.to_s.rjust(8, '0')}#{transaction.transaction_header.region}T"
+  def generate_reference(transaction, num)
+    "PAS#{num.to_s.rjust(8, '0')}#{transaction.transaction_header.region}T"
   end
 end

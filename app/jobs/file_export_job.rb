@@ -5,7 +5,8 @@ class FileExportJob < ApplicationJob
     ActiveRecord::Base.connection_pool.with_connection do
       transaction_file = TransactionFile.find(transaction_file_id)
       exporter = TransactionFileExporter.new(transaction_file.regime,
-                                             transaction_file.region)
+                                             transaction_file.region,
+                                             transaction_file.user)
       exporter.generate_output_file(transaction_file)
     end
   rescue => e

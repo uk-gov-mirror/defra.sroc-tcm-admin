@@ -17,6 +17,9 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+  def set_audit_user(user = nil)
+    Thread.current[:current_user] = user || users(:billing_admin)
+  end
 end
 
 class ActionDispatch::IntegrationTest

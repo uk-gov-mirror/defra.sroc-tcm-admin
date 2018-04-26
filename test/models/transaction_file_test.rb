@@ -3,6 +3,8 @@ require 'test_helper'
 class TransactionFileTest < ActiveSupport::TestCase
   def setup
     @user = users(:billing_admin)
+    Thread.current[:current_user] = @user
+
     @regime = regimes(:cfd)
     @sroc_file = @regime.transaction_files.create!(user: @user,
                                                    region: 'A',

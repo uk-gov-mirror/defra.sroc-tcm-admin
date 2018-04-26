@@ -49,9 +49,14 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def compliance_band_with_percent
-    # FIXME: this should be built using data returned from rules engine
-    # in the form "B (100%)"
-    "#{compliance_band} (x%)"
+    chg = transaction_detail.charge_calculation
+    if !chg.nil? && !chg['calculation'].nil?
+      band = chg['calculation']['compliancePerformanceBand']
+      unless band.nil?
+        d = band.match /\A(.*)(\(\d+%\))\z/
+        "#{d[1]} #{d[2]}" if d.size == 3
+      end
+    end
   end
 
   def temporary_cessation_adjustment

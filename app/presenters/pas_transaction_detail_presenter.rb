@@ -17,11 +17,28 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
     band || ""
   end
 
-  def percentage_adjustment
-    # FIXME: this is wrong - this is not a percentage value
-    # charge calculation adjustment as a percentage - ie. 95%
-    val = charge_calculation['calculation']['decisionPoints']['percentageAdjustment']
-    "#{val}%"
+  # def percentage_adjustment
+  #   # FIXME: this is wrong - this is not a percentage value
+  #   # charge calculation adjustment as a percentage - ie. 95%
+  #   val = charge_calculation['calculation']['decisionPoints']['percentageAdjustment']
+  #   "#{val}%"
+  # end
+
+  def compliance_band_adjustment
+    band = extract_compliance_performance
+    return "" if band.nil?
+    d = band.match /\A.*\((\d+%)\)\z/
+    if d.size == 2
+      d[1]
+    else
+      ""
+    end
+  end
+
+  def extract_compliance_performance
+    chg = transaction_detail.charge_calculation
+    chg['calculation']['compliancePerformanceBand'] unless chg.nil? ||
+      chg['calculation'].nil?
   end
 
   def permit_reference
@@ -34,6 +51,36 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
 
   def site
     header_attr_3
+  end
+
+  def site_address
+    @site_address ||= make_site_address
+  end
+
+  def make_site_address
+    cols = [ :header_attr_2,
+             :header_attr_3,
+             :header_attr_4,
+             :header_attr_5,
+             :header_attr_6,
+             :header_attr_7,
+             :header_attr_8 ]
+
+    parts = cols.map { |c| value_or_space(c) }
+    first = parts.shift
+    first += ':' unless first.ends_with?(':')
+    addr = first + ' ' + parts.shift + ','
+    addr += parts.join(',')
+    addr
+  end
+
+  def value_or_space(attr)
+    val = transaction_detail.send(attr.to_sym)
+    if val.blank?
+      " "
+    else
+      val
+    end
   end
 
   def as_json(options = {})
