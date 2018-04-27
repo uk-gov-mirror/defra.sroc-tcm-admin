@@ -209,10 +209,10 @@ class TransactionFileExporter
     # calculate overall credit or invoice and assign to group
     cust_charges = if transaction_file.retrospective?
                      transaction_file.transaction_details.
-                       group(:customer_reference).sum(:line_amount)
+                       group(:customer_reference, :line_context_code).sum(:line_amount)
                    else
                      transaction_file.transaction_details.
-                       group(:customer_reference).sum(:tcm_charge)
+                       group(:customer_reference, :line_context_code).sum(:tcm_charge)
                    end
 
     cust_charges.each do |k, v|
@@ -223,7 +223,7 @@ class TransactionFileExporter
                   else
                     "#{n.to_s.rjust(5, '0')}1#{region}T"
                   end
-      transaction_file.transaction_details.where(customer_reference: k).
+      transaction_file.transaction_details.where(customer_reference: k[0], line_context_code: k[1]).
         update_all(tcm_transaction_type: trans_type,
                    tcm_transaction_reference: trans_ref)
     end
