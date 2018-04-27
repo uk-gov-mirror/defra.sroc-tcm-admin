@@ -50,6 +50,7 @@ class TransactionFileExporter
     # lock transactions for regime / region
     # get list of exportable transactions
     TransactionDetail.transaction do
+      Thread.current[:current_user] = user
       q = retrospective_transactions_by_region(region).lock(true)
       credits = q.credits.pluck(:line_amount)
       invoices = q.invoices.pluck(:line_amount)
@@ -58,6 +59,7 @@ class TransactionFileExporter
 
       if credits.count > 0 || invoices.count > 0
         f = regime.transaction_files.create!(region: region,
+                                             user: user,
                                              retrospective: true,
                                              generated_at: Time.zone.now,
                                              credit_total: credit_total,
