@@ -51,8 +51,8 @@ class TransactionFileExporter
     # get list of exportable transactions
     TransactionDetail.transaction do
       q = retrospective_transactions_by_region(region).lock(true)
-      credits = q.credits.pluck(:line_amount).sum
-      invoices = q.invoices.pluck(:line_amount).sum
+      credits = q.credits.pluck(:line_amount)
+      invoices = q.invoices.pluck(:line_amount)
       credit_total = credits.sum
       invoice_total = invoices.sum
 
