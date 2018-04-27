@@ -49,7 +49,7 @@ class TransactionsController < ApplicationController
           @region,
           sort_col,
           sort_dir
-        ).limit(500)
+        ).limit(15000)
         send_data csv.export(presenter.wrap(@transactions)), csv_opts
       end
     end
