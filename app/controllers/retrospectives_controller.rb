@@ -75,6 +75,6 @@ class RetrospectivesController < ApplicationController
     end
 
     def transaction_store
-      @transaction_store ||= TransactionStorageService.new(@regime)
+      @transaction_store ||= TransactionStorageService.new(@regime, current_user)
     end
 end

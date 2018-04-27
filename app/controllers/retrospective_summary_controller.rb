@@ -20,6 +20,6 @@ class RetrospectiveSummaryController < ApplicationController
 
   private
     def transaction_summary
-      @transaction_summary ||= TransactionSummaryService.new(@regime)
+      @transaction_summary ||= TransactionSummaryService.new(@regime, current_user)
     end
 end

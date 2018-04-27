@@ -54,10 +54,10 @@ class RetrospectiveFilesController < ApplicationController
     # :nocov:
 
     def exporter
-      @exporter ||= TransactionFileExporter.new(@regime, @region)
+      @exporter ||= TransactionFileExporter.new(@regime, @region, current_user)
     end
 
     def transaction_store
-      @transaction_store ||= TransactionStorageService.new(@regime)
+      @transaction_store ||= TransactionStorageService.new(@regime, current_user)
     end
 end
