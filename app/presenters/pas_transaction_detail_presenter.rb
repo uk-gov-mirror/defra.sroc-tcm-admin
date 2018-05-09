@@ -102,6 +102,8 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
       period: period,
       line_amount: original_charge,
       amount: amount,
+      excluded: excluded,
+      excluded_reason: excluded_reason,
       error_message: error_message
     }
   end

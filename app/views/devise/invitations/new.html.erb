@@ -1,5 +1,4 @@
 <h2><%= t "devise.invitations.new.header" %></h2>
-Wigwam
 <%= form_for resource, :as => resource_name, :url => invitation_path(resource_name), :html => {:method => :post} do |f| %>
   <%#= devise_error_messages! %>
   <%= error_header(resource) %>

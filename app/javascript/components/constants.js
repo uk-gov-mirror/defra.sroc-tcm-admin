@@ -4,7 +4,15 @@ const Constants = module.exports = {}
 
 Constants.PAS_COLUMNS = { 
   unbilled: [
-    { name: 'original_filename',
+    {
+      name: 'excluded',
+      label: '',
+      accessHelp: 'transaction for Permit ',
+      accessHelpColumn: 'permit_reference',
+      sortable: false,
+      editable: true
+    }, {
+      name: 'original_filename',
       label: 'File Reference',
       sortable: true,
       editable: false
@@ -153,12 +161,68 @@ Constants.PAS_COLUMNS = {
       editable: false,
       rightAlign: true
     }
+  ],
+  excluded: [
+    { name: 'original_filename',
+      label: 'File Reference',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'original_file_date',
+      label: 'File Date',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'customer_reference',
+      label: 'Customer',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'permit_reference',
+      label: 'Permit',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'original_permit_reference',
+      label: 'Original Permit',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'compliance_band',
+      label: 'Compliance Band',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'period',
+      label: 'Period',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'excluded_reason',
+      label: 'Exclusion Reason',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'amount',
+      label: 'Credit/Invoice',
+      sortable: false,
+      editable: false,
+      rightAlign: true
+    }
   ]
 }
 
 Constants.CFD_COLUMNS = {
   unbilled: [
-    { name: 'original_filename',
+    {
+      name: 'excluded',
+      label: '',
+      accessHelp: 'transaction for Consent Reference ',
+      accessHelpColumn: 'consent_reference',
+      sortable: false,
+      editable: true
+    }, {
+      name: 'original_filename',
       label: 'File Reference',
       sortable: true,
       editable: false
@@ -342,12 +406,69 @@ Constants.CFD_COLUMNS = {
       editable: false,
       rightAlign: true
     }
+  ],
+  excluded: [
+    { name: 'original_filename',
+      label: 'File Reference',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'original_file_date',
+      label: 'File Date',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'customer_reference',
+      label: 'Customer',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'consent_reference',
+      label: 'Consent',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'version',
+      label: 'Ver',
+      accessLabel: 'Version',
+      sortable: false,
+      editable: false
+    }, {
+      name: 'discharge',
+      label: 'Dis',
+      accessLabel: 'Discharge',
+      sortable: false,
+      editable: false
+    }, {
+      name: 'variation',
+      label: '%',
+      accessLabel: 'Variation Percentage',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'period',
+      label: 'Period',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'excluded_reason',
+      label: 'Exclusion Reason',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'amount',
+      label: 'Credit/Invoice',
+      sortable: false,
+      editable: false,
+      rightAlign: true
+    }
   ]
 }
 
 Constants.WML_COLUMNS = {
   unbilled: [
-    { name: 'original_filename',
+    {
+      name: 'original_filename',
       label: 'File Reference',
       sortable: true,
       editable: false
@@ -486,6 +607,39 @@ Constants.WML_COLUMNS = {
       editable: false,
       rightAlign: true
     }
+  ],
+  excluded: [
+    { name: 'customer_reference',
+      label: 'Customer',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'permit_reference',
+      label: 'Permit',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'compliance_band',
+      label: 'Compliance Band',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'period',
+      label: 'Period',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'excluded_reason',
+      label: 'Exclusion Reason',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'amount',
+      label: 'Credit/Invoice',
+      sortable: false,
+      editable: false,
+      rightAlign: true
+    }
   ]
 }
 
@@ -505,7 +659,8 @@ Constants.DATA_FILE_COLUMNS = [
 Constants.VIEW_MODE_NAMES = [
   'unbilled',
   'historic',
-  'retrospective'
+  'retrospective',
+  'excluded'
 ]
 
 Constants.VIEW_MODES = {
@@ -527,6 +682,11 @@ Constants.VIEW_MODES = {
     path: '/retrospectives',
     summaryPath: '/retrospective_summary',
     generatePath: '/retrospective_files'
+  },
+  excluded: {
+    name: 'excluded',
+    label: 'Excluded transactions',
+    path: '/exclusions'
   }//,
   // { name: 'retrospective_history',
   //   label: 'Retrospective History',

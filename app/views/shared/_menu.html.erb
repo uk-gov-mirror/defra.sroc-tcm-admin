@@ -4,7 +4,8 @@
       @regime = current_user.selected_regime
     end
 %>
-<nav class="main-menu navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="main-menu navbar navbar-expand-lg navbar-dark bg-dark"
+  data-turbolinks='false'>
   <%= link_to "Tactical Charging Module", root_path, class: "navbar-brand" %>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
