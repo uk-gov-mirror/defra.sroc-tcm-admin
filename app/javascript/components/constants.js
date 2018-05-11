@@ -122,7 +122,17 @@ Constants.PAS_COLUMNS = {
     }
   ],
   retrospective: [
-    { name: 'customer_reference',
+    { name: 'original_filename',
+      label: 'File Reference',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'original_file_date',
+      label: 'File Date',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'customer_reference',
       label: 'Customer',
       sortable: true,
       editable: false
@@ -147,7 +157,7 @@ Constants.PAS_COLUMNS = {
       sortable: true,
       editable: false
     }, {
-      name: 'amount',
+      name: 'line_amount',
       label: 'Amount (£)',
       sortable: false,
       editable: false,

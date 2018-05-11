@@ -6,7 +6,6 @@ class RetrospectiveSummaryController < ApplicationController
 
   def index
     respond_to do |format|
-      format.js
       format.json do
         region = params.fetch(:region, '')
         @summary = transaction_summary.summarize_retrospectives(region)

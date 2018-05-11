@@ -9,6 +9,7 @@ class TransactionFileExporter
     @regime = regime
     @region = region
     @user = user
+    Thread.current[:current_user] = user
   end
 
   def export
@@ -50,7 +51,6 @@ class TransactionFileExporter
     # lock transactions for regime / region
     # get list of exportable transactions
     TransactionDetail.transaction do
-      Thread.current[:current_user] = user
       q = retrospective_transactions_by_region(region).lock(true)
       credits = q.credits.pluck(:line_amount)
       invoices = q.invoices.pluck(:line_amount)
@@ -174,23 +174,24 @@ class TransactionFileExporter
     # E.g. the first invoice number for region A would be PAS00000001AT, and so on.
     # The ‘T’ suffix should ensure that there will never be any duplication with
     # invoice numbers previously generated in PAS  
+    charge_attr = transaction_file.retrospective? ? :line_amount : :tcm_charge
     atab = TransactionDetail.arel_table
     positives = transaction_file.transaction_details.distinct.
-      where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
+      where(atab[charge_attr].gteq(0)).pluck(:reference_1)
     negatives = transaction_file.transaction_details.distinct.
-      where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
+      where(atab[charge_attr].lt(0)).pluck(:reference_1)
 
     positives.each do |ref|
       trans_ref = next_pas_transaction_reference(transaction_file.retrospective?)
       transaction_file.transaction_details.where(reference_1: ref).
-        where(atab[:tcm_charge].gteq(0)).
+        where(atab[charge_attr].gteq(0)).
         update_all(tcm_transaction_type: 'I',
                    tcm_transaction_reference: trans_ref)
     end
     negatives.each do |ref|
       trans_ref = next_pas_transaction_reference(transaction_file.retrospective?)
       transaction_file.transaction_details.where(reference_1: ref).
-        where(atab[:tcm_charge].lt(0)).
+        where(atab[charge_attr].lt(0)).
         update_all(tcm_transaction_type: 'C',
                    tcm_transaction_reference: trans_ref)
     end
