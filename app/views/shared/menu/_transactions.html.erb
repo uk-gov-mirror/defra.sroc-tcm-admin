@@ -17,5 +17,8 @@
     <%= link_to "Retrospectives to be billed",
       regime_transactions_path(@regime, view_mode: 'retrospective'),
       class: "dropdown-item" %>
+    <%= link_to "Excluded Transactions",
+      regime_transactions_path(@regime, view_mode: 'excluded'),
+      class: "dropdown-item" %>
   </div>
 </li>

@@ -15,16 +15,17 @@ Rails.application.routes.draw do
     resources :transactions, only: [:index, :show, :edit, :update]
     resources :history, only: [:index, :show]
     resources :retrospectives, only: [:index, :show]
+    resources :exclusions, only: [:index]
     resources :transaction_files, only: [:create]
     resources :transaction_summary, only: [:index]
     resources :retrospective_files, only: [:create]
     resources :retrospective_summary, only: [:index]
     resources :annual_billing_data_files, except: [:destroy]
+    resources :exclusion_reasons, except: [:show]
   end
 
   root to: 'transactions#index'
 
-  # TODO: protect me when we add users
   require 'resque/server'
   authenticate(:user, ->(u) { u.admin? }) do
     mount Resque::Server, at: '/jobs'

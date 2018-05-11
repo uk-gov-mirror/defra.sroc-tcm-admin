@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col">
+    <h1 class="heading">Exclusion Reasons</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Reason Description</th>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <% @reasons.each do |reason| %>
+          <tr>
+            <td><%= reason.reason %></td>
+            <td>
+              <%= link_to 'Edit',
+                edit_regime_exclusion_reason_path(@regime, reason),
+                class: 'btn btn-sm btn-success', role: 'button' %>
+              <%= link_to 'Delete',
+                regime_exclusion_reason_path(@regime, reason),
+                method: :delete, data: { confirm: 'Are you sure?' },
+                class: 'btn btn-sm btn-danger', role: 'button' %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <%= link_to 'New Exclusion Reason', new_regime_exclusion_reason_path(@regime),
+        class: 'btn btn-primary', role: 'button' %>
+  </div>
+</div

@@ -19,12 +19,20 @@ export default class TransactionTableHeader extends React.Component {
     )
     return (
       <thead>
-        <tr>{cols}<td /></tr>
+        <tr>{cols}<td key='options' /></tr>
       </thead>
     )
   }
 
   columnMarkup (col) {
+    if (col.name === 'excluded') {
+      if (col.editable) {
+        return <td key={col.name}/>
+      } else {
+        return ''
+      }
+    }
+    
     if (col.sortable) {
       const selected = this.selectionInfo(col)
       return (

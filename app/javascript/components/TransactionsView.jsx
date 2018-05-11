@@ -29,6 +29,7 @@ export default class TransactionsView extends React.Component {
       pageSize: transactions.pagination.per_page,
       currentPage: transactions.pagination.current_page,
       summary: this.emptySummary(),
+      reasons: [],
       fileSummaryOpen: false,
       regionOptions: [{label: 'All', value: ''}],
       financialYearOptions: [{label: 'All', value: ''}]
@@ -47,6 +48,10 @@ export default class TransactionsView extends React.Component {
     this.showFileSummary = this.showFileSummary.bind(this)
     this.hideFileSummary = this.hideFileSummary.bind(this)
     this.exportTransactions = this.exportTransactions.bind(this)
+    this.excludeTransaction = this.excludeTransaction.bind(this)
+    this.reinstateTransaction = this.reinstateTransaction.bind(this)
+
+    this.fetchExclusionReasons()
   }
 
   tableColumns (viewMode) {
@@ -162,6 +167,16 @@ export default class TransactionsView extends React.Component {
     window.location.replace(uri)
   }
 
+  excludeTransaction(id, reason) {
+    console.log('Exclude ' + id + ' - ' + reason)
+    this.updateExclusionFlag(id, true, reason)
+  }
+
+  reinstateTransaction(id) {
+    console.log('Reinstate ' + id)
+    this.updateExclusionFlag(id, false, null)
+  }
+
   generateFile () {
     console.log('generate file')
   }
@@ -226,6 +241,20 @@ export default class TransactionsView extends React.Component {
       })
   }
 
+  fetchExclusionReasons () {
+    const path = '/regimes/' + this.props.regime + '/exclusion_reasons.json'
+
+    axios.get(path)
+      .then(res => {
+        this.setState({
+          reasons: res.data,
+        })
+      })
+      .catch(error => {
+        this.handleXhrError(error)
+      })
+  }
+
   updateTransactionCategory (id, value) {
     this.updateRowForSlowNetwork(id, 'sroc_category', value)
     this.doUpdate(id, {
@@ -238,6 +267,14 @@ export default class TransactionsView extends React.Component {
     this.updateRowForSlowNetwork(id, 'temporary_cessation', showVal)
     this.doUpdate(id, {
       temporary_cessation: value
+    })
+  }
+
+  updateExclusionFlag (id, excluded, reason) {
+    console.log('update exclusion: ' + id + ' ' + excluded + ' ' + reason)
+    this.doUpdate(id, {
+      excluded: excluded,
+      excluded_reason: reason
     })
   }
 
@@ -314,9 +351,12 @@ export default class TransactionsView extends React.Component {
     const fileDialogTitle = fileType + ' File'
     const generateButtonLabel = 'Generate ' + fileType + ' File'
     const showExportButton = (viewMode === 'unbilled')
+    const canExcludeTransactions = (viewMode === 'unbilled')
+    const exclusionReasons = this.state.reasons
 
     let fileButton = null
     let fileDialog = null
+
     if (canGenerateFiles) {
       fileButton = (
         <button className='btn btn-primary mr-4' onClick={this.showFileSummary}>
@@ -341,8 +381,8 @@ export default class TransactionsView extends React.Component {
     })
 
     let financialYearSelector = null
-    // history view only
-    if(viewMode === 'historic') {
+    // history and exclusion views only
+    if(viewMode === 'historic' || viewMode === 'excluded') {
       financialYearSelector = (
         <div className='mr-4'>
           <OptionSelector selectedValue={selectedFinancialYear}
@@ -358,7 +398,7 @@ export default class TransactionsView extends React.Component {
     }
 
     return (
-      <div>
+      <div className={viewMode}>
         <div className="row mb-4">
           <div className="col">
             <h1>{this.currentViewMode().label}</h1>
@@ -403,6 +443,10 @@ export default class TransactionsView extends React.Component {
           onChangeSortColumn={this.changeSortColumn}
           onChangeCategory={this.updateTransactionCategory}
           onChangeTemporaryCessation={this.updateTemporaryCessation}
+          onExcludeTransaction={this.excludeTransaction}
+          onReinstateTransaction={this.reinstateTransaction}
+          canExcludeTransactions={canExcludeTransactions}
+          exclusionReasons={exclusionReasons}
         />
         <PaginationBar pagination={pagination}
           useMatchingLabel={true}

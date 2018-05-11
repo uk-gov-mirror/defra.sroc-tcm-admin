@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180424113158) do
+ActiveRecord::Schema.define(version: 20180504135421) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,16 @@ ActiveRecord::Schema.define(version: 20180424113158) do
     t.integer "line_number", null: false
     t.string "message", null: false
     t.index ["annual_billing_data_file_id"], name: "index_data_upload_errors_on_annual_billing_data_file_id"
+  end
+
+  create_table "exclusion_reasons", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.string "reason", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["regime_id", "reason"], name: "index_exclusion_reasons_on_regime_id_and_reason", unique: true
+    t.index ["regime_id"], name: "index_exclusion_reasons_on_regime_id"
   end
 
   create_table "permit_categories", force: :cascade do |t|
@@ -190,6 +200,8 @@ ActiveRecord::Schema.define(version: 20180424113158) do
     t.string "original_filename"
     t.datetime "original_file_date"
     t.string "tcm_financial_year"
+    t.boolean "excluded", default: false, null: false
+    t.string "excluded_reason"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"

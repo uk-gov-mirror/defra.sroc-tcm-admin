@@ -36,6 +36,8 @@ class TransactionFileExporter
         files << f
         # auditor.log_create(f)
       end
+      # 'remove' excluded transactions
+      excluded_transactions_by_region(region).update_all(status: 'excluded') 
     end
 
     # queue the background job to create the file
