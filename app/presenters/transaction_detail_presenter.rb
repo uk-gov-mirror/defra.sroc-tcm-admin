@@ -87,6 +87,8 @@ class TransactionDetailPresenter < SimpleDelegator
     # called when exporting to file
     if charge_calculation && charge_calculation['generatedAt']
       charge_calculation['generatedAt'].to_date
+    else
+      transaction_detail.transaction_date
     end
   end
 
