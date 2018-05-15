@@ -541,11 +541,6 @@ Constants.WML_COLUMNS = {
       sortable: true,
       editable: false
     }, {
-      name: 'original_permit_reference',
-      label: 'Original Permit',
-      sortable: true,
-      editable: false
-    }, {
       name: 'sroc_category',
       label: 'SRoC Category',
       sortable: true,
