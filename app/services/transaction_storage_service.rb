@@ -41,6 +41,15 @@ class TransactionStorageService
     order_query(q, order, direction).page(page).per(per_page)
   end
 
+  def transaction_history_for_export(search = '', fy = '', region = '',
+                                     order = :customer_reference, direction = 'asc')
+    q = regime.transaction_details.historic
+    q = q.region(region) unless region.blank?
+    q = q.history_search(search) unless search.blank?
+    q = q.where(tcm_financial_year: fy) unless fy.blank?
+    order_query(q, order, direction)
+  end
+
   def retrospective_transactions(search = '', page = 1, per_page = 10,
                                  region = '', order = :customer_reference,
                                  direction = 'asc')

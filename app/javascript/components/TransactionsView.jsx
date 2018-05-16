@@ -350,7 +350,7 @@ export default class TransactionsView extends React.Component {
     const fileType = (viewMode === 'retrospective' ? 'Retrospective' : 'Transaction')
     const fileDialogTitle = fileType + ' File'
     const generateButtonLabel = 'Generate ' + fileType + ' File'
-    const showExportButton = (viewMode === 'unbilled')
+    const showExportButton = (viewMode === 'unbilled' || viewMode == 'historic')
     const canExcludeTransactions = (viewMode === 'unbilled')
     const exclusionReasons = this.state.reasons
 
