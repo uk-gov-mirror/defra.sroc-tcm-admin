@@ -48,10 +48,10 @@ class CfdRetrospectiveFilePresenter < CfdTransactionFilePresenter
   end
 protected
   def trailer_invoice_total
-    transaction_details.where(transaction_type: 'I').sum(:line_amount).to_i
+    transaction_details.where(tcm_transaction_type: 'I').sum(:line_amount).to_i
   end
 
   def trailer_credit_total
-    transaction_details.where(transaction_type: 'C').sum(:line_amount).to_i
+    transaction_details.where(tcm_transaction_type: 'C').sum(:line_amount).to_i
   end
 end
