@@ -7,7 +7,7 @@ every 15.minutes do
   runner "FileCheckJob.perform_now"
 end
 
-every 1.day, at: '9:00 am' do
+every 1.day, at: '5:30 am' do
   runner "TransactionsToBeBilledExportJob.perform_now"
 end
 
