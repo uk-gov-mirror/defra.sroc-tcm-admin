@@ -478,6 +478,13 @@ Constants.CFD_COLUMNS = {
 Constants.WML_COLUMNS = {
   unbilled: [
     {
+      name: 'excluded',
+      label: '',
+      accessHelp: 'transaction for Permit ',
+      accessHelpColumn: 'permit_reference',
+      sortable: false,
+      editable: true
+    }, {
       name: 'original_filename',
       label: 'File Reference',
       sortable: true,
