@@ -21,6 +21,10 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date transaction_detail.original_file_date
   end
 
+  def tcm_file_date
+    fmt_date transaction_file.created_at
+  end
+
   def pro_rata_days
     bd = billable_days
     fyd = financial_year_days

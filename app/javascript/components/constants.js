@@ -661,6 +661,8 @@ Constants.DATA_FILE_COLUMNS = [
   }
 ]
 
+Constants.TRANSACTION_DOWNLOAD_LIMIT = 15000
+
 Constants.VIEW_MODE_NAMES = [
   'unbilled',
   'historic',
