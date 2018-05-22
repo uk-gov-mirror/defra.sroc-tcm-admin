@@ -82,7 +82,7 @@ module TransactionGroupFilters
 
   def wml_sorter(base_query)
     # TODO: make this WML specific
-    base_query.order(transaction_reference: :asc,
+    base_query.order(tcm_transaction_reference: :asc,
                      reference_1: :asc,
                      line_amount: :asc)
   end
