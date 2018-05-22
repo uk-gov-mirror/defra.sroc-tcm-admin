@@ -57,4 +57,11 @@ module ExportFileFormat
     :currency_baseline_charge,
     :currency_tcm_charge
   ].freeze
+
+  HistoryColumns = Columns + [
+    :generated_filename,
+    :tcm_file_date,
+    :tcm_transaction_type,
+    :tcm_transaction_reference
+  ].freeze
 end

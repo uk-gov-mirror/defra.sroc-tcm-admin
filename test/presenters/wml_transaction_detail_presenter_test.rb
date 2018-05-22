@@ -72,6 +72,8 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
       temporary_cessation: @presenter.temporary_cessation_flag,
       period: @presenter.period,
       amount: @presenter.amount,
+      excluded: @presenter.excluded,
+      excluded_reason: @presenter.excluded_reason,
       error_message: nil
     }, @presenter.as_json)
   end

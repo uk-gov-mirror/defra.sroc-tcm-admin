@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   before_action :cache_buster
+  around_action :set_local_time
   before_action :authenticate_user!
   before_action :set_thread_current_user
 
@@ -14,6 +15,14 @@ class ApplicationController < ActionController::Base
     # this enables us to access the :current_user in models which is used in
     # auditing changes
     Thread.current[:current_user] = current_user if user_signed_in?
+  end
+
+  def set_local_time
+    zone = Time.zone
+    Time.zone = "Europe/London"
+    yield
+  ensure
+    Time.zone = zone
   end
 
   def cache_buster

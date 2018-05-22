@@ -12,7 +12,7 @@ class TransactionDetail < ApplicationRecord
 
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
-  has_one :transaction_file, inverse_of: :transaction_details
+  belongs_to :transaction_file, inverse_of: :transaction_details, required: false
 
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true
