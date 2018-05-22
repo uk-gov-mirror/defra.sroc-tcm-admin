@@ -139,6 +139,8 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       period: @presenter.period,
       line_amount: @presenter.original_charge,
       amount: @presenter.amount,
+      excluded: @presenter.excluded,
+      excluded_reason: @presenter.excluded_reason,
       error_message: @presenter.error_message
     }, @presenter.as_json)
   end
