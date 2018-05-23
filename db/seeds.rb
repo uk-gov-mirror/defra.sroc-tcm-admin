@@ -12,6 +12,16 @@ PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'installati
   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
 end
 
+if r.exclusion_reasons.count.zero?
+  [
+    "Extra line auto-created by feeder system",
+    "Extra line created by PAS manual invoice function (permit category)",
+    "Extra line created by PAS manual invoice function (temporary cessation)"
+  ].each do |reason|
+    r.exclusion_reasons.create!(reason: reason, active: true)
+  end
+end
+
 r = Regime.find_by!(slug: 'cfd')
 r.permit_categories.destroy_all
 PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_quality.csv'))
