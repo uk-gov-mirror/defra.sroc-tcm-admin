@@ -1,0 +1,14 @@
+pas:
+  regime: pas
+  reason: "PAS reason"
+  active: true
+
+cfd:
+  regime: cfd
+  reason: "CFD reason"
+  active: true
+
+wml:
+  regime: wml
+  reason: "WML reason"
+  active: true

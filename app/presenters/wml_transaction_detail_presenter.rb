@@ -49,14 +49,16 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def compliance_band_with_percent
+    val = ""
     chg = transaction_detail.charge_calculation
     if !chg.nil? && !chg['calculation'].nil?
       band = chg['calculation']['compliancePerformanceBand']
       unless band.nil?
         d = band.match /\A(.*)(\(\d+%\))\z/
-        "#{d[1]} #{d[2]}" if d.size == 3
+        val = "#{d[1]} #{d[2]}" if d.size == 3 && d[1].strip.present?
       end
     end
+    val
   end
 
   def temporary_cessation_adjustment
