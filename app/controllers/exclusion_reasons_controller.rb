@@ -1,5 +1,8 @@
 class ExclusionReasonsController < AdminController
   include RegimeScope
+  # allow billing admins access to the index (frontend JSON requests)
+  skip_before_action :admin_only_check!, only: :index
+
   before_action :set_regime
   before_action :set_reason, only: [:edit, :update, :destroy]
 
