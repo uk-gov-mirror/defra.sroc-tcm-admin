@@ -153,7 +153,11 @@ class TransactionStorageService
     when :sroc_category
       q.order(category: dir, id: dir)
     when :compliance_band
-      q.order(line_attr_11: dir, id: dir)
+      if regime.installations?
+        q.order(line_attr_11: dir, id: dir)
+      else
+        q.order(line_attr_6: dir, reference_1: dir)
+      end
     # when :variation
     #   q.order(line_attr_9: dir, id: dir)
     when :variation
@@ -174,6 +178,8 @@ class TransactionStorageService
       q.order(tcm_charge: dir, id: dir)
     when :excluded_reason
       q.order(excluded_reason: dir, reference_1: dir)
+    when :temporary_cessation
+      q.order(temporary_cessation: dir, reference_1: dir)
     else
       q.joins(:transaction_header).
         merge(TransactionHeader.order(region: dir, file_sequence_number: dir)).
