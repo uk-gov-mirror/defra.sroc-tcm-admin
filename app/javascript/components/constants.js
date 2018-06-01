@@ -621,7 +621,18 @@ Constants.WML_COLUMNS = {
     }
   ],
   excluded: [
-    { name: 'customer_reference',
+    {
+      name: 'original_filename',
+      label: 'File Reference',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'original_file_date',
+      label: 'File Date',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'customer_reference',
       label: 'Customer',
       sortable: true,
       editable: false
