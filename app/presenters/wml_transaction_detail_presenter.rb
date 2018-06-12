@@ -72,6 +72,7 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
       customer_reference: customer_reference,
       tcm_transaction_reference: tcm_transaction_reference,
       generated_filename: generated_filename,
+      generated_file_date: generated_file_date,
       original_filename: original_filename,
       original_file_date: original_file_date_table,
       permit_reference: permit_reference,
