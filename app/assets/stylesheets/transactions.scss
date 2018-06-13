@@ -1,3 +1,5 @@
+$text-col: theme-color("dark");
+
 .transaction-summary {
   // dt:after {
   //   content: ":";
@@ -40,4 +42,23 @@
 
 .error-popup a {
   color: #660000;
+}
+
+.exclude-button {
+  margin-top: 0.75em;
+  margin-left: 0;
+}
+
+tr.excluded {
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.excluded tr.excluded {
+  color: $text-col;
+  text-decoration: none;
+}
+
+.exclude-button:checked {
+  margin-top: .25em;
 }

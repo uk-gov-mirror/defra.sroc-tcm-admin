@@ -16,6 +16,9 @@ export default class TransactionTableBody extends React.Component {
         categories={categories}
         onChangeCategory={onChangeCategory}
         onChangeTemporaryCessation={onChangeTemporaryCessation}
+        onExclusionSave={this.props.onExclusionSave}
+        onShowExclusionDialog={this.props.onShowExclusionDialog}
+        onReinstateTransaction={this.props.onReinstateTransaction}
       />)
 
     return (

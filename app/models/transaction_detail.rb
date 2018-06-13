@@ -6,11 +6,13 @@ class TransactionDetail < ApplicationRecord
                      :temporary_cessation,
                      :charge_calculation,
                      :tcm_charge,
-                     :variation ]
+                     :variation,
+                     :excluded,
+                     :excluded_reason ]
 
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
-  has_one :transaction_file, inverse_of: :transaction_details
+  belongs_to :transaction_file, inverse_of: :transaction_details, required: false
 
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true
@@ -20,6 +22,12 @@ class TransactionDetail < ApplicationRecord
   scope :unbilled, -> { where(status: 'unbilled') }
   scope :retrospective, -> { where(status: 'retrospective') }
   scope :historic, -> { where(status: 'billed') }
+
+  scope :excluded, -> { where(excluded: true) }
+  scope :unexcluded, -> { where(excluded: false) }
+  scope :historic_excluded, -> { where(status: 'excluded') }
+
+  scope :unbilled_exclusions, -> { where(status: 'unbilled', excluded: true) }
 
   scope :with_charge_errors, -> {
     where("(charge_calculation -> 'calculation' ->> 'messages') is not null")
@@ -56,6 +64,16 @@ class TransactionDetail < ApplicationRecord
     where(arel_table[:customer_reference].matches(m).
           or(arel_table[:reference_1].matches(m)).
           or(arel_table[:transaction_reference].matches(m)))
+  end
+
+  def self.exclusion_search(q)
+    m = "%#{q}%"
+    where(arel_table[:customer_reference].matches(m).
+          or(arel_table[:reference_1].matches(m)).
+          or(arel_table[:reference_2].matches(m)).
+          or(arel_table[:transaction_reference].matches(m)).
+          or(arel_table[:original_filename].matches(m)).
+          or(arel_table[:excluded_reason].matches(m)))
   end
 
   def updateable?

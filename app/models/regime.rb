@@ -6,6 +6,7 @@ class Regime < ApplicationRecord
   has_many :permit_categories, inverse_of: :regime, dependent: :destroy
   has_many :transaction_files, inverse_of: :regime, dependent: :destroy
   has_many :annual_billing_data_files, inverse_of: :regime, dependent: :destroy
+  has_many :exclusion_reasons, inverse_of: :regime, dependent: :destroy
 
   has_many :regime_users, inverse_of: :regime, dependent: :destroy
   has_many :users, through: :regime_users

@@ -1,0 +1,16 @@
+<%= form_with(model: [@regime, reason], local: true) do |form| %>
+  <%= error_header(reason) %>
+
+  <div class="col-lg-6">
+    <div class="form-group">
+      <%= form.label :reason, 'Reason' %>
+      <%= form.text_field :reason, id: :exclusion_reason_reason, class: "form-control" %>
+    </div>
+
+    <div class="actions mt-4">
+      <%= form.submit class: "btn btn-primary" %>
+      <%= link_to 'Back', regime_exclusion_reasons_path(@regime),
+        class: "btn btn-secondary", role: "button" %>
+    </div>
+  </div>
+<% end %>

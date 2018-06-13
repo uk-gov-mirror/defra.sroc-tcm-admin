@@ -41,12 +41,31 @@ class TransactionStorageService
     order_query(q, order, direction).page(page).per(per_page)
   end
 
+  def transaction_history_for_export(search = '', fy = '', region = '',
+                                     order = :customer_reference, direction = 'asc')
+    q = regime.transaction_details.historic
+    q = q.region(region) unless region.blank?
+    q = q.history_search(search) unless search.blank?
+    q = q.where(tcm_financial_year: fy) unless fy.blank?
+    order_query(q, order, direction)
+  end
+
   def retrospective_transactions(search = '', page = 1, per_page = 10,
                                  region = '', order = :customer_reference,
                                  direction = 'asc')
     region = first_retrospective_region if region.blank?
     q = regime.transaction_details.region(region).retrospective
     q = q.retrospective_search(search) unless search.blank?
+    order_query(q, order, direction).page(page).per(per_page)
+  end
+
+  def excluded_transactions(search = '', fy = '', page = 1, per_page = 10,
+                            region = '', order = :customer_reference,
+                            direction = 'asc')
+    q = regime.transaction_details.historic_excluded
+    q = q.region(region) unless region.blank?
+    q = q.exclusion_search(search) unless search.blank?
+    q = q.where(tcm_financial_year: fy) unless fy.blank?
     order_query(q, order, direction).page(page).per(per_page)
   end
 
@@ -60,6 +79,10 @@ class TransactionStorageService
   
   def retrospective_regions
     regions_for('retrospective')
+  end
+
+  def exclusion_regions
+    regions_for('excluded')
   end
 
   def regions_for(status)
@@ -80,6 +103,10 @@ class TransactionStorageService
     financial_years_for('retrospective')
   end
 
+  def exclusion_financial_years
+    financial_years_for('excluded')
+  end
+
   def financial_years_for(status)
     regime.transaction_details.where(status: status).
       distinct.order(:tcm_financial_year).pluck(:tcm_financial_year)
@@ -95,6 +122,10 @@ class TransactionStorageService
 
   def first_retrospective_region
     retrospective_regions.first
+  end
+
+  def first_exclusion_region
+    exclusion_regions.first
   end
 
   def order_query(q, col, dir)
@@ -141,6 +172,8 @@ class TransactionStorageService
       q.order(generated_filename: dir, id: dir)
     when :amount
       q.order(tcm_charge: dir, id: dir)
+    when :excluded_reason
+      q.order(excluded_reason: dir, reference_1: dir)
     else
       q.joins(:transaction_header).
         merge(TransactionHeader.order(region: dir, file_sequence_number: dir)).

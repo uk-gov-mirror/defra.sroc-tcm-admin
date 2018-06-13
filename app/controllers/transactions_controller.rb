@@ -49,7 +49,7 @@ class TransactionsController < ApplicationController
           @region,
           sort_col,
           sort_dir
-        ).limit(15000)
+        ).unexcluded.limit(15000)
         send_data csv.export(presenter.wrap(@transactions)), csv_opts
       end
     end
@@ -104,6 +104,8 @@ class TransactionsController < ApplicationController
           # tc_changes = @transaction.changes[:temporary_cessation]
           category_changes = @transaction.previous_changes[:category]
           tc_changes = @transaction.previous_changes[:temporary_cessation]
+          exclusion_changes = @transaction.previous_changes[:excluded]
+
           if tc_changes 
             if @transaction.category.present?
               @transaction.charge_calculation = get_charge_calculation
@@ -143,6 +145,19 @@ class TransactionsController < ApplicationController
             # else
             #   false
             # end
+          elsif exclusion_changes
+            if exclusion_changes[0] == true
+              # was excluded now reinstate
+              @transaction.charge_calculation = get_charge_calculation
+              unless @transaction.charge_calculation_error?
+                @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
+              end
+            else
+              # become excluded
+              @transaction.charge_calculation = nil
+              @transaction.tcm_charge = nil
+            end
+            @transaction.save
           else
             # nothing changing but don't want to generate an error
             true
@@ -191,7 +206,8 @@ class TransactionsController < ApplicationController
     end
 
     def transaction_params
-      params.require(:transaction_detail).permit(:category, :temporary_cessation)
+      params.require(:transaction_detail).permit(:category, :temporary_cessation,
+                                                :excluded, :excluded_reason)
     end
 
     def transaction_store

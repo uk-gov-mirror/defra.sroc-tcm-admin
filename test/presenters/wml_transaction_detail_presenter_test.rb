@@ -37,6 +37,11 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
                  @presenter.compliance_band_with_percent)
   end
 
+  def test_it_returns_blank_if_compliance_band_100_percent
+    set_charge_calculation_compliance(@transaction, " (100%)")
+    assert @presenter.compliance_band_with_percent.blank?
+  end
+
   def test_credit_line_description_modifies_the_line_description
     @presenter.category = "2.15.2"
     val = "Credit of subsistence charge for permit category 2.15.2 due to the "\
@@ -72,6 +77,8 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
       temporary_cessation: @presenter.temporary_cessation_flag,
       period: @presenter.period,
       amount: @presenter.amount,
+      excluded: @presenter.excluded,
+      excluded_reason: @presenter.excluded_reason,
       error_message: nil
     }, @presenter.as_json)
   end

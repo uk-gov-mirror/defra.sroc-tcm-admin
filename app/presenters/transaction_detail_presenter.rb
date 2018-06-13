@@ -21,6 +21,10 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date transaction_detail.original_file_date
   end
 
+  def tcm_file_date
+    fmt_date transaction_file.created_at
+  end
+
   def pro_rata_days
     bd = billable_days
     fyd = financial_year_days
@@ -87,6 +91,8 @@ class TransactionDetailPresenter < SimpleDelegator
     # called when exporting to file
     if charge_calculation && charge_calculation['generatedAt']
       charge_calculation['generatedAt'].to_date
+    else
+      transaction_detail.transaction_date
     end
   end
 
@@ -151,11 +157,14 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def credit_debit
-    if line_amount.negative?
-      'Credit (TBC)'
-    else
-      'Invoice (TBC)'
-    end
+    txt = if line_amount.negative?
+            'Credit'
+          else
+            'Invoice'
+          end
+
+    txt += ' (TBC)' if status != 'excluded'
+    txt
   end
 
   def charge_amount

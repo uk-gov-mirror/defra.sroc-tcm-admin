@@ -5,7 +5,7 @@ module TransactionGroupFilters
   end
 
   def grouped_unbilled_transactions_by_region(region)
-    regime_specific_group_filter(unbilled_transactions.region(region))
+    regime_specific_group_filter(unbilled_transactions.region(region).unexcluded)
   end
 
   def grouped_retrospective_transactions_by_region(region)
@@ -16,12 +16,20 @@ module TransactionGroupFilters
     retrospective_transactions.region(region)
   end
 
+  def excluded_transactions_by_region(region)
+    excluded_transactions.region(region)
+  end
+
   def unbilled_transactions
     regime.transaction_details.unbilled
   end
 
   def retrospective_transactions
     regime.transaction_details.retrospective
+  end
+
+  def excluded_transactions
+    regime.transaction_details.excluded
   end
 
   def regime_specific_group_filter(base_query)
@@ -74,7 +82,7 @@ module TransactionGroupFilters
 
   def wml_sorter(base_query)
     # TODO: make this WML specific
-    base_query.order(transaction_reference: :asc,
+    base_query.order(tcm_transaction_reference: :asc,
                      reference_1: :asc,
                      line_amount: :asc)
   end

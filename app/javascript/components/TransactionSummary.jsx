@@ -37,6 +37,18 @@ export default class TransactionSummary extends React.Component {
     const csrfToken = this.props.csrfToken
     const title = this.props.title
     const buttonLabel = this.props.buttonLabel
+    const excluded = summary.excluded_count
+
+    let excludedWarning = null
+    if (excluded > 0) {
+      excludedWarning = (
+        <div className='row alert alert-warning'>
+          <div className='col'>
+            Proceeding will remove <strong>{excluded}</strong> excluded transaction{excluded > 1 ? 's' : ''}
+          </div>
+        </div>
+      )
+    }
 
     return (
       <form method='post' action={action}>
@@ -77,6 +89,7 @@ export default class TransactionSummary extends React.Component {
                   </div>
                 </div>
               </div>
+              {excludedWarning}
             </div>
             <div className='modal-footer'>
               <input type='submit' className='btn btn-primary' disabled={disabled}

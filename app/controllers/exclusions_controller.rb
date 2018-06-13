@@ -1,21 +1,16 @@
 # frozen_string_literal: true
 
-class HistoryController < ApplicationController
+class ExclusionsController < ApplicationController
   include RegimeScope
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
 
-  # GET /regimes/:regime_id/history
-  # GET /regimes/:regime_id/history.json
+  # GET /regimes/:regime_id/exclusions
+  # GET /regimes/:regime_id/exclusions.json
   def index
-    regions = transaction_store.history_regions
+    regions = transaction_store.exclusion_regions
     @region = params.fetch(:region, '')
     @region = regions.first unless @region.blank? || regions.include?(@region)
-
-    q = params.fetch(:search, "")
-    fy = params.fetch(:fy, '')
-    sort_col = params.fetch(:sort, :customer_reference)
-    sort_dir = params.fetch(:sort_direction, 'asc')
 
     respond_to do |format|
       format.html do
@@ -23,49 +18,33 @@ class HistoryController < ApplicationController
       end
       format.js
       format.json do
+        q = params.fetch(:search, "")
+        fy = params.fetch(:fy, '')
         pg = params.fetch(:page, 1)
         per_pg = params.fetch(:per_page, 10)
 
-        @transactions = transaction_store.transaction_history(
+        @transactions = transaction_store.excluded_transactions(
           q,
           fy,
           pg,
           per_pg,
           @region,
-          sort_col,
-          sort_dir)
+          params.fetch(:sort, :customer_reference),
+          params.fetch(:sort_direction, 'asc'))
 
-        financial_years = transaction_store.history_financial_years.reject { |r| r.blank? }
+        financial_years = transaction_store.exclusion_financial_years.reject { |r| r.blank? }
         @transactions = present_transactions(@transactions, @region, regions, financial_years)
         render json: @transactions
-      end
-      format.csv do
-        @transactions = transaction_store.transaction_history_for_export(
-          q,
-          fy,
-          @region,
-          sort_col,
-          sort_dir
-        ).limit(15000)
-        send_data csv.export_history(presenter.wrap(@transactions)), csv_opts
       end
     end
   end
 
-  # GET /regimes/:regime_id/history/1
-  # GET /regimes/:regime_id/history/1.json
+  # GET /regimes/:regime_id/exclusions/1
+  # GET /regimes/:regime_id/exclusions/1.json
   def show
   end
 
   private
-    def csv_opts
-      ts = Time.zone.now.strftime("%Y%m%d%H%M%S")
-      {
-        filename: "transaction_history_#{ts}.csv",
-        type: :csv
-      }
-    end
-
     def present_transactions(transactions, selected_region, regions, financial_years)
       name = "#{@regime.slug}_transaction_detail_presenter".camelize
       presenter = str_to_class(name) || TransactionDetailPresenter
@@ -99,10 +78,6 @@ class HistoryController < ApplicationController
       fys = fy_list.map { |fy| { label: fy[0..1] + '/' + fy[2..3], value: fy } }
       fys = [{label: 'All', value: ''}] + fys if fys.count > 1
       fys
-    end
-
-    def csv
-      @csv ||= TransactionExportService.new(@regime)
     end
 
     def transaction_store

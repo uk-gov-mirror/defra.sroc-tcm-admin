@@ -27,3 +27,10 @@ pas_sroc_file:
   retrospective: false
   file_id: "50678T"
   generated_at: <%= 1.hour.ago %>
+
+wml_sroc_file:
+  regime: wml
+  region: 'B'
+  retrospective: false
+  file_id: "50012T"
+  generated_at: <%= 1.hour.ago %>
