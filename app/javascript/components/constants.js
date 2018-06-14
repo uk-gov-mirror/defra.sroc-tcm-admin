@@ -122,6 +122,11 @@ Constants.PAS_COLUMNS = {
       sortable: true,
       editable: false
     }, {
+      name: 'generated_file_date',
+      label: 'File Date (TCM)',
+      sortable: true,
+      editable: false
+    }, {
       name: 'tcm_transaction_reference',
       label: 'Transaction Ref',
       accessLabel: 'Transaction Reference',
@@ -359,6 +364,11 @@ Constants.CFD_COLUMNS = {
       sortable: true,
       editable: false
     }, {
+      name: 'generated_file_date',
+      label: 'File Date (TCM)',
+      sortable: true,
+      editable: false
+    }, {
       name: 'tcm_transaction_reference',
       label: 'Transaction Ref',
       accessLabel: 'Transaction Reference',
@@ -582,6 +592,11 @@ Constants.WML_COLUMNS = {
     }, {
       name: 'generated_filename',
       label: 'File (TCM)',
+      sortable: true,
+      editable: false
+    }, {
+      name: 'generated_file_date',
+      label: 'File Date (TCM)',
       sortable: true,
       editable: false
     }, {

@@ -174,6 +174,9 @@ class TransactionStorageService
       q.order(original_filename: dir, id: dir)
     when :generated_filename
       q.order(generated_filename: dir, id: dir)
+    when :generated_file_date
+      q.includes(:transaction_file).
+        order("transaction_files.created_at #{dir}, tcm_transaction_reference #{dir}")
     when :amount
       q.order(tcm_charge: dir, id: dir)
     when :excluded_reason

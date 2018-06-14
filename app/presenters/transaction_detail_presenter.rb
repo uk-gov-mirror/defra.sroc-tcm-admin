@@ -25,6 +25,10 @@ class TransactionDetailPresenter < SimpleDelegator
     fmt_date transaction_file.created_at
   end
 
+  def generated_file_date
+    transaction_file.created_at.strftime("%d/%m/%y") if transaction_file
+  end
+
   def pro_rata_days
     bd = billable_days
     fyd = financial_year_days
