@@ -71,6 +71,10 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
         str = "Authorisation No - #{fields[:reference_1]}"
       end
       assert_equal(line, str, "Fail: #{idx}: #{line}")
+
+      arr = line.split('/')
+      assert_equal(arr.second_to_last, fields[:reference_2], "Invalid version extracted #{idx}: #{line}")
+      assert_equal(arr.last, fields[:reference_3], "Invalid discharge extracted #{idx}: #{line}")
     end
   end
 
