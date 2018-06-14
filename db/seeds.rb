@@ -30,6 +30,13 @@ PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_qual
   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
 end
 
+# one time task to fix consent references for unbilled cfd transactions
+tfi = TransactionFileImporter.new
+r.transaction_details.unbilled.each do |t|
+  refs = tfi.extract_consent_fields(t.line_description)
+  t.update_attributes(refs) if refs
+end
+
 r = Regime.find_by!(slug: 'wml')
 r.permit_categories.destroy_all
 PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'))
