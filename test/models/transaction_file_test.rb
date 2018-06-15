@@ -31,4 +31,38 @@ class TransactionFileTest < ActiveSupport::TestCase
     f = @retro_file
     assert_equal "#{@regime.to_param}#{f.region}I#{f.file_id}.dat".downcase, f.filename
   end
+
+  def test_filename_is_lowercase_for_Water_Quality
+    [@sroc_file, @retro_file].each do |f|
+      assert_equal f.filename.downcase, f.filename
+    end
+  end
+
+  def test_filename_is_lowercase_for_Installations
+    @regime = regimes(:pas)
+    @sroc_file = @regime.transaction_files.create(user: @user,
+                                                   region: 'A',
+                                                   retrospective: false)
+
+    @retro_file = @regime.transaction_files.create(user: @user,
+                                                   region: 'B',
+                                                   retrospective: true)
+    [@sroc_file, @retro_file].each do |f|
+      assert_equal f.filename.downcase, f.filename
+    end
+  end
+
+  def test_filename_is_uppercase_for_Waste
+    @regime = regimes(:wml)
+    @sroc_file = @regime.transaction_files.create(user: @user,
+                                                   region: 'A',
+                                                   retrospective: false)
+
+    @retro_file = @regime.transaction_files.create(user: @user,
+                                                   region: 'B',
+                                                   retrospective: true)
+    [@sroc_file, @retro_file].each do |f|
+      assert_equal f.filename.upcase, f.filename
+    end
+  end
 end
