@@ -15,5 +15,9 @@ class HistoryControllerTest < ActionDispatch::IntegrationTest
     get regime_history_index_url(@regime, format: :json)
     assert_response :success
   end
-end
 
+  def test_it_should_get_index_for_csv
+    get regime_history_index_url(@regime, format: :csv)
+    assert_response :success
+  end
+end
