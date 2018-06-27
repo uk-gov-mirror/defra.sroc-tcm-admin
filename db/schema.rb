@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180504135421) do
+ActiveRecord::Schema.define(version: 20180619073618) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,10 +62,11 @@ ActiveRecord::Schema.define(version: 20180504135421) do
     t.string "code", null: false
     t.string "description"
     t.string "status", null: false
-    t.integer "display_order", default: 1000, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["code", "regime_id"], name: "index_permit_categories_on_code_and_regime_id", unique: true
+    t.string "valid_from", default: "1819", null: false
+    t.string "valid_to"
+    t.index ["code", "regime_id", "valid_from"], name: "index_permit_categories_on_code_and_regime_id_and_valid_from", unique: true
     t.index ["regime_id"], name: "index_permit_categories_on_regime_id"
   end
 
@@ -202,6 +203,7 @@ ActiveRecord::Schema.define(version: 20180504135421) do
     t.string "tcm_financial_year"
     t.boolean "excluded", default: false, null: false
     t.string "excluded_reason"
+    t.string "category_description"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"

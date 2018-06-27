@@ -90,7 +90,7 @@ export default class TransactionTableRow extends React.Component {
       if (c.editable && (!excluded || c.name === 'excluded')) {
         if (c.name === 'sroc_category') {
           const categories = this.props.categories
-          const catId = 'category-' + row['id']
+          const catId = 'category-' + row.id
           const helpTxt = this.accessHelpText(c, row)
 
           return (
@@ -108,7 +108,7 @@ export default class TransactionTableRow extends React.Component {
             </td>
           )
         } else if (c.name === 'temporary_cessation') {
-          const tcId = 'tc-' + row['id']
+          const tcId = 'tc-' + row.id
           const helpTxt = this.accessHelpText(c, row)
 
           return (
@@ -127,7 +127,7 @@ export default class TransactionTableRow extends React.Component {
             </td>
           )
         } else if (c.name === 'excluded') {
-          const exId = 'ex-' + row['id']
+          const exId = 'ex-' + row.id
           const exHelpTxt = this.excludedHelpText(c, row)
 
           return (
@@ -144,6 +144,19 @@ export default class TransactionTableRow extends React.Component {
                   checked={excluded}
                   onChange={this.toggleExcluded}
                 />
+            </td>
+          )
+        } else if (c.name === 'edit_link') {
+          const edId = 'ed-' + row.id
+          const helpTxt = this.accessHelpText(c, row)
+          const helpElem = (
+            <span className='sr-only'>{helpTxt}</span>
+          )
+          return (
+            <td key={edId}>
+              <button className="btn btn-sm btn-success"
+                onClick={() => this.props.onEditRow(row.id)}>
+                Edit <span className='sr-only'>{helpTxt}</span></button>
             </td>
           )
         } else {
@@ -175,7 +188,7 @@ export default class TransactionTableRow extends React.Component {
     if (row.error_message) {
       clz = 'alert-danger '
     }
-    if (row.excluded) {
+    if (row.excluded || row.status === 'excluded') {
       clz = clz + 'excluded'
     }
     return (

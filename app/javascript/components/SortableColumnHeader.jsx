@@ -19,7 +19,7 @@ export default class SortableColumnHeader extends React.Component {
     }
     return (
       <th>
-        <a href='#' onClick={this.props.clickHandler}>
+        <a href='#' className='sortable-header' onClick={this.props.clickHandler}>
           {col.label}{indicator}{label}
         </a>
       </th>

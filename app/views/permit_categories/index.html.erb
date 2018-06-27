@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <%= javascript_pack_tag 'transactions' %>
+  <%= stylesheet_pack_tag 'transactions' %>
+<% end %>
 <div class="row">
   <div class="col">
     <h1 class="heading">Permit Categories</h1>
@@ -5,21 +9,13 @@
 </div>
 <div class="row">
   <div class="col">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @permit_categories.each do |permit_category| %>
-          <tr>
-            <td><%= permit_category.code %></td>
-            <td><%= permit_category.description %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <div id="permit-table"
+         data-regime="<%= @regime.slug %>"
+         data-financial-year="<%= @financial_year %>"
+         data-sort-col="code"
+         data-sort-dir="asc"
+         data-search-term="<%= params[:search] %>"
+         data-search-placeholder="Search for code or description matching...">
+    </div>
   </div>
 </div>

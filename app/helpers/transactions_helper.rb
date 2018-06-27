@@ -54,9 +54,13 @@ module TransactionsHelper
   end
 
   def permit_categories(regime)
-    regime.permit_categories.order(:display_order, :code).pluck(:code).map do |c|
-      { value: c, label: c }
-    end
+    PermitStorageService.new(regime).active_list_for_selection('1819').
+      pluck(:code).map do |c|
+        { value: c, label: c }
+      end
+    # regime.permit_categories.order(:code).pluck(:code).map do |c|
+    #   { value: c, label: c }
+    # end
   end
 
   def regime_columns(regime)

@@ -1,6 +1,5 @@
 import React from 'react'
 import TransactionTableHeader from './TransactionTableHeader'
-// import TransactionTableBody from './TransactionTableBody'
 import TransactionTableRow from './TransactionTableRow'
 import ExclusionReasonDialog from './ExclusionReasonDialog'
 
@@ -18,7 +17,6 @@ export default class TransactionTable extends React.Component {
   }
 
   showExclusionDialog (saveCallback, cancelCallback) {
-    console.log('show dialog')
     this.setState({
       exclusionDialogOpen: true,
       saveCallback: saveCallback,
@@ -27,7 +25,6 @@ export default class TransactionTable extends React.Component {
   }
 
   onCancelExclusionDialog () {
-    console.log('cancel dialog')
     const cancelFn = this.state.cancelCallback
     if (cancelFn) {
       cancelFn()
@@ -40,7 +37,6 @@ export default class TransactionTable extends React.Component {
   }
 
   onSaveExclusionReason(reason) {
-    console.log('onSaveExclusionReason: ' + reason)
     const saveFn = this.state.saveCallback
     if (saveFn) {
       saveFn(reason)
@@ -89,6 +85,7 @@ export default class TransactionTable extends React.Component {
         onShowExclusionDialog={this.showExclusionDialog}
         onExcludeTransaction={this.props.onExcludeTransaction}
         onReinstateTransaction={this.props.onReinstateTransaction}
+        onEditRow={this.props.onEditRow}
       />)
 
     return (
@@ -110,16 +107,3 @@ export default class TransactionTable extends React.Component {
     )
   }
 }
-/*
-        <TransactionTableBody
-          columns={columns}
-          data={data}
-          categories={categories}
-          onChangeCategory={onChangeCategory}
-          onChangeTemporaryCessation={onChangeTemporaryCessation}
-          onShowExclusionDialog={this.showExclusionDialog}
-          onReinstateTransaction={this.onReinstateExcludedTransaction}
-          excludeTransaction={this.props.excludeTransaction}
-          reinstateTransaction={this.props.reinstateTransaction}
-        />
-*/
