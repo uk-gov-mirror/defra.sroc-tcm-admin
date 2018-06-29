@@ -50,6 +50,16 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(val, @presenter.credit_line_description)
   end
 
+  def test_credit_line_description_without_due_present
+    @presenter.category = "2.15.2"
+    @presenter.line_description = "In cancellation of invoice no. B01191428: "\
+      "Credit of Charge Code 1 at Rookery Road, St Georges, Telford, TF2 9BW, "\
+      "Permit Ref: FB3404FL/"
+    expected_val = "Credit of subsistence charge for permit category 2.15.2. "\
+      "At Rookery Road, St Georges, Telford, TF2 9BW, EPR Ref: FB3404FL/"
+    assert_equal(expected_val, @presenter_credit_line_description)
+  end
+
   def test_invoice_line_description_modifies_the_line_description
     transaction = transaction_details(:wml_invoice)
     presenter = WmlTransactionDetailPresenter.new(transaction)
