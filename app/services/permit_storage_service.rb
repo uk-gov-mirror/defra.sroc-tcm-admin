@@ -65,25 +65,39 @@ class PermitStorageService
   end
 
   def new_permit_category(code, description, valid_from, status = 'active')
+    pc = build_permit_category(code, description, valid_from, status)
+
     if code_exists?(code)
-      update_or_create_new_version(code, description, valid_from, status)
-    else
-      # create excluded one from 1819 until the requested valid_from
-      # unless valid_from is 1819
-      pc = regime.permit_categories.create(code: code,
-                                           description: description,
-                                           valid_from: valid_from,
-                                           status: status)
-      if pc.valid? && valid_from != '1819'
-        regime.permit_categories.create(code: code,
-                                        description: description,
-                                        valid_from: '1819',
-                                        valid_to: valid_from,
-                                        status: 'excluded')
-      end 
-      pc
+      pc.errors.add(:code, "^Code '#{code}' is already in use.")
+    elsif pc.save && valid_from != '1819'
+      create_permit_category(code: code,
+                             description: description,
+                             valid_from: '1819',
+                             valid_to: valid_from,
+                             status: 'excluded')
     end
+    pc
   end
+  #
+  #   if code_exists?(code)
+  #     update_or_create_new_version(code, description, valid_from, status)
+  #   else
+  #     # create excluded one from 1819 until the requested valid_from
+  #     # unless valid_from is 1819
+  #     pc = create_permit_category(code: code,
+  #                                 description: description,
+  #                                 valid_from: valid_from,
+  #                                 status: status)
+  #     if pc.valid? && valid_from != '1819'
+  #       create_permit_category(code: code,
+  #                              description: description,
+  #                              valid_from: '1819',
+  #                              valid_to: valid_from,
+  #                              status: 'excluded')
+  #     end 
+  #     pc
+  #   end
+  # end
 
   def find(code, fy)
     regime.permit_categories.find_by(code: code, valid_from: fy)
@@ -93,21 +107,29 @@ class PermitStorageService
     pc = regime.permit_categories.find_by(code: code, valid_from: fy)
     if pc.nil?
       # no version to update so create a new one
-      add_permit_category_version(code, description, fy, status)
+      pc = add_permit_category_version(code, description, fy, status)
     else
       pc.description = description
       pc.status = status
-      pc.save!
+      pc.save
     end
     pc
   end
 
   def add_permit_category_version(code, description, valid_from, status = 'active')
-    pc = nil
+    pc = build_permit_category(code: code,
+                               description: description,
+                               valid_from: valid_from,
+                               status: status)
+
+    return pc unless pc.valid?
+
     pc_prev = nil
     pc_next = nil
 
-    permit_category_versions(code).each do |c|
+    cats = permit_category_versions(code)
+
+    cats.each do |c|
       if c.valid_from > valid_from
         pc_next = c
         break
@@ -115,15 +137,45 @@ class PermitStorageService
       pc_prev = c
     end
 
+    populate_future_categories = false
+    matching = []
+
+    if pc_prev && pc_next && pc_prev.description == pc_next.description &&
+        pc_prev.status == pc_next.status
+      populate_future_categories = true
+      matching << pc_next
+
+      cats.each do |c|
+        if c.valid_from > pc_next.valid_from
+          if c.description == pc_prev.description &&
+            c.status == pc_prev.status
+            matching << c
+          else
+            break
+          end
+        end
+      end
+    end
+
     PermitCategory.transaction do
       if pc_prev
         pc_prev.valid_to = valid_from
         pc_prev.save!
       end
-      pc = new_permit_category(code, description, valid_from, status)
+
+      pc.save!
+
       if pc_next
         pc.valid_to = pc_next.valid_from
         pc.save!
+
+        if populate_future_categories
+          matching.each do |mc|
+            mc.description = pc.description
+            mc.status = pc.status
+            mc.save!
+          end
+        end
       end
     end
     pc
@@ -144,5 +196,11 @@ class PermitStorageService
     else
       q.order("string_to_array(code, '.')::int[] #{dir}")
     end
+  end
+
+  private
+
+  def create_permit_category(attrs = {})
+    regime.permit_categories.create(attrs)
   end
 end

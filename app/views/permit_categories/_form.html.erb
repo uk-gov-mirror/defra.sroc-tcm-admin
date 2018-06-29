@@ -15,7 +15,11 @@
 
     <div class="form-group">
       <%= form.label :description %>
-      <%= form.text_area :description, id: :permit_category_description, class: "form-control", rows: 4 %>
+      <%= form.text_area :description, id: :permit_category_description,
+        maxlength: 150, class: "form-control", rows: 4 %>
+      <div class="panel mt-2 mb-4 help-text">
+        Description must not be longer than 150 characters and must not contain any of the following characters: ?, ^, £, &le;, &ge;, &mdash; (long dash).
+      </div>
     </div>
 
       <%= form.hidden_field :status %>
@@ -24,18 +28,26 @@
       <%= hidden_field_tag :fy, @financial_year %>
 
     <div class="actions">
+      <%
+        opts = {}
+        opts[:data] = { turbolinks: false } if permit_category.errors.any?
+      %>
       <% if permit_category.new_record? %>
-        <%= form.submit class: "btn btn-primary" %>
+        <%= form.submit opts.merge(class: "btn btn-primary") %>
       <% else %>
-        <%= form.submit "Update description", class: "btn btn-primary" %>
+        <%= form.submit "Update description",
+          opts.merge(class: "btn btn-primary") %>
         <% if permit_category.excluded? %>
-          <%= form.submit "Reinstate Category", class: "btn btn-warning" %>
+          <%= form.submit "Reinstate Category",
+            opts.merge(class: "btn btn-warning") %>
         <% else %>
-          <%= form.submit "Remove Category", class: "btn btn-danger" %>
+          <%= form.submit "Remove Category", 
+            opts.merge(class: "btn btn-danger") %>
         <% end %>
       <% end %>
-      <%= link_to 'Cancel', regime_permit_categories_path(@regime, fy: @financial_year),
-        class: "btn btn-secondary", role: "button" %>
+      <%= link_to 'Cancel',
+        regime_permit_categories_path(@regime, fy: @financial_year),
+        opts.merge(class: 'btn btn-secondary', role: 'button') %>
     </div>
   </div>
 <% end %>

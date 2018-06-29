@@ -55,7 +55,7 @@ class PermitCategoriesController < AdminController
                                                         @financial_year)
 
     respond_to do |format|
-      if @permit_category.valid?
+      if @permit_category.errors.empty?
         format.html do
           redirect_to regime_permit_categories_path(@regime,
                                                    fy: @financial_year),
@@ -84,7 +84,6 @@ class PermitCategoriesController < AdminController
             @financial_year, 'excluded')
       else
        @permit_category.errors.add(base: "^This code is in use and cannot be removed")
-       result = false 
       end
     elsif params[:commit] == 'Reinstate Category'
       @permit_category = permit_store.update_or_create_new_version(
@@ -97,6 +96,7 @@ class PermitCategoriesController < AdminController
           cat.code, permit_category_params[:description],
           @financial_year, cat.status)
     end
+    result = @permit_category.errors.empty?
     # result = false
     # create = false
     # if @permit_category.valid_from != @financial_year

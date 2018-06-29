@@ -1,4 +1,10 @@
 $text-col: theme-color("dark");
+// $help-text-col: theme-color("gray");
+
+.help-text {
+  // color: $help-text-col;
+  color: $gray-600;
+}
 
 .transaction-summary {
   // dt:after {

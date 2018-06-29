@@ -1,4 +1,12 @@
 class PermitCategory < ApplicationRecord
+  include Auditable
+
+  audit_events [:create, :update]
+  audit_attributes [ :code,
+                     :description,
+                     :valid_from,
+                     :valid_to,
+                     :status ]
   belongs_to :regime
 
   validate :valid_from_is_financial_year
@@ -6,6 +14,8 @@ class PermitCategory < ApplicationRecord
   validate :valid_from_and_valid_to_is_valid_range
   validates :code, presence: true, uniqueness: { scope: [:regime_id, :valid_from] }
   validates :description, presence: true, unless: :excluded?
+  validates :description, length: { maximum: 150 }
+  validate :description_has_no_invalid_characters
   validates :status, inclusion: { in: %w[active excluded],
     message: "%{value} is not a valid state" }
 
@@ -57,6 +67,14 @@ class PermitCategory < ApplicationRecord
 
     if valid_from >= valid_to
       errors.add(:valid_from, "Valid from must be earlier than valid to")
+    end
+  end
+
+  def description_has_no_invalid_characters
+    if description.present?
+      if description =~ /[\?\^£\u2014\u2264\u2265]/
+        errors.add(:description, "^Description contains characters that are not permitted. Please modify your description to remove them.")
+      end
     end
   end
 end
