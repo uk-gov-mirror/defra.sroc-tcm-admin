@@ -50,6 +50,38 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal(val, @presenter.credit_line_description)
   end
 
+  def test_credit_line_description_without_due_present
+    @presenter.category = "2.15.2"
+    @transaction.line_description = "In cancellation of invoice no. B01191428: "\
+      "Credit of Charge Code 1 at Rookery Road, St Georges, Telford, TF2 9BW, "\
+      "Permit Ref: FB3404FL/"
+    expected_val = "Credit of subsistence charge for permit category 2.15.2. "\
+      "At Rookery Road, St Georges, Telford, TF2 9BW, EPR Ref: FB3404FL/"
+    assert_equal(expected_val, @presenter.credit_line_description)
+  end
+
+  def test_credit_line_description_without_due_or_at_present
+    @presenter.category = "2.15.2"
+    @transaction.line_description = "In cancellation of invoice no. B01191428: "\
+      "Credit of Charge Code 1 on Rookery Road, St Georges, Telford, TF2 9BW, "\
+      "Permit Ref: FB3404FL/"
+    expected_val = "Credit of subsistence charge for permit category 2.15.2. "\
+      "Credit of Charge Code 1 on Rookery Road, St Georges, Telford, TF2 9BW, "\
+      "EPR Ref: FB3404FL/"
+    assert_equal(expected_val, @presenter.credit_line_description)
+  end
+
+  def test_credit_line_description_without_match
+    @presenter.category = "2.15.2"
+    @transaction.line_description = "In cancellation of invoice. "\
+      "Rookery Road, St Georges, Telford, TF2 9BW, "\
+      "Permit Ref: FB3404FL/"
+    expected_val = "Credit of subsistence charge for permit category 2.15.2. "\
+      "In cancellation of invoice. Rookery Road, St Georges, Telford, TF2 9BW, "\
+      "EPR Ref: FB3404FL/"
+    assert_equal(expected_val, @presenter.credit_line_description)
+  end
+
   def test_invoice_line_description_modifies_the_line_description
     transaction = transaction_details(:wml_invoice)
     presenter = WmlTransactionDetailPresenter.new(transaction)
@@ -57,6 +89,17 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
     val = "Site: Hairy Wigwam, Big Pig Farm, Great Upperford, Big Town, BT5 5EL, "\
       "EPR Ref: XZ3333PG/A001"
     assert_equal(val, presenter.invoice_line_description)
+  end
+
+  def test_invoice_line_description_return_line_description_when_no_at_in_text
+    transaction = transaction_details(:wml_invoice)
+    val = "Compliance adjustment for Hairy Wigwam, "\
+      "Big Pig Farm, Great Upperford, Big Town, BT5 5EL, Permit Ref: XXX/123"
+    transaction.line_description = val
+
+    presenter = WmlTransactionDetailPresenter.new(transaction)
+
+    assert_equal(val.gsub(/Permit/, 'EPR'), presenter.invoice_line_description)
   end
 
   def test_it_returns_permit_reference
