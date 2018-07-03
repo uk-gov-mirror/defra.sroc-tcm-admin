@@ -119,6 +119,7 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
       compliance_band: @presenter.compliance_band,
       sroc_category: @presenter.category,
       temporary_cessation: @presenter.temporary_cessation_flag,
+      tcm_financial_year: @presenter.tcm_financial_year,
       period: @presenter.period,
       amount: @presenter.amount,
       excluded: @presenter.excluded,

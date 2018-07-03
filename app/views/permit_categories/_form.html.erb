@@ -1,6 +1,6 @@
 <%= form_with(model: [@regime, permit_category], local: true) do |form| %>
-  <h2>Financial Year <%= pretty_financial_year @financial_year -%>
-      <%= "(Excluded)" if permit_category.excluded? -%></h2>
+  <h2><%= "Financial Year #{pretty_financial_year @financial_year}"\
+    "#{' (Excluded)' if permit_category.excluded?}" -%></h2>
   <%= error_header(permit_category) %>
 
   <div class="col-lg-6">
@@ -17,8 +17,10 @@
       <%= form.label :description %>
       <%= form.text_area :description, id: :permit_category_description,
         maxlength: 150, class: "form-control", rows: 4 %>
-      <div class="panel mt-2 mb-4 help-text">
-        Description must not be longer than 150 characters and must not contain any of the following characters: ?, ^, £, &le;, &ge;, &mdash; (long dash).
+      <div class="panel pt-2 mt-2 pb-2 mb-4 help-text">
+        Description must not be longer than 150 characters and must not
+        contain any of the following characters: ?, ^, £, &le;, &ge;,
+        &mdash; (long dash).
       </div>
     </div>
 
@@ -27,11 +29,10 @@
       <%= form.hidden_field :valid_to %>
       <%= hidden_field_tag :fy, @financial_year %>
 
+      <%= content_for :timeline %>
+
     <div class="actions">
-      <%
-        opts = {}
-        opts[:data] = { turbolinks: false } if permit_category.errors.any?
-      %>
+      <% opts = { data: { turbolinks: false }} %>
       <% if permit_category.new_record? %>
         <%= form.submit opts.merge(class: "btn btn-primary") %>
       <% else %>

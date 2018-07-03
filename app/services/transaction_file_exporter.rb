@@ -35,7 +35,6 @@ class TransactionFileExporter
         # link transactions and update status
         fy_q.update_all(transaction_file_id: f.id, status: 'exporting')
         files << f
-        # auditor.log_create(f)
       end
       # 'remove' excluded transactions
       excluded_transactions_by_region(region).update_all(status: 'excluded') 
@@ -108,8 +107,16 @@ class TransactionFileExporter
       attrs[:status] = 'billed'
     end
 
-    tf.transaction_details.update_all(attrs)
-    tf.update_attributes(state: 'exported')
+    TransactionFile.transaction do
+      tf.transaction_details.each do |td|
+        cat = permit_store.code_for_financial_year(td.category,
+                                                   td.tcm_financial_year)
+        td.update_attributes(attrs.merge(category_description:
+                                         cat.description))
+      end
+      tf.update_attributes(state: 'exported')
+    end
+    # tf.transaction_details.update_all(attrs)
   ensure
     out_file.close
   end
@@ -242,7 +249,7 @@ class TransactionFileExporter
     @storage ||= FileStorageService.new
   end
 
-  # def auditor
-  #   @auditor ||= AuditService.new(user)
-  # end
+  def permit_store
+    @permit_store ||= PermitStorageService.new(regime)
+  end
 end

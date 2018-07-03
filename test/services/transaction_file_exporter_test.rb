@@ -23,6 +23,7 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
       t.category = '2.3.4'
       t.status = 'unbilled'
       t.tcm_charge = t.line_amount
+      t.tcm_financial_year = '1819'
       set_charge_calculation(t)
     end
 
@@ -53,6 +54,20 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
     assert_equal 2, file.transaction_details.count
     assert_includes file.transaction_details, @transaction_1
     assert_includes file.transaction_details, @transaction_2
+  end
+
+  def test_export_sets_permit_category_description_on_transaction
+    @exporter.export
+    file = TransactionFile.last
+    @exporter.generate_output_file(file)
+
+    store = PermitStorageService.new(@regime)
+
+    file.transaction_details.each do |td|
+      pc = store.code_for_financial_year(td.category,
+                                         td.tcm_financial_year)
+      assert_equal(pc.description, td.category_description)
+    end
   end
 
   def test_export_creates_audit_record

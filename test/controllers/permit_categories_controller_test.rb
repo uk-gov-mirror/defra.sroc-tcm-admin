@@ -10,6 +10,14 @@ class PermitCategoriesControllerTest < ActionDispatch::IntegrationTest
   def test_it_should_get_index
     get regime_permit_categories_url(@regime)
     assert_response :success
-    assert_equal(assigns(:permit_categories), [ @permit_category ])
+    assert_nil assigns(:permit_categories)
+  end
+
+  def test_it_should_get_index_for_json
+    get regime_permit_categories_url(@regime, format: :json)
+    assert_response :success
+    payload = assigns(:permit_categories)
+    assert_not_nil payload
+    assert_equal(payload[:permit_categories], [ @permit_category ])
   end
 end

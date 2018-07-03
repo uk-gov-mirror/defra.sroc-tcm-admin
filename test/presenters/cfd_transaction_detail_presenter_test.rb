@@ -135,6 +135,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       sroc_category: @presenter.category,
       variation: @presenter.clean_variation_percentage,
       temporary_cessation: @presenter.temporary_cessation_flag,
+      tcm_financial_year: @presenter.tcm_financial_year,
       financial_year: @presenter.charge_period,
       region: @presenter.region_from_ref,
       period: @presenter.period,

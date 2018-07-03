@@ -89,6 +89,7 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
       compliance_band: compliance_band,
       sroc_category: category,
       temporary_cessation: temporary_cessation_flag,
+      tcm_financial_year: tcm_financial_year,
       period: period,
       amount: amount,
       excluded: excluded,

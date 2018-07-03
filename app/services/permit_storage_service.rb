@@ -117,10 +117,7 @@ class PermitStorageService
   end
 
   def add_permit_category_version(code, description, valid_from, status = 'active')
-    pc = build_permit_category(code: code,
-                               description: description,
-                               valid_from: valid_from,
-                               status: status)
+    pc = build_permit_category(code, description, valid_from, status)
 
     return pc unless pc.valid?
 
@@ -137,25 +134,25 @@ class PermitStorageService
       pc_prev = c
     end
 
-    populate_future_categories = false
-    matching = []
-
-    if pc_prev && pc_next && pc_prev.description == pc_next.description &&
-        pc_prev.status == pc_next.status
-      populate_future_categories = true
-      matching << pc_next
-
-      cats.each do |c|
-        if c.valid_from > pc_next.valid_from
-          if c.description == pc_prev.description &&
-            c.status == pc_prev.status
-            matching << c
-          else
-            break
-          end
-        end
-      end
-    end
+    # populate_future_categories = false
+    # matching = []
+    #
+    # if pc_prev && pc_next && pc_prev.description == pc_next.description &&
+    #     pc_prev.status == pc_next.status
+    #   populate_future_categories = true
+    #   matching << pc_next
+    #
+    #   cats.each do |c|
+    #     if c.valid_from > pc_next.valid_from
+    #       if c.description == pc_prev.description &&
+    #         c.status == pc_prev.status
+    #         matching << c
+    #       else
+    #         break
+    #       end
+    #     end
+    #   end
+    # end
 
     PermitCategory.transaction do
       if pc_prev
@@ -169,13 +166,13 @@ class PermitStorageService
         pc.valid_to = pc_next.valid_from
         pc.save!
 
-        if populate_future_categories
-          matching.each do |mc|
-            mc.description = pc.description
-            mc.status = pc.status
-            mc.save!
-          end
-        end
+        # if populate_future_categories
+        #   matching.each do |mc|
+        #     mc.description = pc.description
+        #     mc.status = pc.status
+        #     mc.save!
+        #   end
+        # end
       end
     end
     pc

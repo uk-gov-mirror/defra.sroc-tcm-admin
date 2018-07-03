@@ -79,7 +79,7 @@ export default class TransactionTable extends React.Component {
         key={r.id}
         columns={columns}
         row={r}
-        categories={categories}
+        categories={this.props.categories}
         onChangeCategory={onChangeCategory}
         onChangeTemporaryCessation={onChangeTemporaryCessation}
         onShowExclusionDialog={this.showExclusionDialog}

@@ -3,4 +3,29 @@
     <h1 class="heading">Edit Permit Category</h1>
   </div>
 </div>
+<% content_for :timeline do %>
+  <div class="row timeline">
+    <div class="col">
+      <h3>Timeline</h3>
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @timeline.each do |pc| %>
+            <tr class="#{'excluded' if pc.excluded? }">
+              <td><%= pretty_financial_year(pc.valid_from) %></td>
+              <td><%= pc.description %></td>
+              <td><%= pc.status.capitalize %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
 <%= render 'form', permit_category: @permit_category %>

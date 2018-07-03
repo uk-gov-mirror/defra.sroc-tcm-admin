@@ -13,6 +13,8 @@ class PermitCategoriesController < AdminController
     sort_dir = params.fetch(:sort_direction, 'asc')
     pg = params.fetch(:page, 1)
     per_pg = params.fetch(:per_page, 10)
+    unpaged = !!params.fetch(:unpaged, false)
+
     # fy = params.fetch(:fy, '1819')
 
     respond_to do |format|
@@ -21,9 +23,15 @@ class PermitCategoriesController < AdminController
         # cats = permit_store.all_for_financial_year(fy).
         #   order("string_to_array(code, '.')::int[]").
         cats = permit_store.search_all(@financial_year, q,
-                                       sort_col, sort_dir).
-                                       page(pg).per(per_pg)
-        @permit_categories = present_categories(cats)
+                                       sort_col, sort_dir)
+        cats = cats.page(pg).per(per_pg) unless unpaged
+
+        @permit_categories = if unpaged
+                               present_categories_unpaged(cats)
+                             else
+                               present_categories(cats)
+                             end
+
         render json: @permit_categories
       end
     end
@@ -45,6 +53,7 @@ class PermitCategoriesController < AdminController
     # The #update method will have to decide whether to create a new
     # record or modify this one
     @permit_category = @regime.permit_categories.find(params[:id])
+    @timeline = permit_store.permit_category_versions(@permit_category.code)
   end
 
   def create
@@ -171,6 +180,12 @@ class PermitCategoriesController < AdminController
     # have used this code
     @regime.transaction_details.financial_year(financial_year).
       where(category: code).count.zero?
+  end
+
+  def present_categories_unpaged(categories)
+    {
+      permit_categories: PermitCategoriesPresenter.wrap(categories)
+    }
   end
 
   def present_categories(categories)

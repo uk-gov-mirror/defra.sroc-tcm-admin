@@ -6,6 +6,15 @@ $text-col: theme-color("dark");
   color: $gray-600;
 }
 
+.timeline {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.table-sm {
+  font-size: 0.85rem;
+}
+
 .transaction-summary {
   // dt:after {
   //   content: ":";

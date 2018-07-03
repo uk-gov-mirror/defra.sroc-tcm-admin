@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  include RegimeScope
+  include RegimeScope, FinancialYear
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show, :edit, :update]
   before_action :set_current_user, only: [:update]
@@ -23,7 +23,9 @@ class TransactionsController < ApplicationController
     sort_dir = params.fetch(:sort_direction, 'asc')
 
     respond_to do |format|
-      format.html
+      format.html do
+        @categories = current_permit_categories 
+      end
       format.json do
         pg = params.fetch(:page, 1)
         per_pg = params.fetch(:per_page, 10)
@@ -93,6 +95,13 @@ class TransactionsController < ApplicationController
         filename: "transactions_to_be_billed_#{ts}.csv",
         type: :csv
       }
+    end
+
+    def current_permit_categories
+      permit_store.active_list_for_selection(current_financial_year).
+        pluck(:code).map do |c|
+          { value: c, label: c }
+        end
     end
 
     def update_transaction
@@ -224,6 +233,10 @@ class TransactionsController < ApplicationController
 
     def auditor
       @auditor ||= AuditService.new(current_user)
+    end
+
+    def permit_store
+      @permit_store ||= PermitStorageService.new(@regime, current_user)
     end
 
     def set_current_user

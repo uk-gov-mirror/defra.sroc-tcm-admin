@@ -81,6 +81,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
       variation: clean_variation_percentage,
       temporary_cessation: temporary_cessation_flag,
       financial_year: charge_period,
+      tcm_financial_year: tcm_financial_year,
       region: region_from_ref,
       period: period,
       line_amount: original_charge,

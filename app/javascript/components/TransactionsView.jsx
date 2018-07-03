@@ -50,7 +50,6 @@ export default class TransactionsView extends React.Component {
     this.exportTransactions = this.exportTransactions.bind(this)
     this.excludeTransaction = this.excludeTransaction.bind(this)
     this.reinstateTransaction = this.reinstateTransaction.bind(this)
-
     this.fetchExclusionReasons()
   }
 
@@ -438,7 +437,7 @@ export default class TransactionsView extends React.Component {
           sortColumn={sortColumn}
           sortDirection={sortDirection}
           data={transactions}
-          categories={categories}
+          categories={this.props.categories}
           onChangeSortDirection={this.toggleSortDirection}
           onChangeSortColumn={this.changeSortColumn}
           onChangeCategory={this.updateTransactionCategory}

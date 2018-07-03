@@ -104,17 +104,37 @@ class PermitStorageServiceTest < ActiveSupport::TestCase
   def test_new_permit_category_creates_a_new_record
     pc = nil
     assert_difference 'PermitCategory.count' do
-      pc = @service.new_permit_category('9.8.7', "A new category", "1920")
+      pc = @service.new_permit_category('9.8.7', "A new category", "1819")
     end
     assert_equal pc, PermitCategory.last
   end
 
-  def test_new_permit_category_raises_validation_error_if_not_valid
+  def test_new_permit_category_creates_excluded_record_when_future_date
+    # when adding a new category from a financial year after 1819
+    # we create an duplicate excluded record from 1819 to the requested
+    # financial year.
     pc = nil
-    assert_raises ActiveRecord::RecordInvalid do
-      pc = @service.new_permit_category('2.3.4', "An existing category", "1819")
+    assert_difference 'PermitCategory.count', 2 do
+      pc = @service.new_permit_category('9.8.7', "A new category", "2122")
     end
-    assert_nil pc
+    assert_equal pc, PermitCategory.second_to_last
+    pc2 = PermitCategory.last
+    assert_equal pc.code, pc2.code
+    assert_equal pc.description, pc2.description
+    assert_equal '1819', pc2.valid_from
+    assert_equal pc.valid_from, pc2.valid_to
+    assert_equal pc2.status, 'excluded'
+  end
+
+  def test_new_permit_category_returns_unsaved_object_if_invalid
+    pc = nil
+    assert_no_difference 'PermitCategory.count' do
+      pc = @service.new_permit_category('2.3.4', "An existing category",
+                                        "1819")
+    end
+    assert_not_nil pc
+    assert_not pc.persisted?
+    assert pc.invalid?
   end
 
   def test_add_permit_category_version_creates_a_new_record
@@ -144,22 +164,22 @@ class PermitStorageServiceTest < ActiveSupport::TestCase
     assert_equal "2223", pc3.valid_to
   end
 
-  def test_update_description_or_create_new_version_updates_description
+  def test_update_or_create_new_version_updates_description
     pc = permit_categories(:cfd)
 
     assert_no_difference 'PermitCategory.count' do
-      @service.update_description_or_create_new_version(pc.code, "Wigwam", pc.valid_from)
+      @service.update_or_create_new_version(pc.code, "Wigwam", pc.valid_from)
     end
 
     assert_equal "Wigwam", pc.reload.description
   end
 
-  def test_update_description_or_create_new_version_creates_new_version
+  def test_update_or_create_new_version_creates_new_version
     pc = permit_categories(:cfd)
     old_desc = pc.description
 
     assert_difference 'PermitCategory.count' do
-      @service.update_description_or_create_new_version(pc.code, "Wigwam", "2223")
+      @service.update_or_create_new_version(pc.code, "Wigwam", "2223")
     end
 
     assert_equal old_desc, pc.reload.description

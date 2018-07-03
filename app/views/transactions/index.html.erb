@@ -14,7 +14,7 @@
          data-selected-region="<%= @region %>"
          data-search-term="<%= params[:search] %>"
          data-search-placeholder="<%= search_placeholder(@regime) %>"
-         data-categories="<%= permit_categories(@regime).to_json %>"
+         data-categories="<%= @categories.to_json %>"
          data-generate-files="true">
     </div>
   </div>
