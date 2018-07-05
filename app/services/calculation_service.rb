@@ -7,6 +7,30 @@ class CalculationService
     @user = user
   end
 
+  def check_connectivity
+    # generate a charge to test connectivity
+    regime = Regime.find_by!(slug: 'cfd')
+    parms = {
+      permitCategoryRef: regime.permit_categories.first.code,
+      percentageAdjustment: "100",
+      temporaryCessation: false,
+      compliancePerformanceBand: "B",
+      billableDays: 365,
+      financialDays: 365,
+      chargePeriod: "FY1819",
+      preConstruction: false,
+      environmentFlag: "TEST"
+    }
+
+    result = calculate_charge(regime, 2018, parms)
+    puts 'Successfully generated charge'
+    result
+  rescue => e
+    msg = "Check connectivity error: " + e.message
+    TcmLogger.error(msg)
+    puts msg
+  end
+
   def calculate_transaction_charge(transaction)
     regime = transaction.regime
     financial_year = transaction.financial_year
