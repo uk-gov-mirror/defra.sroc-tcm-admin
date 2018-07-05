@@ -18,8 +18,10 @@ class TransactionFile < ApplicationRecord
 
   def filename
     unless @filename
-      @filename = "#{base_filename}.DAT"
-      @filename = @filename.downcase unless regime.waste?
+      base = base_filename
+      base.downcase! if regime.water_quality?
+      ext = regime.waste? ? '.DAT' : '.dat'
+      @filename = "#{base}#{ext}"
     end
     @filename
   end

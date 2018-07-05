@@ -38,7 +38,7 @@ class TransactionFileTest < ActiveSupport::TestCase
     end
   end
 
-  def test_filename_is_lowercase_for_Installations
+  def test_filename_is_uppercase_for_Installations
     @regime = regimes(:pas)
     @sroc_file = @regime.transaction_files.create(user: @user,
                                                    region: 'A',
@@ -48,11 +48,14 @@ class TransactionFileTest < ActiveSupport::TestCase
                                                    region: 'B',
                                                    retrospective: true)
     [@sroc_file, @retro_file].each do |f|
-      assert_equal f.filename.downcase, f.filename
+      fn = f.filename
+      ext = File.extname(fn)
+      base = File.basename(fn, ext)
+      assert_equal "#{base.upcase}#{ext.downcase}", fn
     end
   end
 
-  def test_filename_is_uppercase_for_Waste
+  def test_filename_is_all_uppercase_for_Waste
     @regime = regimes(:wml)
     @sroc_file = @regime.transaction_files.create(user: @user,
                                                    region: 'A',
