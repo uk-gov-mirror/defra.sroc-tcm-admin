@@ -1,6 +1,8 @@
 require 'test_helper.rb'
 
 class PasTransactionFilePresenterTest < ActiveSupport::TestCase
+  include TransactionFileFormat
+
   def setup
     @user = users(:billing_admin)
     Thread.current[:current_user] = @user
@@ -65,7 +67,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     end
 
     rows.each_with_index do |r, i|
-      assert_equal(sorted_rows[i].tcm_transaction_reference, r[5])
+      assert_equal(sorted_rows[i].tcm_transaction_reference, r[Detail::TransactionReference])
     end
   end
 
@@ -73,7 +75,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal(p.site_address, row[22])
+      assert_equal(p.site_address, row[Detail::LineDescription])
     end
   end
 
@@ -81,7 +83,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal(p.transaction_type, row[4])
+      assert_equal(p.transaction_type, row[Detail::TransactionType])
     end
   end
 
@@ -89,7 +91,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal(p.pro_rata_days, row[28])
+      assert_equal(p.pro_rata_days, row[Detail::LineAttr4])
     end
   end
 
@@ -100,7 +102,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
 
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[36]
+      assert_equal expected_value, row[Detail::LineAttr12]
     end
   end
 
@@ -109,8 +111,8 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[3]
-      assert_equal expected_value, row[9]
+      assert_equal expected_value, row[Detail::TransactionDate]
+      assert_equal expected_value, row[Detail::HeaderAttr1]
     end
   end
 
@@ -120,7 +122,7 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
       expected_value = td.reference_1
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[25]
+      assert_equal expected_value, row[Detail::LineAttr1]
     end
   end
 
@@ -128,7 +130,18 @@ class PasTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = PasTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal p.compliance_band_adjustment, row[32]
+      assert_equal p.compliance_band_adjustment, row[Detail::LineAttr8]
+    end
+  end
+
+  def test_detail_record_has_correct_category_description
+    expected_value = 'Wigwam'
+    @presenter.transaction_details.each_with_index do |td, i|
+      td.category_description = expected_value
+
+      p = PasTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal expected_value, row[Detail::LineAttr5]
     end
   end
 

@@ -1,6 +1,8 @@
 require 'test_helper.rb'
 
 class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
+  include TransactionFileFormat
+
   def setup
     @transaction_1 = transaction_details(:cfd)
     @transaction_2 = @transaction_1.dup
@@ -54,7 +56,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = CfdTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal(p.pro_rata_days, row[28])
+      assert_equal(p.pro_rata_days, row[Detail::LineAttr4])
     end
   end
 
@@ -65,7 +67,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
 
       p = CfdTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[32]
+      assert_equal expected_value, row[Detail::LineAttr8]
     end
   end
 
@@ -74,8 +76,8 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = CfdTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[3]
-      assert_equal expected_value, row[9]
+      assert_equal expected_value, row[Detail::TransactionDate]
+      assert_equal expected_value, row[Detail::HeaderAttr1]
     end
   end
 
@@ -89,7 +91,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
         p.variation = '100%'
       end
       row = @presenter.detail_row(p, i)
-      assert row[31].blank?
+      assert row[Detail::LineAttr7].blank?
     end
   end
 
@@ -100,7 +102,18 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
       expected_value = td.reference_1
       p = CfdTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
-      assert_equal expected_value, row[25]
+      assert_equal expected_value, row[Detail::LineAttr1]
+    end
+  end
+
+  def test_detail_record_has_correct_category_description
+    expected_value = 'Wigwam'
+    @presenter.transaction_details.each_with_index do |td, i|
+      td.category_description = expected_value
+
+      p = CfdTransactionDetailPresenter.new(td)
+      row = @presenter.detail_row(p, i)
+      assert_equal expected_value, row[Detail::LineAttr5]
     end
   end
 

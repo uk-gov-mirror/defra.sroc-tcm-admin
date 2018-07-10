@@ -70,12 +70,12 @@ class TransactionDetailPresenter < SimpleDelegator
           sprintf('%.2f', line_amount/100.0), unit: "")
   end
 
-  def category_description
-    if category.present?
-      desc = PermitCategory.find_by(code: category).description
-      desc.truncate(150, separator: /\s/, ommission: '...')
-    end
-  end
+  # def category_description
+  #   if category.present?
+  #     desc = PermitCategory.find_by(code: category).description
+  #     desc.truncate(150, separator: /\s/, ommission: '...')
+  #   end
+  # end
   
   def baseline_charge
     if charge_calculated? && !charge_calculation_error?

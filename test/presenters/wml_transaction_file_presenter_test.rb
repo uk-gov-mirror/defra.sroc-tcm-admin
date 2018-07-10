@@ -1,6 +1,8 @@
 require 'test_helper.rb'
 
 class WmlTransactionFilePresenterTest < ActiveSupport::TestCase
+  include TransactionFileFormat
+
   def setup
     @user = users(:billing_admin)
     Thread.current[:current_user] = @user
@@ -17,7 +19,9 @@ class WmlTransactionFilePresenterTest < ActiveSupport::TestCase
     @transaction_2.line_amount = -1234
     @transaction_2.unit_of_measure_price = -1234
 
-    [@transaction_1, @transaction_2].each_with_index do |t, i|
+    @transaction_3 = transaction_details(:wml_invoice)
+
+    [@transaction_1, @transaction_2, @transaction_3].each_with_index do |t, i|
       t.category = '2.4.4'
       t.status = 'billed'
       t.tcm_charge = t.line_amount
@@ -29,6 +33,7 @@ class WmlTransactionFilePresenterTest < ActiveSupport::TestCase
     @file = transaction_files(:wml_sroc_file)
     @file.transaction_details << @transaction_1
     @file.transaction_details << @transaction_2
+    @file.transaction_details << @transaction_3
 
     @presenter = WmlTransactionFilePresenter.new(@file)
   end
@@ -54,7 +59,7 @@ class WmlTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.details do |row|
       rows << row
     end
-    assert_equal(2, rows.count)
+    assert_equal(3, rows.count)
   end
 
   def test_it_sorts_detail_rows_by_tcm_transaction_reference
@@ -62,15 +67,30 @@ class WmlTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.details do |row|
       rows << row
     end
-    sorted_rows = [@transaction_1, @transaction_2].sort do |a,b|
+    sorted_rows = [@transaction_1, @transaction_2, @transaction_3].sort do |a,b|
       a.tcm_transaction_reference <=> b.tcm_transaction_reference
     end
 
     rows.each_with_index do |r, i|
-      assert_equal(sorted_rows[i].tcm_transaction_reference, r[5])
+      assert_equal(sorted_rows[i].tcm_transaction_reference, r[Detail::TransactionReference])
     end
   end
 
+  def test_detail_record_has_correct_category_description
+    expected_value = 'Wigwam'
+    tested = false
+    @presenter.transaction_details.each_with_index do |td, i|
+      if td.invoice?
+        td.category_description = expected_value
+
+        p = WmlTransactionDetailPresenter.new(td)
+        row = @presenter.detail_row(p, i)
+        assert_equal expected_value, row[Detail::LineAttr5]
+        tested = true
+      end
+    end
+    assert tested, "Did not test an invoice for category_description"
+  end
 
   def test_is_returns_a_trailer_record
     count = @presenter.transaction_details.count

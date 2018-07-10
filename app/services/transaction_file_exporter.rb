@@ -79,6 +79,7 @@ class TransactionFileExporter
   def generate_output_file(transaction_file)
     out_file = Tempfile.new
     assign_transaction_references(transaction_file)
+    assign_category_descriptions(transaction_file)
 
     tf = present(transaction_file)
 
@@ -106,17 +107,9 @@ class TransactionFileExporter
     else
       attrs[:status] = 'billed'
     end
+    tf.transaction_details.update_all(attrs)
+    tf.update_attributes(state: 'exported')
 
-    TransactionFile.transaction do
-      tf.transaction_details.each do |td|
-        cat = permit_store.code_for_financial_year(td.category,
-                                                   td.tcm_financial_year)
-        td.update_attributes(attrs.merge(category_description:
-                                         cat.description))
-      end
-      tf.update_attributes(state: 'exported')
-    end
-    # tf.transaction_details.update_all(attrs)
   ensure
     out_file.close
   end
@@ -125,6 +118,19 @@ class TransactionFileExporter
     file_type = transaction_file.retrospective? ? 'Retrospective' : 'Transaction'
     "#{regime.to_param.titlecase}#{file_type}FilePresenter".constantize.
       new(transaction_file)
+  end
+
+  def assign_category_descriptions(transaction_file)
+    # retrospective files don't have categories
+    return if transaction_file.retrospective?
+
+    TransactionFile.transaction do
+      transaction_file.transaction_details.each do |td|
+        cat = permit_store.code_for_financial_year(td.category,
+                                                   td.tcm_financial_year)
+        td.update_attributes(category_description: cat.description)
+      end
+    end
   end
 
   def assign_transaction_references(transaction_file)
