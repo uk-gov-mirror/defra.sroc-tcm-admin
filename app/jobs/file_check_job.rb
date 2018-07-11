@@ -31,6 +31,8 @@ class FileCheckJob < ApplicationJob
               # service.store_file_in(:export, out_file.path, f)
               service.delete_file_from(:import, f)
               success += 1
+              processor = CategoryProcessor.new
+              processor.suggest_categories_for_file(transaction)
             else
               raise Exceptions::TransactionFileError, "File generated invalid transaction record [#{f}]"
             end
