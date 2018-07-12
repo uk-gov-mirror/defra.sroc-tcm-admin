@@ -24,26 +24,36 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
 
   def credit_line_description
     if transaction_detail.line_description.present?
-      txt = transaction_detail.line_description
+      txt = transaction_detail.line_description.gsub(/Permit Ref:/, 'EPR Ref:')
+      prefix = "Credit of subsistence charge for permit category #{category}"
       pos = txt.index /\sdue\s/
       if pos
-        "Credit of subsistence charge for permit category #{category}" +
-          txt[pos..-1].gsub(/Permit Ref:/, 'EPR Ref:')
+        prefix + txt[pos..-1]
       else
-        ""
+        pos = txt.index /\sat\s/
+        if pos
+          prefix + '. At ' + txt[(pos + 4)..-1]
+        else
+          m = /\AIn cancellation of invoice no. [A-Z0-9]+:\s*(.*)\z/.match(txt)
+          if m
+            prefix + '. ' + m[1]
+          else
+            prefix + '. ' + txt
+          end
+        end
       end
     end
   end
 
   def invoice_line_description
     if transaction_detail.line_description.present?
-      txt = transaction_detail.line_description
+      txt = transaction_detail.line_description.gsub(/Permit Ref:/, 'EPR Ref:')
       # remove leading text either "Compliance Adjustment at " or "Charge code n at "
       pos = txt.index /\sat\s/
       if pos
-        "Site: " + txt[(pos + 4)..-1].gsub(/Permit Ref:/, 'EPR Ref:')
+        "Site: " + txt[(pos + 4)..-1]
       else
-        ""
+        txt
       end
     end
   end
@@ -72,6 +82,7 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
       customer_reference: customer_reference,
       tcm_transaction_reference: tcm_transaction_reference,
       generated_filename: generated_filename,
+      generated_file_date: generated_file_date,
       original_filename: original_filename,
       original_file_date: original_file_date_table,
       permit_reference: permit_reference,

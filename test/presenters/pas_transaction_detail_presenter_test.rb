@@ -57,6 +57,7 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
         customer_reference: @presenter.customer_reference,
         tcm_transaction_reference: @presenter.tcm_transaction_reference,
         generated_filename: @presenter.generated_filename,
+        generated_file_date: @presenter.generated_file_date,
         original_filename: @presenter.original_filename,
         original_file_date: @presenter.original_file_date_table,
         permit_reference: @presenter.permit_reference,

@@ -150,20 +150,20 @@ class TransactionFileImporter
       # Consent No - WIG 0226/1/1
       # - or -
       # Consent No - T/40/00817/O */1/2
+      # - or -
+      # Consent No - TS/18/25124/O   R/11/1
 
-      tokens = consent_data.split(' ')
-      # remove string prefix and join again
-      consent = tokens[3...tokens.length].join(' ')
-      # split to extract discharge and version numbers (always the last 2)
-      data = consent.split('/')
-      parts = {
-        # consent
-        reference_1: consent,
-        # version
-        reference_2: data.second_to_last,
-        # discharge
-        reference_3: data.last
-      }
+      m = /\A(?>\w+\s+\w+\s+-\s+)((?:.*)\/(\d+)\/(\d+))$\z/.match(consent_data)
+      if m
+        parts = {
+          # consent
+          reference_1: m[1],
+          # version
+          reference_2: m[2],
+          # discharge
+          reference_3: m[3]
+        }
+      end
     end
     parts
   end

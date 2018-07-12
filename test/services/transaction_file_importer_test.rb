@@ -58,40 +58,24 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
     end
   end
 
-  def test_extract_consent_fields_handle_consent_reference
-    fields = @importer.extract_consent_fields("Consent No - 27/23/0118/1/2")
-    assert_equal(
-      {
-        reference_1: "27/23/0118/1/2",
-        reference_2: "1",
-        reference_3: "2"
-      },
-      fields
-    )
-  end
+  def test_extract_consent_fields_extracts_references
+    # this is the line_description fields extracted from the complete annual billing
+    # files for CFD 18/19
+    File.foreach(file_fixture('cfd_line_descriptions.txt')).with_index do |line, idx|
+      line.chomp!
+      fields = @importer.extract_consent_fields(line)
+      str = ""
+      if line.start_with? "Consent"
+        str = "Consent No - #{fields[:reference_1]}"
+      else
+        str = "Authorisation No - #{fields[:reference_1]}"
+      end
+      assert_equal(line, str, "Fail: #{idx}: #{line}")
 
-  def test_extract_consent_fields_handle_authorisation_consent_reference
-    fields = @importer.extract_consent_fields("Authorisation No - WQD005215/1/1")
-    assert_equal(
-      {
-        reference_1: "WQD005215/1/1",
-        reference_2: "1",
-        reference_3: "1"
-      },
-      fields
-    )
-  end
-
-  def test_extract_consent_fields_handle_consent_reference_with_space
-    fields = @importer.extract_consent_fields("Consent No - T/40/00817/O */1/2")
-    assert_equal(
-      {
-        reference_1: "T/40/00817/O */1/2",
-        reference_2: "1",
-        reference_3: "2"
-      },
-      fields
-    )
+      arr = line.split('/')
+      assert_equal(arr.second_to_last, fields[:reference_2], "Invalid version extracted #{idx}: #{line}")
+      assert_equal(arr.last, fields[:reference_3], "Invalid discharge extracted #{idx}: #{line}")
+    end
   end
 
   def test_import_creates_transactions_with_whitespace_consents
