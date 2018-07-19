@@ -8,6 +8,12 @@
       <%= form.label :code %>
       <% if permit_category.new_record? %>
         <%= form.text_field :code, id: :permit_category_code, class: "form-control" %>
+      <div class="panel pt-2 mt-2 pb-2 mb-4 help-text">
+        Code must be in dotted number format. It may have between
+        1 and 3 segments seperated by a period (.). Each segment
+        may be between 1 and 4 digits in length.<br/>
+        For example: 27, 9.23, 54.1.1234, 12.34.56
+      </div>
       <% else %>
         <%= form.text_field :code, class: "form-control", readonly: true %>
       <% end %>

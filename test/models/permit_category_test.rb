@@ -15,6 +15,21 @@ class PermitCategoryTest < ActiveSupport::TestCase
     assert_not_nil @permit_category.errors[:code]
   end
 
+  def test_valid_when_code_formatted_correctly
+    %w[ 1 12.1111.2 1.9.9999 1.88 1234.1234.1234 ].each do |code|
+      @permit_category.code = code
+      assert @permit_category.valid?
+    end
+  end
+
+  def test_invalid_when_code_not_formatted_correctly
+    %w[ wigwam 12a 1.9.11111111 1.egg.88 ].each do |code|
+      @permit_category.code = code
+      assert @permit_category.invalid?
+      assert_not_nil @permit_category.errors[:code]
+    end
+  end
+
   def test_invalid_without_description_when_active
     @permit_category.status = 'active'
     @permit_category.description = nil
