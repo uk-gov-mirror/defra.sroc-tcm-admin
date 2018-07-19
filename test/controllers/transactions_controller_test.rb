@@ -1,6 +1,8 @@
 require 'test_helper.rb'
 
 class TransactionControllerTest < ActionDispatch::IntegrationTest
+  include ChargeCalculation
+
   def setup
     # @regime = FactoryBot.create(:cfd)
     @regime = regimes(:cfd)
@@ -42,14 +44,16 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
   #   assert_equal assigns(:transaction), @transaction
   # end
   def stub_calculator
-    calculator = mock()
-    calculator.expects(:calculate_transaction_charge).returns({ calculation: { chargeValue: 12345.67 }})
+    calculator = build_mock_calculator
+    # calculator = mock()
+    # calculator.expects(:calculate_transaction_charge).returns({ calculation: { chargeValue: 12345.67 }})
     TransactionsController.any_instance.stubs(:calculator).returns(calculator)
   end
 
   def stub_calculator_error
-    calculator = mock()
-    calculator.expects(:calculate_transaction_charge).returns({ calculation: { messages: 'Error message' }})
+    calculator = build_mock_calculator_with_error
+    # calculator = mock()
+    # calculator.expects(:calculate_transaction_charge).returns({ calculation: { messages: 'Error message' }})
     TransactionsController.any_instance.stubs(:calculator).returns(calculator)
   end
 end

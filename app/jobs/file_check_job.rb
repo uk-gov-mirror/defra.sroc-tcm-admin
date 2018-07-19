@@ -5,7 +5,9 @@ class FileCheckJob < ApplicationJob
     if SystemConfig.config.start_import
       begin
         # Look to see whether there are any files that need processing
-        service = FileStorageService.new
+        user = User.system_account
+        Thread.current[:current_user] = user
+        service = FileStorageService.new(user)
         importer = TransactionFileImporter.new
 
         files = service.list_files_in(:import)
@@ -31,8 +33,11 @@ class FileCheckJob < ApplicationJob
               # service.store_file_in(:export, out_file.path, f)
               service.delete_file_from(:import, f)
               success += 1
-              processor = CategoryProcessor.new
-              processor.suggest_categories_for_file(transaction)
+
+              if transaction.regime.water_quality?
+                processor = PermitCategoryProcessor.new(transaction, user)
+                processor.suggest_categories
+              end
             else
               raise Exceptions::TransactionFileError, "File generated invalid transaction record [#{f}]"
             end

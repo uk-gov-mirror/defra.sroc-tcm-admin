@@ -69,7 +69,7 @@ cfd_annual:
   related_reference: ""
   currency_code: "GBP"
   header_narrative: ""
-  header_attr_1: "01-APR-2018"
+  header_attr_1: "01-APR-2020"
   header_attr_2: ""
   header_attr_3: ""
   header_attr_4: ""
@@ -82,12 +82,12 @@ cfd_annual:
   line_amount: 23747
   line_vat_code: ""
   line_area_code: "3"
-  line_description: "Consent No - ANQA/1234/1/1"
+  line_description: "Consent No - ANQA/1234/1/2"
   line_income_stream_code: "C"
   line_context_code: "D"
   line_attr_1: "Green Rd. Pig Disposal"
   line_attr_2: "STORM SEWAGE OVERFLOW"
-  line_attr_3: "01/04/18 - 31/03/19"
+  line_attr_3: "01/04/20 - 31/03/21"
   line_attr_4: "365/365"
   line_attr_5: "C 1"
   line_attr_6: "E 1"
@@ -104,7 +104,7 @@ cfd_annual:
   unit_of_measure: "Each"
   unit_of_measure_price: 23747
   status: "unbilled"
-  reference_1: "ANQA/1234/1/1"
+  reference_1: "ANQA/1234/1/2"
   reference_2: "1"
   reference_3: "1"
   generated_filename:
@@ -114,11 +114,11 @@ cfd_annual:
   temporary_cessation_end:
   category:
   charge_calculation:
-  period_start: "01-Apr-2018"
-  period_end: "31-Mar-2019"
+  period_start: "01-Apr-2020"
+  period_end: "31-Mar-2021"
   original_filename: 'CFDBI00123'
   original_file_date: <%= 2.weeks.ago.to_date %>
-  tcm_financial_year: "1819"
+  tcm_financial_year: "2021"
 
 pas:
   transaction_header: pas

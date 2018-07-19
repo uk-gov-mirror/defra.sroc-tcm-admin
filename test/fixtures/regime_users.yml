@@ -17,3 +17,9 @@ cfd_bill:
   regime: cfd
   user: billing_admin
   enabled: true
+
+cfd_sys_acc:
+  regime: cfd
+  user: system_account
+  enabled: true
+

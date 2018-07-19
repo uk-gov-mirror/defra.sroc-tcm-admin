@@ -3,6 +3,7 @@ class TransactionDetail < ApplicationRecord
 
   audit_events :update
   audit_attributes [ :category,
+                     :category_logic,
                      :temporary_cessation,
                      :charge_calculation,
                      :tcm_charge,

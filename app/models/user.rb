@@ -22,6 +22,10 @@ class User < ApplicationRecord
   validate :at_least_one_regime_selected
   validate :password_complexity
 
+  def self.system_account
+    find_by!(email: 'system@example.com')
+  end
+
   def full_name
     first_name + " " + last_name
   end

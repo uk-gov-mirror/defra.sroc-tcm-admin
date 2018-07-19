@@ -1,13 +1,14 @@
 require 'test_helper.rb'
 
 class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
+  include ChargeCalculation
+
   def setup
     @regime = regimes(:cfd)
     @user = users(:billing_admin) 
     @service = AnnualBillingDataFileService.new(@regime, @user)
-    # @service.stubs(:invoke_charge_calculation).returns(dummy_charge)
-    @calculator = mock('calculator')
-    @calculator.stubs(:calculate_transaction_charge).returns(dummy_charge)
+
+    @calculator = build_mock_calculator
     @service.stubs(:calculator).returns(@calculator)
   end
 
@@ -193,24 +194,5 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     upload = @service.new_upload(filename: File.basename(file))
     upload.state.upload!
     upload
-  end
-
-  def dummy_charge
-    {
-      "uuid" => "8ae80f67-3879-4dd0-b03b-8531f986740d0",
-      "generatedAt" => 2.seconds.ago.iso8601,
-      "calculation" => {
-        "chargeValue" => 1994.62,
-        "environmentFlag" => "TEST",
-        "decisionPoints" => {
-          "baselineCharge" => 8865,
-          "percentageAdjustment" => 3989.25,
-          "temporaryCessation" => 1994.625,
-          "complianceAdjustment" => 1994.625,
-          "chargeType" => nil
-        },
-        "messages" => nil
-      }
-    }
   end
 end
