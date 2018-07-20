@@ -92,7 +92,7 @@ class PermitCategoriesController < AdminController
             cat.code, permit_category_params[:description],
             @financial_year, 'excluded')
       else
-       @permit_category.errors.add(base: "^This code is in use and cannot be removed")
+       @permit_category.errors.add(:base, "^This code is in use and cannot be removed")
       end
     elsif params[:commit] == 'Reinstate Category'
       @permit_category = permit_store.update_or_create_new_version(
@@ -128,6 +128,7 @@ class PermitCategoriesController < AdminController
         format.html { redirect_to regime_permit_categories_path(@regime, fy: @financial_year), notice: 'Permit category was successfully updated.' }
         format.json { render :show, status: :ok, location: regime_permit_category_path(@regime, @permit_category) }
       else
+        @timeline = permit_store.permit_category_versions(@permit_category.code)
         format.html { render :edit }
         format.json { render json: @permit_category.errors, status: :unprocessable_entity }
       end
