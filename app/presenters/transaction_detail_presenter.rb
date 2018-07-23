@@ -70,6 +70,22 @@ class TransactionDetailPresenter < SimpleDelegator
           sprintf('%.2f', line_amount/100.0), unit: "")
   end
 
+  def category_description
+    desc = transaction_detail.category_description
+    return desc unless desc.blank?
+
+    # category description is not present until the user generates
+    # a transaction file. However, is should probably be included
+    # in a TTBB export if a category has been set even at the risk
+    # of the category description changing between assignment and 
+    # file generation
+    if transaction_detail.unbilled? && category.present?
+      pc = permit_store.code_for_financial_year(category, tcm_financial_year)
+      desc = pc.description unless pc.nil?
+    end
+    desc
+  end
+
   # def category_description
   #   if category.present?
   #     desc = PermitCategory.find_by(code: category).description
@@ -196,5 +212,9 @@ class TransactionDetailPresenter < SimpleDelegator
 protected
   def transaction_detail
     __getobj__
+  end
+
+  def permit_store
+    @permit_store ||= PermitStorageService.new(regime)
   end
 end

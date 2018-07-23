@@ -1,7 +1,7 @@
 require 'test_helper.rb'
 
 class PermitCategoryProcessorTest < ActiveSupport::TestCase
-  include ChargeCalculation
+  include ChargeCalculation, GenerateHistory
   def setup
     @header = transaction_headers(:cfd_annual)
     fixup_transactions(@header)
@@ -36,7 +36,7 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
 
   def test_find_historic_transaction_returns_newest_matching_transaction
     # newest == newest period_end date
-    historic = generate_historic
+    historic = generate_historic_cfd
     assert_equal historic[1], @processor.find_historic_transaction('AAAA/1/1')
   end
 
@@ -69,7 +69,7 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_suggest_categories_processes_transactions_in_file
-    history = generate_historic
+    history = generate_historic_cfd
     @processor.suggest_categories
 
     [
@@ -93,37 +93,10 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_suggest_categories_generates_audit_records
-    history = generate_historic
+    history = generate_historic_cfd
     assert_difference 'AuditLog.count', 9 do
       @processor.suggest_categories
     end
-  end
-
-  def generate_historic
-    t = transaction_details(:cfd)
-    history = []
-    tt = t.dup
-    tt.reference_1 = 'AAAA/1/1'
-    tt.reference_2 = '1' 
-    tt.reference_3 = '1'
-    tt.customer_reference = 'A1234'
-    tt.status = 'billed'
-    tt.line_amount = 12567
-    tt.category = '2.3.4'
-    tt.period_start = '1-APR-18'
-    tt.period_end = '31-MAR-19'
-    tt.tcm_financial_year = '1819'
-    tt.save!
-    history << tt
-    ttt = tt.dup
-    ttt.line_amount = 32411
-    ttt.category = '2.3.5'
-    ttt.period_start = '1-APR-19'
-    ttt.period_end = '31-MAR-20'
-    ttt.tcm_financial_year = '1920'
-    ttt.save!
-    history << ttt
-    history
   end
 
   def fixup_transactions(header)

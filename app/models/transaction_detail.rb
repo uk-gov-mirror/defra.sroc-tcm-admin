@@ -78,6 +78,10 @@ class TransactionDetail < ApplicationRecord
   end
 
   def updateable?
+    unbilled?
+  end
+
+  def unbilled?
     status == 'unbilled'
   end
 
