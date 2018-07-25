@@ -13,6 +13,10 @@ class PermitCategoryProcessor
   end
 
   def suggest_categories
+    send "process_#{regime.slug}_transactions"
+  end
+
+  def process_cfd_transactions
     consents = fetch_unique_consents
 
     consents.each do |consent|
@@ -49,8 +53,10 @@ class PermitCategoryProcessor
       transaction.charge_calculation = calc_charge(transaction)
       if transaction.charge_calculation_error?
         transaction.category = nil
+        transaction.tcm_charge = nil
         transaction.category_logic = 'Error assigning charge'
       else
+        transaction.tcm_charge = TransactionCharge.extract_correct_charge(transaction)
         transaction.category_logic = 'Assigned matching category'
       end
     end

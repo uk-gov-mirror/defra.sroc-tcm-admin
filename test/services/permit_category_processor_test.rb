@@ -48,6 +48,14 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal 'Assigned matching category', transaction.category_logic
   end
 
+  def test_set_category_sets_charge_info
+    transaction = @header.transaction_details.
+      find_by(reference_1: 'AAAA/1/1')
+    @processor.set_category(transaction, '2.3.4')
+    assert_not_nil transaction.charge_calculation
+    assert_not_nil transaction.tcm_charge
+  end
+
   def test_set_category_does_not_set_category_when_category_removed
     transaction = @header.transaction_details.
       find_by(reference_1: 'AAAA/1/1')
