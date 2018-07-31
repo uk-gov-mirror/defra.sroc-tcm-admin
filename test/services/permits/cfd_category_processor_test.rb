@@ -1,6 +1,6 @@
 require 'test_helper.rb'
 
-class PermitCategoryProcessorTest < ActiveSupport::TestCase
+class CfdCategoryProcessorTest < ActiveSupport::TestCase
   include ChargeCalculation, GenerateHistory
   def setup
     @header = transaction_headers(:cfd_annual)
@@ -9,10 +9,13 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
     @user = User.system_account
     Thread.current[:current_user] = @user
 
-    @processor = PermitCategoryProcessor.new(@header)
+    @processor = Permits::CfdCategoryProcessor.new(@header)
     @calculator = build_mock_calculator
     @processor.stubs(:calculator).returns(@calculator)
     @header.regime.permit_categories.create!(code: '2.3.5',
+                                             description: 'test',
+                                             status: 'active')
+    @header.regime.permit_categories.create!(code: '2.3.6',
                                              description: 'test',
                                              status: 'active')
   end
@@ -31,13 +34,13 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_find_historic_transactions_returns_nil_when_no_matches_found
-    assert_nil @processor.find_historic_transaction('AAAB/1/1')
+    assert_nil @processor.find_latest_historic_transaction('AAAB/1/1')
   end
 
   def test_find_historic_transaction_returns_newest_matching_transaction
     # newest == newest period_end date
     historic = generate_historic_cfd
-    assert_equal historic[1], @processor.find_historic_transaction('AAAA/1/1')
+    assert_equal historic[1], @processor.find_latest_historic_transaction('AAAA/1/1')
   end
 
   def test_set_category_sets_category
@@ -100,9 +103,19 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
     end
   end
 
+  def test_suggest_categories_does_not_consider_historic_credits
+    historic = generate_historic_cfd
+    historic.last.update_attributes(category: '2.3.6', line_amount: -1234)
+    @processor.suggest_categories
+    t = @header.transaction_details.find_by(reference_1: 'AAAA/1/1')
+    assert_equal('2.3.4', t.category)
+    assert_equal('Assigned matching category', t.category_logic)
+  end
+
   def test_suggest_categories_generates_audit_records
     history = generate_historic_cfd
-    assert_difference 'AuditLog.count', 9 do
+    count = @header.transaction_details.count
+    assert_difference 'AuditLog.count', count do
       @processor.suggest_categories
     end
   end
@@ -127,9 +140,9 @@ class PermitCategoryProcessorTest < ActiveSupport::TestCase
       tt.line_amount = ref[3]
       tt.customer_reference = ref[4]
       tt.transaction_header_id = header.id
-      tt.period_start = '1-APR-19'
-      tt.period_end = '31-MAR-20'
-      tt.tcm_financial_year = '1920'
+      tt.period_start = '1-APR-2020'
+      tt.period_end = '31-MAR-2021'
+      tt.tcm_financial_year = '2021'
       tt.save!
     end
   end

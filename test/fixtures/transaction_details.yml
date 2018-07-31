@@ -230,7 +230,7 @@ wml:
   filename: 
   reference_1: "026101"
   reference_2: "XZ3333PG/A001"
-  reference_3:
+  reference_3: "1"
   generated_filename:
   generated_file_at:
   temporary_cessation: false
@@ -243,6 +243,68 @@ wml:
   original_filename: 'WMLEI07892'
   original_file_date: <%= 6.weeks.ago.to_date %>
   tcm_financial_year: "1819"
+
+wml_annual:
+  transaction_header: wml_annual
+  sequence_number: 1
+  customer_reference: "E01001529J"
+  transaction_date: <%= 2.months.ago %>
+  transaction_type: "C"
+  transaction_reference: "E01188066"
+  related_reference:
+  currency_code: "GBP"
+  header_narrative:
+  header_attr_1: <%= 2.months.ago %>
+  header_attr_2: ""
+  header_attr_3: ""
+  header_attr_4: ""
+  header_attr_5: ""
+  header_attr_6: ""
+  header_attr_7: ""
+  header_attr_8: ""
+  header_attr_9: ""
+  header_attr_10: "From 06/03/2018"
+  line_amount: -5556
+  line_vat_code: ""
+  line_area_code: "51"
+  line_description: "Charge Code 1 at Hairy Wigwam, Big Pig Farm, Great Upperford, Big Town, BT5 5EL, Permit Ref: XZ3333PG/A001"
+  line_income_stream_code: "J"
+  line_context_code: ""
+  line_attr_1: ""
+  line_attr_2: "026101"
+  line_attr_3: "From 6th March 2018 (26 Days)"
+  line_attr_4: ""
+  line_attr_5: ""
+  line_attr_6: ""
+  line_attr_7: ""
+  line_attr_8: ""
+  line_attr_9: ""
+  line_attr_10: ""
+  line_attr_11: ""
+  line_attr_12: ""
+  line_attr_13: ""
+  line_attr_14: ""
+  line_attr_15: ""
+  line_quantity: 1
+  unit_of_measure: "Each"
+  unit_of_measure_price: 555667
+  status: "unbilled"
+  filename: 
+  reference_1: "026101"
+  reference_2: "XZ3333PG/A001"
+  reference_3: "1"
+  generated_filename:
+  generated_file_at:
+  temporary_cessation: false
+  temporary_cessation_start:
+  temporary_cessation_end:
+  category:
+  charge_calculation:
+  period_start: "01-Apr-2020"
+  period_end: "31-Mar-2021"
+  original_filename: 'WMLEI07892'
+  original_file_date: <%= 6.weeks.ago.to_date %>
+  tcm_financial_year: "2021"
 
 wml_invoice:
   transaction_header: wml

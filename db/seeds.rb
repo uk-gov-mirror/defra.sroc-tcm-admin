@@ -31,15 +31,23 @@ r = Regime.find_by!(slug: 'cfd')
 # end
 #
 # one time task to extract consent references for cfd transactions
+# tfi = TransactionFileImporter.new
+# r.transaction_details.each do |t|
+#   refs = tfi.extract_consent_fields(t.line_description)
+#   if refs
+#     t.update_attributes(reference_4: refs[:reference_4])
+#   end
+# end
+
+r = Regime.find_by!(slug: 'wml')
 tfi = TransactionFileImporter.new
-r.transaction_details.each do |t|
-  refs = tfi.extract_consent_fields(t.line_description)
-  if refs
-    t.update_attributes(reference_4: refs[:reference_4])
-  end
+# retro extract the charge code and store in reference_3
+# this is needed for future years biling
+r.transaction_details.each do |td|
+  cc = tfi.extract_charge_code(td.line_description)
+  td.update_attributes(reference_3: cc) unless cc.nil?
 end
 
-# r = Regime.find_by!(slug: 'wml')
 # r.permit_categories.destroy_all
 # PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'))
 #

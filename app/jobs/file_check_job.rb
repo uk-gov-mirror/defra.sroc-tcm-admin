@@ -34,9 +34,11 @@ class FileCheckJob < ApplicationJob
               service.delete_file_from(:import, f)
               success += 1
 
-              if transaction.regime.water_quality?
-                processor = PermitCategoryProcessor.new(transaction, user)
-                processor.suggest_categories
+              begin
+                processor = category_processor(transaction, user)
+                processor.suggest_categories unless processor.nil?
+              rescue => e
+                Rails.logger.warn("Failed when suggesting permits: #{e.message}")
               end
             else
               raise Exceptions::TransactionFileError, "File generated invalid transaction record [#{f}]"
@@ -59,6 +61,16 @@ class FileCheckJob < ApplicationJob
       ensure
         SystemConfig.config.stop_import
       end
+    end
+  end
+
+  def category_processor(header, user)
+    if header.regime.water_quality?
+      Permits::CfdCategoryProcessor.new(header, user)
+    elsif header.regime.waste?
+      Permits::WmlCategoryProcessor.new(header, user)
+    else
+      nil
     end
   end
 

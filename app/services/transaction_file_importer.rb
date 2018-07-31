@@ -104,10 +104,13 @@ class TransactionFileImporter
               row[Detail::LineAttr3]
             end
 
-      data.merge!({
+      refs = {
         reference_1: ref,
         reference_2: line.split(':').last.strip
-      })
+      }
+      cc = extract_charge_code(line)
+      refs[:reference_3] = cc unless cc.nil?
+      data.merge!(refs)
     end
 
     # Header attrs 1 - 10
@@ -177,6 +180,11 @@ class TransactionFileImporter
     else
       "#{v}%"
     end
+  end
+
+  def extract_charge_code(description)
+    m = /(?:Charge Code (\d+))/.match(description)
+    m[1] if m
   end
 
   def determine_financial_year(date)
