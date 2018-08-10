@@ -65,13 +65,7 @@ class FileCheckJob < ApplicationJob
   end
 
   def category_processor(header, user)
-    if header.regime.water_quality?
-      Permits::CfdCategoryProcessor.new(header, user)
-    elsif header.regime.waste?
-      Permits::WmlCategoryProcessor.new(header, user)
-    else
-      nil
-    end
+    "Permits::#{header.regime.slug.capitalize}CategoryProcessor".constantize.new(header, user)
   end
 
   def quarantine(service, tmp_file, filename)

@@ -26,21 +26,21 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_only_invoices_in_file_returns_true_when_only_invoices_in_file_for_consent
-    assert @processor.only_invoices_in_file? 'AAAA/1/1'
+    assert @processor.only_invoices_in_file?(reference_1: 'AAAA/1/1')
   end
 
   def test_only_invoices_in_file_returns_false_when_credits_in_file_for_consent
-   refute @processor.only_invoices_in_file? 'AAAF/2/3'
+   refute @processor.only_invoices_in_file?(reference_1: 'AAAF/2/3')
   end
 
   def test_find_historic_transactions_returns_nil_when_no_matches_found
-    assert_nil @processor.find_latest_historic_transaction('AAAB/1/1')
+    assert_nil @processor.find_latest_historic_transaction(reference_1: 'AAAB/1/1')
   end
 
   def test_find_historic_transaction_returns_newest_matching_transaction
     # newest == newest period_end date
     historic = generate_historic_cfd
-    assert_equal historic[1], @processor.find_latest_historic_transaction('AAAA/1/1')
+    assert_equal historic[1], @processor.find_latest_historic_transaction(reference_1: 'AAAA/1/1')
   end
 
   def test_set_category_sets_category

@@ -182,6 +182,68 @@ pas:
   original_file_date: <%= 6.weeks.ago.to_date %>
   tcm_financial_year: "1718"
 
+pas_annual:
+  transaction_header: pas
+  sequence_number: 1
+  customer_reference: "A16010889P"
+  transaction_date: <%= 2.months.ago %>
+  transaction_type: "I"
+  transaction_reference: "PAS00058516Y"
+  related_reference:
+  currency_code: "GBP"
+  header_narrative:
+  header_attr_1: "23-JUN-2017"
+  header_attr_2: "Site"
+  header_attr_3: "Red St. Hill Farm"
+  header_attr_4: ""
+  header_attr_5: ""
+  header_attr_6: ""
+  header_attr_7: ""
+  header_attr_8: ""
+  header_attr_9: "Charge Period: "
+  header_attr_10: "01/04/2020 - 31/03/2021"
+  line_amount: 323260
+  line_vat_code: ""
+  line_area_code: "Y05"
+  line_description: "Subsistence Charge Permit No: VP3839DA"
+  line_income_stream_code: "P"
+  line_context_code: "P1"
+  line_attr_1: ""
+  line_attr_2: ""
+  line_attr_3: ""
+  line_attr_4: ""
+  line_attr_5: ""
+  line_attr_6: ""
+  line_attr_7: ""
+  line_attr_8: ""
+  line_attr_9: ""
+  line_attr_10: ""
+  line_attr_11: "F 3.0"
+  line_attr_12: ""
+  line_attr_13: ""
+  line_attr_14: ""
+  line_attr_15: "Directly Associated Activity only"
+  line_quantity: 1
+  unit_of_measure: "Each"
+  unit_of_measure_price: 323260
+  status: "unbilled"
+  filename: "PASYI00337.dat.transfered-19062017"
+  reference_1: "VP3839DA"
+  reference_2: "AB1234"
+  reference_3: "AAAA1234"
+  generated_filename:
+  generated_file_at:
+  temporary_cessation: false
+  temporary_cessation_start:
+  temporary_cessation_end:
+  category:
+  charge_calculation:
+  period_start: "1-Apr-2020"
+  period_end: "31-Mar-2021"
+  original_filename: 'PASYI00337'
+  original_file_date: <%= 6.weeks.ago.to_date %>
+  tcm_financial_year: "2021"
+
 wml:
   transaction_header: wml
   sequence_number: 1

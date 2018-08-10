@@ -44,20 +44,25 @@ module Permits
                                                   presenter.new(transaction))
     end
 
-    def not_annual_bill(consent)
+    def not_annual_bill(where_args)
       # record that this file contains credits for this consent
       # so it is not an annual bill
-      set_logic_message({ reference_1: consent }, 'Not part of an annual bill')
+      set_logic_message(where_args, 'Not part of an annual bill')
     end
 
-    def set_logic_message(where_opts, msg)
-      header.transaction_details.unbilled.where(where_opts).each do |t|
+    def no_historic_transaction(where_args)
+      # record that we couldn't find a previous bill
+      set_logic_message(where_args, 'No previous bill found')
+    end
+
+    def set_logic_message(where_args, msg)
+      header.transaction_details.unbilled.where(where_args).each do |t|
         t.update_attributes(category_logic: msg)
       end
     end
 
-    def only_invoices_in_file?(consent)
-      header.transaction_details.unbilled.where(reference_1: consent).
+    def only_invoices_in_file?(where_args)
+      header.transaction_details.unbilled.where(where_args).
         credits.count.zero?
     end
 

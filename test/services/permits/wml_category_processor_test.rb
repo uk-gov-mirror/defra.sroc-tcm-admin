@@ -23,21 +23,23 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_only_invoices_in_file_returns_true_when_only_invoices_in_file_for_permit
-    assert @processor.only_invoices_in_file? '0123456'
+    assert @processor.only_invoices_in_file?(reference_1: '0123456')
   end
 
   def test_only_invoices_in_file_returns_false_when_credits_in_file_for_permit
-   refute @processor.only_invoices_in_file? '0123451'
+   refute @processor.only_invoices_in_file?(reference_1: '0123451')
   end
 
   def test_find_latest_historic_transaction_returns_nil_when_no_matches_found
-    assert_nil @processor.find_latest_historic_transaction(['0123456', '1'])
+    assert_nil @processor.find_latest_historic_transaction(
+      reference_1: '0123456', reference_3: '1')
   end
 
   def test_find_historic_transaction_returns_newest_matching_transaction
     # newest == newest period_end date
     historic = generate_historic_wml
-    assert_equal historic[1], @processor.find_latest_historic_transaction(['0123456', '1'])
+    assert_equal historic[1], @processor.find_latest_historic_transaction(
+      reference_1: '0123456', reference_3: '1')
   end
 
   def test_set_category_sets_category

@@ -6,30 +6,24 @@ module Permits
       permits = fetch_unique_consents
 
       permits.each do |permit|
-        if only_invoices_in_file?(permit)
+        if only_invoices_in_file?(reference_1: permit)
           grouped_permits = find_unique_permits(permit)
 
           grouped_permits.keys.each do |k|
-            historic_transaction = find_latest_historic_transaction(k)
+            permit_args = keys_to_args(k)
+            historic_transaction = find_latest_historic_transaction(permit_args)
             if historic_transaction
-              transactions = get_transaction_group(k)
-              transactions.each do |transaction|
-                set_category(transaction, historic_transaction.category)
+              header.transaction_details.unbilled.where(permit_args).each do |t|
+                set_category(t, historic_transaction.category)
               end
             else
-              no_historic_transaction(k)
+              no_historic_transaction(permit_args)
             end
           end
         else
-          not_annual_bill(permit)
+          not_annual_bill(reference_1: permit)
         end
       end
-    end
-
-    def no_historic_transaction(key)
-      # record that we couldn't find a previous bill
-      set_logic_message({ reference_1: key[0], reference_3: key[1] },
-                        'No previous bill found')
     end
 
     def find_unique_permits(permit)
@@ -38,15 +32,16 @@ module Permits
         group(:reference_1, :reference_3).count
     end
 
-    def get_transaction_group(key)
-      header.transaction_details.unbilled.where(reference_1: key[0],
-                                                reference_3: key[1])
+    def find_latest_historic_transaction(where_args)
+      regime.transaction_details.historic.invoices.where(where_args).
+        order(transaction_reference: :desc).first
     end
 
-    def find_latest_historic_transaction(key)
-      regime.transaction_details.historic.invoices.
-        where(reference_1: key[0], reference_3: key[1]).
-        order(transaction_reference: :desc).first
+    def keys_to_args(keys)
+      {
+        reference_1: keys[0],
+        reference_3: keys[1]
+      }
     end
   end
 end
