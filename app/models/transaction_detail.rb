@@ -11,6 +11,7 @@ class TransactionDetail < ApplicationRecord
                      :excluded,
                      :excluded_reason ]
 
+  enum category_confidence_level: [ :green, :amber ]
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
   belongs_to :transaction_file, inverse_of: :transaction_details, required: false

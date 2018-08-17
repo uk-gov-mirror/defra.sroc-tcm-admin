@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180712104413) do
+ActiveRecord::Schema.define(version: 20180816103754) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -205,6 +205,7 @@ ActiveRecord::Schema.define(version: 20180712104413) do
     t.string "excluded_reason"
     t.string "category_description"
     t.string "category_logic"
+    t.integer "category_confidence_level"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"

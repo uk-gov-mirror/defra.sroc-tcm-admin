@@ -14,7 +14,7 @@ module Permits
             historic_transaction = find_latest_historic_transaction(permit_args)
             if historic_transaction
               header.transaction_details.unbilled.where(permit_args).each do |t|
-                set_category(t, historic_transaction.category)
+                set_category(t, historic_transaction.category, :green)
               end
             else
               no_historic_transaction(permit_args)

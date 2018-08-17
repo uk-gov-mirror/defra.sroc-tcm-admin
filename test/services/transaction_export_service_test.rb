@@ -23,7 +23,7 @@ class TransactionExportServiceTest < ActiveSupport::TestCase
 
   def test_export_looks_up_permit_category_description
     transactions = @regime.transaction_details.unbilled
-    code = permit_categories(:cfd).code
+    code = permit_categories(:cfd_a).code
 
     assert transactions.count > 0, "No TTBB data"
     transactions.update_all(category: code, category_description: nil)

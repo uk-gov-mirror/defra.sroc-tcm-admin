@@ -2,7 +2,7 @@ require 'test_helper'
 
 class PermitCategoryTest < ActiveSupport::TestCase
   def setup
-    @permit_category = permit_categories(:cfd)
+    @permit_category = permit_categories(:cfd_a)
   end
 
   def test_valid_permit_category

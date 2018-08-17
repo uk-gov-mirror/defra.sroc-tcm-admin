@@ -146,7 +146,7 @@ class PermitStorageServiceTest < ActiveSupport::TestCase
   end
 
   def test_add_permit_category_version_updates_valid_to_in_previous_version
-    pc = permit_categories(:cfd)
+    pc = permit_categories(:cfd_a)
     assert_nil pc.valid_to
 
     pc2 = @service.add_permit_category_version(pc.code, "A new category version", "1920")
@@ -154,7 +154,7 @@ class PermitStorageServiceTest < ActiveSupport::TestCase
   end
 
   def test_add_permit_category_version_updates_valid_to_when_next_version_exists
-    pc = permit_categories(:cfd)
+    pc = permit_categories(:cfd_a)
     assert_nil pc.valid_to
     pc2 = @service.add_permit_category_version(pc.code, "A later version", "2223")
     assert_equal "2223", pc.reload.valid_to
@@ -165,7 +165,7 @@ class PermitStorageServiceTest < ActiveSupport::TestCase
   end
 
   def test_update_or_create_new_version_updates_description
-    pc = permit_categories(:cfd)
+    pc = permit_categories(:cfd_a)
 
     assert_no_difference 'PermitCategory.count' do
       @service.update_or_create_new_version(pc.code, "Wigwam", pc.valid_from)
@@ -175,7 +175,7 @@ class PermitStorageServiceTest < ActiveSupport::TestCase
   end
 
   def test_update_or_create_new_version_creates_new_version
-    pc = permit_categories(:cfd)
+    pc = permit_categories(:cfd_a)
     old_desc = pc.description
 
     assert_difference 'PermitCategory.count' do

@@ -3,7 +3,7 @@ require 'test_helper.rb'
 class PermitCategoriesControllerTest < ActionDispatch::IntegrationTest
   def setup
     @regime = regimes(:cfd)
-    @permit_category = permit_categories(:cfd)
+    @permit_category = permit_categories(:cfd_a)
     sign_in users(:system_admin)
   end
 
@@ -18,6 +18,6 @@ class PermitCategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     payload = assigns(:permit_categories)
     assert_not_nil payload
-    assert_equal(payload[:permit_categories], [ @permit_category ])
+    assert_includes payload[:permit_categories], @permit_category
   end
 end

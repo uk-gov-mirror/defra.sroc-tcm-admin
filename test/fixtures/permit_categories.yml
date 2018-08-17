@@ -1,6 +1,20 @@
-cfd:
+cfd_a:
   regime: cfd
   code: "2.3.4"
+  description: "Sewage 50,000 - 150,000 m3/day"
+  status: "active"
+  valid_from: "1819"
+
+cfd_b:
+  regime: cfd
+  code: "2.3.5"
+  description: "Sewage 50,000 - 150,000 m3/day"
+  status: "active"
+  valid_from: "1819"
+
+cfd_c:
+  regime: cfd
+  code: "2.3.6"
   description: "Sewage 50,000 - 150,000 m3/day"
   status: "active"
   valid_from: "1819"

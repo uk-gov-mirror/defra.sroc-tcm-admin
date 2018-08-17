@@ -18,12 +18,38 @@ module GenerateHistory
     t2.save!
     history << t2
     t3 = t2.dup
+    t3.reference_1 = 'AAAA/1/2'
+    t3.reference_3 = '2'
     t3.line_amount = 32411
     t3.category = '2.3.5'
-    t3.period_start = '1-APR-2019'
-    t3.period_end = '31-MAR-2020'
-    t3.tcm_financial_year = '1920'
+    t3.period_start = '1-APR-2018'
+    t3.period_end = '31-MAR-2019'
+    t3.tcm_financial_year = '1819'
     t3.transaction_file_id = f.id
+    t3.save!
+    history << t3
+    history
+  end
+
+  def generate_historic_with_supplemental_cfd
+    history = generate_historic_cfd
+    t = history[0].dup
+    t.line_amount = -1234
+    t.save!
+    history << t
+    t2 = t.dup
+    t2.line_amount = 23423
+    t2.period_start = '1-APR-2018'
+    t2.period_end = '30-JUN-2018'
+    t2.save!
+    history << t2
+    t3 = t2.dup
+    t3.line_amount = 1212414
+    t3.reference_1 = 'AAAA/2/1'
+    t3.reference_2 = '2'
+    t3.category = '2.3.6'
+    t3.period_start = '1-JUL-2018'
+    t3.period_end = '31-MAR-2019'
     t3.save!
     history << t3
     history

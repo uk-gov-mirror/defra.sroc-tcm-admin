@@ -58,26 +58,28 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   def test_set_category_sets_category
     transaction = @header.transaction_details.
       find_by(reference_3: 'AAAA0001')
-    @processor.set_category(transaction, '2.4.4')
+    @processor.set_category(transaction, '2.4.4', :green)
     assert_equal '2.4.4', transaction.reload.category
     assert_equal 'Assigned matching category', transaction.category_logic
+    assert transaction.green?
   end
 
   def test_set_category_sets_charge_info
     transaction = @header.transaction_details.
       find_by(reference_3: 'AAAA0001')
-    @processor.set_category(transaction, '2.4.4')
+    @processor.set_category(transaction, '2.4.4', :green)
     assert_not_nil transaction.charge_calculation
     assert_not_nil transaction.tcm_charge
+    assert transaction.green?
   end
 
   def test_set_category_does_not_set_category_when_category_removed
     transaction = @header.transaction_details.
       find_by(reference_3: 'AAAA0001', customer_reference: 'A1234')
-    @processor.set_category(transaction, '2.3.9')
+    @processor.set_category(transaction, '2.3.9', :green)
     assert_nil transaction.reload.category
-    assert_equal 'Category not valid for financial year',
-      transaction.category_logic
+    assert_equal 'Category not valid for financial year', transaction.category_logic
+    assert_nil transaction.category_confidence_level
   end
 
   def test_set_category_does_not_set_category_if_calculation_error
@@ -86,9 +88,10 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
 
     transaction = @header.transaction_details.
       find_by(reference_3: 'AAAA0001', customer_reference: 'A1234')
-    @processor.set_category(transaction, '2.4.4')
+    @processor.set_category(transaction, '2.4.4', :green)
     assert_nil transaction.reload.category
     assert_equal 'Error assigning charge', transaction.category_logic
+    assert_nil transaction.category_confidence_level
   end
 
   def test_suggest_categories_processes_transactions_in_file

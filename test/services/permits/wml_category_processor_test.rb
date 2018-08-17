@@ -45,26 +45,29 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
   def test_set_category_sets_category
     transaction = @header.transaction_details.
       find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.15.2')
+    @processor.set_category(transaction, '2.15.2', :green)
     assert_equal '2.15.2', transaction.reload.category
     assert_equal 'Assigned matching category', transaction.category_logic
+    assert transaction.green?
   end
 
   def test_set_category_sets_charge_info
     transaction = @header.transaction_details.
       find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.15.2')
+    @processor.set_category(transaction, '2.15.2', :amber)
     assert_not_nil transaction.charge_calculation
     assert_not_nil transaction.tcm_charge
+    assert transaction.amber?
   end
 
   def test_set_category_does_not_set_category_when_category_removed
     transaction = @header.transaction_details.
       find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.3.9')
+    @processor.set_category(transaction, '2.3.9', :green)
     assert_nil transaction.reload.category
     assert_equal 'Category not valid for financial year',
       transaction.category_logic
+    assert_nil transaction.category_confidence_level
   end
 
   def test_set_category_does_not_set_category_if_calculation_error
@@ -73,9 +76,10 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
 
     transaction = @header.transaction_details.
       find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.15.2')
+    @processor.set_category(transaction, '2.15.2', :green)
     assert_nil transaction.reload.category
     assert_equal 'Error assigning charge', transaction.category_logic
+    assert_nil transaction.category_confidence_level
   end
 
   def test_suggest_categories_processes_transactions_in_file

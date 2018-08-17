@@ -13,7 +13,7 @@ module Permits
             if historic_transactions.count == 1
               transaction = header.transaction_details.find_by(permit_args)
               category = historic_transactions.first.category
-              set_category(transaction, category)
+              set_category(transaction, category, :green)
             elsif historic_transactions.count > 1
               # handle multiple matching for same start period
               multiple_historic_matches(permit_args)

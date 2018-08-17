@@ -18,7 +18,7 @@ module Permits
         pluck(:reference_1)
     end
 
-    def set_category(transaction, category)
+    def set_category(transaction, category, confidence_level)
       fy = transaction.tcm_financial_year
       # need to ensure the found category is still valid
       cat = permit_store.code_for_financial_year(category, fy)
@@ -34,6 +34,7 @@ module Permits
         else
           transaction.tcm_charge = TransactionCharge.extract_correct_charge(transaction)
           transaction.category_logic = 'Assigned matching category'
+          transaction.category_confidence_level = confidence_level
         end
       end
       transaction.save!
