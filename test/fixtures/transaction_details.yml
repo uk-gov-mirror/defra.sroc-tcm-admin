@@ -236,7 +236,7 @@ pas_annual:
   temporary_cessation: false
   temporary_cessation_start:
   temporary_cessation_end:
-  category:
+  category: '2.4.4'
   charge_calculation:
   period_start: "1-Apr-2020"
   period_end: "31-Mar-2021"

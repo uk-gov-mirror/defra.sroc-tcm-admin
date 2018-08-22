@@ -3,7 +3,6 @@ class TransactionDetail < ApplicationRecord
 
   audit_events :update
   audit_attributes [ :category,
-                     :category_logic,
                      :temporary_cessation,
                      :charge_calculation,
                      :tcm_charge,
@@ -11,10 +10,11 @@ class TransactionDetail < ApplicationRecord
                      :excluded,
                      :excluded_reason ]
 
-  enum category_confidence_level: [ :green, :amber ]
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
   belongs_to :transaction_file, inverse_of: :transaction_details, required: false
+  has_one :suggested_category, inverse_of: :transaction_detail, dependent: :destroy
+  has_many :matched_transactions, class_name: 'SuggestedCategory', foreign_key: :matched_transaction_id 
 
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true

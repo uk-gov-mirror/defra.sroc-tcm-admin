@@ -27,10 +27,10 @@ module Permits
       if last_invoice
         category = last_invoice.category
         header.transaction_details.unbilled.where(consent_args).each do |t|
-          set_category(t, category, :green)
+          set_category(t, last_invoice, :green, 'Annual billing')
         end
       else
-        no_historic_transaction(consent_args)
+        no_historic_transaction(consent_args, 'Annual billing')
       end
     end
 
@@ -48,16 +48,16 @@ module Permits
       history_args = consent_args.merge(period_start: transaction.period_start)
       last_invoice = find_latest_historic_invoice(history_args)
       if last_invoice
-        set_category(transaction, last_invoice.category, :green)
+        set_category(transaction, last_invoice, :green, 'Supplementary invoice stage 1')
       else
         invoice = find_latest_historic_invoice_version(transaction)
 
         if invoice
-          set_category(transaction, invoice.category, :amber)
+          set_category(transaction, invoice, :amber, 'Supplementary invoice stage 2')
         else
           # possibly multiple transactions we're working through for this
           # consent so identify transaction explicitly
-          no_historic_transaction(id: transaction.id)
+          no_historic_transaction({ id: transaction.id }, 'Supplementary invoice')
         end
       end
     end
@@ -70,9 +70,9 @@ module Permits
         order(tcm_transaction_reference: :desc).first
 
       if invoice
-        set_category(transaction, invoice.category, :green)
+        set_category(transaction, invoice, :green, 'Supplementary credit', true)
       else
-        no_historic_transaction(id: transaction.id)
+        no_historic_transaction({ id: transaction.id }, 'Supplementary credit')
       end
       # not_annual_bill(id: transaction.id)
     end

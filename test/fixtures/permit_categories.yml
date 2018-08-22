@@ -19,9 +19,23 @@ cfd_c:
   status: "active"
   valid_from: "1819"
 
-pas:
+pas_a:
   regime: pas
   code: "2.4.4"
+  description: "Section 4.1 Organic; Organic other"
+  status: "active"
+  valid_from: "1819"
+
+pas_b:
+  regime: pas
+  code: "2.4.5"
+  description: "Section 4.1 Organic; Organic other"
+  status: "active"
+  valid_from: "1819"
+
+pas_c:
+  regime: pas
+  code: "2.4.6"
   description: "Section 4.1 Organic; Organic other"
   status: "active"
   valid_from: "1819"

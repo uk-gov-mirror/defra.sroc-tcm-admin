@@ -13,15 +13,15 @@ module Permits
             permit_args = keys_to_args(k)
             historic_transaction = find_latest_historic_transaction(permit_args)
             if historic_transaction
-              header.transaction_details.unbilled.where(permit_args).each do |t|
-                set_category(t, historic_transaction.category, :green)
+              unbilled_transactions(permit_args) do |t|
+                set_category(t, historic_transaction, :green, 'Annual billing')
               end
             else
-              no_historic_transaction(permit_args)
+              no_historic_transaction(permit_args, 'Annual billing')
             end
           end
         else
-          not_annual_bill(reference_1: permit)
+          not_annual_bill({ reference_1: permit }, 'Annual billing')
         end
       end
     end

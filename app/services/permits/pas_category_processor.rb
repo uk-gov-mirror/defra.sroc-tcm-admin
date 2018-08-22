@@ -12,20 +12,20 @@ module Permits
             historic_transactions = find_historic_transactions(permit_args)
             if historic_transactions.count == 1
               transaction = header.transaction_details.find_by(permit_args)
-              category = historic_transactions.first.category
-              set_category(transaction, category, :green)
+              set_category(transaction, historic_transactions.first,
+                           :green, 'Annual billing')
             elsif historic_transactions.count > 1
               # handle multiple matching for same start period
               multiple_historic_matches(permit_args)
             else
-              no_historic_transaction(permit_args)
+              no_historic_transaction(permit_args, 'Annual billing')
             end
           else
             # multiple transactions in file for permit
             multiple_matching_permits(permit_args)
           end
         else
-          not_annual_bill(permit_args)
+          not_annual_bill(permit_args, 'Annual billing')
         end
       end
     end

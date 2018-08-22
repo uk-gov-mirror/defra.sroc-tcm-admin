@@ -12,9 +12,9 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     @processor = Permits::PasCategoryProcessor.new(@header)
     @calculator = build_mock_calculator
     @processor.stubs(:calculator).returns(@calculator)
-    @header.regime.permit_categories.create!(code: '2.4.5',
-                                             description: 'test',
-                                             status: 'active')
+    # @header.regime.permit_categories.create!(code: '2.4.5',
+    #                                          description: 'test',
+    #                                          status: 'active')
   end
 
   def test_fetch_unique_pas_permits_returns_list_of_permits
@@ -56,42 +56,65 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_set_category_sets_category
-    transaction = @header.transaction_details.
-      find_by(reference_3: 'AAAA0001')
-    @processor.set_category(transaction, '2.4.4', :green)
-    assert_equal '2.4.4', transaction.reload.category
-    assert_equal 'Assigned matching category', transaction.category_logic
-    assert transaction.green?
+    transaction = @header.transaction_details.find_by(reference_3: 'AAAA0001')
+    history = generate_historic_pas
+    matched = history.first
+    @processor.set_category(transaction, matched, :green, 'Level 99')
+    assert_equal matched.category, transaction.reload.category
+    sc = transaction.suggested_category
+    assert_equal 'Assigned matching category', sc.logic
+    assert_equal 'Level 99', sc.suggestion_stage
+    assert sc.green?
+  end
+
+  def test_set_category_sets_matched_transaction
+    history = generate_historic_pas
+    matched = history.first
+    transaction = @header.transaction_details.find_by(reference_3: 'AAAA0001')
+    @processor.set_category(transaction, matched, :amber, 'Level')
+    assert_equal matched.category, transaction.reload.category
+    sc = transaction.suggested_category
+    assert_equal matched, sc.matched_transaction, 'Matched transaction incorrect'
+    assert_equal 'Assigned matching category', sc.logic
+    assert sc.amber?, 'Confidence not AMBER'
   end
 
   def test_set_category_sets_charge_info
-    transaction = @header.transaction_details.
-      find_by(reference_3: 'AAAA0001')
-    @processor.set_category(transaction, '2.4.4', :green)
-    assert_not_nil transaction.charge_calculation
-    assert_not_nil transaction.tcm_charge
-    assert transaction.green?
+    transaction = @header.transaction_details.find_by(reference_3: 'AAAA0001')
+    history = generate_historic_pas
+    matched = history.first
+    @processor.set_category(transaction, matched, :green, 'Level')
+    assert_not_nil transaction.charge_calculation, 'Charge calculation not set'
+    assert_not_nil transaction.tcm_charge, 'Charge not extracted'
   end
 
   def test_set_category_does_not_set_category_when_category_removed
     transaction = @header.transaction_details.
       find_by(reference_3: 'AAAA0001', customer_reference: 'A1234')
-    @processor.set_category(transaction, '2.3.9', :green)
+    history = generate_historic_pas
+    matched = history.first
+    p = PermitStorageService.new(@header.regime)
+    p.update_or_create_new_version(matched.category, 'test', '1920', 'excluded')
+    @processor.set_category(transaction, matched, :green, 'Level')
     assert_nil transaction.reload.category
-    assert_equal 'Category not valid for financial year', transaction.category_logic
-    assert_nil transaction.category_confidence_level
+    sc = transaction.suggested_category
+    assert_equal 'Category not valid for financial year', sc.logic
+    assert sc.red?, "Confidence not RED"
   end
 
   def test_set_category_does_not_set_category_if_calculation_error
+    history = generate_historic_pas
+    matched = history.first
     @calculator = build_mock_calculator_with_error
     @processor.stubs(:calculator).returns(@calculator)
 
     transaction = @header.transaction_details.
       find_by(reference_3: 'AAAA0001', customer_reference: 'A1234')
-    @processor.set_category(transaction, '2.4.4', :green)
+    @processor.set_category(transaction, matched, :green, 'Level')
     assert_nil transaction.reload.category
-    assert_equal 'Error assigning charge', transaction.category_logic
-    assert_nil transaction.category_confidence_level
+    sc = transaction.suggested_category
+    assert_equal 'Error assigning charge', sc.logic
+    assert sc.red?, "Confidence not RED"
   end
 
   def test_suggest_categories_processes_transactions_in_file
@@ -99,7 +122,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     @processor.suggest_categories
 
     [
-      [ 'AAAA0001', 'A1234', '2.4.5', 'Assigned matching category' ],
+      [ 'AAAA0001', 'A1234', '2.4.6', 'Assigned matching category' ],
       [ 'AAAA0002', 'A1235', nil, 'No previous bill found' ],
       [ 'AAAA0003', 'A1236', nil, 'No previous bill found' ],
       [ 'AAAA0004', 'A1237', nil, 'No previous bill found' ],
@@ -116,7 +139,8 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       else
         assert_equal td[2], t.category, "Failed category #{td[0]}"
       end
-      assert_equal td[3], t.category_logic, "Failed logic #{td[0]}"
+      sc = t.suggested_category
+      assert_equal td[3], sc.logic, "Failed logic #{td[0]}"
     end
   end
 
@@ -126,8 +150,9 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     @processor.suggest_categories
     t = @header.transaction_details.find_by(reference_3: 'AAAA0001',
                                             customer_reference: 'A1234')
-    assert_equal('2.4.4', t.category)
-    assert_equal('Assigned matching category', t.category_logic)
+    assert_equal('2.4.5', t.category)
+    sc = t.suggested_category
+    assert_equal('Assigned matching category', sc.logic)
   end
 
   def test_suggest_categories_handles_multiple_matching_period_start
@@ -137,15 +162,18 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     t = @header.transaction_details.find_by(reference_3: 'AAAA0001',
                                             customer_reference: 'A1234')
     assert_nil t.category
-    assert_equal('Multiple historic matches found', t.category_logic)
+    sc = t.suggested_category
+    assert_equal('Multiple historic matches found', sc.logic)
   end
 
   def test_suggest_categories_generates_audit_records
     history = generate_historic_pas
-    count = @header.transaction_details.count
-    assert_difference 'AuditLog.count', count do
-      @processor.suggest_categories
-    end
+    audit_before = AuditLog.count
+    @processor.suggest_categories
+    audit_after = AuditLog.count
+    count = @header.transaction_details.where.not(category: nil).count
+    assert count.positive?
+    assert_equal count, (audit_after - audit_before)
   end
 
   def fixup_transactions(header)
@@ -171,6 +199,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       tt.period_start = '1-APR-2020'
       tt.period_end = '31-MAR-2021'
       tt.tcm_financial_year = '2021'
+      tt.category = nil
       tt.save!
     end
   end

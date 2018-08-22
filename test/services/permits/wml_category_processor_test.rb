@@ -43,43 +43,49 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_set_category_sets_category
-    transaction = @header.transaction_details.
-      find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.15.2', :green)
-    assert_equal '2.15.2', transaction.reload.category
-    assert_equal 'Assigned matching category', transaction.category_logic
-    assert transaction.green?
+    history = generate_historic_wml
+    matched = history.last
+    transaction = @header.transaction_details.find_by(reference_1: '0123456')
+    @processor.set_category(transaction, matched, :green, 'Level')
+    assert_equal matched.category, transaction.reload.category
+    sg = transaction.suggested_category
+    assert_equal 'Assigned matching category', sg.logic
+    assert sg.green?
   end
 
   def test_set_category_sets_charge_info
-    transaction = @header.transaction_details.
-      find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.15.2', :amber)
+    history = generate_historic_wml
+    matched = history.last
+    transaction = @header.transaction_details.find_by(reference_1: '0123456')
+    @processor.set_category(transaction, matched, :amber, 'Level')
     assert_not_nil transaction.charge_calculation
     assert_not_nil transaction.tcm_charge
-    assert transaction.amber?
   end
 
   def test_set_category_does_not_set_category_when_category_removed
-    transaction = @header.transaction_details.
-      find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.3.9', :green)
+    history = generate_historic_wml
+    matched = history.last
+    matched.category = '2.3.9'
+    transaction = @header.transaction_details.find_by(reference_1: '0123456')
+    @processor.set_category(transaction, matched, :green, 'Level')
     assert_nil transaction.reload.category
-    assert_equal 'Category not valid for financial year',
-      transaction.category_logic
-    assert_nil transaction.category_confidence_level
+    sg = transaction.suggested_category
+    assert_equal 'Category not valid for financial year', sg.logic
+    assert sg.red?
   end
 
   def test_set_category_does_not_set_category_if_calculation_error
+    history = generate_historic_wml
+    matched = history.last
     @calculator = build_mock_calculator_with_error
     @processor.stubs(:calculator).returns(@calculator)
 
-    transaction = @header.transaction_details.
-      find_by(reference_1: '0123456')
-    @processor.set_category(transaction, '2.15.2', :green)
+    transaction = @header.transaction_details.find_by(reference_1: '0123456')
+    @processor.set_category(transaction, matched, :green, 'Level')
     assert_nil transaction.reload.category
-    assert_equal 'Error assigning charge', transaction.category_logic
-    assert_nil transaction.category_confidence_level
+    sg = transaction.suggested_category
+    assert_equal 'Error assigning charge', sg.logic
+    assert sg.red?
   end
 
   def test_suggest_categories_processes_transactions_in_file
@@ -104,7 +110,8 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
       else
         assert_equal td[2], t.category, "Failed category #{td[0]}"
       end
-      assert_equal td[3], t.category_logic, "Failed logic #{td[0]}"
+      sg = t.suggested_category
+      assert_equal td[3], sg.logic, "Failed logic #{td[0]}"
     end
   end
 
@@ -114,15 +121,17 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
     @processor.suggest_categories
     t = @header.transaction_details.find_by(reference_1: '0123456', reference_3: '1')
     assert_equal('2.15.2', t.category)
-    assert_equal('Assigned matching category', t.category_logic)
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
   end
 
   def test_suggest_categories_generates_audit_records
     history = generate_historic_wml
-    count = @header.transaction_details.count
-    assert_difference 'AuditLog.count', count do
-      @processor.suggest_categories
-    end
+    audit_before = AuditLog.count
+    @processor.suggest_categories
+    audit_after = AuditLog.count
+    count = @header.transaction_details.where.not(category: nil).count
+    assert_equal count, (audit_after - audit_before) 
   end
 
   def fixup_transactions(header)
