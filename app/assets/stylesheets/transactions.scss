@@ -60,8 +60,18 @@ $text-col: theme-color("dark");
 }
 
 .exclude-button {
-  margin-top: 0.75em;
+  margin-bottom: 0.5em;
   margin-left: 0;
+  position: relative;
+}
+
+td.exclude-column {
+  padding: 0.75rem 0.5rem 0.75rem 0;
+}
+
+td.control-column {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 tr.excluded {
@@ -74,10 +84,39 @@ tr.excluded {
   text-decoration: none;
 }
 
-.exclude-button:checked {
-  margin-top: .25em;
-}
+// .exclude-button:checked {
+//   margin-top: .25em;
+// }
 
 .sortable-header {
   white-space: nowrap;
+}
+
+@mixin dot($dot_color) {
+  height: 1em;
+  width: 1em;
+  background-color: $dot_color;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.green-dot {
+  @include dot(#0b0);
+}
+
+.amber-dot {
+  @include dot(#fb0);
+}
+
+.red-dot {
+  @include dot(#f00);
+}
+
+.tmp-cessation {
+  min-width: 3em;
+}
+
+.table-sm td a.btn {
+  color: $text-col;
+  padding: 0 4px;
 }

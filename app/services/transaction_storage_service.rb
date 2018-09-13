@@ -69,6 +69,35 @@ class TransactionStorageService
     order_query(q, order, direction).page(page).per(per_page)
   end
 
+def transactions_related_to(transaction)
+    # col = regime.waste_or_installations? ? :reference_3 : :reference_1
+    # val = transaction.send(col)
+    # regime.transaction_details.unbilled.where(col => val).
+    #   where.not(col => nil).
+    #   where.not(col => 'NA').
+    #   order(:reference_1)
+    at = TransactionDetail.arel_table
+    q = regime.transaction_details.unbilled.where.not(id: transaction.id)
+    if regime.installations?
+      q = q.where.not(reference_3: nil).
+        where.not(reference_3: 'NA').
+        where(reference_3: transaction.reference_3).
+        or(q.where.not(reference_1: 'NA').
+           where.not(reference_1: nil).
+           where(reference_1: transaction.reference_1)
+        ).
+        or(q.where.not(reference_2: 'NA').
+           where.not(reference_2: nil).
+           where(reference_2: transaction.reference_2)
+        )
+    else
+      q = q.where.not(reference_1: nil).
+        where.not(reference_1: 'NA').
+        where(reference_1: transaction.reference_1)
+    end
+    q.order(:reference_1)
+  end
+
   def unbilled_regions
     regions_for('unbilled')
   end

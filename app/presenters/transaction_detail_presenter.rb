@@ -1,8 +1,13 @@
 class TransactionDetailPresenter < SimpleDelegator
   include FormattingUtils
 
-  def self.wrap(collection)
-    collection.map { |o| new o }
+  def initialize(obj, user = nil)
+    super obj
+    @user = user
+  end
+
+  def self.wrap(collection, user = nil)
+    collection.map { |o| new(o, user) }
   end
 
   def file_reference
@@ -86,13 +91,19 @@ class TransactionDetailPresenter < SimpleDelegator
     desc
   end
 
-  # def category_description
-  #   if category.present?
-  #     desc = PermitCategory.find_by(code: category).description
-  #     desc.truncate(150, separator: /\s/, ommission: '...')
-  #   end
-  # end
-  
+  def category_locked
+    transaction_detail.suggested_category && transaction_detail.suggested_category.admin_lock?
+  end
+
+  def can_update_category?
+    if category_locked
+      # if the current_user is an admin we can allow editing
+      @user && @user.admin?
+    else
+      true
+    end
+  end
+
   def baseline_charge
     if charge_calculated? && !charge_calculation_error?
       (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
@@ -158,6 +169,10 @@ class TransactionDetailPresenter < SimpleDelegator
     temporary_cessation? ? 'Y' : 'N'
   end
 
+  def temporary_cessation_yes_no
+    temporary_cessation ? 'Yes' : 'No'
+  end
+
   def period
     "#{transaction_detail.period_start.strftime("%d/%m/%y")} - #{transaction_detail.period_end.strftime("%d/%m/%y")}"
   end
@@ -187,6 +202,10 @@ class TransactionDetailPresenter < SimpleDelegator
     txt
   end
 
+  def pretty_status
+    status.to_s.capitalize
+  end
+
   def charge_amount
     tcm_charge
     # charge = transaction_detail.charge_calculation
@@ -207,6 +226,10 @@ class TransactionDetailPresenter < SimpleDelegator
 
   def error_message
     TransactionCharge.extract_calculation_error(transaction_detail)
+  end
+
+  def confidence_level
+    transaction_detail.suggested_category.confidence_level unless transaction_detail.suggested_category.nil?
   end
 
 protected

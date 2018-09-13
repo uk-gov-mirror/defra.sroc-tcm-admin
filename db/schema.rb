@@ -130,6 +130,7 @@ ActiveRecord::Schema.define(version: 20180816103754) do
     t.string "category"
     t.integer "confidence_level"
     t.boolean "admin_lock", default: false, null: false
+    t.boolean "overridden", default: false, null: false
     t.string "suggestion_stage", null: false
     t.string "logic", null: false
     t.bigint "matched_transaction_id"

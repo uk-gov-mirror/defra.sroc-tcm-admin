@@ -5,6 +5,7 @@ class CreateSuggestedCategories < ActiveRecord::Migration[5.1]
       t.string :category
       t.integer :confidence_level, mull: false, index: true
       t.boolean :admin_lock, null: false, default: false
+      t.boolean :overridden, null: false, default: false
       t.string :suggestion_stage, null: false
       t.string :logic, null: false
       t.references :matched_transaction, foreign_key: { to_table: :transaction_details}

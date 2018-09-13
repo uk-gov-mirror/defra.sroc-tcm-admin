@@ -109,4 +109,38 @@ module TransactionsHelper
   def selectable?(col)
     col == :sroc_category
   end
+
+  def confidence(level)
+    { green: 'High', amber: 'Medium', red: 'Low' }.fetch(level.to_sym)
+  end
+
+  def lookup_category_description(regime, category, financial_year)
+     c = PermitStorageService.new(regime).
+       code_for_financial_year(category, financial_year)
+     c.description unless c.nil?
+  end
+
+  def status_text(state)
+    {
+      billed: 'Billed',
+      unbilled: 'Unbilled',
+      exporting: 'Exporting',
+      excluded: 'Excluded',
+      retrospective: 'Pre-SRoC Unbilled',
+      retro_exporting: 'Pre-SRoC Exporting',
+      retro_billed: 'Pre-SRoC Billed'
+    }.fetch(state.to_sym)
+  end
+
+  def status_colour(state)
+    {
+      billed: 'success',
+      unbilled: 'primary',
+      exporting: 'secondary',
+      excluded: 'danger',
+      retrospective: 'warning',
+      retro_exporting: 'secondary',
+      retro_billed: 'success'
+    }.fetch(state.to_sym)
+  end
 end

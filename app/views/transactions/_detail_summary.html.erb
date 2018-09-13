@@ -7,8 +7,10 @@
         <% if @regime.waste_or_installations? %>
           <dt>Permit Reference</dt>
           <dd><%= transaction.permit_reference %></dd>
-          <dt>Original Permit Ref</dt>
-          <dd><%= transaction.original_permit_reference %></dd>
+          <% if @regime.installations? %>
+            <dt>Original Permit Ref</dt>
+            <dd><%= transaction.original_permit_reference %></dd>
+          <% end %>
         <% else %>
           <dt>Consent Reference</dt>
           <dd><%= transaction.permit_reference %></dd>
@@ -17,8 +19,14 @@
           <dt>Discharge</dt>
           <dd><%= transaction.discharge_reference %> (<%= transaction.discharge_description %>)</dd>
         <% end %>
-        <dt>Site</dt>
-        <dd><%= transaction.site %></dd>
+        <dt>Category</dt>
+        <dd><%= transaction.category %><%= " (#{transaction.category_description})" unless transaction.category_description.nil? %></dd>
+        <dt>Temporary Cessation</dt>
+        <dd><%= transaction.temporary_cessation_yes_no %></dd>
+        <% unless @regime.waste? %>
+          <dt>Site</dt>
+          <dd><%= transaction.site %></dd>
+        <% end %>
         <dt>Generated On</dt>
         <dd><%= transaction.generated_at %></dd>
         <% if @regime.waste_or_installations? %>
@@ -32,6 +40,12 @@
         <dd><%= transaction.period %></dd>
         <dt>Amount</dt>
         <dd><%= transaction.amount %></dd>
+        <dt>Status</dt>
+        <dd>
+          <span class="<%= "badge badge-pill badge-#{status_colour(transaction.status)}" %>">
+            <%= status_text(transaction.status) -%>
+          </span>
+        </dd>
       </dl>
     </div>
   </div>

@@ -44,6 +44,12 @@ Constants.PAS_COLUMNS = {
       sortable: true,
       editable: true
     }, {
+      name: 'confidence_level',
+      label: '',
+      accessLabel: 'SRoC Category Confidence Level',
+      sortable: false,
+      editable: false
+    }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
@@ -67,6 +73,13 @@ Constants.PAS_COLUMNS = {
       sortable: false,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'show_details',
+      label: '',
+      accessHelp: 'Show more transaction details for Permit ',
+      accessHelpColumn: 'permit_reference',
+      sortable: false,
+      editable: true
     }
   ],
   historic: [
@@ -276,6 +289,12 @@ Constants.CFD_COLUMNS = {
       sortable: true,
       editable: true
     }, {
+      name: 'confidence_level',
+      label: '',
+      accessLabel: 'SRoC Category Confidence Level',
+      sortable: false,
+      editable: false
+    }, {
       name: 'variation',
       label: '%',
       accessLabel: 'Variation Percentage',
@@ -300,6 +319,13 @@ Constants.CFD_COLUMNS = {
       sortable: false,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'show_details',
+      label: '',
+      accessHelp: 'Show more transaction details for Consent ',
+      accessHelpColumn: 'consent_reference',
+      sortable: false,
+      editable: true
     }
   ],
   historic: [
@@ -522,6 +548,12 @@ Constants.WML_COLUMNS = {
       sortable: true,
       editable: true
     }, {
+      name: 'confidence_level',
+      label: '',
+      accessLabel: 'SRoC Category Confidence Level',
+      sortable: false,
+      editable: false
+    }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
@@ -545,6 +577,13 @@ Constants.WML_COLUMNS = {
       sortable: false,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'show_details',
+      label: '',
+      accessHelp: 'Show more transaction details for Permit ',
+      accessHelpColumn: 'permit_reference',
+      sortable: false,
+      editable: true
     }
   ],
   historic: [

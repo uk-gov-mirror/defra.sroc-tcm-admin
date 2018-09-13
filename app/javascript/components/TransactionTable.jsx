@@ -86,6 +86,7 @@ export default class TransactionTable extends React.Component {
         onExcludeTransaction={this.props.onExcludeTransaction}
         onReinstateTransaction={this.props.onReinstateTransaction}
         onEditRow={this.props.onEditRow}
+        onShowRow={this.props.onShowRow}
       />)
 
     return (

@@ -1,0 +1,23 @@
+<% sc = transaction.suggested_category %>
+<div class="row">
+  <div class="col">
+    <div class="panel">
+      <dl class="transaction-summary dl-horizontal">
+        <dt>Suggested Category</dt>
+        <dd><%= sc.category %> (<%= lookup_category_description(@regime, sc.category, transaction.tcm_financial_year) %>)</dd>
+        <dt>Confidence Level</dt>
+        <dd><%= confidence(sc.confidence_level) %></dd>
+        <dt>Assignment Logic</dt>
+        <dd><%= sc.logic %></dd>
+        <dt>Suggestion Stage</dt>
+        <dd><%= sc.suggestion_stage %></dd>
+        <dt>Admin Lock</dt>
+        <dd><%= sc.admin_lock ? 'Yes' : 'No' %></dd>
+        <dt>Suggestion Overridden</dt>
+        <dd><%= sc.overridden ? 'Yes' : 'No' %></dd>
+      </dl>
+    </div>
+    <%= render partial: 'matched_transaction',
+      locals: { transaction: present_transaction(sc.matched_transaction) } %></dd>
+  </div>
+</div>

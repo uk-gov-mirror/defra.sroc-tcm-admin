@@ -60,6 +60,7 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions/1
   # GET /regimes/:regime_id/transactions/1.json
   def show
+    @related_transactions = transaction_store.transactions_related_to(@transaction)
   end
 
   # GET /regimes/:regimes_id/transactions/1/edit
@@ -75,7 +76,7 @@ class TransactionsController < ApplicationController
         format.html { redirect_to edit_regime_transaction_path(@regime, @transaction),
                       notice: 'Transaction was successfully updated.' }
         format.json {
-          render json: { transaction: presenter.new(@transaction),
+          render json: { transaction: presenter.new(@transaction, current_user),
                          message: 'Transaction updated'
                         },
                         status: :ok,
@@ -145,6 +146,9 @@ class TransactionsController < ApplicationController
             else
               # extract charge calculation and correctly sign it
               @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
+              if @transaction.suggested_category
+                @transaction.suggested_category.update_attributes(overridden: true)
+              end
             end
             # auditor.log_modify(@transaction)
             @transaction.save
@@ -186,7 +190,7 @@ class TransactionsController < ApplicationController
     end
 
     def present_transactions(transactions, selected_region, regions, summary)
-      arr = Kaminari.paginate_array(presenter.wrap(transactions),
+      arr = Kaminari.paginate_array(presenter.wrap(transactions, current_user),
                                     total_count: transactions.total_count,
                                     limit: transactions.limit_value,
                                     offset: transactions.offset_value)
