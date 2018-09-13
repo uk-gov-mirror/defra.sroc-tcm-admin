@@ -45,7 +45,6 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions/1
   # GET /regimes/:regime_id/transactions/1.json
   def show
-    # @related_transactions = transaction_store.transactions_related_to(@transaction)
     @related_transactions = Query::RelatedTransactions.call(transaction: @transaction)
     @exclusion_reasons = Query::Exclusions.call(regime: @regime)
   end
