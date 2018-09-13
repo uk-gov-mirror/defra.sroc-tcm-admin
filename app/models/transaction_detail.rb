@@ -15,6 +15,7 @@ class TransactionDetail < ApplicationRecord
   belongs_to :transaction_file, inverse_of: :transaction_details, required: false
   has_one :suggested_category, inverse_of: :transaction_detail, dependent: :destroy
   has_many :matched_transactions, class_name: 'SuggestedCategory', foreign_key: :matched_transaction_id 
+  belongs_to :approver, class_name: 'User', inverse_of: :approved_transactions
 
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true
