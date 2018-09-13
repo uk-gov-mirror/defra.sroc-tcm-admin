@@ -17,7 +17,9 @@
         <dd><%= sc.overridden ? 'Yes' : 'No' %></dd>
       </dl>
     </div>
-    <%= render partial: 'matched_transaction',
-      locals: { transaction: present_transaction(sc.matched_transaction) } %></dd>
+    <% if sc.matched_transaction %>
+      <%= render partial: 'matched_transaction',
+        locals: { transaction: present_transaction(sc.matched_transaction) } %>
+    <% end %>
   </div>
 </div>
