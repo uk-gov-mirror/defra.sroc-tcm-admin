@@ -1,36 +1,58 @@
 # frozen_string_literal: true
 
 class RetrospectivesController < ApplicationController
-  include RegimeScope
+  include RegimeScope, CsvExporter, QueryTransactions
+
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
 
   # GET /regimes/:regime_id/history
   # GET /regimes/:regime_id/history.json
   def index
-    regions = transaction_store.retrospective_regions
-    @region = params.fetch(:region, regions.first)
-    @region = regions.first unless regions.include? @region
+    # regions = PreSrocRegionsQuery.call(regime: @regime)
+    # regions = transaction_store.retrospective_regions
+    @region = params.fetch(:region, cookies.fetch(:region, ''))
+    # @region = regions.first unless regions.include? @region
+    # q = params.fetch(:search, "")
+    # sort_col = params.fetch(:sort, :customer_reference)
+    # sort_dir = params.fetch(:sort_direction, 'asc')
+    pg = params.fetch(:page, 1)
+    per_pg = params.fetch(:per_page, 10)
+
+    @transactions = PreSrocTransactionsQuery.call(query_params)
+    @financial_years = PreSrocFinancialYearsQuery.call(regime: @regime)
+
+    # @transactions = transaction_store.retrospective_transactions(
+    #   q,
+    #   pg,
+    #   per_pg,
+    #   @region,
+    #   sort_col,
+    #   sort_dir
+    # )
+
+    summary = nil
 
     respond_to do |format|
       format.html do
-        render
+        @transactions = present_transactions(@transactions.page(pg).per(per_pg))
+        if request.xhr?
+          render partial: 'table', locals: { transactions: @transactions }
+        else
+          render
+        end
       end
-      format.js
+      format.csv do
+        # @transactions = transaction_store.transactions_to_be_billed_for_export(
+        #   q,
+        #   @region,
+        #   sort_col,
+        #   sort_dir
+        # ).unexcluded.limit(15000)
+        send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
+      end
       format.json do
-        q = params.fetch(:search, "")
-        pg = params.fetch(:page, 1)
-        per_pg = params.fetch(:per_page, 10)
-
-        @transactions = transaction_store.retrospective_transactions(
-          q,
-          pg,
-          per_pg,
-          @region,
-          params.fetch(:sort, :customer_reference),
-          params.fetch(:sort_direction, 'asc'))
-
-        @transactions = present_transactions(@transactions, @region, regions)
+        @transactions = present_transactions_for_json(@transactions, @region, regions)
         render json: @transactions
       end
     end
@@ -42,13 +64,15 @@ class RetrospectivesController < ApplicationController
   end
 
   private
-    def present_transactions(transactions, selected_region, regions)
-      name = "#{@regime.slug}_transaction_detail_presenter".camelize
-      presenter = str_to_class(name) || TransactionDetailPresenter
-      arr = Kaminari.paginate_array(presenter.wrap(transactions),
-                                    total_count: transactions.total_count,
-                                    limit: transactions.limit_value,
-                                    offset: transactions.offset_value)
+    def present_transactions(transactions)
+      Kaminari.paginate_array(presenter.wrap(transactions, current_user),
+                              total_count: transactions.total_count,
+                              limit: transactions.limit_value,
+                              offset: transactions.offset_value)
+    end
+
+    def present_transactions_for_json(transactions, selected_region, regions)
+      arr = present_transactions(transactions)
       {
         pagination: {
           current_page: arr.current_page,

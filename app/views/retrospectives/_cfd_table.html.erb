@@ -1,0 +1,21 @@
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><span class='sr-only'>Details</span></th>
+      <th><%= sortable :file_reference %></th>
+      <th><%= sortable :file_date %></th>
+      <th><%= sortable :customer_reference %></th>
+      <th><%= sortable :consent_reference %></th>
+      <th><%= sortable :version %></th>
+      <th><%= sortable :discharge %></th>
+      <th><%= sortable :variation %></th>
+      <th><%= sortable :period %></th>
+      <th class="text-right"><%= sortable :line_amount %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.each do |transaction| %>
+      <%= render partial: 'cfd_transaction', locals: { transaction: transaction } %>
+    <% end %>
+  </tbody>
+</table>

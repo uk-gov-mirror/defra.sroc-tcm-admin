@@ -1,21 +1,16 @@
-<% content_for :head do %>
-  <%= javascript_pack_tag 'transactions' %>
-  <%= stylesheet_pack_tag 'transactions' %>
-<% end %>
 <div class="row">
   <div class="col">
-    <div id="transaction-table"
-         data-regime="<%= @regime.slug %>"
-         data-view-mode="<%= params.fetch(:view_mode, 'unbilled') %>"
-         data-sort-col="customer_reference"
-         data-sort-dir="asc"
-         data-summary-path="<%= regime_transaction_summary_index_path(@regime) %>"
-         data-generate-file-path="<%= regime_transaction_files_path(@regime) %>"
-         data-selected-region="<%= @region %>"
-         data-search-term="<%= params[:search] %>"
-         data-search-placeholder="<%= search_placeholder(@regime) %>"
-         data-categories="<%= @categories.to_json %>"
-         data-generate-files="true">
+    <p id="notice"><%= notice %></p>
+  </div>
+</div>
+<div class="unbilled">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 id="view-title">Transactions to be billed</h1>
     </div>
+  </div>
+  <%= render partial: "table", locals: { transactions: @transactions } %>
+  <div id="summary-dialog"
+       data-summary-path="<%= regime_transaction_summary_index_path(@regime) %>">
   </div>
 </div>

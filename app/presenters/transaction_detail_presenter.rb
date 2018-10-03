@@ -10,6 +10,11 @@ class TransactionDetailPresenter < SimpleDelegator
     collection.map { |o| new(o, user) }
   end
 
+  def editable?
+    # NOTE: need user for this
+    unbilled? && !excluded? && !approved?
+  end
+
   def file_reference
     transaction_detail.transaction_header.file_reference
   end

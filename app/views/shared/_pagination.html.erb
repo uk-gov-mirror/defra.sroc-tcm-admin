@@ -3,23 +3,30 @@
     <div class="page-info">
       <%= page_entries_info collection %>
     </div>
+    <div class="ml-2 d-inline">
+      <button class="btn btn-sm btn-outline-secondary table-export-btn"
+              title="Export matching entries">
+        <span class="sr-only">Export matching entries</span>
+        <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
+      </button>
+    </div>
   </div>
-  <div class="col-12 col-md-4 justify-content-lg-end mb-4">
+  <div class="col-12 col-md-3 d-flex justify-content-lg-end mb-4">
     <%= form_with controller: controller_name, action: action_name, method: "get", class: 'form-inline justify-content-lg-end', local: true do %>
       <div class="">
         <div class="form-group">
           <%= label_tag(:per_page, 'Items per page', class: 'mr-sm-2') %>
-          <%= select_tag(:per_page, per_page_options, class: "mr-sm-2 form-control") %>
-          <%= hidden_field_tag :page, params.fetch(:page, 1), id: 'page-number' %>
-          <%= hidden_field_tag :region, params.fetch(:region, 'all') %>
-          <%= hidden_field_tag :search, params[:search] %>
-          <%= hidden_field_tag :sort, params[:sort] %>
-          <%= hidden_field_tag :sort_direction, params[:sort_direction] %>
+          <%= select_tag(:per_page, per_page_options, class: "form-control") %>
+          <%= hidden_field_tag :page, param_or_cookie(:page, 1), id: 'page-number' %>
+          <%= hidden_field_tag :region, @region %>
+          <%= hidden_field_tag :search, param_or_cookie(:search) %>
+          <%= hidden_field_tag :sort, param_or_cookie(:sort) %>
+          <%= hidden_field_tag :sort_direction, param_or_cookie(:sort_direction) %>
         </div>
       </div>
     <% end %>
   </div>
-  <div class="col-12 col-md-4 justify-content-lg-end">
+  <div class="col-12 col-md-5">
     <%= paginate collection %>
   </div>
 </div>

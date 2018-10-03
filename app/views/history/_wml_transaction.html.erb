@@ -1,0 +1,42 @@
+<tr id=<%= transaction.id %>>
+  <td class="align-middle details-button-column">
+    <button class="btn btn-sm show-details-button"
+      data-path="<%= regime_transaction_path(@regime, transaction) %>">
+      <span class='sr-only'>Show details for Permit <%= transaction.permit_reference %></span>
+      <span class="aria-hidden oi oi-magnifying-glass"></span>
+    </button>
+  </td>
+  <td class="align-middle">
+    <%= transaction.customer_reference %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.permit_reference %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.category %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.temporary_cessation_flag %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.compliance_band %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.period %>
+  </td>
+  <td class="align-middle text-right">
+    <%= transaction.amount %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.original_filename %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.generated_filename %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.generated_file_date %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.tcm_transaction_reference %>
+  </td>
+</tr>

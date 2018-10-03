@@ -8,14 +8,15 @@ class TransactionDetail < ApplicationRecord
                      :tcm_charge,
                      :variation,
                      :excluded,
-                     :excluded_reason ]
+                     :excluded_reason,
+                     :approved_for_billing ]
 
   belongs_to :transaction_header, inverse_of: :transaction_details
   has_one :regime, through: :transaction_header
   belongs_to :transaction_file, inverse_of: :transaction_details, required: false
   has_one :suggested_category, inverse_of: :transaction_detail, dependent: :destroy
   has_many :matched_transactions, class_name: 'SuggestedCategory', foreign_key: :matched_transaction_id 
-  belongs_to :approver, class_name: 'User', inverse_of: :approved_transactions
+  belongs_to :approver, class_name: 'User', inverse_of: :approved_transactions, required: false
 
   validates :sequence_number, presence: true
   validates :customer_reference, presence: true
@@ -39,9 +40,13 @@ class TransactionDetail < ApplicationRecord
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
   scope :region, ->(region) { joins(:transaction_header).
                               merge(TransactionHeader.in_region(region)) }
-  scope :without_charge, -> { where(charge_calculation: nil).
-                              or(TransactionDetail.with_charge_errors) }
+  # scope :without_charge, -> { where(charge_calculation: nil).
+  #                             or(TransactionDetail.with_charge_errors) }
+  scope :with_charge, -> { where.not(tcm_charge: nil) }
+  scope :without_charge, -> { where(tcm_charge: nil) }
   scope :financial_year, ->(fy) { where(tcm_financial_year: fy) }
+  scope :approved, -> { where(approved_for_billing: true) }
+  scope :unapproved, -> { where(approved_for_billing: false) }
 
   def self.search(q)
     m = "%#{q}%"
@@ -83,8 +88,24 @@ class TransactionDetail < ApplicationRecord
     unbilled?
   end
 
+  def approved?
+    approved_for_billing?
+  end
+
+  def ready_for_approval?
+    unbilled? && !approved? && charge_calculated? && !charge_calculation_error?
+  end
+
+  def category_overridden?
+    suggested_category && suggested_category.overridden?
+  end
+
   def unbilled?
     status == 'unbilled'
+  end
+
+  def retrospective?
+    status == 'retrospective'
   end
 
   def charge_calculated?

@@ -1,28 +1,13 @@
-<% content_for :head do %>
-  <%= javascript_pack_tag 'transactions' %>
-<% end %>
 <div class="row">
   <div class="col">
     <p id="notice"><%= notice %></p>
   </div>
 </div>
-<div class="row mb-4">
-  <div class="col">
-    <h1>Transaction History</h1>
-  </div>
-</div>
-<div class="row">
-  <div class="col">
-    <div id="transaction-table" 
-         data-regime="<%= @regime.slug %>"
-         data-historic="true"
-         data-sort-col="customer_reference"
-         data-sort-dir="asc"
-         data-path="<%= regime_history_index_path(@regime) %>"
-         data-regions="<%= available_regions(@regime).to_json %>"
-         data-selected-region="<%= params.fetch(:region, 'all') %>"
-         data-search-term="<%= params[:search] %>"
-         data-search-placeholder="<%= search_placeholder(@regime) %>">
+<div class="historic">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 id="view-title">Transaction History</h1>
     </div>
   </div>
+  <%= render partial: "table", locals: { transactions: @transactions } %>
 </div>

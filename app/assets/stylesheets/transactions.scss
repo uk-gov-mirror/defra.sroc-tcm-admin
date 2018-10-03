@@ -55,23 +55,29 @@ $text-col: theme-color("dark");
   margin-bottom: 0.75rem;
 }
 
-.error-popup a {
+.error-popup a, .error-popup button {
+  background-color: transparent;
   color: #660000;
 }
 
-.exclude-button {
-  margin-bottom: 0.5em;
+.approve-button {
+  // margin-bottom: 0.5em;
   margin-left: 0;
   position: relative;
-}
-
-td.exclude-column {
-  padding: 0.75rem 0.5rem 0.75rem 0;
 }
 
 td.control-column {
   padding-top: 0;
   padding-bottom: 0;
+}
+
+tr.error-bg {
+  color: theme-color('light');
+  background-color: theme-color('danger');
+}
+
+tr.success-bg {
+  background-color: theme-color('success');
 }
 
 tr.excluded {
@@ -112,11 +118,23 @@ tr.excluded {
   @include dot(#f00);
 }
 
-.tmp-cessation {
-  min-width: 3em;
+.temporary-cessation-select {
+  min-width: 3rem;
 }
 
 .table-sm td a.btn {
   color: $text-col;
   padding: 0 4px;
+}
+
+td.details-button-column {
+  padding: 0 !important;
+}
+
+td.indicator-column {
+  padding-left: 0;
+}
+
+.show-details-button {
+  background-color: transparent;
 }

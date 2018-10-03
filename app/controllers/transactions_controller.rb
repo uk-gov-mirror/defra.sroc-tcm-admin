@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  include RegimeScope, FinancialYear
-  before_action :set_regime, only: [:index]
+  include RegimeScope, FinancialYear, CsvExporter
+  before_action :set_regime, only: [:index, :approve]
   before_action :set_transaction, only: [:show, :edit, :update]
-  before_action :set_current_user, only: [:update]
+  before_action :set_current_user, only: [:update, :approve]
 
   # GET /regimes/:regime_id/transactions
   # GET /regimes/:regime_id/transactions.json
@@ -12,37 +12,53 @@ class TransactionsController < ApplicationController
     regions = transaction_store.unbilled_regions
     mode = params.fetch(:view_mode, 'unbilled')
     if mode == 'unbilled'
-      @region = params.fetch(:region, regions.first)
-      @region = regions.first unless regions.include? @region
+      @region = params.fetch(:region, cookies[:region])
+      @region = regions.first if @region.blank? #unless regions.include? @region
     else
-      @region = params.fetch(:region, '')
+      @region = params.fetch(:region, cookies[:region] || '')
     end
 
-    q = params.fetch(:search, "")
-    sort_col = params.fetch(:sort, :customer_reference)
-    sort_dir = params.fetch(:sort_direction, 'asc')
+    q = params.fetch(:search, cookies[:search] || '')
+    sort_col = params.fetch(:sort, cookies[:sort] || '')
+    sort_dir = params.fetch(:sort_direction, cookies[:sort_direction] || 'asc')
+    pg = params.fetch(:page, cookies[:page] || 1)
+    per_pg = params.fetch(:per_page, cookies[:per_page] || 10)
+
+    @transactions = TransactionsToBeBilledQuery.call(regime: @regime,
+                                                     region: @region,
+                                                     sort_column: sort_col,
+                                                     sort_direction: sort_dir,
+                                                     search: q)
+
+    # @transactions = transaction_store.transactions_to_be_billed(
+    #   q,
+    #   pg,
+    #   per_pg,
+    #   @region,
+    #   sort_col,
+    #   sort_dir
+    # )
+
+    # don't want to display these here for now
+    # summary = transaction_store.transactions_to_be_billed_summary(q, region)
+    summary = nil
 
     respond_to do |format|
       format.html do
-        @categories = current_permit_categories 
+        @transactions = present_transactions(@transactions.page(pg).per(per_pg))
+        @financial_years = UnbilledFinancialYearsQuery.call(regime: @regime)
+        # @categories = current_permit_categories 
+        if request.xhr?
+          render partial: "table", locals: { transactions: @transactions }
+        else
+          render
+        end
       end
       format.json do
-        pg = params.fetch(:page, 1)
-        per_pg = params.fetch(:per_page, 10)
-
-        @transactions = transaction_store.transactions_to_be_billed(
-          q,
-          pg,
-          per_pg,
-          @region,
-          sort_col,
-          sort_dir
-        )
-
-        # don't want to display these here for now
-        # summary = transaction_store.transactions_to_be_billed_summary(q, region)
-        summary = nil
-        @transactions = present_transactions(@transactions, @region, regions, summary)
+        @transactions = present_transactions_for_json(@transactions.page(pg).per(per_pg),
+                                                      @region,
+                                                      regions,
+                                                      summary)
         render json: @transactions
       end
       format.csv do
@@ -72,9 +88,21 @@ class TransactionsController < ApplicationController
   # PATCH/PUT /regimes/:regimes_id/transactions/1.json
   def update
     respond_to do |format|
-      if update_transaction
-        format.html { redirect_to edit_regime_transaction_path(@regime, @transaction),
-                      notice: 'Transaction was successfully updated.' }
+      result = UpdateTransaction.call(transaction: @transaction,
+                                      attributes: transaction_params,
+                                      user: current_user)
+      @transaction = result.transaction
+
+      if result.success?
+        format.html do
+          if request.xhr?
+            render partial: "#{@regime.to_param}_transaction",
+              locals: { transaction: presenter.new(@transaction, current_user) }
+          else
+            redirect_to edit_regime_transaction_path(@regime, @transaction),
+              notice: 'Transaction was successfully updated.'
+          end
+        end
         format.json {
           render json: { transaction: presenter.new(@transaction, current_user),
                          message: 'Transaction updated'
@@ -83,21 +111,49 @@ class TransactionsController < ApplicationController
                         location: regime_transaction_path(@regime, @transaction)
         }
       else
-        format.html { render :edit }
+        format.html do
+          if request.xhr?
+            render partial: "#{@regime.to_param}_transaction",
+              locals: { transaction: presenter.new(@transaction, current_user) }
+          else
+            redirect_to edit_regime_transaction_path(@regime, @transaction),
+              notice: 'Transaction was not updated.'
+          end
+        end
         format.json { render json: @transaction, status: :unprocessable_entity }
       end
     end
   end
 
-  private
-    def csv_opts
-      ts = Time.zone.now.strftime("%Y%m%d%H%M%S")
-      {
-        filename: "transactions_to_be_billed_#{ts}.csv",
-        type: :csv
-      }
+  # PUT - approve all matching eligible transactions
+  def approve
+    regions = transaction_store.unbilled_regions
+    @region = params.fetch(:region, cookies[:region])
+    result = regions.include? @region
+    # error if blank or no legit region specified
+    count = 0
+
+    if result
+      q = params.fetch(:search, '')
+      approval = ApproveMatchingTransactions.call(regime: @regime,
+                                                  region: @region,
+                                                  search: q,
+                                                  user: current_user)
+      result = approval.success?
+      count = approval.count
     end
 
+    respond_to do |format|
+      format.json do
+        render json: { success: result, count: count }
+      end
+      format.any do
+        head :not_acceptable
+      end
+    end
+  end
+
+  private
     def current_permit_categories
       permit_store.active_list_for_selection(current_financial_year).
         pluck(:code).map do |c|
@@ -189,11 +245,19 @@ class TransactionsController < ApplicationController
                                                   presenter.new(@transaction)) if @transaction.category.present?
     end
 
-    def present_transactions(transactions, selected_region, regions, summary)
-      arr = Kaminari.paginate_array(presenter.wrap(transactions, current_user),
-                                    total_count: transactions.total_count,
-                                    limit: transactions.limit_value,
-                                    offset: transactions.offset_value)
+    def present_transactions(transactions)
+      Kaminari.paginate_array(presenter.wrap(transactions, current_user),
+                              total_count: transactions.total_count,
+                              limit: transactions.limit_value,
+                              offset: transactions.offset_value)
+    end
+
+    def present_transactions_for_json(transactions, selected_region, regions, summary)
+      arr = present_transactions(transactions)
+      # arr = Kaminari.paginate_array(presenter.wrap(transactions, current_user),
+      #                               total_count: transactions.total_count,
+      #                               limit: transactions.limit_value,
+      #                               offset: transactions.offset_value)
       {
         pagination: {
           current_page: arr.current_page,
@@ -220,7 +284,8 @@ class TransactionsController < ApplicationController
 
     def transaction_params
       params.require(:transaction_detail).permit(:category, :temporary_cessation,
-                                                :excluded, :excluded_reason)
+                                                 :excluded, :excluded_reason,
+                                                 :approved_for_billing)
     end
 
     def transaction_store
@@ -229,10 +294,6 @@ class TransactionsController < ApplicationController
 
     def calculator
       @calculator ||= CalculationService.new
-    end
-
-    def csv
-      @csv ||= TransactionExportService.new(@regime)
     end
 
     def auditor

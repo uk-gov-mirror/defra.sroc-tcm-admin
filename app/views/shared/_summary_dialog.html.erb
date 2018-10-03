@@ -1,0 +1,61 @@
+<div id="summary-dialog" class='modal fade' tabIndex='-1' role='dialog'
+     data-backdrop='static' aria-hidden='true'>
+  <div class='modal-dialog' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'><%= summary.title %></h5>
+        <button type='button' class='close' data-dismiss='modal'
+                aria-label='Close'>
+          <span aria-hidden='true'>&times;</span>
+        </button>
+      </div>
+      <div class='modal-body'>
+        <div class='row'>
+          <div class='col'>
+            <p>Check the summary information before proceeding</p>
+          </div>
+        </div>
+        <div class='row'>
+          <div class='col'>
+            <div class='panel'>
+              <dl class='transaction-summary dl-horizontal'>
+                <dt>Number of credits</dt>
+                <dd><%= summary.credit_count %><dd>
+                <dt>Value of credits</dt>
+                <dd><%= summary.credit_total %><dd>
+                <dt>Number of invoices</dt>
+                <dd><%= summary.invoice_count %><dd>
+                <dt>Value of invoices</dt>
+                <dd><%= summary.invoice_total %><dd>
+                <dt>Net amount to be billed</dt>
+                <dd><%= summary.net_total %><dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <% if summary.excluded_count > 0 %>
+          <div class='row alert alert-warning'>
+            <div class='col'>
+              Proceeding will remove
+              <strong><%= summary.excluded_count %></strong>
+              excluded <%= pluralize(summary.excluded_count, 'transaction') %>
+          </div>
+          </div>
+        <% end %>
+      </div>
+      <div class='modal-footer'>
+        <%= form_tag regime_transaction_files_path(@regime), method: "post" do %>
+          <%= hidden_field_tag(:region, @region) %>
+          <% if summary.has_transactions_to_bill? %>
+            <%= submit_tag summary.title, class: 'btn btn-primary' %>
+          <% else %>
+            <span class='btn btn-primary disabled'><%= summary.title %></span>
+          <% end %>
+          <button type='button' class='btn btn-secondary' data-dismiss='modal'>
+            Cancel
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

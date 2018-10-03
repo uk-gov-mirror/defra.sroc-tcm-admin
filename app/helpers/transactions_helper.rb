@@ -5,6 +5,16 @@ module TransactionsHelper
     presenter.new(transaction)
   end
 
+  def transaction_row_class(transaction)
+    if transaction.charge_calculation_error?
+      "error alert-danger"
+    elsif transaction.excluded?
+      "excluded"
+    else
+      "active"
+    end
+  end
+
   def search_placeholder(regime)
     if regime.water_quality?
       "Search for Customer or Consent references matching ..."
@@ -21,10 +31,19 @@ module TransactionsHelper
     end
   end
 
+  def view_options(selected_mode)
+    options_for_select([
+      ['Transactions to be billed', 'unbilled', { 'data-path' => regime_transactions_path(@regime) }],
+      ['Transaction History', 'historic', { 'data-path' => regime_history_index_path(@regime) }],
+      ['Retrospectives to be billed', 'retrospective', { 'data-path' => regime_retrospectives_path(@regime) }],
+      ['Excluded Transactions', 'excluded', { 'data-path' => regime_exclusions_path(@regime) }]
+    ], selected_mode)
+  end
+
   def per_page_options
     options_for_select([
       ['5', 5], ['10', 10], ['15', 15], ['20', 20], ['50', 50], ['100', 100]
-    ], params.fetch(:per_page, 10))
+    ], param_or_cookie(:per_page, 10))
   end
 
   def available_regions(regime)
@@ -35,22 +54,44 @@ module TransactionsHelper
       sort.map { |r| { label: r, value: r, selected: selected == r } }
   end
 
-  def region_options(regime)
-    options_for_select([['All', 'all']] +
+  def region_options(regime, include_all = true)
+    if include_all
+      arr = [['All', 'all']]
+      default_region = 'all'
+    else
+      arr = []
+      default_region = ''
+    end
+
+    options_for_select(arr + 
                        regime.transaction_headers.pluck(:region).uniq.
                        sort.map { |r| [r, r] },
-                       params.fetch(:region, 'all'))
+                       param_or_cookie(:region, default_region))
   end
 
-  def region_options_historic(regime)
-    options_for_select([['All', 'all']] +
-                       regime.transaction_headers.pluck(:region).uniq.
-                       sort.map { |r| [r, r] },
-                       params.fetch(:region, 'all'))
+  # def region_options_historic(regime)
+  #   options_for_select([['All', 'all']] +
+  #                      regime.transaction_headers.pluck(:region).uniq.
+  #                      sort.map { |r| [r, r] },
+  #                      params.fetch(:region, 'all'))
+  # end
+
+  def financial_year_options(years_list)
+    years_list = [] if years_list.nil?
+    opts = []
+    # show all when nothing available or when more than one item in the list
+    opts = [['All', 'all']] if years_list.length != 1
+    options_for_select(opts +
+                       years_list.sort.map { |y| ["#{y[0..1]}/#{y[2..3]}", y] },
+                       param_or_cookie(:fy, 'all'))
   end
 
   def category_options(regime, selected)
     options_for_select([['Category 1',1],['Category 2',2]], selected)
+  end
+
+  def temporary_cessation_options(selected)
+    options_for_select([['Y', true], ['N', false]], selected)
   end
 
   def permit_categories(regime)
@@ -112,6 +153,16 @@ module TransactionsHelper
 
   def confidence(level)
     { green: 'High', amber: 'Medium', red: 'Low' }.fetch(level.to_sym)
+  end
+
+  def confidence_dot(level)
+    if level
+      msg = "Category confidence is #{confidence(level)}"
+
+      "<span class='sr-only'>#{msg}</span>" \
+        "<span aria-hidden='true' class='#{level}-dot' title='#{msg}'></span>".
+        html_safe
+    end
   end
 
   def lookup_category_description(regime, category, financial_year)

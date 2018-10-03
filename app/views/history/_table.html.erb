@@ -1,0 +1,13 @@
+<div class="tcm-table"
+     data-path="<%= regime_history_index_path(@regime) %>"
+     data-region="<%= @region %>"
+     data-financial-year="<%= param_or_cookie(:fy, '') %>"
+     data-search="<%= param_or_cookie(:search, '') %>"
+     data-page="<%= param_or_cookie(:page, 1) %>"
+     data-per-page="<%= param_or_cookie(:per_page, 10) %>"
+     data-sort-column="<%= param_or_cookie(:sort, 'customer_reference') %>"
+     data-sort-direction="<%= param_or_cookie(:sort_direction, 'asc') %>">
+<%= render partial: 'search_bar', locals: { view_mode: 'historic' } %>
+<%= render partial: "#{@regime.slug}_table", locals: { transactions: transactions } %>
+<%= render partial: "shared/pagination", locals: { collection: transactions } %>
+</div>

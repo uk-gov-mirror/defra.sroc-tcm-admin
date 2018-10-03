@@ -1,40 +1,62 @@
 # frozen_string_literal: true
 
 class ExclusionsController < ApplicationController
-  include RegimeScope
+  include RegimeScope, CsvExporter, QueryTransactions
+
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
 
   # GET /regimes/:regime_id/exclusions
   # GET /regimes/:regime_id/exclusions.json
   def index
-    regions = transaction_store.exclusion_regions
-    @region = params.fetch(:region, '')
-    @region = regions.first unless @region.blank? || regions.include?(@region)
+    # regions = transaction_store.exclusion_regions
+    # @region = params.fetch(:region, '')
+    # @region = regions.first unless @region.blank? || regions.include?(@region)
+    # q = params.fetch(:search, "")
+    # sort_col = params.fetch(:sort, :customer_reference)
+    # sort_dir = params.fetch(:sort_direction, 'asc')
+    # fy = params.fetch(:fy, '')
+    pg = params.fetch(:page, cookies.fetch(:page, 1))
+    per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
+
+    # @transactions = transaction_store.excluded_transactions(
+    #   q,
+    #   fy,
+    #   pg,
+    #   per_pg,
+    #   @region,
+    #   sort_col,
+    #   sort_dir
+    # )
+    #
+    @transactions = ExcludedTransactionsQuery.call(query_params)
 
     respond_to do |format|
       format.html do
-        render
+        @transactions = present_transactions(@transactions.page(pg).per(per_pg))
+        @financial_years = ExcludedFinancialYearsQuery.call(regime: @regime)
+
+        if request.xhr?
+          render partial: 'table', locals: { transactions: @transactions }
+        else
+          render
+        end
       end
-      format.js
+      format.csv do
+        # transactions = ExcludedTransactionsQuery.call(
+        # # @transactions = transaction_store.transactions_to_be_billed_for_export(
+        #   regime: @regime,
+        #   search: q,
+        #   region: @region,
+        #   sort_column: sort_col,
+        #   sort_direction: sort_dir
+        # ).limit(15000)
+        send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
+      end
       format.json do
-        q = params.fetch(:search, "")
-        fy = params.fetch(:fy, '')
-        pg = params.fetch(:page, 1)
-        per_pg = params.fetch(:per_page, 10)
-
-        @transactions = transaction_store.excluded_transactions(
-          q,
-          fy,
-          pg,
-          per_pg,
-          @region,
-          params.fetch(:sort, :customer_reference),
-          params.fetch(:sort_direction, 'asc'))
-
-        financial_years = transaction_store.exclusion_financial_years.reject { |r| r.blank? }
-        @transactions = present_transactions(@transactions, @region, regions, financial_years)
-        render json: @transactions
+        # @transactions = present_transactions_for_json(@transactions.page(pg).per(per_pg))
+        # @transactions = present_transactions_for_json(@transactions, region, regions, financial_years)
+        render json: present_transactions_for_json(@transactions.page(pg).per(per_pg))
       end
     end
   end
@@ -45,13 +67,18 @@ class ExclusionsController < ApplicationController
   end
 
   private
-    def present_transactions(transactions, selected_region, regions, financial_years)
-      name = "#{@regime.slug}_transaction_detail_presenter".camelize
-      presenter = str_to_class(name) || TransactionDetailPresenter
-      arr = Kaminari.paginate_array(presenter.wrap(transactions),
-                                    total_count: transactions.total_count,
-                                    limit: transactions.limit_value,
-                                    offset: transactions.offset_value)
+    def present_transactions(transactions)
+      Kaminari.paginate_array(presenter.wrap(transactions),
+                              total_count: transactions.total_count,
+                              limit: transactions.limit_value,
+                              offset: transactions.offset_value)
+    end
+
+    def present_transactions_for_json(transactions)
+      regions = ExcludedRegionsQuery.call(regime: @regime)
+      selected_region = params.fetch(:region, regions.first)
+      arr = present_transactions(transactions)
+
       {
         pagination: {
           current_page: arr.current_page,
@@ -72,6 +99,10 @@ class ExclusionsController < ApplicationController
       opts = regions.map { |r| { label: r, value: r } }
       opts = [{label: 'All', value: ''}] + opts if opts.count > 1
       opts
+    end
+
+    def financial_years
+      ExcludedFinancialYearsQuery.call(regime: @regime)
     end
 
     def financial_year_options(fy_list)

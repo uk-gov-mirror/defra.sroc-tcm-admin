@@ -18,6 +18,7 @@
 
 .byebug_history
 .env
+APPVERSION
 
 # needed for heroku - all ENV vars anyway
 # config/secrets.yml

@@ -115,9 +115,10 @@ def transactions_related_to(transaction)
   end
 
   def regions_for(status)
-    regime.transaction_headers.joins(:transaction_details).
-      merge(TransactionDetail.where(status: status)).
-      distinct.order(:region).pluck(:region).reject { |r| r.blank? }
+    regime.transaction_details.where(status: status).distinct.pluck(:region).sort
+    # regime.transaction_headers.joins(:transaction_details).
+    #   merge(TransactionDetail.where(status: status)).
+    #   distinct.order(:region).pluck(:region).reject { |r| r.blank? }
   end
 
   def unbilled_financial_years

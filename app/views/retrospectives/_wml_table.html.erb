@@ -1,0 +1,19 @@
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><%= sortable :file_reference %></th>
+      <th><%= sortable :file_date %></th>
+      <th><%= sortable :customer_reference %></th>
+      <th><%= sortable :permit_reference %></th>
+      <th><%= sortable :compliance_band %></th>
+      <th><%= sortable :period %></th>
+      <th class="text-right"><%= sortable :amount %></th>
+      <th><span class='sr-only'>Actions</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.each do |transaction| %>
+      <%= render partial: 'wml_transaction', locals: { transaction: transaction } %>
+    <% end %>
+  </tbody>
+</table>

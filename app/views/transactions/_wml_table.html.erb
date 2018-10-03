@@ -1,0 +1,29 @@
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><span class='sr-only'>Transaction Details</span></th>
+      <th><%= sortable :file_reference %></th>
+      <th><%= sortable :file_date %></th>
+      <th><%= sortable :customer_reference %></th>
+      <th><%= sortable :permit_reference %></th>
+      <th><%= sortable :sroc_category %></th>
+      <th><span class='sr-only'>Confidence level indicator</span></th>
+      <th><%= sortable :compliance_band %></th>
+      <th>
+        <span aria-hidden="true">TC</span>
+        <span class='sr-only'>Temporary Cessation</span>
+      </th>
+      <th><%= sortable :period %></th>
+      <th class="text-right">Amount (£)</th>
+      <th>
+        <span aria-hidden="true" class="oi oi-check"></span>
+        <span class='sr-only'>Approved for billing</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.each do |transaction| %>
+      <%= render partial: 'wml_transaction', locals: { transaction: transaction } %>
+    <% end %>
+  </tbody>
+</table>

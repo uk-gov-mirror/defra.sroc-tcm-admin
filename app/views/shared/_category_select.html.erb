@@ -1,0 +1,25 @@
+<% id = "category-#{transaction.id}" %>
+<div class="tcm-select"
+     id="<%= id %>"
+     data-financial-year="<%= transaction.tcm_financial_year %>"
+     data-category-path="<%= regime_permit_categories_lookup_index_path(@regime,
+                                                                        format: :json) %>">
+
+  <input type="hidden" name="<%= id %>" class="tcm-select-value"
+                                        value="<%= transaction.category %>">
+  <div class="tcm-select-control">
+    <span class="tcm-select-input-wrapper">
+      <input type="text" value="<%= transaction.category %>"
+                         placeholder="Select..."
+                         class="tcm-select-input">
+    </span>
+    <% if transaction.category.present? %>
+      <span class="tcm-select-clear-btn">
+        <span class="tcm-select-clear-btn-icon">&times;</span>
+      </span>
+    <% end %>
+    <span class="tcm-select-btn">
+      <span class="tcm-select-btn-icon"></span>
+    </span>
+  </div>
+</div>

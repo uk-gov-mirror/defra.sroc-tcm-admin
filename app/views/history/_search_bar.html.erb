@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col mb-2">
+    <%= form_with controller: controller_name, action: action_name, method: "get",
+      class: 'form-inline search-bar', local: true do %>
+      <div class="form-group mr-4">
+        <%= label_tag(:mode, 'View', class: 'mr-2') %>
+        <%= select_tag(:mode, view_options(view_mode), class: 'form-control') %>
+      </div>
+      <div class="form-group mr-4">
+        <%= label_tag(:region, 'Region', class: 'mr-2') %>
+        <%= select_tag(:region, region_options(@regime),
+                       class: 'form-control') %>
+      </div>
+      <div class="form-group mr-4">
+        <%= label_tag(:fy, 'FY', class: 'mr-2') %>
+        <%= select_tag(:fy, financial_year_options(@financial_years),
+                       class: 'form-control') %>
+      </div>
+      <div class="input-group col-12 col-md-5 mr-2">
+        <%= label_tag(:search, 'Search', class: 'sr-only') %>
+        <%= search_field_tag(:search, params[:search],
+                             class: 'form-control',
+                             placeholder: search_placeholder(@regime)) %>
+        <span class="input-group-btn">
+          <%= submit_tag "Search", class: 'btn btn-outline-primary' %>
+        </span>
+      </div>
+      <%= hidden_field_tag :page, 1 %>
+      <%= hidden_field_tag :sort, params[:sort] %>
+      <%= hidden_field_tag :sort_direction, params[:sort_direction] %>
+    <% end %>
+  </div>
+</div>

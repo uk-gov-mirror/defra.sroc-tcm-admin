@@ -6,21 +6,23 @@
 <% transaction = present_transaction(@transaction) %>
 <%= render partial: "detail_summary", locals: { transaction: transaction } %>
 <hr />
-<div class="row">
-  <div class="col">
-    <h2>Suggested category</h2>
-  </div>
-</div>
-<% if transaction.suggested_category %>
-  <%= render partial: "suggested_category", locals: { transaction: transaction } %>
-<% else %>
+<% unless transaction.retrospective? %>
   <div class="row">
     <div class="col">
-      <p>No category suggestion available for this transaction.</p>
+      <h2>Suggested category</h2>
     </div>
   </div>
+  <% if transaction.suggested_category %>
+    <%= render partial: "suggested_category", locals: { transaction: transaction } %>
+  <% else %>
+    <div class="row">
+      <div class="col">
+        <p>No category suggestion available for this transaction.</p>
+      </div>
+    </div>
+  <% end %>
+  <hr />
 <% end %>
-<hr />
 <% if @related_transactions.count.positive? %>
   <%= render partial: "related_transactions",
     locals: { transactions: @related_transactions } %>
