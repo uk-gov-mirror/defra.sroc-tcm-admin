@@ -22,9 +22,11 @@ class HistoryController < ApplicationController
     pg = params.fetch(:page, cookies.fetch(:page, 1))
     per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
     
-    @transactions = BilledTransactionsQuery.call(query_params)
     @financial_years = BilledFinancialYearsQuery.call(regime: @regime)
+    @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
+    @financial_year = '' unless @financial_years.include? @financial_year
 
+    @transactions = BilledTransactionsQuery.call(query_params)
     # @transactions = transaction_store.transaction_history(
     #   q,
     #   fy,

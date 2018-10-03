@@ -19,6 +19,10 @@ class ExclusionsController < ApplicationController
     pg = params.fetch(:page, cookies.fetch(:page, 1))
     per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
 
+    @financial_years = ExcludedFinancialYearsQuery.call(regime: @regime)
+    @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
+    @financial_year = '' unless @financial_years.include? @financial_year
+
     # @transactions = transaction_store.excluded_transactions(
     #   q,
     #   fy,
@@ -34,7 +38,6 @@ class ExclusionsController < ApplicationController
     respond_to do |format|
       format.html do
         @transactions = present_transactions(@transactions.page(pg).per(per_pg))
-        @financial_years = ExcludedFinancialYearsQuery.call(regime: @regime)
 
         if request.xhr?
           render partial: 'table', locals: { transactions: @transactions }

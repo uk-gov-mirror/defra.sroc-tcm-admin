@@ -16,7 +16,7 @@
         <%= select_tag(:fy, financial_year_options(@financial_years),
                        class: 'form-control') %>
       </div>
-      <div class="input-group col-12 col-md-5 mr-2">
+      <div class="input-group col-12 col-lg-3 col-md-3 col-sm-4 mr-2">
         <%= label_tag(:search, 'Search', class: 'sr-only') %>
         <%= search_field_tag(:search, param_or_cookie(:search),
                              class: 'form-control',
@@ -25,9 +25,9 @@
           <%= submit_tag "Search", class: 'btn btn-outline-primary' %>
         </span>
       </div>
-      <button class="btn btn-primary mr-4 generate-transaction-file-btn">Generate Transaction File</button>
+      <button class="btn btn-primary generate-transaction-file-btn">Generate Transaction File</button>
       <% if current_user.admin? %>
-        <button class="btn btn-success mr-4 approve-all-btn">Approve All</button>
+        <button class="btn btn-success ml-4 approve-all-btn">Approve All</button>
       <% end %>
       <%= hidden_field_tag :page, 1 %>
       <%= hidden_field_tag :sort, params[:sort] %>

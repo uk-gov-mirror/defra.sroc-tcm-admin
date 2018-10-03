@@ -79,11 +79,12 @@ module TransactionsHelper
   def financial_year_options(years_list)
     years_list = [] if years_list.nil?
     opts = []
+
     # show all when nothing available or when more than one item in the list
     opts = [['All', 'all']] if years_list.length != 1
     options_for_select(opts +
                        years_list.sort.map { |y| ["#{y[0..1]}/#{y[2..3]}", y] },
-                       param_or_cookie(:fy, 'all'))
+                       @financial_year)
   end
 
   def category_options(regime, selected)

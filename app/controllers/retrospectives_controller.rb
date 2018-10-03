@@ -19,9 +19,11 @@ class RetrospectivesController < ApplicationController
     pg = params.fetch(:page, 1)
     per_pg = params.fetch(:per_page, 10)
 
-    @transactions = PreSrocTransactionsQuery.call(query_params)
     @financial_years = PreSrocFinancialYearsQuery.call(regime: @regime)
+    @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
+    @financial_year = '' unless @financial_years.include? @financial_year
 
+    @transactions = PreSrocTransactionsQuery.call(query_params)
     # @transactions = transaction_store.retrospective_transactions(
     #   q,
     #   pg,

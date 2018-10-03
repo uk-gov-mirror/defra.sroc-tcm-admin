@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  include RegimeScope, FinancialYear, CsvExporter
+  include RegimeScope, FinancialYear, CsvExporter, QueryTransactions
   before_action :set_regime, only: [:index, :approve]
   before_action :set_transaction, only: [:show, :edit, :update]
   before_action :set_current_user, only: [:update, :approve]
@@ -11,24 +11,29 @@ class TransactionsController < ApplicationController
   def index
     regions = transaction_store.unbilled_regions
     mode = params.fetch(:view_mode, 'unbilled')
-    if mode == 'unbilled'
-      @region = params.fetch(:region, cookies[:region])
-      @region = regions.first if @region.blank? #unless regions.include? @region
-    else
-      @region = params.fetch(:region, cookies[:region] || '')
-    end
+    # if mode == 'unbilled'
+      # @region = params.fetch(:region, cookies[:region])
+      # @region = regions.first if @region.blank? #unless regions.include? @region
+    # else
+      @region = params.fetch(:region, cookies.fetch(:region, ''))
+    # end
 
-    q = params.fetch(:search, cookies[:search] || '')
-    sort_col = params.fetch(:sort, cookies[:sort] || '')
-    sort_dir = params.fetch(:sort_direction, cookies[:sort_direction] || 'asc')
-    pg = params.fetch(:page, cookies[:page] || 1)
-    per_pg = params.fetch(:per_page, cookies[:per_page] || 10)
+    # q = params.fetch(:search, cookies[:search] || '')
+    # sort_col = params.fetch(:sort, cookies[:sort] || '')
+    # sort_dir = params.fetch(:sort_direction, cookies[:sort_direction] || 'asc')
+      pg = params.fetch(:page, cookies.fetch(:page, 1))
+      per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
 
-    @transactions = TransactionsToBeBilledQuery.call(regime: @regime,
-                                                     region: @region,
-                                                     sort_column: sort_col,
-                                                     sort_direction: sort_dir,
-                                                     search: q)
+    @financial_years = UnbilledFinancialYearsQuery.call(regime: @regime)
+    @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
+    @financial_year = '' unless @financial_years.include? @financial_year
+
+    @transactions = TransactionsToBeBilledQuery.call(query_params)
+    # regime: @regime,
+    #                                                  region: @region,
+    #                                                  sort_column: sort_col,
+    #                                                  sort_direction: sort_dir,
+    #                                                  search: q)
 
     # @transactions = transaction_store.transactions_to_be_billed(
     #   q,
@@ -46,7 +51,6 @@ class TransactionsController < ApplicationController
     respond_to do |format|
       format.html do
         @transactions = present_transactions(@transactions.page(pg).per(per_pg))
-        @financial_years = UnbilledFinancialYearsQuery.call(regime: @regime)
         # @categories = current_permit_categories 
         if request.xhr?
           render partial: "table", locals: { transactions: @transactions }

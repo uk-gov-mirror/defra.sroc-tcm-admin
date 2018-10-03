@@ -3,7 +3,7 @@ class ExcludedTransactionsQuery < QueryObject
     @regime = opts.fetch(:regime)
     @region = opts.fetch(:region, '')
     @search = opts.fetch(:search, '')
-    @financial_year = opts.fetch(:fy, '')
+    @financial_year = opts.fetch(:financial_year, '')
     @sort_column = opts.fetch(:sort, :customer_reference)
     @sort_direction = opts.fetch(:sort_direction, 'asc')
   end

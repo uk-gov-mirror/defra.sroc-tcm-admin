@@ -1,7 +1,7 @@
 <div class="tcm-table"
      data-path="<%= regime_history_index_path(@regime) %>"
      data-region="<%= @region %>"
-     data-financial-year="<%= param_or_cookie(:fy, '') %>"
+     data-financial-year="<%= @financial_year %>"
      data-search="<%= param_or_cookie(:search, '') %>"
      data-page="<%= param_or_cookie(:page, 1) %>"
      data-per-page="<%= param_or_cookie(:per_page, 10) %>"
