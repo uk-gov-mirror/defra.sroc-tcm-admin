@@ -24,16 +24,6 @@ class ExclusionsController < ApplicationController
     @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
     @financial_year = '' unless @financial_years.include? @financial_year
 
-    # @transactions = transaction_store.excluded_transactions(
-    #   q,
-    #   fy,
-    #   pg,
-    #   per_pg,
-    #   @region,
-    #   sort_col,
-    #   sort_dir
-    # )
-    #
     @transactions = ExcludedTransactionsQuery.call(query_params)
 
     respond_to do |format|
@@ -47,19 +37,9 @@ class ExclusionsController < ApplicationController
         end
       end
       format.csv do
-        # transactions = ExcludedTransactionsQuery.call(
-        # # @transactions = transaction_store.transactions_to_be_billed_for_export(
-        #   regime: @regime,
-        #   search: q,
-        #   region: @region,
-        #   sort_column: sort_col,
-        #   sort_direction: sort_dir
-        # ).limit(15000)
         send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
       end
       format.json do
-        # @transactions = present_transactions_for_json(@transactions.page(pg).per(per_pg))
-        # @transactions = present_transactions_for_json(@transactions, region, regions, financial_years)
         render json: present_transactions_for_json(@transactions.page(pg).per(per_pg))
       end
     end

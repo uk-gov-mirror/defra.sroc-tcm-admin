@@ -45,12 +45,6 @@ class RetrospectivesController < ApplicationController
         end
       end
       format.csv do
-        # @transactions = transaction_store.transactions_to_be_billed_for_export(
-        #   q,
-        #   @region,
-        #   sort_col,
-        #   sort_dir
-        # ).unexcluded.limit(15000)
         send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
       end
       format.json do

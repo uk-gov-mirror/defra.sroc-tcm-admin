@@ -27,16 +27,7 @@ class HistoryController < ApplicationController
     @financial_year = '' unless @financial_years.include? @financial_year
 
     @transactions = BilledTransactionsQuery.call(query_params)
-    # @transactions = transaction_store.transaction_history(
-    #   q,
-    #   fy,
-    #   pg,
-    #   per_pg,
-    #   @region,
-    #   sort_col,
-    #   sort_dir)
 
-    # @financial_years = transaction_store.history_financial_years.reject { |r| r.blank? }
     respond_to do |format|
       format.html do
         @transactions = present_transactions(@transactions.page(pg).per(per_pg))
@@ -48,13 +39,6 @@ class HistoryController < ApplicationController
       end
       format.csv do
         send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
-        # @transactions = transaction_store.transactions_to_be_billed_for_export(
-        #   q,
-        #   @region,
-        #   sort_col,
-        #   sort_dir
-        # ).unexcluded.limit(15000)
-        # send_data csv.export(presenter.wrap(@transactions)), csv_opts
       end
       format.json do
         render json: present_transactions_for_json(@transactions.page(pg).per(per_pg),

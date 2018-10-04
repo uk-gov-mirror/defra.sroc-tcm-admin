@@ -13,7 +13,7 @@ class TransactionFileExporter
   end
 
   def export
-    files = []
+    file = nil
     # lock transactions for regime / region
     # get list of exportable transactions
     TransactionDetail.transaction do
@@ -21,30 +21,28 @@ class TransactionFileExporter
 
       # can't do a distinct query once locked for update, so have to do it locally
       # q.order(:tcm_financial_year).distinct.pluck(:tcm_financial_year).each do |fy|
-      q.pluck(:tcm_financial_year).uniq.sort.each do |fy|
-        fy_q = q.financial_year(fy)
-        credit_total = fy_q.credits.pluck(:tcm_charge).sum
-        invoice_total = fy_q.invoices.pluck(:tcm_charge).sum
+      # q.pluck(:tcm_financial_year).uniq.sort.each do |fy|
+      # fy_q = q.financial_year(fy)
+      # credit_total = fy_q.credits.pluck(:tcm_charge).sum
+      # invoice_total = fy_q.invoices.pluck(:tcm_charge).sum
 
-        f = regime.transaction_files.create!(region: region,
-                                             user: user,
-                                             generated_at: Time.zone.now,
-                                             credit_total: credit_total,
-                                             invoice_total: invoice_total)
+      credit_total = q.credits.pluck(:tcm_charge).sum
+      invoice_total = q.invoices.pluck(:tcm_charge).sum
 
-        # link transactions and update status
-        fy_q.update_all(transaction_file_id: f.id, status: 'exporting')
-        files << f
-      end
-      # 'remove' excluded transactions
-      excluded_transactions_by_region(region).update_all(status: 'excluded') 
+      file = regime.transaction_files.create!(region: region,
+                                              user: user,
+                                              generated_at: Time.zone.now,
+                                              credit_total: credit_total,
+                                              invoice_total: invoice_total)
+
+      # link transactions and update status
+      q.update_all(transaction_file_id: f.id, status: 'exporting')
     end
-
+    # 'remove' excluded transactions
+    excluded_transactions_by_region(region).update_all(status: 'excluded') 
     # queue the background job to create the file
-    files.each do |file|
-      FileExportJob.perform_later(file.id)
-    end
-    files
+    FileExportJob.perform_later(file.id) unless file.nil
+    file
   end
 
   def export_retrospectives
