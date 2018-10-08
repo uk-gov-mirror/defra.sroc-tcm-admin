@@ -16,6 +16,7 @@ class ExclusionsController < ApplicationController
     # sort_col = params.fetch(:sort, :customer_reference)
     # sort_dir = params.fetch(:sort_direction, 'asc')
     # fy = params.fetch(:fy, '')
+    @region = params.fetch(:region, cookies.fetch(:region, ''))
     pg = params.fetch(:page, cookies.fetch(:page, 1))
     per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
 

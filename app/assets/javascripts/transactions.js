@@ -30,7 +30,7 @@ function init_row(container) {
 
 function reload_table(container) {
   var data = $(container).data()
-
+console.log('Region ' + data.region)
   $.ajax({
     url: data.path,
     data: {

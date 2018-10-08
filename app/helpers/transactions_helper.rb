@@ -55,17 +55,15 @@ module TransactionsHelper
   end
 
   def region_options(regime, include_all = true)
+    regions = RegionsQuery.call(regime: regime) 
     if include_all
       arr = [['All', 'all']]
       default_region = 'all'
     else
       arr = []
-      default_region = ''
+      default_region = regions.first
     end
-
-    options_for_select(arr + 
-                       regime.transaction_headers.pluck(:region).uniq.
-                       sort.map { |r| [r, r] },
+    options_for_select(arr + regions.map { |r| [r, r] },
                        param_or_cookie(:region, default_region))
   end
 
