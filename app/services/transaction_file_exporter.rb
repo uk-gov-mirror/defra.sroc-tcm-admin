@@ -36,17 +36,17 @@ class TransactionFileExporter
                                               invoice_total: invoice_total)
 
       # link transactions and update status
-      q.update_all(transaction_file_id: f.id, status: 'exporting')
+      q.update_all(transaction_file_id: file.id, status: 'exporting')
     end
     # 'remove' excluded transactions
     excluded_transactions_by_region(region).update_all(status: 'excluded') 
     # queue the background job to create the file
-    FileExportJob.perform_later(file.id) unless file.nil
+    FileExportJob.perform_later(file.id) unless file.nil?
     file
   end
 
   def export_retrospectives
-    f = nil
+    file = nil
     # lock transactions for regime / region
     # get list of exportable transactions
     TransactionDetail.transaction do
@@ -57,7 +57,7 @@ class TransactionFileExporter
       invoice_total = invoices.sum
 
       if credits.count > 0 || invoices.count > 0
-        f = regime.transaction_files.create!(region: region,
+        file = regime.transaction_files.create!(region: region,
                                              user: user,
                                              retrospective: true,
                                              generated_at: Time.zone.now,
@@ -65,13 +65,13 @@ class TransactionFileExporter
                                              invoice_total: invoice_total)
 
         # link transactions and update status
-        q.update_all(transaction_file_id: f.id, status: 'retro_exporting')
+        q.update_all(transaction_file_id: file.id, status: 'retro_exporting')
       end
     end
 
     # queue the background job to create the file
-    FileExportJob.perform_later(f.id) unless f.nil?
-    f
+    FileExportJob.perform_later(file.id) unless file.nil?
+    file
   end
 
   def generate_output_file(transaction_file)
@@ -149,30 +149,39 @@ class TransactionFileExporter
     # The ‘T’ suffix should ensure that there will never be any duplication with
     # invoice numbers previously generated in WaBS
     atab = TransactionDetail.arel_table
-    positives = transaction_file.transaction_details.distinct.
-      where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
-    negatives = transaction_file.transaction_details.distinct.
-      where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
+    TransactionFileYearsQuery.call(transaction_file: transaction_file).each do |fy|
+      q = transaction_file.transaction_details.where(tcm_financial_year: fy)
+      positives = q.distinct.where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
+      negatives = q.distinct.where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
+      # positives = transaction_file.transaction_details.distinct.
+      #   where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
+      # negatives = transaction_file.transaction_details.distinct.
+      #   where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
 
-    positives.each do |ref|
-      trans_ref = next_wml_transaction_reference
-      transaction_file.transaction_details.where(reference_1: ref).
-        where(atab[:tcm_charge].gteq(0)).
-        update_all(tcm_transaction_type: 'I',
-                   tcm_transaction_reference: trans_ref)
-    end
-    negatives.each do |ref|
-      trans_ref = next_wml_transaction_reference
-      transaction_file.transaction_details.where(reference_1: ref).
-        where(atab[:tcm_charge].lt(0)).
-        update_all(tcm_transaction_type: 'C',
-                   tcm_transaction_reference: trans_ref)
+      positives.each do |ref|
+        trans_ref = next_wml_transaction_reference
+        q.where(reference_1: ref).where(atab[:tcm_charge].gteq(0)).
+          update_all(tcm_transaction_type: 'I',
+                     tcm_transaction_reference: trans_ref)
+      end
+      negatives.each do |ref|
+        trans_ref = next_wml_transaction_reference
+        q.where(reference_1: ref).where(atab[:tcm_charge].lt(0)).
+          update_all(tcm_transaction_type: 'C',
+                     tcm_transaction_reference: trans_ref)
+      end
     end
   end
 
   def next_wml_transaction_reference
-    n = SequenceCounter.next_invoice_number(regime, region)
-    "#{region}#{n.to_s.rjust(8, '0')}T"
+    result = NextWmlReference.call(regime: regime, region: region)
+    if result.success?
+      result.reference
+    else
+      ''
+    end
+    # n = SequenceCounter.next_invoice_number(regime, region)
+    # "#{region}#{n.to_s.rjust(8, '0')}T"
   end
 
   def assign_pas_transaction_references(transaction_file)
@@ -187,35 +196,43 @@ class TransactionFileExporter
     # E.g. the first invoice number for region A would be PAS00000001AT, and so on.
     # The ‘T’ suffix should ensure that there will never be any duplication with
     # invoice numbers previously generated in PAS  
-    charge_attr = transaction_file.retrospective? ? :line_amount : :tcm_charge
+    retro = transaction_file.retrospective?
+    charge_attr = retro ? :line_amount : :tcm_charge
     atab = TransactionDetail.arel_table
-    positives = transaction_file.transaction_details.distinct.
-      where(atab[charge_attr].gteq(0)).pluck(:reference_1)
-    negatives = transaction_file.transaction_details.distinct.
-      where(atab[charge_attr].lt(0)).pluck(:reference_1)
+    TransactionFileYearsQuery.call(transaction_file: transaction_file).each do |fy|
+      q = transaction_file.transaction_details.where(tcm_financial_year: fy)
+      positives = q.distinct.where(atab[charge_attr].gteq(0)).pluck(:reference_1)
+      negatives = q.distinct.where(atab[charge_attr].lt(0)).pluck(:reference_1)
 
-    positives.each do |ref|
-      trans_ref = next_pas_transaction_reference(transaction_file.retrospective?)
-      transaction_file.transaction_details.where(reference_1: ref).
-        where(atab[charge_attr].gteq(0)).
-        update_all(tcm_transaction_type: 'I',
-                   tcm_transaction_reference: trans_ref)
-    end
-    negatives.each do |ref|
-      trans_ref = next_pas_transaction_reference(transaction_file.retrospective?)
-      transaction_file.transaction_details.where(reference_1: ref).
-        where(atab[charge_attr].lt(0)).
-        update_all(tcm_transaction_type: 'C',
-                   tcm_transaction_reference: trans_ref)
+      positives.each do |ref|
+        trans_ref = next_pas_transaction_reference(retro)
+        q.where(reference_1: ref).where(atab[charge_attr].gteq(0)).
+          update_all(tcm_transaction_type: 'I',
+                     tcm_transaction_reference: trans_ref)
+      end
+      negatives.each do |ref|
+        trans_ref = next_pas_transaction_reference(retro)
+        q.where(reference_1: ref).where(atab[charge_attr].lt(0)).
+          update_all(tcm_transaction_type: 'C',
+                     tcm_transaction_reference: trans_ref)
+      end
     end
   end
 
   def next_pas_transaction_reference(retrospective)
-    n = SequenceCounter.next_invoice_number(regime, region)
+    # n = SequenceCounter.next_invoice_number(regime, region)
+    result = nil
     if retrospective
-      "PAS#{n.to_s.rjust(8, '0')}#{region}"
+      result = NextPasRetrospectiveReference.call(regime, region)
+      # "PAS#{n.to_s.rjust(8, '0')}#{region}"
     else
-      "PAS#{n.to_s.rjust(8, '0')}#{region}T"
+      result = NextPasReference.call(regime, region)
+      # "PAS#{n.to_s.rjust(8, '0')}#{region}T"
+    end
+    if result.success?
+      result.reference
+    else
+      ''
     end
   end
 
@@ -223,25 +240,51 @@ class TransactionFileExporter
     # for CFD group transactions by Customer Reference
     # generate invoice number and assign to group
     # calculate overall credit or invoice and assign to group
-    cust_charges = if transaction_file.retrospective?
-                     transaction_file.transaction_details.
-                       group(:customer_reference, :line_context_code).sum(:line_amount)
-                   else
-                     transaction_file.transaction_details.
-                       group(:customer_reference, :line_context_code).sum(:tcm_charge)
-                   end
+    retro = transaction_file.retrospective?
+    TransactionFileYearsQuery.call(transaction_file: transaction_file).each do |fy|
+      q = transaction_file.transaction_details.where(tcm_financial_year: fy)
+      cust_charges = if retro
+                       q.group(:customer_reference, :line_context_code).
+                         sum(:line_amount)
+                     else
+                       q.group(:customer_reference, :line_context_code).
+                         sum(:tcm_charge)
+                     end
+      # cust_charges = if transaction_file.retrospective?
+      #                transaction_file.transaction_details.
+      #                  group(:customer_reference, :line_context_code).sum(:line_amount)
+      #              else
+      #                transaction_file.transaction_details.
+      #                  group(:customer_reference, :line_context_code).sum(:tcm_charge)
+      #              end
 
-    cust_charges.each do |k, v|
-      trans_type = v.negative? ? 'C' : 'I'
-      n = SequenceCounter.next_invoice_number(regime, region)
-      trans_ref = if transaction_file.retrospective?
-                    "#{n.to_s.rjust(5, '0')}2#{region}"
-                  else
-                    "#{n.to_s.rjust(5, '0')}1#{region}T"
-                  end
-      transaction_file.transaction_details.where(customer_reference: k[0], line_context_code: k[1]).
-        update_all(tcm_transaction_type: trans_type,
-                   tcm_transaction_reference: trans_ref)
+      cust_charges.each do |k, v|
+        trans_type = v.negative? ? 'C' : 'I'
+        trans_ref = next_cfd_trnasaction_reference(retro)
+        # n = SequenceCounter.next_invoice_number(regime, region)
+        # trans_ref = if transaction_file.retrospective?
+        #               "#{n.to_s.rjust(5, '0')}2#{region}"
+        #             else
+        #               "#{n.to_s.rjust(5, '0')}1#{region}T"
+        #             end
+        q.where(customer_reference: k[0], line_context_code: k[1]).
+          update_all(tcm_transaction_type: trans_type,
+                     tcm_transaction_reference: trans_ref)
+      end
+    end
+  end
+
+  def next_cfd_transaction_reference(retrospective)
+    result = nil
+    if retrospective
+      result = NextCfdRetrospectiveReference.call(regime, region)
+    else
+      result = NextCfdReference.call(regime, region)
+    end
+    if result.success?
+      result.reference
+    else
+      ''
     end
   end
 
