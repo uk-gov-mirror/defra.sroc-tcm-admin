@@ -9,7 +9,7 @@ class RetrospectiveSummaryController < ApplicationController
     respond_to do |format|
       format.html do
         if request.xhr?
-          @summary = PreSrocSummaryQuery.call(regime: @regime, region: @region)
+          @summary = Query::PreSrocSummary.call(regime: @regime, region: @region)
           @summary.title = "Generate Pre-SRoC File"
           render partial: 'shared/summary_dialog', locals: { summary: @summary }
         end

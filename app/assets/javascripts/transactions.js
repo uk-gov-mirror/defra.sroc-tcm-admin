@@ -14,9 +14,6 @@ function init() {
     init_approve_all_button(container)
     init_generate_file_button(container)
     init_row(container)
-    // init_category_select(container)
-    // init_temporary_cessation_select(container)
-    // init_show_details_button(container)
   }
 }
 
@@ -30,7 +27,6 @@ function init_row(container) {
 
 function reload_table(container) {
   var data = $(container).data()
-console.log('Region ' + data.region)
   $.ajax({
     url: data.path,
     data: {
@@ -273,26 +269,10 @@ function update_row(row, table, data) {
     success: function (data) {
       row.replaceWith(data)
       var newRow = $("tr#" + id)
-      // if (newRow.hasClass("error")) {
-      //   flash(newRow, "error-bg")
-      // }
-      // else {
-      //   flash(newRow, "success-bg")
-      // }
       init_row(newRow)
     }
   })
 }
-
-// function flash (container, cssClass) {
-//   container.fadeTo(50, 0.3, function() {
-//     $(this).addClass(cssClass).fadeTo(250, 0.75, function () {
-//       $(this).fadeTo(250, 0.3, function () {
-//         $(this).removeClass(cssClass).fadeTo(50, 1.0)
-//       })
-//     })
-//   })
-// }
 
 function init_show_details_button (container) {
   var table = container.hasClass(".tcm-table") ? container : container.closest(".tcm-table")
@@ -312,7 +292,7 @@ function init_approve_button (container) {
 }
 
 function init_popups (container) {
-  $("[data-toggle='popover']").popover()
+  container.find("[data-toggle='popover']").popover()
 }
 
 $(document).on('turbolinks:load', function () {

@@ -27,11 +27,11 @@ class TransactionsController < ApplicationController
       pg = params.fetch(:page, cookies.fetch(:page, 1))
       per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
 
-    @financial_years = UnbilledFinancialYearsQuery.call(regime: @regime)
+    @financial_years = Query::UnbilledFinancialYears.call(regime: @regime)
     @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
     @financial_year = '' unless @financial_years.include? @financial_year
 
-    @transactions = TransactionsToBeBilledQuery.call(query_params)
+    @transactions = Query::TransactionsToBeBilled.call(query_params)
     # regime: @regime,
     #                                                  region: @region,
     #                                                  sort_column: sort_col,

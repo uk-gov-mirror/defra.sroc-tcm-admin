@@ -7,9 +7,9 @@ class PermitCategoriesLookupController < ApplicationController
     financial_year = params.fetch(:fy)
     q = params.fetch(:q, "")
 
-    categories = PermitCategoryLookupQuery.call(regime: @regime,
-                                                financial_year: financial_year,
-                                                query: q)
+    categories = Query::PermitCategoryLookup.call(regime: @regime,
+                                                  financial_year: financial_year,
+                                                  query: q)
 
     respond_to do |format|
       format.json do

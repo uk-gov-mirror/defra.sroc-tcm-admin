@@ -22,11 +22,11 @@ class HistoryController < ApplicationController
     pg = params.fetch(:page, cookies.fetch(:page, 1))
     per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
     
-    @financial_years = BilledFinancialYearsQuery.call(regime: @regime)
+    @financial_years = Query::BilledFinancialYears.call(regime: @regime)
     @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
     @financial_year = '' unless @financial_years.include? @financial_year
 
-    @transactions = BilledTransactionsQuery.call(query_params)
+    @transactions = Query::BilledTransactions.call(query_params)
 
     respond_to do |format|
       format.html do
@@ -55,14 +55,6 @@ class HistoryController < ApplicationController
   end
 
   private
-    # def csv_opts
-    #   ts = Time.zone.now.strftime("%Y%m%d%H%M%S")
-    #   {
-    #     filename: "transaction_history_#{ts}.csv",
-    #     type: :csv
-    #   }
-    # end
-
     def present_transactions(transactions)
       Kaminari.paginate_array(presenter.wrap(transactions, current_user),
                               total_count: transactions.total_count,
@@ -100,12 +92,4 @@ class HistoryController < ApplicationController
       fys = [{label: 'All', value: ''}] + fys if fys.count > 1
       fys
     end
-
-    # def csv
-    #   @csv ||= TransactionExportService.new(@regime)
-    # end
-
-    # def transaction_store
-    #   @transaction_store ||= TransactionStorageService.new(@regime)
-    # end
 end

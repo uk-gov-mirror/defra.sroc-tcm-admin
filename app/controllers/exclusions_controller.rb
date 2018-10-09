@@ -20,11 +20,11 @@ class ExclusionsController < ApplicationController
     pg = params.fetch(:page, cookies.fetch(:page, 1))
     per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
 
-    @financial_years = ExcludedFinancialYearsQuery.call(regime: @regime)
+    @financial_years = Query::ExcludedFinancialYears.call(regime: @regime)
     @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
     @financial_year = '' unless @financial_years.include? @financial_year
 
-    @transactions = ExcludedTransactionsQuery.call(query_params)
+    @transactions = Query::ExcludedTransactions.call(query_params)
 
     respond_to do |format|
       format.html do
@@ -59,7 +59,7 @@ class ExclusionsController < ApplicationController
     end
 
     def present_transactions_for_json(transactions)
-      regions = ExcludedRegionsQuery.call(regime: @regime)
+      regions = Query::ExcludedRegions.call(regime: @regime)
       selected_region = params.fetch(:region, regions.first)
       arr = present_transactions(transactions)
 
@@ -86,7 +86,7 @@ class ExclusionsController < ApplicationController
     end
 
     def financial_years
-      ExcludedFinancialYearsQuery.call(regime: @regime)
+      Query::ExcludedFinancialYears.call(regime: @regime)
     end
 
     def financial_year_options(fy_list)

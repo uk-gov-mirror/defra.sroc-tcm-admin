@@ -11,7 +11,7 @@ class TransactionSummaryController < ApplicationController
     respond_to do |format|
       format.html do
         if request.xhr?
-          @summary = TransactionSummaryQuery.call(regime: @regime, region: @region)
+          @summary = Query::TransactionSummary.call(regime: @regime, region: @region)
           @summary.title = "Generate Transaction File"
           render partial: 'shared/summary_dialog', locals: { summary: @summary }
         end
