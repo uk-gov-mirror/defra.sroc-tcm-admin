@@ -1,21 +1,12 @@
-<% content_for :head do %>
-  <%= javascript_pack_tag 'transactions' %>
-  <%= stylesheet_pack_tag 'transactions' %>
-<% end %>
+<%# <% content_for :head do %>
+<%#   <%= javascript_pack_tag 'transactions' %>
+<%#   <%= stylesheet_pack_tag 'transactions' %>
+<%# <% end %>
 <div class="row">
   <div class="col">
     <h1 class="heading">Permit Categories</h1>
   </div>
 </div>
-<div class="row">
-  <div class="col">
-    <div id="permit-table"
-         data-regime="<%= @regime.slug %>"
-         data-financial-year="<%= @financial_year %>"
-         data-sort-col="code"
-         data-sort-dir="asc"
-         data-search-term="<%= params[:search] %>"
-         data-search-placeholder="Search for code or description matching...">
-    </div>
-  </div>
+<div class="categories">
+  <%= render partial: 'table', locals: { view_model: @view_model } %>
 </div>

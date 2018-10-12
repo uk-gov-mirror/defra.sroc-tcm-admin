@@ -156,7 +156,8 @@ class AnnualBillingDataFileService
         if !failed
           if transaction.changed?
             # (re)calculate the charge if the transaction has changed
-            transaction.charge_calculation = TransactionCharge.invoke_charge_calculation(calculator, presenter.new(transaction))
+            # transaction.charge_calculation = TransactionCharge.invoke_charge_calculation(calculator, presenter.new(transaction))
+            transaction.charge_calculation = CalculateCharge.call(transaction: transaction).charge_calculation
             if transaction.charge_calculation_error?
               # what should we do here? revoke the changes and mark as an error?
               upload.log_error(counter,
@@ -217,7 +218,7 @@ class AnnualBillingDataFileService
     Thread.current[:current_user] = user
   end
 
-  def calculator
-    @calculator ||= CalculationService.new
-  end
+  # def calculator
+  #   @calculator ||= CalculationService.new
+  # end
 end

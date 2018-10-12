@@ -10,8 +10,9 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     Thread.current[:current_user] = @user
 
     @processor = Permits::PasCategoryProcessor.new(@header)
-    @calculator = build_mock_calculator
-    @processor.stubs(:calculator).returns(@calculator)
+    build_mock_calculator
+    # @calculator = build_mock_calculator
+    # @processor.stubs(:calculator).returns(@calculator)
     # @header.regime.permit_categories.create!(code: '2.4.5',
     #                                          description: 'test',
     #                                          status: 'active')
@@ -105,8 +106,9 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   def test_set_category_does_not_set_category_if_calculation_error
     history = generate_historic_pas
     matched = history.first
-    @calculator = build_mock_calculator_with_error
-    @processor.stubs(:calculator).returns(@calculator)
+    build_mock_calculator_with_error
+    # @calculator = build_mock_calculator_with_error
+    # @processor.stubs(:calculator).returns(@calculator)
 
     transaction = @header.transaction_details.
       find_by(reference_3: 'AAAA0001', customer_reference: 'A1234')

@@ -8,8 +8,9 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     @user = users(:billing_admin) 
     @service = AnnualBillingDataFileService.new(@regime, @user)
 
-    @calculator = build_mock_calculator
-    @service.stubs(:calculator).returns(@calculator)
+    build_mock_calculator
+    # @calculator = build_mock_calculator
+    # @service.stubs(:calculator).returns(@calculator)
   end
 
   def test_new_upload_returns_instance_of_AnnualBillingDataFile

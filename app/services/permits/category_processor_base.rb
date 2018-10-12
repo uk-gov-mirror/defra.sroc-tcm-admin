@@ -56,8 +56,10 @@ module Permits
     end
 
     def calc_charge(transaction)
-      TransactionCharge.invoke_charge_calculation(calculator,
-                                                  presenter.new(transaction))
+      CalculateCharge.call(transaction: transaction).charge_calculation
+
+      # TransactionCharge.invoke_charge_calculation(calculator,
+      #                                             presenter.new(transaction))
     end
 
     def not_annual_bill(where_args, stage)

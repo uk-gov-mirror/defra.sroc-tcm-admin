@@ -15,7 +15,7 @@ class TransactionsController < ApplicationController
       # @region = params.fetch(:region, cookies[:region])
       # @region = regions.first if @region.blank? #unless regions.include? @region
     # else
-    regions = RegionsQuery.call(regime: @regime)
+    regions = Query::Regions.call(regime: @regime)
     @region = params.fetch(:region, cookies.fetch(:region, ''))
     @region = regions.first if @region.blank? || @region == 'all'
 
@@ -27,7 +27,7 @@ class TransactionsController < ApplicationController
       pg = params.fetch(:page, cookies.fetch(:page, 1))
       per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
 
-    @financial_years = Query::UnbilledFinancialYears.call(regime: @regime)
+    @financial_years = Query::FinancialYears.call(regime: @regime)
     @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
     @financial_year = '' unless @financial_years.include? @financial_year
 
@@ -129,7 +129,7 @@ class TransactionsController < ApplicationController
 
   # PUT - approve all matching eligible transactions
   def approve
-    regions = RegionsQuery.call(regime: @regime)
+    regions = Query::Regions.call(regime: @regime)
     # regions = transaction_store.unbilled_regions
     @region = params.fetch(:region, cookies[:region])
     msg = ""

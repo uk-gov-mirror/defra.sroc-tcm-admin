@@ -1,12 +1,13 @@
 module Query
-  class ExcludedRegions < QueryObject
+  class FinancialYears < QueryObject
     def initialize(opts = {})
       @regime = opts.fetch(:regime)
     end
 
     def call
       # NOTE: doesn't return a query
-      @regime.transaction_details.excluded.distinct.pluck(:region).sort
+      @regime.transaction_details.distinct.
+        order(:tcm_financial_year).pluck(:tcm_financial_year)
     end
   end
 end

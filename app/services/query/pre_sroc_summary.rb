@@ -20,7 +20,7 @@ module Query
       invoice_total = invoices.sum
       excluded_count = excluded_query ? excluded_query.count : 0
 
-      summary = TransactionSummary.new(@regime)
+      summary = ::TransactionSummary.new(@regime)
       summary.assign_attributes(
         credit_count:   credits.length,
         credit_total:   credit_total,

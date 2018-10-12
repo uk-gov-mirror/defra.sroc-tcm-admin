@@ -40,10 +40,11 @@ module TransactionsHelper
     ], selected_mode)
   end
 
-  def per_page_options
+  def per_page_options(selected = nil)
+    selected = param_or_cookie(:per_page, 10) if selected.nil?
     options_for_select([
       ['5', 5], ['10', 10], ['15', 15], ['20', 20], ['50', 50], ['100', 100]
-    ], param_or_cookie(:per_page, 10))
+    ], selected)
   end
 
   def available_regions(regime)
@@ -55,7 +56,7 @@ module TransactionsHelper
   end
 
   def region_options(regime, include_all = true)
-    regions = RegionsQuery.call(regime: regime) 
+    regions = Query::Regions.call(regime: regime) 
     if include_all
       arr = [['All', 'all']]
       default_region = 'all'
@@ -80,9 +81,16 @@ module TransactionsHelper
 
     # show all when nothing available or when more than one item in the list
     opts = [['All', 'all']] if years_list.length != 1
-    options_for_select(opts +
-                       years_list.sort.map { |y| ["#{y[0..1]}/#{y[2..3]}", y] },
-                       @financial_year)
+    options_for_select(opts + pretty_years_list(years_list), @financial_year)
+  end
+
+  def permit_financial_year_options(years_list, selected)
+    options_for_select(pretty_years_list(years_list), selected)
+  end
+
+  def pretty_years_list(list)
+    list = [] if list.nil?
+    list.sort.map { |y| ["#{y[0..1]}/#{y[2..3]}", y] }
   end
 
   def category_options(regime, selected)

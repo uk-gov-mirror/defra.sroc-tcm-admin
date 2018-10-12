@@ -9,8 +9,9 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
     Thread.current[:current_user] = @user
 
     @processor = Permits::CfdCategoryProcessor.new(@header)
-    @calculator = build_mock_calculator
-    @processor.stubs(:calculator).returns(@calculator)
+    build_mock_calculator
+    # @calculator = build_mock_calculator
+    # @processor.stubs(:calculator).returns(@calculator)
   end
 
   def test_fetch_unique_consents_returns_list_of_consent_references
@@ -102,8 +103,9 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
     fixup_annual(@header)
     history = generate_historic_cfd
     matched = history.first
-    @calculator = build_mock_calculator_with_error
-    @processor.stubs(:calculator).returns(@calculator)
+    build_mock_calculator_with_error
+    # @calculator = build_mock_calculator_with_error
+    # @processor.stubs(:calculator).returns(@calculator)
 
     transaction = @header.transaction_details.find_by(reference_1: 'AAAA/1/1')
     @processor.set_category(transaction, matched, :amber, 'Level')

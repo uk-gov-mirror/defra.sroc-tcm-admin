@@ -12,4 +12,7 @@
 <%= render partial: 'transaction_search_bar', locals: { view_mode: 'unbilled' } %>
 <%= render partial: "#{@regime.slug}_table", locals: { transactions: transactions } %>
 <%= render partial: "shared/pagination", locals: { collection: transactions } %>
+  <div id="summary-dialog"
+       data-summary-path="<%= regime_transaction_summary_index_path(@regime) %>">
+  </div>
 </div>

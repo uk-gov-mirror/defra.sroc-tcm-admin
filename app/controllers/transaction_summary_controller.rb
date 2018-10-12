@@ -16,13 +16,13 @@ class TransactionSummaryController < ApplicationController
           render partial: 'shared/summary_dialog', locals: { summary: @summary }
         end
       end
-      format.json do
-        @summary = transaction_summary.summarize(@region)
-        render json: @summary
-      end
-      format.any do
-        head :not_acceptable
-      end
+      # format.json do
+      #   @summary = transaction_summary.summarize(@region)
+      #   render json: @summary
+      # end
+      # format.any do
+      #   head :not_acceptable
+      # end
     end
   end
 

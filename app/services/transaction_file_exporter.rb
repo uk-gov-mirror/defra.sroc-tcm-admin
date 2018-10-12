@@ -149,7 +149,7 @@ class TransactionFileExporter
     # The ‘T’ suffix should ensure that there will never be any duplication with
     # invoice numbers previously generated in WaBS
     atab = TransactionDetail.arel_table
-    TransactionFileYearsQuery.call(transaction_file: transaction_file).each do |fy|
+    Query::TransactionFileYears.call(transaction_file: transaction_file).each do |fy|
       q = transaction_file.transaction_details.where(tcm_financial_year: fy)
       positives = q.distinct.where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
       negatives = q.distinct.where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
@@ -199,7 +199,7 @@ class TransactionFileExporter
     retro = transaction_file.retrospective?
     charge_attr = retro ? :line_amount : :tcm_charge
     atab = TransactionDetail.arel_table
-    TransactionFileYearsQuery.call(transaction_file: transaction_file).each do |fy|
+    Query::TransactionFileYears.call(transaction_file: transaction_file).each do |fy|
       q = transaction_file.transaction_details.where(tcm_financial_year: fy)
       positives = q.distinct.where(atab[charge_attr].gteq(0)).pluck(:reference_1)
       negatives = q.distinct.where(atab[charge_attr].lt(0)).pluck(:reference_1)
@@ -223,10 +223,10 @@ class TransactionFileExporter
     # n = SequenceCounter.next_invoice_number(regime, region)
     result = nil
     if retrospective
-      result = NextPasRetrospectiveReference.call(regime, region)
+      result = NextPasRetrospectiveReference.call(regime: regime, region: region)
       # "PAS#{n.to_s.rjust(8, '0')}#{region}"
     else
-      result = NextPasReference.call(regime, region)
+      result = NextPasReference.call(regime: regime, region: region)
       # "PAS#{n.to_s.rjust(8, '0')}#{region}T"
     end
     if result.success?
@@ -241,7 +241,7 @@ class TransactionFileExporter
     # generate invoice number and assign to group
     # calculate overall credit or invoice and assign to group
     retro = transaction_file.retrospective?
-    TransactionFileYearsQuery.call(transaction_file: transaction_file).each do |fy|
+    Query::TransactionFileYears.call(transaction_file: transaction_file).each do |fy|
       q = transaction_file.transaction_details.where(tcm_financial_year: fy)
       cust_charges = if retro
                        q.group(:customer_reference, :line_context_code).
@@ -260,7 +260,7 @@ class TransactionFileExporter
 
       cust_charges.each do |k, v|
         trans_type = v.negative? ? 'C' : 'I'
-        trans_ref = next_cfd_trnasaction_reference(retro)
+        trans_ref = next_cfd_transaction_reference(retro)
         # n = SequenceCounter.next_invoice_number(regime, region)
         # trans_ref = if transaction_file.retrospective?
         #               "#{n.to_s.rjust(5, '0')}2#{region}"
@@ -277,9 +277,9 @@ class TransactionFileExporter
   def next_cfd_transaction_reference(retrospective)
     result = nil
     if retrospective
-      result = NextCfdRetrospectiveReference.call(regime, region)
+      result = NextCfdRetrospectiveReference.call(regime: regime, region: region)
     else
-      result = NextCfdReference.call(regime, region)
+      result = NextCfdReference.call(regime: regime, region: region)
     end
     if result.success?
       result.reference

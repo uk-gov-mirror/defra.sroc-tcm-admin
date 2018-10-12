@@ -14,11 +14,37 @@ class PermitCategoriesController < AdminController
     pg = params.fetch(:page, 1)
     per_pg = params.fetch(:per_page, 10)
     unpaged = !!params.fetch(:unpaged, false)
+    @financial_years = Query::PermitCategoryYears.call
 
     # fy = params.fetch(:fy, '1819')
+    @categories = Query::PermitCategories.call(regime: @regime,
+                                               financial_year: @financial_year,
+                                               search: q,
+                                               sort: sort_col,
+                                               sort_direction: sort_dir)
 
     respond_to do |format|
-      format.html
+      format.html do
+        @view_model = ViewModels::PermitCategories.new
+        @view_model.assign_attributes(
+          permit_categories: @categories.page(pg).per(per_pg),
+          financial_year: @financial_year,
+          search: q,
+          sort: sort_col,
+          sort_direction: sort_dir,
+          page: pg,
+          per_page: per_pg,
+          financial_years: @financial_years
+        )
+
+        # @categories = @categories.page(pg).per(per_pg)
+
+        if request.xhr?
+          render partial: 'table', locals: { view_model: @view_model }
+        else
+          render
+        end
+      end
       format.json do
         # cats = permit_store.all_for_financial_year(fy).
         #   order("string_to_array(code, '.')::int[]").

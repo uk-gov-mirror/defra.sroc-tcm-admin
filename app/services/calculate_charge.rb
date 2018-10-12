@@ -1,3 +1,5 @@
+require 'net/http'
+
 class CalculateCharge < ServiceObject
   include RegimeScope
 
@@ -36,7 +38,7 @@ class CalculateCharge < ServiceObject
 
   def extract_charge_amount
     if success?
-      amt = (@body["calculation"]["chargeValue"] * 100).round
+      amt = (charge_calculation["calculation"]["chargeValue"] * 100).round
       amt = -amt if @transaction.credit?
       amt
     end

@@ -13,6 +13,7 @@ function init() {
     init_export_button(container)
     init_approve_all_button(container)
     init_generate_file_button(container)
+    init_new_permit_category_button(container)
     init_row(container)
   }
 }
@@ -80,8 +81,6 @@ function export_table (container) {
 
 function fetch_summary_and_show (container) {
   var data = container.data()
-  console.log("Fetch summary")
-  console.log(data.summaryPath)
   $.ajax({
     url: data.summaryPath,
     data: {
@@ -186,7 +185,9 @@ function init_search_form (container) {
     form.on('submit', function (ev) {
       var val = form.find("input[name=search]").val()
       container.data('search', val)
-      set_cookie_data(container)
+      if (!container.hasClass('permit-categories')) {
+        set_cookie_data(container)
+      }
       reload_table(container)
       ev.preventDefault()
     })
@@ -277,7 +278,7 @@ function update_row(row, table, data) {
 function init_show_details_button (container) {
   var table = container.hasClass(".tcm-table") ? container : container.closest(".tcm-table")
   container.find(".show-details-button").on('click', function (ev) {
-    path = $(this).data('path')
+    var path = $(this).data('path')
     set_cookie_data(table)
     window.location.assign(path)
   })
@@ -293,6 +294,14 @@ function init_approve_button (container) {
 
 function init_popups (container) {
   container.find("[data-toggle='popover']").popover()
+}
+
+function init_new_permit_category_button (container) {
+  container.find("button#new-category").on('click', function (ev) {
+    var financialYear = container.data('financialYear')
+    var path = $(this).data('path')
+    window.location.assign(path + '?fy=' + financialYear)
+  })
 }
 
 $(document).on('turbolinks:load', function () {

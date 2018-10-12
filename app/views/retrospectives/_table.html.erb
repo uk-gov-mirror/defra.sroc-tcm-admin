@@ -11,4 +11,7 @@
 <%= render partial: 'search_bar', locals: { view_mode: 'retrospective' } %>
 <%= render partial: "#{@regime.slug}_table", locals: { transactions: transactions } %>
 <%= render partial: "shared/pagination", locals: { collection: transactions } %>
+  <div id="summary-dialog"
+       data-summary-path="<%= regime_retrospective_summary_index_path(@regime) %>">
+  </div>
 </div>
