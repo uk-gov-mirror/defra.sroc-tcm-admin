@@ -89,9 +89,9 @@ module Permits
       like_clause = make_permit_discharge_matcher(transaction.reference_1)
       at = TransactionDetail.arel_table
       invoice = regime.transaction_details.historic.invoices.
-        where(at[:reference_1].matches(like_clause),
-              period_end: transaction.period_end).
-              order(reference_2: :desc, tcm_transaction_reference: :desc).first
+        where(at[:reference_1].matches(like_clause)).
+        where(period_end: transaction.period_end).
+        order(reference_2: :desc, tcm_transaction_reference: :desc).first
     end
 
     def consent_to_args(consent)

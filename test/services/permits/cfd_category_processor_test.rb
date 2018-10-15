@@ -3,6 +3,7 @@ require 'test_helper.rb'
 class CfdCategoryProcessorTest < ActiveSupport::TestCase
   include ChargeCalculation, GenerateHistory
   def setup
+    @regime = Regime.find_by(slug: 'cfd')
     @header = transaction_headers(:cfd_annual)
  
     @user = User.system_account
@@ -272,6 +273,18 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal count, (audit_count_after - audit_count_before)
   end
 
+  # defect 149 - Amber status given to supplemental invoice without matching end date
+  def test_red_status_given_when_stage_2_end_date_does_not_match_defect_149
+    transactions = fixup_defect_149(@header)
+    @processor.suggest_categories
+
+    transactions.each do |t|
+      assert_nil t.category, "Category has been assigned for #{t.line_amount}"
+      sg = t.suggested_category
+      assert sg.red?, 'Confidence not RED'
+    end
+  end
+
   def fixup_annual(header)
     t = transaction_details(:cfd_annual)
     [
@@ -329,5 +342,40 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
       tt.tcm_financial_year = '1819'
       tt.save!
     end
+  end
+
+  def fixup_defect_149(header)
+    history = generate_historic_cfd
+    t2 = history.second.dup
+    t2.status = 'unbilled'
+    t2.line_amount = 18724
+    t2.category = nil
+    t2.transaction_header_id = header.id
+    t2.tcm_financial_year = '1920'
+    t2.period_start = '21-MAY-2019'
+    t2.period_end = '05-AUG-2020'
+    t2.transaction_file_id = nil
+    t2.save!
+    t3 = t2.dup
+    t3.status = 'unbilled'
+    t3.line_amount = 58117
+    t3.category = nil
+    t3.transaction_header_id = header.id
+    t3.tcm_financial_year = '1920'
+    t3.period_start = '06-AUG-2019'
+    t3.period_end = '31-MAR-2020'
+    t3.transaction_file_id = nil
+    t3.save!
+    t4 = t2.dup
+    t4.status = 'unbilled'
+    t4.line_amount = -76841
+    t4.category = nil
+    t4.transaction_header_id = header.id
+    t4.tcm_financial_year = '1920'
+    t4.period_start = '21-MAY-2019'
+    t4.period_end = '31-MAR-2020'
+    t4.transaction_file_id = nil
+    t4.save!
+    [t2, t3, t4]
   end
 end

@@ -23,7 +23,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     refute @transaction.approved_for_billing
     put regime_transaction_url(@regime, @transaction),
       params: { transaction_detail: { category: '2.3.5' }}
-    assert_redirected_to edit_regime_transaction_path(@regime, @transaction)
+    assert_redirected_to regime_transaction_path(@regime, @transaction)
     assert_equal '2.3.5', @transaction.reload.category
     assert_not_nil @transaction.charge_calculation
     assert @transaction.approved_for_billing
@@ -34,7 +34,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     @transaction = transaction_details(:cfd)
     put regime_transaction_url(@regime, @transaction),
       params: { transaction_detail: { temporary_cessation: 'true' }}
-    assert_redirected_to edit_regime_transaction_path(@regime, @transaction)
+    assert_redirected_to regime_transaction_path(@regime, @transaction)
     assert_equal true, @transaction.reload.temporary_cessation
   end
 
@@ -48,7 +48,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
 
     put regime_transaction_url(@regime, @transaction),
       params: { transaction_detail: { approved_for_billing: true }}
-    assert_redirected_to edit_regime_transaction_path(@regime, @transaction)
+    assert_redirected_to regime_transaction_path(@regime, @transaction)
     assert @transaction.reload.approved_for_billing, "Not approved"
   end
 
@@ -56,7 +56,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     stub_calculator_error
     put regime_transaction_url(@regime, @transaction),
       params: { transaction_detail: { category: 'Windy' }}
-    assert_redirected_to edit_regime_transaction_path(@regime, @transaction)
+    assert_redirected_to regime_transaction_path(@regime, @transaction)
     assert_nil @transaction.reload.category
     assert_not_nil @transaction.charge_calculation['calculation']['messages']
   end
