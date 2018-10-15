@@ -78,7 +78,8 @@ module Permits
     end
 
     def find_latest_historic_invoice(consent_args)
-      find_historic_invoices(consent_args).order(period_end: :desc).first
+      find_historic_invoices(consent_args).
+        order(period_end: :desc, tcm_transaction_reference: :desc).first
     end
 
     def find_historic_invoices(consent_args)
