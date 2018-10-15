@@ -27,7 +27,7 @@ class UpdateTransaction < ServiceObject
       if str_to_bool(attrs.fetch(:excluded))
         ExcludeTransaction.call(transaction: transaction, user: user)
       else
-        UnexludeTransaction.call(transaction: transaction, user: user)
+        UnexcludeTransaction.call(transaction: transaction, user: user)
       end
     elsif attrs.has_key?(:approved_for_billing)
       if str_to_bool(attrs.fetch(:approved_for_billing))

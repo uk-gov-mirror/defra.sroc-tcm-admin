@@ -55,6 +55,9 @@
           <span class="<%= "badge badge-pill badge-#{status_colour(transaction.status)}" %>">
             <%= status_text(transaction.status) -%>
           </span>
+          <% if transaction.unbilled? && transaction.excluded? %>
+            <span class="badge badge-pill badge-danger">Marked for Exclusion</span>
+          <% end %>
         </dd>
       </dl>
     </div>

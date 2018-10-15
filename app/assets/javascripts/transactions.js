@@ -16,6 +16,11 @@ function init() {
     init_new_permit_category_button(container)
     init_row(container)
   }
+
+  container = $('.exclusion-zone')
+  if (container.length > 0) {
+    init_exclusion_zone(container)
+  }
 }
 
 function init_row(container) {
@@ -252,6 +257,18 @@ function init_temporary_cessation_select (container) {
     row.find("td:nth-last-child(2)").html("Working ...")
     update_row(row, table, { temporary_cessation: $(this).val() })
   })
+}
+
+function init_exclusion_zone (container) {
+  console.log("init exclusion zone")
+  var dlg = container.find('.exclusion-dialog')
+  if (dlg.length > 0 ) {
+    container.find(".exclude-button").on('click', function (ev) {
+      ev.preventDefault()
+      console.log('exclude transactions')
+      dlg.modal()
+    })
+  }
 }
 
 function update_row(row, table, data) {

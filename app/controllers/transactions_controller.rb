@@ -79,6 +79,7 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions/1.json
   def show
     @related_transactions = transaction_store.transactions_related_to(@transaction)
+    @exclusion_reasons = Query::Exclusions.call(regime: @regime)
   end
 
   # GET /regimes/:regimes_id/transactions/1/edit
@@ -101,7 +102,7 @@ class TransactionsController < ApplicationController
             render partial: "#{@regime.to_param}_transaction",
               locals: { transaction: presenter.new(@transaction, current_user) }
           else
-            redirect_to edit_regime_transaction_path(@regime, @transaction),
+            redirect_to regime_transaction_path(@regime, @transaction),
               notice: 'Transaction was successfully updated.'
           end
         end
@@ -118,7 +119,7 @@ class TransactionsController < ApplicationController
             render partial: "#{@regime.to_param}_transaction",
               locals: { transaction: presenter.new(@transaction, current_user) }
           else
-            redirect_to edit_regime_transaction_path(@regime, @transaction),
+            redirect_to regime_transaction_path(@regime, @transaction),
               notice: 'Transaction was not updated.'
           end
         end

@@ -5,6 +5,24 @@
 </div>
 <% transaction = present_transaction(@transaction) %>
 <%= render partial: "detail_summary", locals: { transaction: transaction } %>
+<% if transaction.unbilled? %>
+  <div class="exclusion-zone">
+    <% if transaction.excluded? %>
+        <%= form_with(url: regime_transaction_path(@regime, transaction),
+                      method: :patch,
+                      local: true) do |f| %>
+        <input type="hidden"
+               name="transaction_detail[excluded]"
+               value="false" />
+        <%= f.submit 'Reinstate for Billing', class: 'btn btn-success' %>
+        <% end %>
+    <% else %>
+      <button class="btn btn-danger exclude-button">Exclude from Billing</button>
+      <%= render partial: 'exclusion_dialog', locals: { transaction: transaction,
+                                                        reasons: @exclusion_reasons } %>
+    <% end %>
+  </div>
+<% end %>
 <hr />
 <% unless transaction.retrospective? %>
   <div class="row">
