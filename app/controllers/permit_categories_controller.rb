@@ -78,6 +78,7 @@ class PermitCategoriesController < AdminController
     # just the the category that is in use for our given financial year
     # The #update method will have to decide whether to create a new
     # record or modify this one
+    set_financial_year
     @permit_category = @regime.permit_categories.find(params[:id])
     @timeline = permit_store.permit_category_versions(@permit_category.code)
   end
@@ -85,12 +86,20 @@ class PermitCategoriesController < AdminController
   def create
     set_financial_year
     p = permit_category_params
-    @permit_category = permit_store.new_permit_category(p[:code],
-                                                        p[:description],
-                                                        @financial_year)
+    result = CreatePermitCategory.call(regime: @regime,
+                                       valid_from: @financial_year,
+                                       user: current_user,
+                                       code: p[:code],
+                                       descriptoon: p[:description])
+    # @permit_category = permit_store.new_permit_category(p[:code],
+    #                                                     p[:description],
+    #                                                     @financial_year)
+
+    @permit_category = result.permit_category
 
     respond_to do |format|
-      if @permit_category.errors.empty?
+      # if @permit_category.errors.empty?
+      if result.success?
         format.html do
           redirect_to regime_permit_categories_path(@regime,
                                                    fy: @financial_year),

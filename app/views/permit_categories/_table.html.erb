@@ -23,7 +23,7 @@
         <td><%= category.code %></td>
         <td><%= category.description %></td>
         <td class="align-middle control-column">
-          <%= link_to edit_regime_permit_category_path(@regime, category),
+          <%= link_to edit_regime_permit_category_path(@regime, category, fy: @financial_year),
             class: "btn btn-sm btn-success" do -%>Edit<span class="sr-only"> permit category with code <%= category.code %></span>
           <% end -%>
         </td>
