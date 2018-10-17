@@ -9,14 +9,9 @@ class ExclusionsController < ApplicationController
   # GET /regimes/:regime_id/exclusions
   # GET /regimes/:regime_id/exclusions.json
   def index
-    # regions = transaction_store.exclusion_regions
-    # @region = params.fetch(:region, '')
-    # @region = regions.first unless @region.blank? || regions.include?(@region)
-    # q = params.fetch(:search, "")
-    # sort_col = params.fetch(:sort, :customer_reference)
-    # sort_dir = params.fetch(:sort_direction, 'asc')
-    # fy = params.fetch(:fy, '')
     @region = params.fetch(:region, cookies.fetch(:region, ''))
+    @region = '' if @region == 'all'
+
     pg = params.fetch(:page, cookies.fetch(:page, 1))
     per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
 

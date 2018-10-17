@@ -10,6 +10,7 @@ class HistoryController < ApplicationController
   # GET /regimes/:regime_id/history.json
   def index
     @region = params.fetch(:region, cookies.fetch(:region, ''))
+    @region = '' if @region == 'all'
 
     pg = params.fetch(:page, cookies.fetch(:page, 1))
     per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
