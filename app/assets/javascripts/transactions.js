@@ -63,7 +63,7 @@ function approve_transactions(container) {
       region: data.region,
     },
     success: function (payload, status, xhr) {
-      console.log(payload)
+      // console.log(payload)
       reload_table(container)
     },
     dataType: 'json'
@@ -153,8 +153,8 @@ function init_view_select (container) {
       container.data('page', 1)
       reload_table(container)
     })
-  } else {
-    console.log("Didn't find view mode select")
+  // } else {
+  //   console.log("Didn't find view mode select")
   }
 }
 
@@ -166,8 +166,8 @@ function init_region_select (container) {
       container.data('page', 1)
       reload_table(container)
     })
-  } else {
-    console.log("Didn't find region select")
+  // } else {
+  //   console.log("Didn't find region select")
   }
 }
 
@@ -179,8 +179,8 @@ function init_financial_year_select (container) {
       container.data('page', 1)
       reload_table(container)
     })
-  } else {
-    console.log("Didn't find financial year select")
+  // } else {
+  //   console.log("Didn't find financial year select")
   }
 }
 
@@ -226,7 +226,7 @@ function init_export_button (container) {
 
 function init_generate_file_button (container) {
   container.find(".generate-transaction-file-btn").on('click', function (ev) {
-    console.log('generate file')
+    // console.log('generate file')
     fetch_summary_and_show(container)
     ev.preventDefault()
   })
@@ -234,7 +234,7 @@ function init_generate_file_button (container) {
 
 function init_approve_all_button (container) {
   container.find(".approve-all-btn").on('click', function (ev) {
-    console.log('approve all')
+    // console.log('approve all')
     approve_transactions(container)
     ev.preventDefault()
   })
@@ -260,12 +260,12 @@ function init_temporary_cessation_select (container) {
 }
 
 function init_exclusion_zone (container) {
-  console.log("init exclusion zone")
+  // console.log("init exclusion zone")
   var dlg = container.find('.exclusion-dialog')
   if (dlg.length > 0 ) {
     container.find(".exclude-button").on('click', function (ev) {
       ev.preventDefault()
-      console.log('exclude transactions')
+      // console.log('exclude transactions')
       dlg.modal()
     })
   }
@@ -274,8 +274,7 @@ function init_exclusion_zone (container) {
 function update_row(row, table, data) {
   var id = row.attr('id')
   var path = table.data('path') + '/' + id
-  console.log("update row: " + path)
-  console.log(data)
+  // console.log("update row: " + path)
 
   $.ajax({
     method: 'PUT',
@@ -285,9 +284,16 @@ function update_row(row, table, data) {
     },
     dataType: 'html',
     success: function (data) {
-      row.replaceWith(data)
-      var newRow = $("tr#" + id)
-      init_row(newRow)
+      // reloading just the row is causing weird (focus?) problems in IE 11
+      reload_table(table)
+      // row.replaceWith(data)
+      // setTimeout(function () {
+      //   var newRow = $("tr#" + id)
+      //   init_row(newRow)
+      //   console.log("after init_row")
+      //   newRow.find('.approve-button').focus()
+      //   // $("#search").focus()
+      // }, 50)
     }
   })
 }

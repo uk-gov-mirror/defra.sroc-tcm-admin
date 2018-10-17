@@ -19,7 +19,6 @@
       }
 
       input.on('focus', function (ev) {
-        console.log('input focus')
         handleFocus(ev, elements)
       })
 
@@ -28,14 +27,12 @@
       })
 
       input.on('click', function (ev) {
-        console.log('click')
         if (!wrapper.hasClass('is-open')) {
           openList(elements)
         }
       })
 
       input.on('input propertychange', function (ev) {
-        console.log('change')
         handleChange(ev, elements)
       })
 
@@ -44,16 +41,13 @@
       })
 
       wrapper.on('tcm-select-item-select', function (ev, item) {
-        console.log('selected')
-        console.log(item)
-        setValue(elements, item.code)
         closeList(elements)
-        input.trigger('focus')
+        setValue(elements, item.code)
+        // input.trigger('focus')
         // console.log('item select: ' + ev.data)
       })
 
       openBtn.on('mousedown', function (ev) {
-        console.log('btn mousedown')
         input.trigger('focus')
         toggleList(ev, elements)
         ev.preventDefault()
@@ -61,26 +55,24 @@
       })
 
       openBtn.on('mouseup', function (ev) {
-        console.log('btn mouseup')
         // elements.mouseDown = false
         ev.preventDefault()
       })
 
-      openBtn.on('click', function (ev) {
-        console.log('btn click')
-      })
+      // openBtn.on('click', function (ev) {
+      //   console.log('btn click')
+      // })
 
       clearBtn.on('mousedown', function (ev) {
-        console.log('clear mousedown')
         setValue(elements, '')
-        input.trigger('focus')
-        ev.preventDefault()
+        // input.trigger('focus')
+        // ev.preventDefault()
       })
 
-      clearBtn.on('mouseup', function (ev) {
-        console.log('clear mouseup')
-        ev.preventDefault()
-      })
+      // clearBtn.on('mouseup', function (ev) {
+      //   console.log('clear mouseup')
+      //   // ev.preventDefault()
+      // })
     })
   }
 
@@ -89,10 +81,8 @@
   }
 
   function handleBlur(ev, elements) {
-    console.log('blur md: ' + elements.mouseDown)
     // if (elements.mouseDown === false) {
       if (elements.wrapper.hasClass('is-open')) {
-        console.log('blur closing')
         cancelSelect(elements)
       }
       elements.wrapper.removeClass('has-focus')
@@ -114,22 +104,18 @@
       // esc to cancel, enter to select
       switch(ev.which) {
         case 27:
-          console.log('Escape')
           cancelSelect(elements)
           ev.preventDefault()
           break;
         case 38:
-          console.log('cursor up')
           moveUp(elements)
           ev.preventDefault()
           break;
         case 40:
-          console.log('cursor down')
           moveDown(elements)
           ev.preventDefault()
           break;
         case 13:
-          console.log('Enter')
           selectFocussedItem(elements)
           break;
       }
@@ -158,7 +144,6 @@
   }
 
   function setValue (elements, value) {
-    console.log('set value: ' + value)
     data = {
       oldValue: elements.original.val(),
       newValue: value
@@ -167,7 +152,9 @@
     elements.original.val(value)
     elements.input.val(value)
 
-    elements.wrapper.trigger('tcm-select-change', data)
+    // setTimeout(function () {
+      elements.wrapper.trigger('tcm-select-change', data)
+    // }, 50)
   }
 
   function reinstateValue (elements) {
@@ -175,7 +162,6 @@
   }
 
   function cancelSelect (elements) {
-    console.log('cancel select')
     reinstateValue(elements)
     closeList(elements)
   }
@@ -183,7 +169,6 @@
   function moveUp (elements) {
     var item = elements.list.find(".is-focussed")
     if (item.length === 0) {
-      console.log("no focussed item")
       item = elements.list.find(".is-selected")
       if (item.length === 0) {
         item = $(".tcm-select-list-item:first")
@@ -191,7 +176,6 @@
       item.addClass('is-focussed')
     } else {
       var i = parseInt(item.data('index'))
-      console.log("Move up from :" + i)
       if (i > 0) {
         item.removeClass("is-focussed")
         var prevItem = item.prev()
@@ -204,18 +188,14 @@
   function moveDown (elements) {
     var item = elements.list.find(".is-focussed")
     if (item.length === 0) {
-      console.log("no focussed item")
       item = elements.list.find(".is-selected")
       if (item.length === 0) {
         item = $(".tcm-select-list-item:first")
       }
       item.addClass('is-focussed')
-      console.log(item)
     } else {
-      console.log(elements.list)
       var count = parseInt(elements.list.data('count'))
       var i = parseInt(item.data('index'))
-      console.log("Move down from :" + i + " (" + count + ")")
       if (i < count - 1) {
         item.removeClass("is-focussed")
         var nextItem = item.next()
@@ -294,7 +274,6 @@
       // elements.mouseDown = false
       ev.preventDefault()
     })
-    console.log('open list')
   }
 
   function closeList(elements) {
@@ -334,7 +313,6 @@
     //   }
     // }
     elements.list.remove()
-    console.log('close list')
   }
 
   function fetchCategories (elements, query, successCallback) {
@@ -377,7 +355,6 @@
   }
 
   function scrollToTop(item) {
-    console.log("item: " + item.offset().top)
     var parent = item.parent()
     parent.scrollTop(item.offset().top - parent.offset().top)
   }
