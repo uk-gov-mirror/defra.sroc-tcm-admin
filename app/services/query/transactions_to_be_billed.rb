@@ -3,7 +3,7 @@ module Query
     def initialize(opts = {})
       @regime = opts.fetch(:regime)
       @region = opts.fetch(:region, '')
-      @sort_column = opts.fetch(:sort_column, :customer_reference)
+      @sort_column = opts.fetch(:sort, :customer_reference)
       @sort_direction = opts.fetch(:sort_direction, 'asc')
       @financial_year = opts.fetch(:financial_year, '')
       @search = opts.fetch(:search, '')
@@ -16,7 +16,7 @@ module Query
       q = q.search(@search) unless @search.blank?
       SortTransactions.call(regime: @regime,
                             query: q,
-                            sort_column: @sort_column,
+                            sort: @sort_column,
                             sort_direction: @sort_direction)
     end
   end

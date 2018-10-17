@@ -32,7 +32,8 @@ module Query
       when :consent_reference
         q.order(reference_1: dir, reference_2: dir, reference_3: dir, id: dir)
       when :sroc_category
-        q.order(category: dir, id: dir)
+        q.order("string_to_array(category, '.')::int[] #{txt_dir}")
+        # q.order(category: dir, id: dir)
       when :compliance_band
         if @regime.installations?
           q.order(line_attr_11: dir, id: dir)
