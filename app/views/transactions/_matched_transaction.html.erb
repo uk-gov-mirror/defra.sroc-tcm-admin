@@ -24,6 +24,7 @@
           <th>Temporary Cessation</th>
           <th>Period</th>
           <th>File (TCM)</th>
+          <th>File Date (TCM)</th>
           <th class="text-right">Amount (£)</th>
           <td></td>
         </tr>
@@ -44,6 +45,7 @@
           <td><%= transaction.temporary_cessation_flag %></td>
           <td><%= transaction.period %></td>
           <td><%= transaction.generated_filename %></td>
+          <td><%= transaction.generated_file_date %></td>
           <td class="text-right"><%= transaction.amount %></td>
           <td>
             <%= link_to regime_transaction_path(@regime, transaction),
