@@ -1,0 +1,24 @@
+<div class="tcm-table"
+     data-path="<%= regime_annual_billing_data_file_path(@regime, upload) %>"
+     data-sort-column="<%= @sort_column %>"
+     data-sort-direction="<%= @sort_direction %>"
+     data-page="<%= @page %>"
+     data-per-page="<%= @per_page %>" >
+  <table class="table table-responsive upload-errors">
+    <thead>
+      <tr>
+        <th><%= sortable :line_number, 'line_number' %></th>
+        <th><%= sortable :message, 'line_number' %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% errors.each do |error| %>
+        <tr id="<%= error.id %>">
+          <td><%= error.line_number %></td>
+          <td><%= error.message %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= render partial: "pagination", locals: { collection: errors } %>
+</div>

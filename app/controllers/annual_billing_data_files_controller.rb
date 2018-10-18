@@ -16,18 +16,22 @@ class AnnualBillingDataFilesController < ApplicationController
   # GET /regimes/:regime_id/transactions/1
   # GET /regimes/:regime_id/transactions/1.json
   def show
-    pg = params.fetch(:page, 1)
-    per_pg = params.fetch(:per_page, 10)
-    sort_col = params.fetch(:sort, :line_number)
-    sort_dir = params.fetch(:sort_direction, 'asc')
+    @page = params.fetch(:page, 1)
+    @per_page = params.fetch(:per_page, 10)
+    @sort_column = params.fetch(:sort, :line_number)
+    @sort_direction = params.fetch(:sort_direction, 'asc')
 
     @errors = @upload.data_upload_errors.
-      order(sort_col => sort_dir).page(pg).per(per_pg)
+      order(@sort_column => @sort_direction).page(@page).per(@per_page)
 
     respond_to do |format|
       format.html do
-        @errors = present_errors(@errors)
-        render
+        # @errors = present_errors(@errors)
+        if request.xhr?
+          render partial: 'table', locals: { upload: @upload, errors: @errors }
+        else
+          render
+        end
       end
       format.js
       format.json do

@@ -1,6 +1,9 @@
 en:
   table:
     heading:
+      annual_billing_data_files:
+        line_number: "Line No"
+        message: "Description"
       transactions:
         file_reference: "File Reference"
         file_date: "File Date"

@@ -43,8 +43,8 @@ module ApplicationHelper
     date.strftime(fmt)
   end
 
-  def sortable(name)
-    sorted = params.fetch(:sort, 'customer_reference') == name.to_s
+  def sortable(name, default_col = 'customer_reference')
+    sorted = params.fetch(:sort, default_col) == name.to_s
     sort_dir = sorted ? params.fetch(:sort_direction, 'asc') : 'desc'
     # options = {
     #   controller: controller_name,
