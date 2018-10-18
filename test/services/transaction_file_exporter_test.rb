@@ -102,7 +102,7 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
     assert_includes file.transaction_details, @transaction_3
   end
 
-  def test_cfd_sets_different_transaction_references_for_each_financial_years
+  def test_cfd_splits_transaction_references_by_financial_year
     @exporter.export
 
     file = TransactionFile.last
@@ -116,6 +116,132 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
       @transaction_2.tcm_transaction_reference
     assert_not_equal @transaction_1.tcm_transaction_reference,
       @transaction_3.tcm_transaction_reference
+  end
+
+  def test_cfd_splits_transaction_references_by_customer_reference
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+    
+    file.transaction_details.update_all(customer_reference: 'ABCD1234',
+                                        reference_1: 'ZZZZ9999')
+    @transaction_2.update_attributes(tcm_charge: @transaction_1.tcm_charge,
+                                     customer_reference: 'AABBCCDD')
+    # 1,2 and 3 same permit reference
+    # 1 and 2 different customer reference
+    # 3 different financial year
+    @exporter.assign_cfd_transaction_references(file)
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
+  end
+
+  def test_cfd_splits_transaction_references_by_line_context_code
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+    
+    file.transaction_details.update_all(customer_reference: 'ABCD1234',
+                                        reference_1: 'ZZZZ9999',
+                                        line_context_code: 'E')
+    @transaction_1.update_attributes(line_context_code: 'A')
+
+    # 1,2 and 3 same consent reference
+    # 1 different context code
+    # 3 different financial year
+    @exporter.assign_cfd_transaction_references(file)
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
+  end
+
+  def test_wml_splits_transaction_references_by_financial_year
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+
+    file.transaction_details.update_all(customer_reference: 'ABCD1234')
+    @exporter.assign_wml_transaction_references(file)
+    # 3 different references because split 1 invoice, 2 credit, 3 different FY
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
+  end
+
+  def test_wml_splits_transaction_references_by_customer_reference
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+    
+    file.transaction_details.update_all(customer_reference: 'ABCD1234',
+                                        reference_1: 'ZZZZ9999')
+    @transaction_2.update_attributes(tcm_charge: @transaction_1.tcm_charge,
+                                     customer_reference: 'AABBCCDD')
+    # 1,2 and 3 same permit reference
+    # 1 and 2 different customer reference
+    # 3 different financial year
+    @exporter.assign_wml_transaction_references(file)
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
+  end
+
+  def test_wml_splits_transaction_references_by_credit_and_invoice
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+    
+    file.transaction_details.update_all(customer_reference: 'ABCD1234',
+                                        reference_1: 'ZZZZ9999')
+    # 1,2 and 3 same permit reference
+    # 1 and 2 different credit/invoice
+    # 3 different financial year
+    @exporter.assign_wml_transaction_references(file)
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
+  end
+
+  def test_pas_assigns_transaction_references_correctly
+  end
+
+  def test_pas_splits_transaction_references_by_financial_year
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+
+    file.transaction_details.update_all(customer_reference: 'ABCD1234')
+    @exporter.assign_pas_transaction_references(file)
+    # 3 different references because split 1 invoice, 2 credit, 3 different FY
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
+  end
+
+  def test_pas_splits_transaction_references_by_customer_reference
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+    
+    file.transaction_details.update_all(customer_reference: 'ABCD1234',
+                                        reference_1: 'ZZZZ9999')
+    @transaction_2.update_attributes(tcm_charge: @transaction_1.tcm_charge,
+                                     customer_reference: 'AABBCCDD')
+    # 1,2 and 3 same permit reference
+    # 1 and 2 different customer reference
+    # 3 different financial year
+    @exporter.assign_pas_transaction_references(file)
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
+  end
+
+  def test_pas_splits_transaction_references_by_credit_and_invoice
+    @exporter.export
+    file = TransactionFile.last
+    assert_equal 3, file.transaction_details.count
+    
+    file.transaction_details.update_all(customer_reference: 'ABCD1234',
+                                        reference_1: 'ZZZZ9999')
+    # 1,2 and 3 same permit reference
+    # 1 and 2 different credit/invoice
+    # 3 different financial year
+    @exporter.assign_pas_transaction_references(file)
+    assert_equal 3, file.transaction_details.distinct.
+      pluck(:tcm_transaction_reference).count
   end
 
   def set_charge_calculation(transaction)

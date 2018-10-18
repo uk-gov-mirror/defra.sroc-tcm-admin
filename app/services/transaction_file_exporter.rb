@@ -151,22 +151,24 @@ class TransactionFileExporter
     atab = TransactionDetail.arel_table
     Query::TransactionFileYears.call(transaction_file: transaction_file).each do |fy|
       q = transaction_file.transaction_details.where(tcm_financial_year: fy)
-      positives = q.distinct.where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
-      negatives = q.distinct.where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
+      positives = q.distinct.where(atab[:tcm_charge].gteq(0)).pluck(:reference_1, :customer_reference)
+      negatives = q.distinct.where(atab[:tcm_charge].lt(0)).pluck(:reference_1, :customer_reference)
       # positives = transaction_file.transaction_details.distinct.
       #   where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
       # negatives = transaction_file.transaction_details.distinct.
       #   where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
 
-      positives.each do |ref|
+      positives.each do |refs|
+        ref, cust = refs
         trans_ref = next_wml_transaction_reference
-        q.where(reference_1: ref).where(atab[:tcm_charge].gteq(0)).
+        q.where(reference_1: ref).where(customer_reference: cust).where(atab[:tcm_charge].gteq(0)).
           update_all(tcm_transaction_type: 'I',
                      tcm_transaction_reference: trans_ref)
       end
-      negatives.each do |ref|
+      negatives.each do |refs|
+        ref, cust = refs
         trans_ref = next_wml_transaction_reference
-        q.where(reference_1: ref).where(atab[:tcm_charge].lt(0)).
+        q.where(reference_1: ref).where(customer_reference: cust).where(atab[:tcm_charge].lt(0)).
           update_all(tcm_transaction_type: 'C',
                      tcm_transaction_reference: trans_ref)
       end
@@ -201,18 +203,20 @@ class TransactionFileExporter
     atab = TransactionDetail.arel_table
     Query::TransactionFileYears.call(transaction_file: transaction_file).each do |fy|
       q = transaction_file.transaction_details.where(tcm_financial_year: fy)
-      positives = q.distinct.where(atab[charge_attr].gteq(0)).pluck(:reference_1)
-      negatives = q.distinct.where(atab[charge_attr].lt(0)).pluck(:reference_1)
+      positives = q.distinct.where(atab[charge_attr].gteq(0)).pluck(:reference_1, :customer_reference)
+      negatives = q.distinct.where(atab[charge_attr].lt(0)).pluck(:reference_1, :customer_reference)
 
-      positives.each do |ref|
+      positives.each do |refs|
+        ref, cust = refs
         trans_ref = next_pas_transaction_reference(retro)
-        q.where(reference_1: ref).where(atab[charge_attr].gteq(0)).
+        q.where(reference_1: ref).where(customer_reference: cust).where(atab[charge_attr].gteq(0)).
           update_all(tcm_transaction_type: 'I',
                      tcm_transaction_reference: trans_ref)
       end
-      negatives.each do |ref|
+      negatives.each do |refs|
+        ref, cust = refs
         trans_ref = next_pas_transaction_reference(retro)
-        q.where(reference_1: ref).where(atab[charge_attr].lt(0)).
+        q.where(reference_1: ref).where(customer_reference: cust).where(atab[charge_attr].lt(0)).
           update_all(tcm_transaction_type: 'C',
                      tcm_transaction_reference: trans_ref)
       end
