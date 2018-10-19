@@ -118,9 +118,11 @@ class AnnualBillingDataFileService
             elsif val.present?
               if col[:header] == :permit_category
                 # validate against categories first
-                if !regime.permit_categories.where(code: val).exists? 
-                  failed = true
-                end
+                # this needs to be against the new way of working now
+                # if !regime.permit_categories.where(code: val).exists 
+                failed = !Query::PermitCategoryExists.call(regime: @regime,
+                                                           category: val,
+                                                           financial_year: transaction.tcm_financial_year)
               elsif col[:header] == :variation
                 # check it's a positive number between 0 - 100
                 # will always be an integer as they round down any fractional values

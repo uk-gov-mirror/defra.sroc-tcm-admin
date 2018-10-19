@@ -90,7 +90,7 @@ class PermitCategoriesController < AdminController
                                        valid_from: @financial_year,
                                        user: current_user,
                                        code: p[:code],
-                                       descriptoon: p[:description])
+                                       description: p[:description])
     # @permit_category = permit_store.new_permit_category(p[:code],
     #                                                     p[:description],
     #                                                     @financial_year)

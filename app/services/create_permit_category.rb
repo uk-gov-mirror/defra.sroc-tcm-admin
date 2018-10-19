@@ -27,15 +27,19 @@ class CreatePermitCategory < ServiceObject
     if code_exists?
       @permit_category.errors.add(:code, "^Code '#{@code}' is already in use.")
       false
-    elsif @permit_category.save && @valid_from != '1819'
-      regime.permit_categories.create(code: @code,
-                                      description: @description,
-                                      valid_from: '1819',
-                                      valid_to: @valid_from,
-                                      status: 'excluded')
-      true
     else
-      true
+      if @permit_category.save
+        if @valid_from != '1819'
+          regime.permit_categories.create(code: @code,
+                                          description: @description,
+                                          valid_from: '1819',
+                                          valid_to: @valid_from,
+                                          status: 'excluded')
+        end
+        true
+      else
+        false
+      end
     end
   end
 
