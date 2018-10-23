@@ -25,7 +25,7 @@ module Permits
     def handle_annual_billing(consent_args)
       last_invoice = find_latest_historic_invoice(consent_args)
       if last_invoice
-        category = last_invoice.category
+        # category = last_invoice.category
         header.transaction_details.unbilled.where(consent_args).each do |t|
           set_category(t, last_invoice, :green, 'Annual billing')
         end

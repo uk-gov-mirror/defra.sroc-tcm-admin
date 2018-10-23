@@ -5,7 +5,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
   def setup
     @header = transaction_headers(:wml_annual)
     fixup_transactions(@header)
- 
+
     @user = User.system_account
     Thread.current[:current_user] = @user
 
@@ -52,7 +52,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
     sg = transaction.suggested_category
     assert_equal 'Assigned matching category', sg.logic
     assert sg.green?
-  end
+  end§
 
   def test_set_category_sets_charge_info
     history = generate_historic_wml
@@ -133,7 +133,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
     @processor.suggest_categories
     audit_after = AuditLog.count
     count = @header.transaction_details.where.not(category: nil).count
-    assert_equal count, (audit_after - audit_before) 
+    assert_equal count, (audit_after - audit_before)
   end
 
   def fixup_transactions(header)

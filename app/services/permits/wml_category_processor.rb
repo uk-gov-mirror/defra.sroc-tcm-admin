@@ -7,21 +7,79 @@ module Permits
 
       permits.each do |permit|
         if only_invoices_in_file?(reference_1: permit)
-          grouped_permits = find_unique_permits(permit)
+          handle_annual_billing(permit)
+        else
+          handle_supplementary_billing(permit)
+        end
+      end
+    end
 
-          grouped_permits.keys.each do |k|
-            permit_args = keys_to_args(k)
-            historic_transaction = find_latest_historic_transaction(permit_args)
-            if historic_transaction
-              unbilled_transactions(permit_args) do |t|
-                set_category(t, historic_transaction, :green, 'Annual billing')
-              end
-            else
-              no_historic_transaction(permit_args, 'Annual billing')
-            end
+    def handle_annual_billing(permit)
+      grouped_permits = find_unique_permits(permit)
+
+      grouped_permits.keys.each do |k|
+        permit_args = keys_to_args(k)
+        historic_transaction = find_latest_historic_transaction(permit_args)
+        if historic_transaction
+          unbilled_transactions(permit_args) do |t|
+            set_category(t, historic_transaction, :green, 'Annual billing')
           end
         else
-          not_annual_bill({ reference_1: permit }, 'Annual billing')
+          no_historic_transaction(permit_args, 'Annual billing')
+        end
+      end
+    end
+
+    def handle_supplementary_billing(permit)
+      header.transaction_details.unbilled.where(reference_1: permit).each do |t|
+        if t.invoice?
+          handle_supplementary_invoice(t)
+        else
+          handle_supplementary_credit(t)
+        end
+      end
+    end
+
+    def handle_supplementary_invoice(transaction)
+      stage = "Supplementary invoice stage 1"
+      # are there more than one of this permit reference in the file?
+      if more_than_one_invoice_in_file_for_permit? transaction.reference_1
+        multiple_activities(transaction, stage)
+      else
+        invoices = find_historic_invoices(transaction)
+        if invoices.count.zero?
+          no_historic_transaction({ id: transaction.id }, stage)
+        elsif invoices.count == 1
+          set_category(transaction, invoices.first, :amber, stage)
+        else
+          stage = "Supplementary invoice stage 2"
+          if invoices.first.period_start != invoices.second.period_start
+            set_category(transaction, invoices.first, :amber, stage)
+          else
+            no_historic_transaction({ id: transaction.id }, stage)
+          end
+        end
+      end
+    end
+
+    def handle_supplementary_credit(transaction)
+      stage = "Supplementary credit stage 1"
+      # are there more than one of this permit reference in the file?
+      if more_than_one_credit_in_file_for_permit? transaction.reference_1
+        multiple_activities(transaction, stage)
+      else
+        invoices = find_historic_invoices(transaction)
+        if invoices.count.zero?
+          no_historic_transaction({ id: transaction.id }, stage)
+        elsif invoices.count == 1
+          set_category(transaction, invoices.first, :green, stage, true)
+        else
+          stage = "Supplementary credit stage 2"
+          if invoices.first.period_start != invoices.second.period_start
+            set_category(transaction, invoices.first, :green, stage, true)
+          else
+            no_historic_transaction({ id: transaction.id }, stage)
+          end
         end
       end
     end
@@ -35,6 +93,27 @@ module Permits
     def find_latest_historic_transaction(where_args)
       regime.transaction_details.historic.invoices.where(where_args).
         order(transaction_reference: :desc).first
+    end
+
+    def find_historic_invoices(transaction)
+      regime.transaction_details.historic.invoices.
+        where(reference_1: transaction.reference_1).
+        where(period_end: transaction.period_end).
+        order(period_start: :desc)
+    end
+
+    def more_than_one_invoice_in_file_for_permit?(permit)
+      header.transaction_details.invoices.where(reference_1: permit).count > 1
+    end
+
+    def more_than_one_credit_in_file_for_permit?(permit)
+      header.transaction_details.credits.where(reference_1: permit).count > 1
+    end
+
+    def multiple_activities(transaction, stage)
+      transaction.create_suggested_category(logic: "Multiple activities for permit",
+        suggestion_stage: stage,
+        confidence_level: :red)
     end
 
     def keys_to_args(keys)
