@@ -8,7 +8,8 @@ class TransactionSummary
     :invoice_count,
     :invoice_total,
     :net_total,
-    :excluded_count
+    :excluded_count,
+    :path
   )
 
   def initialize(regime)

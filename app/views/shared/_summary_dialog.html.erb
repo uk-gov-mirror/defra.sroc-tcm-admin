@@ -44,7 +44,7 @@
         <% end %>
       </div>
       <div class='modal-footer'>
-        <%= form_tag regime_transaction_files_path(@regime), method: "post" do %>
+        <%= form_tag summary.path, method: "post" do %>
           <%= hidden_field_tag(:region, @region) %>
           <% if summary.has_transactions_to_bill? %>
             <%= submit_tag summary.title, class: 'btn btn-primary' %>

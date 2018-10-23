@@ -2,16 +2,19 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # host: <%= ENV["POSTGRES_HOST"] %>
   username: <%= ENV["POSTGRES_USERNAME"] %>
   password: <%= ENV["POSTGRES_PASSWORD"] %>
 
 development:
   <<: *default
+  host: <%= ENV["POSTGRES_HOST"] %>
+  port: <%= ENV["POSTGRES_PORT"] %>
   database: sroc-tcm-admin_development
 
 test: &test
   <<: *default
+  host: <%= ENV["POSTGRES_HOST"] %>
+  port: <%= ENV["POSTGRES_PORT"] %>
   database: sroc-tcm-admin_test
 
 production:

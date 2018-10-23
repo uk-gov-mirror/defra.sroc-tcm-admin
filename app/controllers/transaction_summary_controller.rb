@@ -13,6 +13,7 @@ class TransactionSummaryController < ApplicationController
         if request.xhr?
           @summary = Query::TransactionSummary.call(regime: @regime, region: @region)
           @summary.title = "Generate Transaction File"
+          @summary.path = regime_transaction_files_path(@regime)
           render partial: 'shared/summary_dialog', locals: { summary: @summary }
         end
       end

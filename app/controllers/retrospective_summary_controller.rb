@@ -11,6 +11,7 @@ class RetrospectiveSummaryController < ApplicationController
         if request.xhr?
           @summary = Query::PreSrocSummary.call(regime: @regime, region: @region)
           @summary.title = "Generate Pre-SRoC File"
+          @summary.path = regime_retrospective_files_path(@regime)
           render partial: 'shared/summary_dialog', locals: { summary: @summary }
         end
       end
