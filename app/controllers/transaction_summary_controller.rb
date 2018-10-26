@@ -4,8 +4,6 @@ class TransactionSummaryController < ApplicationController
   include RegimeScope
   before_action :set_regime, only: [:index]
 
-  # GET /regimes/:regime_id/transaction_summary
-  # GET /regimes/:regime_id/transaction_summary.json
   def index
     @region = params.fetch(:region, '')
     respond_to do |format|
@@ -17,13 +15,6 @@ class TransactionSummaryController < ApplicationController
           render partial: 'shared/summary_dialog', locals: { summary: @summary }
         end
       end
-      # format.json do
-      #   @summary = transaction_summary.summarize(@region)
-      #   render json: @summary
-      # end
-      # format.any do
-      #   head :not_acceptable
-      # end
     end
   end
 

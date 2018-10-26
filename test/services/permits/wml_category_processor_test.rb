@@ -2,9 +2,10 @@ require 'test_helper.rb'
 
 class WmlCategoryProcessorTest < ActiveSupport::TestCase
   include ChargeCalculation, GenerateHistory
+
   def setup
     @header = transaction_headers(:wml_annual)
-    fixup_transactions(@header)
+    @transactions = fixup_transactions(@header)
 
     @user = User.system_account
     Thread.current[:current_user] = @user
@@ -52,7 +53,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
     sg = transaction.suggested_category
     assert_equal 'Assigned matching category', sg.logic
     assert sg.green?
-  end§
+  end
 
   def test_set_category_sets_charge_info
     history = generate_historic_wml
@@ -72,6 +73,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
     assert_nil transaction.reload.category
     sg = transaction.suggested_category
     assert_equal 'Category not valid for financial year', sg.logic
+    refute sg.admin_lock?, "It is admin locked"
     assert sg.red?
   end
 
@@ -87,11 +89,12 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
     assert_nil transaction.reload.category
     sg = transaction.suggested_category
     assert_equal 'Error assigning charge', sg.logic
+    refute sg.admin_lock?, "It is admin locked"
     assert sg.red?
   end
 
   def test_suggest_categories_processes_transactions_in_file
-    history = generate_historic_wml
+    generate_historic_wml
     @processor.suggest_categories
 
     [
@@ -101,8 +104,8 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
       [ '0123459', '1', nil, 'No previous bill found' ],
       [ '0123450', '1', nil, 'No previous bill found' ],
       [ '0123450', '2', nil, 'No previous bill found' ],
-      [ '0123451', '1', nil, 'Not part of an annual bill' ],
-      [ '0123451', '2', nil, 'Not part of an annual bill' ]
+      [ '0123451', '1', nil, 'No previous bill found' ],
+      [ '0123451', '2', nil, 'No previous bill found' ]
     ].each do |td|
       t = @header.transaction_details.find_by(reference_1: td[0],
                                               reference_3: td[1])
@@ -128,7 +131,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_suggest_categories_generates_audit_records
-    history = generate_historic_wml
+    generate_historic_wml
     audit_before = AuditLog.count
     @processor.suggest_categories
     audit_after = AuditLog.count
@@ -136,7 +139,216 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal count, (audit_after - audit_before)
   end
 
+  def test_supplemental_no_suggestion_when_more_than_one_invoice
+    generate_historic_wml
+
+    t = @transactions.second_to_last.dup
+    t.line_amount = 123000
+    t.save!
+
+    @processor.suggest_categories
+
+    assert_nil t.reload.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('Multiple activities for permit', sg.logic)
+    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_invoice_no_suggestion_when_no_history
+    @processor.suggest_categories
+
+    t = @transactions.second_to_last.reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_invoice_amber_suggestion_when_single_match
+    historic = generate_historic_wml
+    ht = historic.last.dup
+    ht.reference_1 = "0123451"
+    ht.reference_2 = "E1239"
+    ht.reference_3 = "1"
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.save!
+
+    @processor.suggest_categories
+
+    t = @transactions.second_to_last.reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.amber?
+  end
+
+  def test_supplemental_invoice_amber_suggestion_when_multiple_match
+    historic = generate_historic_wml
+    ht = historic.last.dup
+    ht.reference_1 = "0123451"
+    ht.reference_2 = "E1239"
+    ht.reference_3 = "1"
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.save!
+    ht2 = ht.dup
+    ht2.period_start = "30-SEP-2020"
+    ht2.category = "2.15.2"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions.second_to_last.reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    assert ht2.category != t.category, "Second category is equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary invoice stage 2', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.amber?
+  end
+
+  def test_supplemental_invoice_red_suggestion_when_multiple_matching_dates
+    historic = generate_historic_wml
+    ht = historic.last.dup
+    ht.reference_1 = "0123451"
+    ht.reference_2 = "E1239"
+    ht.reference_3 = "1"
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.save!
+    ht2 = ht.dup
+    ht2.category = "2.15.2"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions.second_to_last.reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary invoice stage 2', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_credit_green_suggestion_when_single_match
+    historic = generate_historic_wml
+    ht = historic.last.dup
+    ht.reference_1 = "0123451"
+    ht.reference_2 = "E1239"
+    ht.reference_3 = "1"
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.save!
+
+    @processor.suggest_categories
+
+    t = @transactions.last.reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
+    assert sg.admin_lock?, "Not admin locked"
+    assert sg.green?
+  end
+
+  def test_supplemental_credit_green_suggestion_when_multiple_match
+    historic = generate_historic_wml
+    ht = historic.last.dup
+    ht.reference_1 = "0123451"
+    ht.reference_2 = "E1239"
+    ht.reference_3 = "1"
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.save!
+    ht2 = ht.dup
+    ht2.period_start = "30-SEP-2020"
+    ht2.category = "2.15.2"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions.last.reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    assert ht2.category != t.category, "Second category is equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary credit stage 2', sg.suggestion_stage)
+    assert sg.admin_lock?, "Not admin locked"
+    assert sg.green?
+  end
+
+  def test_supplemental_credit_red_suggestion_when_multiple_matching_dates
+    historic = generate_historic_wml
+    ht = historic.last.dup
+    ht.reference_1 = "0123451"
+    ht.reference_2 = "E1239"
+    ht.reference_3 = "1"
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.save!
+    ht2 = ht.dup
+    ht2.category = "2.15.2"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions.last.reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary credit stage 2', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_no_suggestion_when_more_than_one_credit
+    generate_historic_wml
+
+    t = @transactions.last.dup
+    t.line_amount = -123000
+    t.save!
+
+    @processor.suggest_categories
+
+    assert_nil t.reload.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('Multiple activities for permit', sg.logic)
+    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_credit_no_suggestion_when_no_history
+    @processor.suggest_categories
+
+    t = @transactions.last.reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
   def fixup_transactions(header)
+    results = []
     t = transaction_details(:wml_annual)
     [
       ["0123456", "E1234", "1", 12345, "A1234"],
@@ -160,6 +372,8 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
       tt.period_end = '31-MAR-2021'
       tt.tcm_financial_year = '2021'
       tt.save!
+      results << tt
     end
+    results
   end
 end

@@ -2,6 +2,8 @@ require 'csv'
 
 class PermitCategoryImporter
   def self.import(regime, filename)
+    Thread.current[:current_user] = User.system_account
+
     n = regime.permit_categories.count
     destroy_BOM = true
     CSV.foreach(filename, headers: false) do |row|
@@ -17,7 +19,7 @@ class PermitCategoryImporter
       n += 1
       regime.permit_categories.find_or_create_by!(code: code) do |cat|
         cat.description = desc
-        cat.display_order = order
+        # cat.display_order = order
         cat.status = "active"
       end
     end

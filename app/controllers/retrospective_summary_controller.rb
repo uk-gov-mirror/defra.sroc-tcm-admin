@@ -15,14 +15,6 @@ class RetrospectiveSummaryController < ApplicationController
           render partial: 'shared/summary_dialog', locals: { summary: @summary }
         end
       end
-      format.json do
-        region = params.fetch(:region, '')
-        @summary = transaction_summary.summarize_retrospectives(region)
-        render json: @summary
-      end
-      format.any do
-        head :not_acceptable
-      end
     end
   end
 

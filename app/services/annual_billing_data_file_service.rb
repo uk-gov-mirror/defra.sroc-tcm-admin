@@ -35,11 +35,13 @@ class AnnualBillingDataFileService
           record.errors.add(:base, e.message)
         end
       else
-        record.errors.add(:base, "This file type is not supported.  Please upload "\
-                          "a correctly formatted CSV file (.csv)")
+        record.errors.add(:base, "This file type is not supported.  " \
+                          "Please upload a correctly formatted CSV " \
+                          "file (.csv)")
       end
     else
-      record.errors.add(:base, "Select a annual billing data file (.csv) to import")
+      record.errors.add(:base, "Select a annual billing data file (.csv) " \
+                        "to import")
     end
     record
   end
@@ -55,7 +57,7 @@ class AnnualBillingDataFileService
                     field_size_limit: 32)
       row = csv.shift
       headers = csv.headers
-      valid = true 
+      valid = true
       mandatory_headers.each { |h| valid = false unless headers.include? h }
       valid
     rescue CSV::MalformedCSVError => e
@@ -70,7 +72,7 @@ class AnnualBillingDataFileService
   def mandatory_headers
     send("#{regime.to_param}_mandatory_column_names")
   end
-      
+
   def regime_headers
     send("#{regime.to_param}_columns")
   end
@@ -119,7 +121,7 @@ class AnnualBillingDataFileService
               if col[:header] == :permit_category
                 # validate against categories first
                 # this needs to be against the new way of working now
-                # if !regime.permit_categories.where(code: val).exists 
+                # if !regime.permit_categories.where(code: val).exists
                 failed = !Query::PermitCategoryExists.call(regime: @regime,
                                                            category: val,
                                                            financial_year: transaction.tcm_financial_year)
