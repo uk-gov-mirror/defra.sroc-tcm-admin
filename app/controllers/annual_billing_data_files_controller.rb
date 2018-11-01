@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AnnualBillingDataFilesController < ApplicationController
-  include RegimeScope
+  include RegimeScope, ViewModelBuilder
 
   before_action :set_regime, only: [:index, :new, :create]
   before_action :set_upload, only: [:show, :edit, :update]
@@ -16,27 +16,29 @@ class AnnualBillingDataFilesController < ApplicationController
   # GET /regimes/:regime_id/transactions/1
   # GET /regimes/:regime_id/transactions/1.json
   def show
-    @page = params.fetch(:page, 1)
-    @per_page = params.fetch(:per_page, 10)
-    @sort_column = params.fetch(:sort, :line_number)
-    @sort_direction = params.fetch(:sort_direction, 'asc')
+    @view_model = build_annual_billing_view_model
 
-    @errors = @upload.data_upload_errors.
-      order(@sort_column => @sort_direction).page(@page).per(@per_page)
+    # @page = params.fetch(:page, 1)
+    # @per_page = params.fetch(:per_page, 10)
+    # @sort_column = params.fetch(:sort, :line_number)
+    # @sort_direction = params.fetch(:sort_direction, 'asc')
+
+    # @errors = @upload.data_upload_errors.
+    #   order(@sort_column => @sort_direction).page(@page).per(@per_page)
 
     respond_to do |format|
       format.html do
         # @errors = present_errors(@errors)
         if request.xhr?
-          render partial: 'table', locals: { upload: @upload, errors: @errors }
+          render partial: 'table', locals: { view_model: @view_model }
         else
           render
         end
       end
-      format.js
-      format.json do
-        render json: present_file(@upload, @errors)
-      end
+      # format.js
+      # format.json do
+      #   render json: present_file(@upload, @errors)
+      # end
     end
     # if request.xhr?
     #   render '_upload_details', layout: false

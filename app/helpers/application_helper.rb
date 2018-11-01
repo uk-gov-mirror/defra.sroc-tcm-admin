@@ -43,32 +43,49 @@ module ApplicationHelper
     date.strftime(fmt)
   end
 
-  def sortable(name, default_col = 'customer_reference')
-    sorted = params.fetch(:sort, default_col) == name.to_s
-    sort_dir = sorted ? params.fetch(:sort_direction, 'asc') : 'desc'
-    # options = {
-    #   controller: controller_name,
-    #   action: 'index',
-    #   regime_id: @regime.slug,
-    #   sort: name,
-    #   sort_direction: switch_direction(sort_dir),
-    #   page: 1,
-    #   per_page: params[:per_page],
-    #   search: params[:search]
-    # }
-    cls = "sort-link"
-    if sorted
+  def sortable(name, view_model)
+    sort_col = view_model.sort.to_sym
+    sort_dir = view_model.sort_direction
+
+    cls = 'sort-link'
+    if name.to_sym == sort_col
       span = "<span class='oi oi-caret-#{top_or_bottom(sort_dir)}'></span>"
       cls = cls + " sorted sorted-#{sort_dir}"
     else
       span = ''
     end
 
-    # link_to(url_for(options)) do
     link_to('#', class: cls, data: { column: name }) do
       "#{th(name)} #{span}".html_safe
     end
   end
+
+  # def sortable(name, default_col = 'customer_reference')
+  #   sorted = params.fetch(:sort, default_col) == name.to_s
+  #   sort_dir = sorted ? params.fetch(:sort_direction, 'asc') : 'desc'
+  #   # options = {
+  #   #   controller: controller_name,
+  #   #   action: 'index',
+  #   #   regime_id: @regime.slug,
+  #   #   sort: name,
+  #   #   sort_direction: switch_direction(sort_dir),
+  #   #   page: 1,
+  #   #   per_page: params[:per_page],
+  #   #   search: params[:search]
+  #   # }
+  #   cls = "sort-link"
+  #   if sorted
+  #     span = "<span class='oi oi-caret-#{top_or_bottom(sort_dir)}'></span>"
+  #     cls = cls + " sorted sorted-#{sort_dir}"
+  #   else
+  #     span = ''
+  #   end
+  #
+  #   # link_to(url_for(options)) do
+  #   link_to('#', class: cls, data: { column: name }) do
+  #     "#{th(name)} #{span}".html_safe
+  #   end
+  # end
 
   def view_scope
     "table.heading.#{controller_name}"

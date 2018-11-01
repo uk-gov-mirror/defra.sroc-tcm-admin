@@ -6,30 +6,30 @@
 <div class="panel">
   <dl class="row">
     <dt class="col-sm-4 col-md-3">Filename</dt>
-    <dd class="col-sm-7 col-md-8"><%= File.basename @upload.filename %></dd>
+    <dd class="col-sm-7 col-md-8"><%= File.basename @view_model.upload.filename %></dd>
     <dt class="col-sm-4 col-md-3">Date uploaded</dt>
-    <dd class="col-sm-7 col-md-8"><%= formatted_date(@upload.created_at, true) %></dd>
+    <dd class="col-sm-7 col-md-8"><%= formatted_date(@view_model.upload.created_at, true) %></dd>
     <dt class="col-sm-4 col-md-3">Status</dt>
-    <dd class="col-sm-7 col-md-8"><%= @upload.status.humanize %></dd>
+    <dd class="col-sm-7 col-md-8"><%= @view_model.upload.status.humanize %></dd>
     <dt class="col-sm-4 col-md-3">Records updated</dt>
-    <dd class="col-sm-7 col-md-8"><%= @upload.success_count %></dd>
+    <dd class="col-sm-7 col-md-8"><%= @view_model.upload.success_count %></dd>
     <dt class="col-sm-4 col-md-3">Errors detected</dt>
-    <dd class="col-sm-7 col-md-8"><%= @upload.failed_count %></dd>
+    <dd class="col-sm-7 col-md-8"><%= @view_model.upload.failed_count %></dd>
   </dl>
 </div>
-<% if @upload.failed_count.positive? %>
+<% if @view_model.upload.failed_count.positive? %>
   <div>
     <div class="row mt-2">
       <div class="col">
         <h2>Errors</h2>
       </div>
     </div>
-    <%= render partial: "table", locals: { upload: @upload, errors: @errors } %>
+    <%= render partial: "table", locals: { view_model: @view_model } %>
   </div>
 <% end %>
 <div class="row">
   <div class="col-lg-6 actions">
-    <%= link_to 'Back', regime_annual_billing_data_files_path(@regime),
+    <%= link_to 'Back', regime_annual_billing_data_files_path(@view_model.regime),
       class: "btn btn-secondary", role: "button" %>
   </div>
 </div>

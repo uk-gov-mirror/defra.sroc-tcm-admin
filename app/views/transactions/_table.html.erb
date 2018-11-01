@@ -1,18 +1,19 @@
 <div class="tcm-table"
-     data-path="<%= regime_transactions_path(@regime) %>"
-     data-summary-path="<%= regime_transaction_summary_index_path(@regime) %>"
-     data-approve-path="<%= approve_regime_transactions_path(@regime, format: :json) %>"
-     data-region="<%= @region %>"
-     data-financial-year="<%= @financial_year %>"
-     data-search="<%= param_or_cookie(:search, '') %>"
-     data-page="<%= param_or_cookie(:page, 1) %>"
-     data-per-page="<%= param_or_cookie(:per_page, 10) %>"
-     data-sort-column="<%= param_or_cookie(:sort, 'customer_reference') %>"
-     data-sort-direction="<%= param_or_cookie(:sort_direction, 'asc') %>">
-<%= render partial: 'transaction_search_bar', locals: { view_mode: 'unbilled' } %>
-<%= render partial: "#{@regime.slug}_table", locals: { transactions: transactions } %>
-<%= render partial: "shared/pagination", locals: { collection: transactions } %>
+     data-path="<%= regime_transactions_path(view_model.regime) %>"
+     data-summary-path="<%= regime_transaction_summary_index_path(view_model.regime) %>"
+     data-approve-path="<%= approve_regime_transactions_path(view_model.regime, format: :json) %>"
+     data-region="<%= view_model.region %>"
+     data-financial-year="<%= view_model.financial_year %>"
+     data-search="<%= view_model.search %>"
+     data-page="<%= view_model.page %>"
+     data-per-page="<%= view_model.per_page %>"
+     data-sort-column="<%= view_model.sort %>"
+     data-sort-direction="<%= view_model.sort_direction %>">
+<%= render partial: 'transaction_search_bar', locals: { view_model: view_model, view_mode: 'unbilled' } %>
+<%= render partial: view_model.table_partial_name,
+  locals: { view_model: view_model } %>
+<%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions } %>
   <div id="summary-dialog"
-       data-summary-path="<%= regime_transaction_summary_index_path(@regime) %>">
+       data-summary-path="<%= regime_transaction_summary_index_path(view_model.regime) %>">
   </div>
 </div>

@@ -2,19 +2,20 @@
   <thead>
     <tr>
       <th><span class='sr-only'>Details</span></th>
-      <th><%= sortable :file_reference %></th>
-      <th><%= sortable :file_date %></th>
-      <th><%= sortable :customer_reference %></th>
-      <th><%= sortable :permit_reference %></th>
-      <th><%= sortable :compliance_band %></th>
-      <th><%= sortable :period %></th>
-      <th><%= sortable :excluded_reason %></th>
-      <th class="text-right"><%= sortable :amount %></th>
+      <th><%= sortable :file_reference, view_model %></th>
+      <th><%= sortable :file_date, view_model %></th>
+      <th><%= sortable :customer_reference, view_model %></th>
+      <th><%= sortable :permit_reference, view_model %></th>
+      <th><%= sortable :compliance_band, view_model %></th>
+      <th><%= sortable :period, view_model %></th>
+      <th><%= sortable :excluded_reason, view_model %></th>
+      <th class="text-right"><%= sortable :amount, view_model %></th>
     </tr>
   </thead>
   <tbody>
-    <% transactions.each do |transaction| %>
-      <%= render partial: 'wml_transaction', locals: { transaction: transaction } %>
+    <% view_model.present_paged_transactions.each do |transaction| %>
+      <%= render partial: 'wml_transaction', locals: { transaction: transaction,
+      data_path: regime_transaction_path(view_model.regime, transaction) } %>
     <% end %>
   </tbody>
 </table>

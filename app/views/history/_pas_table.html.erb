@@ -2,23 +2,24 @@
   <thead>
     <tr>
       <th><span class='sr-only'>Details</span></th>
-      <th><%= sortable :customer_reference %></th>
-      <th><%= sortable :permit_reference %></th>
-      <th><%= sortable :original_permit_reference %></th>
-      <th><%= sortable :sroc_category %></th>
-      <th><%= sortable :temporary_cessation %></th>
-      <th><%= sortable :compliance_band %></th>
-      <th><%= sortable :period %></th>
-      <th class="text-right"><%= sortable :amount %></th>
-      <th><%= sortable :original_filename %></th>
-      <th><%= sortable :generated_filename %></th>
-      <th><%= sortable :generated_file_date %></th>
-      <th><%= sortable :tcm_transaction_reference %></th>
+      <th><%= sortable :customer_reference, view_model %></th>
+      <th><%= sortable :permit_reference, view_model %></th>
+      <th><%= sortable :original_permit_reference, view_model %></th>
+      <th><%= sortable :sroc_category, view_model %></th>
+      <th><%= sortable :temporary_cessation, view_model %></th>
+      <th><%= sortable :compliance_band, view_model %></th>
+      <th><%= sortable :period, view_model %></th>
+      <th class="text-right"><%= sortable :amount, view_model %></th>
+      <th><%= sortable :original_filename, view_model %></th>
+      <th><%= sortable :generated_filename, view_model %></th>
+      <th><%= sortable :generated_file_date, view_model %></th>
+      <th><%= sortable :tcm_transaction_reference, view_model %></th>
     </tr>
   </thead>
   <tbody>
-    <% transactions.each do |transaction| %>
-      <%= render partial: 'pas_transaction', locals: { transaction: transaction } %>
+    <% view_model.present_paged_transactions.each do |transaction| %>
+      <%= render partial: 'pas_transaction', locals: { transaction: transaction,
+      data_path: regime_transaction_path(view_model.regime, transaction) } %>
     <% end %>
   </tbody>
 </table>

@@ -33,6 +33,8 @@ function init_row(container) {
 
 function reload_table(container) {
   var data = $(container).data()
+  set_cookie_data(container)
+
   $.ajax({
     url: data.path,
     data: {
@@ -190,6 +192,7 @@ function init_search_form (container) {
     form.on('submit', function (ev) {
       var val = form.find("input[name=search]").val()
       container.data('search', val)
+      container.data('page', 1)
       if (!container.hasClass('permit-categories')) {
         set_cookie_data(container)
       }
