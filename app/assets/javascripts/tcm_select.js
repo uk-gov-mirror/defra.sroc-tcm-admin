@@ -28,13 +28,26 @@
 
       input.on('click', function (ev) {
         if (!wrapper.hasClass('is-open')) {
+          // console.log('openList from click')
           openList(elements)
         }
       })
 
       input.on('input propertychange', function (ev) {
-        handleChange(ev, elements)
+        // there is a bug in IE10/11 that fires this
+        // when placeholder is changed i.e. when focus/blur
+        // and generates an extra event
+        if (elements.original.val() !== $(this).val()) {
+          // console.log('Propertychange: ' + $(this).val())
+          // console.log('handleChange from propertychange')
+          handleChange(ev, elements)
+        }
       })
+      // instead try:
+      // input.on('change', function (ev) {
+      //   console.log('handleChange from change')
+      //   handleChange(ev, elements)
+      // })
 
       input.on('keydown', function (ev) {
         handleKeys(ev, elements)
@@ -82,6 +95,7 @@
 
   function handleBlur(ev, elements) {
     // if (elements.mouseDown === false) {
+    // console.log("handleBlur")
       if (elements.wrapper.hasClass('is-open')) {
         cancelSelect(elements)
       }
@@ -91,9 +105,12 @@
 
   function handleChange(ev, elements) {
     if (elements.wrapper.hasClass('is-open')) {
+      // console.log('refreshList from handleChange')
+      // console.log(ev)
       refreshList(elements)
     } else {
       // should it be open then?
+      // console.log('openList from handleChange')
       openList(elements)
     }
   }
@@ -121,6 +138,7 @@
       }
     } else {
       if (ev.which == 40) { // cursor down
+        // console.log('openList from cursor down')
         openList(elements)
       }
     }
@@ -158,10 +176,12 @@
   }
 
   function reinstateValue (elements) {
+    // console.log('reinstateValue')
     elements.input.val(elements.original.val())
   }
 
   function cancelSelect (elements) {
+    // console.log('cancelSelect')
     reinstateValue(elements)
     closeList(elements)
   }
@@ -206,16 +226,20 @@
   }
 
   function toggleList (ev, elements) {
+    // console.log('toggleList')
     if (elements.wrapper.hasClass('is-open')) {
       // close popup
+      // console.log('closeList from toggleList')
       closeList(elements)
     } else {
       // show popup
+      // console.log('openList from toggleList')
       openList(elements)
     }
   }
 
   function openList (elements) {
+    // console.log('openList')
     // initial open fetch all
     var el = elements.wrapper
     var data = el.data()
@@ -223,6 +247,7 @@
 
     fetchCategories(elements, '', function (payload, status, xkr) {
         elements.wrapper.addClass('is-open')
+        // console.log('initList from openList')
         initList(elements, payload)
         if (elements.list.find(".tcm-select-list-item").length > 0) {
           var item = elements.list.find(".is-selected")
@@ -236,11 +261,13 @@
   }
 
   function refreshList (elements) {
+    // console.log('refreshList')
     var el = elements.wrapper
     var data = el.data()
     var q = elements.input.val()
 
     fetchCategories(elements, q, function (payload, status, xkr) {
+        // console.log('initList from refreshList')
         initList(elements, payload)
         if (elements.list.find(".tcm-select-list-item").length > 0) {
           $("#tcm-select-list-item-0").addClass('is-focussed')
@@ -249,6 +276,7 @@
   }
 
   function initList (elements, payload) {
+    // console.log('initList')
     var val = elements.original.val()
     var list = makeList(payload, val)
     elements.list = list
@@ -272,11 +300,12 @@
       ev.preventDefault()
     }).on('mouseup', function (ev) {
       // elements.mouseDown = false
-      ev.preventDefault()
+      // ev.preventDefault()
     })
   }
 
   function closeList(elements) {
+    // console.log('closeList')
     elements.wrapper.removeClass('is-open')
     elements.list.hide()
 
