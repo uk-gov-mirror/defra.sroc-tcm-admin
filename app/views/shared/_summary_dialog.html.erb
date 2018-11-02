@@ -38,8 +38,8 @@
             <div class='col'>
               Proceeding will remove
               <strong><%= summary.excluded_count %></strong>
-              excluded <%= pluralize(summary.excluded_count, 'transaction') %>
-          </div>
+              excluded <%= 'transaction'.pluralize(summary.excluded_count) %>
+            </div>
           </div>
         <% end %>
       </div>
