@@ -111,6 +111,10 @@ module TransactionsHelper
     # end
   end
 
+  def reason_options(reasons, selected = nil)
+    options_for_select(reasons.map { |r| [r, r] }, selected)
+  end
+
   def regime_columns(regime)
     if regime.installations?
       [ :customer_reference,

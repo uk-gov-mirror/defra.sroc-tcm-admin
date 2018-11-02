@@ -2,6 +2,10 @@
   data-backdrop="static" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+      <%= form_with(model: transaction,
+                    url: regime_transaction_path(@regime, transaction),
+                    method: :patch,
+                    local: true) do |f| %>
       <div class="modal-header">
         <h5 class="modal-title">Exclude Transaction</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -19,19 +23,17 @@
         <div class="row">
           <div class="col">
             <div class="panel">
-              <select class="form-control" name="reason-selector" id="reason-selector" aria-labelledby="reason-label">
-                <%= reasons.each do |reason| %>
-                  <option value="<%= reason %>"><%= reason %></option>
-                <% end %>
-              </select>
+              <%= f.select(:excluded_reason,
+                reason_options(reasons, transaction.excluded_reason),
+                {},
+                id: 'reason-selector',
+                class: 'form-control',
+                aria: { labelledby: "reason-label"}) %>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <%= form_with(url: regime_transaction_path(@regime, transaction),
-                      method: :patch,
-                      local: true) do |f| %>
         <input type="hidden"
                name="transaction_detail[excluded]"
                value="true" />
@@ -41,8 +43,8 @@
         <% end %>
           <button type="button" class="btn btn-secondary"
                   id="cancel-button" data-dismiss="modal">Cancel</button>
-        <% end %>
       </div>
+    <% end %>
     </div>
   </div>
 </div>

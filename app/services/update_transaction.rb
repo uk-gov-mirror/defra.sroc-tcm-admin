@@ -25,7 +25,9 @@ class UpdateTransaction < ServiceObject
       end
     elsif attrs.has_key?(:excluded)
       if str_to_bool(attrs.fetch(:excluded))
-        ExcludeTransaction.call(transaction: transaction, user: user)
+        ExcludeTransaction.call(transaction: transaction,
+                                reason: attrs.fetch(:excluded_reason),
+                                user: user)
       else
         UnexcludeTransaction.call(transaction: transaction, user: user)
       end
