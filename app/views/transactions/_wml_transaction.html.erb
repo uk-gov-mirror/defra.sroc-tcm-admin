@@ -21,7 +21,7 @@
     <%= transaction.permit_reference %>
   </td>
   <td class="align-middle control-column">
-    <% if transaction.editable? %>
+    <% if transaction.can_update_category? && transaction.editable? %>
       <%= category_select_tag transaction %>
     <% else %>
       <%= transaction.category %>
