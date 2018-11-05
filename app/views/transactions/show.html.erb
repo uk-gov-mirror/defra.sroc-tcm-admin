@@ -24,7 +24,7 @@
   </div>
 <% end %>
 <hr />
-<% unless transaction.retrospective? %>
+<% if @regime.water_quality? && !transaction.retrospective?  %>
   <div class="row">
     <div class="col">
       <h2>Suggested category</h2>

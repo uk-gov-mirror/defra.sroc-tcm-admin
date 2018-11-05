@@ -30,11 +30,13 @@
       <%= transaction.category %>
     <% end %>
   </td>
-  <td class="align-middle indicator-column">
-    <% if !transaction.category_overridden? %>
-      <%= confidence_dot(transaction.confidence_level) %>
-    <% end %>
-  </td>
+  <% if "NOT IN RELEASE_2_0" == false %>
+    <td class="align-middle indicator-column">
+      <% if !transaction.category_overridden? %>
+        <%= confidence_dot(transaction.confidence_level) %>
+      <% end %>
+    </td>
+  <% end %>
   <td class="align-middle">
     <%= transaction.compliance_band %>
   </td>

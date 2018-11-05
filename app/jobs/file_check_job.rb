@@ -34,11 +34,13 @@ class FileCheckJob < ApplicationJob
               service.delete_file_from(:import, f)
               success += 1
 
-              begin
-                processor = category_processor(transaction, user)
-                processor.suggest_categories unless processor.nil?
-              rescue => e
-                Rails.logger.warn("Failed when suggesting permits: #{e.message}")
+              if regime.water_quality?
+                begin
+                  processor = category_processor(transaction, user)
+                  processor.suggest_categories unless processor.nil?
+                rescue => e
+                  Rails.logger.warn("Failed when suggesting permits: #{e.message}")
+                end
               end
             else
               raise Exceptions::TransactionFileError, "File generated invalid transaction record [#{f}]"
