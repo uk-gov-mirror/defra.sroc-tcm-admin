@@ -34,7 +34,6 @@ class FileCheckJob < ApplicationJob
               service.delete_file_from(:import, f)
               success += 1
 
-              debugger
               if transaction.regime.water_quality?
                 begin
                   processor = category_processor(transaction, user)
