@@ -9,25 +9,33 @@ module Permits
         permit_args = keys_to_args(keys)
         if only_invoices_in_file?(permit_args)
           if count == 1
-            historic_transactions = find_historic_transactions(permit_args)
-            if historic_transactions.count == 1
-              transaction = header.transaction_details.find_by(permit_args)
-              set_category(transaction, historic_transactions.first,
-                           :green, 'Annual billing')
-            elsif historic_transactions.count > 1
-              # handle multiple matching for same start period
-              multiple_historic_matches(permit_args)
-            else
-              no_historic_transaction(permit_args, 'Annual billing')
-            end
+            handle_single_annual_permit(permit_args)
           else
-            # multiple transactions in file for permit
-            multiple_matching_permits(permit_args)
+            handle_multiple_annual_permits(permit_args)
           end
         else
-          not_annual_bill(permit_args, 'Annual billing')
+          handle_supplementary_billing(permit_args)
         end
       end
+    end
+
+    def handle_single_annual_permit(permit_args)
+      historic_transactions = find_historic_transactions(permit_args)
+      if historic_transactions.count == 1
+        transaction = header.transaction_details.find_by(permit_args)
+        set_category(transaction, historic_transactions.first,
+                     :green, 'Annual billing')
+      elsif historic_transactions.count > 1
+        # handle multiple matching for same start period
+        multiple_historic_matches(permit_args)
+      else
+        no_historic_transaction(permit_args, 'Annual billing')
+      end
+    end
+
+    def handle_multiple_annual_permits(permit_args)
+        # multiple transactions in file for permit
+        multiple_matching_permits(permit_args)
     end
 
     def fetch_unique_pas_permits
