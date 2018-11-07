@@ -43,11 +43,6 @@
           handleChange(ev, elements)
         }
       })
-      // instead try:
-      // input.on('change', function (ev) {
-      //   console.log('handleChange from change')
-      //   handleChange(ev, elements)
-      // })
 
       input.on('keydown', function (ev) {
         handleKeys(ev, elements)
@@ -245,7 +240,7 @@
     var data = el.data()
     // var q = elements.input.val()
 
-    fetchCategories(elements, '', function (payload, status, xkr) {
+    fetchCategories(elements, '', function (payload, status, xhr) {
         elements.wrapper.addClass('is-open')
         // console.log('initList from openList')
         initList(elements, payload)
@@ -266,7 +261,7 @@
     var data = el.data()
     var q = elements.input.val()
 
-    fetchCategories(elements, q, function (payload, status, xkr) {
+    fetchCategories(elements, q, function (payload, status, xhr) {
         // console.log('initList from refreshList')
         initList(elements, payload)
         if (elements.list.find(".tcm-select-list-item").length > 0) {
@@ -353,6 +348,13 @@
         q: query
       },
       success: successCallback,
+      error: function (xhr, status, err) {
+        console.log("Error fetching categories: " + xhr.status + " : " + err)
+        if (xhr.status === 401) {
+          // unauthorized so force login again
+          window.location.reload(true)
+        }
+      },
       dataType: 'json'
     })
   }

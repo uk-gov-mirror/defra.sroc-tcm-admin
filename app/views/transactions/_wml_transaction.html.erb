@@ -1,6 +1,5 @@
 <tr id=<%= transaction.id %>
-  class="<%= transaction_row_class(transaction) %>"
->
+  class="<%= transaction_row_class(transaction) %>" >
   <td class="align-middle details-button-column">
     <button class="btn btn-sm show-details-button"
       data-path="<%= data_path %>">
@@ -27,13 +26,11 @@
       <%= transaction.category %>
     <% end %>
   </td>
-  <% if "NOT IN RELEASE_2_0" == false %>
-    <td class="align-middle indicator-column">
-      <% if !transaction.category_overridden? %>
-        <%= confidence_dot(transaction.confidence_level) %>
-      <% end %>
-    </td>
-  <% end %>
+  <td class="align-middle indicator-column">
+    <% if !transaction.category_overridden? %>
+      <%= confidence_dot(transaction.confidence_level) %>
+    <% end %>
+  </td>
   <td class="align-middle">
     <%= transaction.compliance_band %>
   </td>

@@ -12,7 +12,12 @@ module Query
       assert @regime.transaction_details.historic_excluded.count.positive?
 
       transactions = ExcludedTransactions.call(regime: @regime)
-      assert_equal @regime.transaction_details.historic_excluded, transactions
+      q =  @regime.transaction_details.historic_excluded
+      assert_equal q.count, transactions.count
+
+      transactions.each do |t|
+        assert_includes q, t, "Where did #{t.reference_1} come from?"
+      end
     end
   end
 end

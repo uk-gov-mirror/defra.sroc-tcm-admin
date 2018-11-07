@@ -12,8 +12,8 @@ SecureHeaders::Configuration.default do |config|
   }
 
   # permit access to webpack devserver
-  if Rails.env.development?
-    config.csp[:connect_src] << 'localhost:3035'
-    config.csp[:connect_src] << 'ws://localhost:3035'
-  end
+  # if Rails.env.development?
+  #   config.csp[:connect_src] << 'localhost:3035'
+  #   config.csp[:connect_src] << 'ws://localhost:3035'
+  # end
 end

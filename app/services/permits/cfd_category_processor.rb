@@ -74,7 +74,6 @@ module Permits
       else
         no_historic_transaction({ id: transaction.id }, 'Supplementary credit')
       end
-      # not_annual_bill(id: transaction.id)
     end
 
     def find_latest_historic_invoice(consent_args)
@@ -107,21 +106,5 @@ module Permits
       raise "Badly formatted consent reference: '#{consent_reference}'" if m.nil?
       "#{m[1]}/%/#{m[3]}"
     end
-
-    # def extract_consent(consent_reference)
-    #   m = /\A(.*)\/(?:\d+)\/(?:\d+)\z/.match(consent_reference)
-    #   m[0] if m
-    # end
-    #
-    # def extract_consent_parts(consent_reference)
-    #   m = /\A(.*)\/(\d+)\/(\d+)\z/.match(consent_reference)
-    #   return {} if m.nil?
-    #   {
-    #     consent: m[0],
-    #     permit: m[1],
-    #     version: m[2],
-    #     discharge: m[3]
-    #   }
-    # end
   end
 end

@@ -65,10 +65,21 @@ module Permits
     def not_annual_bill(where_args, stage)
       # record that this file contains credits for this consent
       # so it is not an annual bill
-      unbilled_transactions(where_args) do |t|
+      make_suggestion(where_args, :red, "Not part of an annual bill", stage)
+      # unbilled_transactions(where_args) do |t|
+      #   sc = suggested_category_for(t)
+      #   sc.logic = 'Not part of an annual bill'
+      #   sc.confidence_level = :red
+      #   sc.suggestion_stage = stage
+      #   sc.save!
+      # end
+    end
+
+    def make_suggestion(args, confidence, logic, stage)
+      unbilled_transactions(args) do |t|
         sc = suggested_category_for(t)
-        sc.logic = 'Not part of an annual bill'
-        sc.confidence_level = :red
+        sc.logic = logic
+        sc.confidence_level = confidence
         sc.suggestion_stage = stage
         sc.save!
       end
@@ -76,13 +87,14 @@ module Permits
 
     def no_historic_transaction(where_args, stage)
       # record that we couldn't find a previous bill
-      unbilled_transactions(where_args) do |t|
-        sc = suggested_category_for(t)
-        sc.logic = 'No previous bill found'
-        sc.confidence_level = :red
-        sc.suggestion_stage = stage
-        sc.save!
-      end
+      make_suggestion(where_args, :red, "No previous bill found", stage)
+      # unbilled_transactions(where_args) do |t|
+      #   sc = suggested_category_for(t)
+      #   sc.logic = 'No previous bill found'
+      #   sc.confidence_level = :red
+      #   sc.suggestion_stage = stage
+      #   sc.save!
+      # end
     end
 
     def set_logic_message(where_args, msg)
@@ -105,6 +117,14 @@ module Permits
       header.transaction_details.unbilled.where(where_args).each do |t|
         yield t if block_given?
       end
+    end
+
+    def more_than_one_invoice_in_file_for_permit?(permit_args)
+      header.transaction_details.invoices.where(permit_args).count > 1
+    end
+
+    def more_than_one_credit_in_file_for_permit?(permit_args)
+      header.transaction_details.credits.where(permit_args).count > 1
     end
 
     def suggested_category_for(transaction)

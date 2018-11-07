@@ -2,20 +2,16 @@ require 'test_helper.rb'
 
 class PasCategoryProcessorTest < ActiveSupport::TestCase
   include ChargeCalculation, GenerateHistory
+
   def setup
     @header = transaction_headers(:pas_annual)
-    fixup_transactions(@header)
+    @transactions = fixup_transactions(@header)
  
     @user = User.system_account
     Thread.current[:current_user] = @user
 
     @processor = Permits::PasCategoryProcessor.new(@header)
     build_mock_calculator
-    # @calculator = build_mock_calculator
-    # @processor.stubs(:calculator).returns(@calculator)
-    # @header.regime.permit_categories.create!(code: '2.4.5',
-    #                                          description: 'test',
-    #                                          status: 'active')
   end
 
   def test_fetch_unique_pas_permits_returns_list_of_permits
@@ -30,8 +26,8 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_only_invoices_in_file_returns_false_when_credits_in_file_for_permit
-   refute @processor.only_invoices_in_file?(reference_3: 'AAAA0007',
-                                            customer_reference: 'A1239')
+    refute @processor.only_invoices_in_file?(reference_3: 'AAAA0007',
+                                             customer_reference: 'A1239')
   end
 
   def test_find_historic_transactions_returns_empty_collection_when_no_matches_found
@@ -130,8 +126,8 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       [ 'AAAA0004', 'A1237', nil, 'No previous bill found' ],
       [ 'AAAA0005', 'A1238', nil, 'No previous bill found' ],
       [ 'AAAA0006', 'A1238', nil, 'No previous bill found' ],
-      [ 'AAAA0007', 'A1239', nil, 'Not part of an annual bill' ],
-      [ 'AAAA0008', 'A1230', nil, 'Multiple matching permits in file found' ]
+      [ 'AAAA0007', 'A1239', nil, 'No previous bill found' ],
+      [ 'AAAA0008', 'A1230', nil, 'Multiple matching transactions found in file' ]
     ].each do |td|
       t = @header.transaction_details.find_by(reference_3: td[0],
                                               customer_reference: td[1])
@@ -178,7 +174,243 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal count, (audit_after - audit_before)
   end
 
+  def test_annual_no_suggestion_when_multiple_invoices
+    t = @transactions.first.dup
+    t.line_amount = 1234
+    t.save!
+
+    @processor.suggest_categories
+
+    assert_nil t.reload.category, "Category set!"
+    sg = t.suggested_category
+    assert_not_nil sg, "No suggested_category"
+    assert_equal('Multiple matching transactions found in file', sg.logic)
+    assert_equal('Annual billing', sg.suggestion_stage)
+    refute sg.admin_lock?, "Admin lock is on"
+    assert sg.red?
+  end
+
+  def test_supplemental_no_suggestion_when_more_than_one_invoice
+    generate_historic_wml
+    @processor.suggest_categories
+
+    t = @transactions.last.reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_not_nil sg, "No suggested_category"
+    assert_equal('Multiple matching transactions found in file', sg.logic)
+    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "Admin lock is on"
+    assert sg.red?
+  end
+
+  def test_supplemental_invoice_no_suggestion_when_no_history
+    @processor.suggest_categories
+
+    t = @transactions[6].reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_invoice_amber_suggestion_when_single_match
+    historic = generate_historic_pas
+
+    # matches on :reference_3, :customer_reference and :period_end
+    ht = historic.last.dup
+    ht.reference_3 = "AAAA0007"
+    ht.customer_reference = 'A1239'
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.tcm_financial_year = "2021"
+    ht.status = 'billed'
+    ht.save!
+
+    @processor.suggest_categories
+
+    t = @transactions[6].reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.amber?
+  end
+
+  def test_supplemental_invoice_amber_suggestion_when_multiple_match
+    historic = generate_historic_pas
+    ht = historic.last.dup
+    ht.reference_3 = "AAAA0007"
+    ht.customer_reference = 'A1239'
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.tcm_financial_year = "2021"
+    ht.category = "2.4.5"
+    ht.status = 'billed'
+    ht.save!
+    ht2 = ht.dup
+    ht2.period_start = "30-SEP-2020"
+    ht2.category = "2.4.4"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions[6].reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    assert ht2.category != t.category, "Second category is equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary invoice stage 2', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.amber?
+  end
+
+  def test_supplemental_invoice_red_suggestion_when_multiple_matching_dates
+    historic = generate_historic_pas
+    ht = historic.last.dup
+    ht.reference_3 = "AAAA0007"
+    ht.customer_reference = 'A1239'
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.tcm_financial_year = "2021"
+    ht.category = "2.4.5"
+    ht.status = 'billed'
+    ht.save!
+    ht2 = ht.dup
+    ht2.category = "2.4.4"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions[6].reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary invoice stage 2', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_credit_green_suggestion_when_single_match
+    historic = generate_historic_pas
+    ht = historic.last.dup
+    ht.reference_3 = "AAAA0007"
+    ht.customer_reference = 'A1239'
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.tcm_financial_year = "2021"
+    ht.category = "2.4.5"
+    ht.status = 'billed'
+    ht.save!
+
+    @processor.suggest_categories
+
+    t = @transactions[7].reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
+    assert sg.admin_lock?, "Not admin locked"
+    assert sg.green?
+  end
+
+  def test_supplemental_credit_green_suggestion_when_multiple_match
+    historic = generate_historic_pas
+    ht = historic.last.dup
+    ht.reference_3 = "AAAA0007"
+    ht.customer_reference = 'A1239'
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.tcm_financial_year = "2021"
+    ht.category = "2.4.5"
+    ht.status = 'billed'
+    ht.save!
+    ht2 = ht.dup
+    ht2.period_start = "30-SEP-2020"
+    ht2.category = "2.4.4"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions[7].reload
+
+    assert_equal ht.category, t.category, "Category not equal"
+    assert ht2.category != t.category, "Second category is equal"
+    sg = t.suggested_category
+    assert_equal('Assigned matching category', sg.logic)
+    assert_equal('Supplementary credit stage 2', sg.suggestion_stage)
+    assert sg.admin_lock?, "Not admin locked"
+    assert sg.green?
+  end
+
+  def test_supplemental_credit_red_suggestion_when_multiple_matching_dates
+    historic = generate_historic_pas
+    ht = historic.last.dup
+    ht.reference_3 = "AAAA0007"
+    ht.customer_reference = 'A1239'
+    ht.period_start = "1-JAN-2021"
+    ht.period_end = "31-MAR-2021"
+    ht.tcm_financial_year = "2021"
+    ht.category = "2.4.5"
+    ht.status = 'billed'
+    ht.save!
+    ht2 = ht.dup
+    ht2.category = "2.4.4"
+    ht2.save!
+
+    @processor.suggest_categories
+
+    t = @transactions[7].reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary credit stage 2', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_no_suggestion_when_more_than_one_credit_in_file
+    generate_historic_pas
+
+    t = @transactions[7].dup
+    t.line_amount = -123000
+    t.save!
+
+    @processor.suggest_categories
+
+    assert_nil t.reload.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('Multiple matching transactions found in file', sg.logic)
+    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
+  def test_supplemental_credit_no_suggestion_when_no_history
+    @processor.suggest_categories
+
+    t = @transactions[7].reload
+
+    assert_nil t.category, "Category set!"
+    sg = t.suggested_category
+    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
+    refute sg.admin_lock?, "It is admin locked"
+    assert sg.red?
+  end
+
   def fixup_transactions(header)
+    results = []
     t = transaction_details(:pas_annual)
     [
       ["AAAA0001", 12345, "A1234"],
@@ -190,6 +422,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       ["AAAA0007", 124322, "A1239"],
       ["AAAA0007", -123991, "A1239"],
       ["AAAA0008", 34567, "A1230"],
+      ["AAAA0008", -34567, "A1230"],
       ["AAAA0008", 9854, "A1230"]
     ].each_with_index do |ref, i|
       tt = t.dup
@@ -203,6 +436,8 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       tt.tcm_financial_year = '2021'
       tt.category = nil
       tt.save!
+      results << tt
     end
+    results
   end
 end
