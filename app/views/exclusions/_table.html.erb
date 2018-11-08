@@ -10,5 +10,5 @@
      <%= render partial: 'search_bar', locals: { view_model: view_model,
                                                  view_mode: 'excluded' } %>
 <%= render partial: view_model.table_partial_name, locals: { view_model: view_model } %>
-<%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions } %>
+<%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions, include_export: false } %>
 </div>

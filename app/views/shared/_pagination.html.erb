@@ -3,13 +3,15 @@
     <div class="page-info">
       <%= page_entries_info collection %>
     </div>
-    <div class="ml-2 d-inline">
-      <button class="btn btn-sm btn-outline-secondary table-export-btn"
-              title="Export matching entries">
-        <span class="sr-only">Export matching entries</span>
-        <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
-      </button>
-    </div>
+    <% if include_export %>
+      <div class="ml-2 d-inline">
+        <button class="btn btn-sm btn-outline-secondary table-export-btn"
+                title="Export matching entries">
+          <span class="sr-only">Export matching entries</span>
+          <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
+        </button>
+      </div>
+    <% end %>
   </div>
   <div class="col-12 col-md-3 d-flex justify-content-lg-end mb-4">
     <%= form_with controller: controller_name, action: action_name, method: "get", class: 'form-inline justify-content-lg-end', local: true do %>

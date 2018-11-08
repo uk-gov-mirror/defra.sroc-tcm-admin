@@ -21,5 +21,6 @@
       <% end %>
     </tbody>
   </table>
-  <%= render partial: "pagination", locals: { collection: view_model.errors } %>
+  <%= render partial: "shared/pagination", locals: { collection: view_model.errors,
+    include_export: false } %>
 </div>
