@@ -112,13 +112,6 @@ module Permits
     def multiple_matching_transactions(permit_args, stage)
       make_suggestion(permit_args, :red,
                       "Multiple matching transactions found in file", stage)
-      # unbilled_transactions(permit_args) do |t|
-      #   sc = suggested_category_for(t)
-      #   sc.logic = 'Multiple matching transactions found in file'
-      #   sc.confidence_level = :red
-      #   sc.suggestion_stage = stage
-      #   sc.save!
-      # end
     end
 
     def find_historic_transactions(args)

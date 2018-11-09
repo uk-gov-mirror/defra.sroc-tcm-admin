@@ -153,10 +153,6 @@ class TransactionFileExporter
       q = transaction_file.transaction_details.where(tcm_financial_year: fy)
       positives = q.distinct.where(atab[:tcm_charge].gteq(0)).pluck(:reference_1, :customer_reference)
       negatives = q.distinct.where(atab[:tcm_charge].lt(0)).pluck(:reference_1, :customer_reference)
-      # positives = transaction_file.transaction_details.distinct.
-      #   where(atab[:tcm_charge].gteq(0)).pluck(:reference_1)
-      # negatives = transaction_file.transaction_details.distinct.
-      #   where(atab[:tcm_charge].lt(0)).pluck(:reference_1)
 
       positives.each do |refs|
         ref, cust = refs
@@ -182,8 +178,6 @@ class TransactionFileExporter
     else
       ''
     end
-    # n = SequenceCounter.next_invoice_number(regime, region)
-    # "#{region}#{n.to_s.rjust(8, '0')}T"
   end
 
   def assign_pas_transaction_references(transaction_file)
@@ -224,14 +218,11 @@ class TransactionFileExporter
   end
 
   def next_pas_transaction_reference(retrospective)
-    # n = SequenceCounter.next_invoice_number(regime, region)
     result = nil
     if retrospective
       result = NextPasRetrospectiveReference.call(regime: regime, region: region)
-      # "PAS#{n.to_s.rjust(8, '0')}#{region}"
     else
       result = NextPasReference.call(regime: regime, region: region)
-      # "PAS#{n.to_s.rjust(8, '0')}#{region}T"
     end
     if result.success?
       result.reference
@@ -254,23 +245,11 @@ class TransactionFileExporter
                        q.group(:customer_reference, :line_context_code).
                          sum(:tcm_charge)
                      end
-      # cust_charges = if transaction_file.retrospective?
-      #                transaction_file.transaction_details.
-      #                  group(:customer_reference, :line_context_code).sum(:line_amount)
-      #              else
-      #                transaction_file.transaction_details.
-      #                  group(:customer_reference, :line_context_code).sum(:tcm_charge)
-      #              end
 
       cust_charges.each do |k, v|
         trans_type = v.negative? ? 'C' : 'I'
         trans_ref = next_cfd_transaction_reference(retro)
-        # n = SequenceCounter.next_invoice_number(regime, region)
-        # trans_ref = if transaction_file.retrospective?
-        #               "#{n.to_s.rjust(5, '0')}2#{region}"
-        #             else
-        #               "#{n.to_s.rjust(5, '0')}1#{region}T"
-        #             end
+
         q.where(customer_reference: k[0], line_context_code: k[1]).
           update_all(tcm_transaction_type: trans_type,
                      tcm_transaction_reference: trans_ref)
@@ -290,10 +269,6 @@ class TransactionFileExporter
     else
       ''
     end
-  end
-
-  def service
-    @service ||= TransactionStorageService.new(regime)
   end
 
   def storage

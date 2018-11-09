@@ -102,21 +102,10 @@ module Permits
         order(period_start: :desc)
     end
 
-    # def more_than_one_invoice_in_file_for_permit?(permit)
-    #   header.transaction_details.invoices.where(reference_1: permit).count > 1
-    # end
-    #
-    # def more_than_one_credit_in_file_for_permit?(permit)
-    #   header.transaction_details.credits.where(reference_1: permit).count > 1
-    # end
-
     def multiple_activities(transaction, stage)
       make_suggestion({ id: transaction.id }, :red,
                       "Multiple activities for permit",
                       stage)
-      # transaction.create_suggested_category(logic: "Multiple activities for permit",
-      #   suggestion_stage: stage,
-      #   confidence_level: :red)
     end
 
     def keys_to_args(keys)

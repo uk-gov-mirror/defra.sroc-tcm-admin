@@ -66,13 +66,6 @@ module Permits
       # record that this file contains credits for this consent
       # so it is not an annual bill
       make_suggestion(where_args, :red, "Not part of an annual bill", stage)
-      # unbilled_transactions(where_args) do |t|
-      #   sc = suggested_category_for(t)
-      #   sc.logic = 'Not part of an annual bill'
-      #   sc.confidence_level = :red
-      #   sc.suggestion_stage = stage
-      #   sc.save!
-      # end
     end
 
     def make_suggestion(args, confidence, logic, stage)
@@ -88,13 +81,6 @@ module Permits
     def no_historic_transaction(where_args, stage)
       # record that we couldn't find a previous bill
       make_suggestion(where_args, :red, "No previous bill found", stage)
-      # unbilled_transactions(where_args) do |t|
-      #   sc = suggested_category_for(t)
-      #   sc.logic = 'No previous bill found'
-      #   sc.confidence_level = :red
-      #   sc.suggestion_stage = stage
-      #   sc.save!
-      # end
     end
 
     def set_logic_message(where_args, msg)
