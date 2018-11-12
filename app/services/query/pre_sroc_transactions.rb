@@ -11,7 +11,7 @@ module Query
 
     def call
       query = @regime.transaction_details.retrospective
-      query = query.region(@region) unless @region.blank?
+      query = query.region(@region) unless @region.blank? || @region == 'all'
       query = query.financial_year(@financial_year) unless @financial_year.blank?
       query = query.search(@search) unless @search.blank?
       SortTransactions.call(regime: @regime,

@@ -1,0 +1,47 @@
+<dl class="transaction-summary dl-horizontal">
+  <dt>Customer Reference</dt>
+  <dd><%= transaction.customer_reference %></dd>
+  <dt>Customer Name</dt>
+  <dd><%= transaction.customer_name %></dd>
+  <dt>Consent Reference</dt>
+  <dd><%= transaction.permit_reference %></dd>
+  <dt>Version</dt>
+  <dd><%= transaction.version %></dd>
+  <dt>Discharge</dt>
+  <dd><%= transaction.discharge_reference %> (<%= transaction.discharge_description %>)</dd>
+  <% unless transaction.retrospective? %>
+    <dt>Category</dt>
+    <dd>
+      <%= transaction.category %>
+      <%= " (#{transaction.category_description})" unless
+        transaction.category_description.nil? %>
+    </dd>
+    <dt>Temporary Cessation</dt>
+    <dd><%= transaction.temporary_cessation_yes_no %></dd>
+  <% end %>
+  <dt>Site</dt>
+  <dd><%= transaction.site %></dd>
+  <dt>File Ref (Source)</dt>
+  <dd><%= transaction.file_reference %></dd>
+  <dt>File Date</dt>
+  <dd><%= transaction.original_file_date %></dd>
+  <dt>Variation</dt>
+  <dd><%= transaction.variation_percentage %></dd>
+  <dt>Period</dt>
+  <dd><%= transaction.period %></dd>
+  <dt>Amount</dt>
+  <% if transaction.retrospective? %>
+    <dd><%= transaction.line_amount %></dd>
+  <% else %>
+    <dd><%= transaction.amount %></dd>
+  <% end %>
+  <dt>Status</dt>
+  <dd>
+    <span class="<%= "badge badge-pill badge-#{status_colour(transaction.status)}" %>">
+      <%= status_text(transaction.status) -%>
+    </span>
+    <% if transaction.unbilled? && transaction.excluded? %>
+      <span class="badge badge-pill badge-danger">Marked for Exclusion</span>
+  <% end %>
+  </dd>
+</dl>

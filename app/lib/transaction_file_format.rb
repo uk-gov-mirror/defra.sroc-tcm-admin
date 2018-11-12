@@ -60,6 +60,10 @@ module TransactionFileFormat
     PermitReference       = 44
     OriginalPermitReference = 45
     AbsOriginalPermitReference = 46
+    # Customer Name field
+    PasCustomerName       = 47
+    CfdCustomerName       = 44
+    WmlCustomerName       = 10    # HeaderAttr2
   end
 
   module Trailer

@@ -22,6 +22,10 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
     reference_1
   end
 
+  def site
+    @site ||= extract_site_from_description
+  end
+
   def credit_line_description
     if transaction_detail.line_description.present?
       txt = transaction_detail.line_description.gsub(/Permit Ref:/, 'EPR Ref:')
@@ -74,6 +78,15 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
   def temporary_cessation_adjustment
     # FIXME: this should be built using data returned from rules engine
     temporary_cessation ? "50%" : ""
+  end
+
+  def extract_site_from_description
+    if transaction_detail.line_description.present?
+      m = transaction_detail.line_description.match /\Wat\W(.*),\s/
+      m.nil? ? "" : m[1]
+    else
+      ""
+    end
   end
 
   def as_json(options = {})

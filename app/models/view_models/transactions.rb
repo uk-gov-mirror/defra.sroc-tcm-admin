@@ -2,7 +2,7 @@ module ViewModels
   class Transactions
     include RegimeScope, ActionView::Helpers::FormOptionsHelper
 
-    attr_reader :regime, :user
+    attr_reader :regime, :user, :permit_all_regions
     attr_accessor :region, :financial_year, :search, :sort, :sort_direction,
       :page, :per_page
 
@@ -13,16 +13,36 @@ module ViewModels
       @per_page = 10
       @sort = 'customer_reference'
       @sort_direction = 'asc'
+      @permit_all_regions = false
     end
 
     def region=(val)
-      val = '' if val == 'all'
-      @region = val
+      if val.blank? || val == 'all'
+        if permit_all_regions
+          @region = 'all'
+        else
+          @region = available_regions.first
+        end
+      else
+        if available_regions.include?(val)
+          @region = val
+        else
+          @region = available_regions.first
+        end
+      end
+      @region
     end
 
     def region
-      @region = available_regions.first if @region.blank? || @region == 'all'
-      @region
+      if permit_all_regions && @region == 'all'
+        @region
+      else
+        if available_regions.include?(@region)
+          @region
+        else
+          @region = available_regions.first
+        end
+      end
     end
 
     def financial_year

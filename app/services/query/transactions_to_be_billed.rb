@@ -11,7 +11,7 @@ module Query
 
     def call
       q = @regime.transaction_details.unbilled
-      q = q.region(@region) unless @region.blank?
+      q = q.region(@region) unless @region.blank? || @region == 'all'
       q = q.financial_year(@financial_year) unless @financial_year.blank?
       q = q.search(@search) unless @search.blank?
       SortTransactions.call(regime: @regime,

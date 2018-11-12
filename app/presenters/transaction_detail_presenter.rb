@@ -237,6 +237,14 @@ class TransactionDetailPresenter < SimpleDelegator
     transaction_detail.suggested_category.confidence_level unless transaction_detail.suggested_category.nil?
   end
 
+  def customer_name
+    if transaction_detail.customer_name.present?
+      transaction_detail.customer_name
+    else
+      ""
+    end
+  end
+
 protected
   def transaction_detail
     __getobj__

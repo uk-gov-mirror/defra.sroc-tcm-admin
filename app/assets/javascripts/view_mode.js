@@ -1,4 +1,4 @@
-// var $ = window.$
+var $ = window.$
 //
 // $(document).on('turbolinks:load', function () {
 //   $('#view-mode').on('change', function () {
@@ -6,3 +6,9 @@
 //     $(this).closest('form').trigger('submit')
 //   })
 // })
+$(document).on('turbolinks:load', function () {
+  $('.back-link').on('click', function (ev) {
+    ev.preventDefault()
+    history.back()
+  })
+})

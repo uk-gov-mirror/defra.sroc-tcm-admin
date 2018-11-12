@@ -4,10 +4,16 @@
     <div class="panel">
       <dl class="transaction-summary dl-horizontal">
         <dt>Suggested Category</dt>
-        <dd><%= sc.category %> (<%= lookup_category_description(@regime, sc.category, transaction.tcm_financial_year) %>)</dd>
+        <dd>
+          <% if sc.category.present? %>
+            <%= sc.category %> (<%= lookup_category_description(@regime, sc.category, transaction.tcm_financial_year) %>)i
+          <% else %>
+            None
+          <% end %>
+        </dd>
         <dt>Confidence Level</dt>
-        <dd><%= confidence(sc.confidence_level) %></dd>
-        <dt>Assignment Logic</dt>
+        <dd><%= confidence_dot(sc.confidence_level) %></dd>
+        <dt>Assignment Outcome</dt>
         <dd><%= sc.logic %></dd>
         <dt>Suggestion Stage</dt>
         <dd><%= sc.suggestion_stage %></dd>

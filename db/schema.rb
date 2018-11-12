@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180913134601) do
+ActiveRecord::Schema.define(version: 20181109141825) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -223,6 +223,7 @@ ActiveRecord::Schema.define(version: 20180913134601) do
     t.boolean "approved_for_billing", default: false, null: false
     t.bigint "approver_id"
     t.datetime "approved_for_billing_at"
+    t.string "customer_name"
     t.index ["approver_id"], name: "index_transaction_details_on_approver_id"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"

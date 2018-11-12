@@ -1,65 +1,8 @@
 <div class="row">
   <div class="col">
     <div class="panel">
-      <dl class="transaction-summary dl-horizontal">
-        <dt>Customer Reference</dt>
-        <dd><%= transaction.customer_reference %></dd>
-        <% if @regime.waste_or_installations? %>
-          <dt>Permit Reference</dt>
-          <dd><%= transaction.permit_reference %></dd>
-          <% if @regime.installations? %>
-            <dt>Original Permit Ref</dt>
-            <dd><%= transaction.original_permit_reference %></dd>
-          <% end %>
-        <% else %>
-          <dt>Consent Reference</dt>
-          <dd><%= transaction.permit_reference %></dd>
-          <dt>Version</dt>
-          <dd><%= transaction.version %></dd>
-          <dt>Discharge</dt>
-          <dd><%= transaction.discharge_reference %> (<%= transaction.discharge_description %>)</dd>
-        <% end %>
-        <% unless transaction.retrospective? %>
-          <dt>Category</dt>
-          <dd>
-            <%= transaction.category %>
-            <%= " (#{transaction.category_description})" unless
-              transaction.category_description.nil? %>
-          </dd>
-          <dt>Temporary Cessation</dt>
-          <dd><%= transaction.temporary_cessation_yes_no %></dd>
-        <% end %>
-        <% unless @regime.waste? %>
-          <dt>Site</dt>
-          <dd><%= transaction.site %></dd>
-        <% end %>
-        <dt>Generated On</dt>
-        <dd><%= transaction.generated_at %></dd>
-        <% if @regime.waste_or_installations? %>
-          <dt>Compliance Band</dt>
-          <dd><%= transaction.compliance_band %></dd>
-        <% else %>
-          <dt>Variation</dt>
-          <dd><%= transaction.variation_percentage %></dd>
-        <% end %>
-        <dt>Period</dt>
-        <dd><%= transaction.period %></dd>
-        <dt>Amount</dt>
-        <% if transaction.retrospective? %>
-          <dd><%= transaction.line_amount %></dd>
-        <% else %>
-          <dd><%= transaction.amount %></dd>
-        <% end %>
-        <dt>Status</dt>
-        <dd>
-          <span class="<%= "badge badge-pill badge-#{status_colour(transaction.status)}" %>">
-            <%= status_text(transaction.status) -%>
-          </span>
-          <% if transaction.unbilled? && transaction.excluded? %>
-            <span class="badge badge-pill badge-danger">Marked for Exclusion</span>
-          <% end %>
-        </dd>
-      </dl>
+      <%= render partial: "#{@regime.slug}_detail",
+        locals: { transaction: transaction } %>
     </div>
   </div>
 </div>

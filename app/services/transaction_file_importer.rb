@@ -88,13 +88,15 @@ class TransactionFileImporter
         filename: row[Detail::Filename],
         reference_1: row[Detail::PermitReference],
         reference_2: row[Detail::OriginalPermitReference],
-        reference_3: row[Detail::AbsOriginalPermitReference]
+        reference_3: row[Detail::AbsOriginalPermitReference],
+        customer_name: row[Detail::PasCustomerName]
       })
     elsif regime.water_quality?
       consent_parts = extract_consent_fields(row[Detail::LineDescription])
       data.merge!(consent_parts) unless consent_parts.empty?
       data.merge!({
-        variation: extract_variation(row)
+        variation: extract_variation(row),
+        customer_name: row[Detail::CfdCustomerName]
       })
     elsif regime.waste?
       line = row[Detail::LineDescription]
@@ -106,7 +108,8 @@ class TransactionFileImporter
 
       refs = {
         reference_1: ref,
-        reference_2: line.split(':').last.strip
+        reference_2: line.split(':').last.strip,
+        customer_name: row[Detail::WmlCustomerName]
       }
       cc = extract_charge_code(line)
       refs[:reference_3] = cc unless cc.nil?

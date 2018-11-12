@@ -8,6 +8,7 @@
     <table class="table table-sm table-responsive">
       <thead>
         <tr>
+          <td></td>
           <% if @regime.waste_or_installations? %>
             <th><%= th :customer_reference %></th>
             <th><%= th :permit_reference %></th>
@@ -26,11 +27,17 @@
           <th>File (TCM)</th>
           <th>File Date (TCM)</th>
           <th class="text-right">Amount (£)</th>
-          <td></td>
         </tr>
       </thead>
       <tbody>
         <tr>
+          <td>
+            <%= link_to regime_transaction_path(@regime, transaction),
+              class: 'btn btn-sm', role: 'button' do %>
+              <span class='sr-only'>Details for transaction for period <%= transaction.period %></span>
+              <span class='oi oi-magnifying-glass'></span>
+            <% end %>
+          </td>
           <td><%= transaction.customer_reference %></td>
           <td><%= transaction.permit_reference %></td>
           <% if @regime.waste_or_installations? %>
@@ -47,13 +54,6 @@
           <td><%= transaction.generated_filename %></td>
           <td><%= transaction.generated_file_date %></td>
           <td class="text-right"><%= transaction.amount %></td>
-          <td>
-            <%= link_to regime_transaction_path(@regime, transaction),
-              class: 'btn btn-sm', role: 'button' do %>
-              <span class='sr-only'>Details for transaction for period <%= transaction.period %></span>
-              <span class='oi oi-magnifying-glass'></span>
-            <% end %>
-          </td>
         </tr>
       </tbody>
     </table>

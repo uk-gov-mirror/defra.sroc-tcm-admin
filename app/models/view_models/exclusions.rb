@@ -1,5 +1,10 @@
 module ViewModels
   class Exclusions < Transactions
+    def initialize(params = {})
+      super(params)
+      @permit_all_regions = true
+    end
+
     def fetch_transactions
       Query::ExcludedTransactions.call(regime: regime,
                                        region: region,

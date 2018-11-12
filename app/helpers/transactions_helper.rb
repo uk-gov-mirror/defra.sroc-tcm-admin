@@ -185,10 +185,10 @@ module TransactionsHelper
   def status_text(state)
     {
       billed: 'Billed',
-      unbilled: 'Unbilled',
+      unbilled: 'To be billed',
       exporting: 'Exporting',
       excluded: 'Excluded',
-      retrospective: 'Pre-SRoC Unbilled',
+      retrospective: 'Pre-SRoC to be billed',
       retro_exporting: 'Pre-SRoC Exporting',
       retro_billed: 'Pre-SRoC Billed'
     }.fetch(state.to_sym)

@@ -306,7 +306,8 @@ function init_show_details_button (container) {
   container.find(".show-details-button").on('click', function (ev) {
     var path = $(this).data('path')
     set_cookie_data(table)
-    window.location.assign(path)
+    Turbolinks.visit(path)
+    // window.location.assign(path)
   })
 }
 
