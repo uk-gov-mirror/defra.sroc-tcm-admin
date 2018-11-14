@@ -1,4 +1,16 @@
 en:
+  exclusions:
+    index:
+      title: "Excluded Transactions"
+  history:
+    index:
+      title: "Transaction History"
+  retrospectives:
+    index:
+      title: "Pre-April 2018 Transactions to be billed"
+  transactions:
+    index:
+      title: "Transactions to be billed"
   table:
     heading:
       annual_billing_data_files:
@@ -36,7 +48,7 @@ en:
         generated_at: "Generated On"
         period: "Period"
         amount: "Amount (£)"
-        original_filename: "File (Src)"
+        original_filename: "File (Source)"
         generated_filename: "File (TCM)"
         generated_file_date: "File Date (TCM)"
         tcm_transaction_reference: 'Transaction Ref'

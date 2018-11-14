@@ -11,23 +11,8 @@ class TransactionsController < ApplicationController
   def index
     @view_model = build_transactions_view_model
 
-    # regions = Query::Regions.call(regime: @regime)
-    # @region = params.fetch(:region, cookies.fetch(:region, ''))
-    # @region = regions.first if @region.blank? || @region == 'all'
-    #
-    # pg = params.fetch(:page, cookies.fetch(:page, 1))
-    # per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
-    #
-    # financial_years = Query::FinancialYears.call(regime: @regime)
-    # financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
-    # financial_year = '' unless financial_years.include? financial_year
-
-    # transactions = Query::TransactionsToBeBilled.call(@view_model.attributes)
-
     respond_to do |format|
       format.html do
-        # transactions = transactions.page(@view_model.page).per(@view_model.per_page)
-        # @view_model.transactions = present_transactions(transactions)
         if request.xhr?
           render partial: "table", locals: { view_model: @view_model }
         else
@@ -36,8 +21,6 @@ class TransactionsController < ApplicationController
       end
       format.csv do
         send_data csv.export(@view_model.csv_transactions), csv_opts
-        # transactions = presenter.wrap(transactions.unexcluded.limit(15000))
-        # send_data csv.export(transactions), csv_opts
       end
     end
   end

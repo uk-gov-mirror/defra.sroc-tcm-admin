@@ -8,16 +8,16 @@
     Transactions
   </a>
   <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
-    <%= link_to "Transactions to be billed",
+    <%= link_to t("title", scope: "transactions.index"),
       regime_transactions_path(@regime),
       class: "dropdown-item" %>
-    <%= link_to "Transaction history",
+    <%= link_to t("title", scope: "history.index"),
       regime_history_index_path(@regime),
       class: "dropdown-item" %>
-    <%= link_to "Retrospectives to be billed",
+    <%= link_to t("title", scope: "retrospectives.index"),
       regime_retrospectives_path(@regime),
       class: "dropdown-item" %>
-    <%= link_to "Excluded Transactions",
+    <%= link_to t("title", scope: "exclusions.index"),
       regime_exclusions_path(@regime),
       class: "dropdown-item" %>
   </div>

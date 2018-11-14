@@ -33,10 +33,10 @@ module TransactionsHelper
 
   def view_options(selected_mode)
     options_for_select([
-      ['Transactions to be billed', 'unbilled', { 'data-path' => regime_transactions_path(@regime) }],
-      ['Transaction History', 'historic', { 'data-path' => regime_history_index_path(@regime) }],
-      ['Retrospectives to be billed', 'retrospective', { 'data-path' => regime_retrospectives_path(@regime) }],
-      ['Excluded Transactions', 'excluded', { 'data-path' => regime_exclusions_path(@regime) }]
+      [t("transactions.index.title"), 'unbilled', { 'data-path' => regime_transactions_path(@regime) }],
+      [t("history.index.title"), 'historic', { 'data-path' => regime_history_index_path(@regime) }],
+      [t("retrospectives.index.title"), 'retrospective', { 'data-path' => regime_retrospectives_path(@regime) }],
+      [t("exclusions.index.title"), 'excluded', { 'data-path' => regime_exclusions_path(@regime) }]
     ], selected_mode)
   end
 
