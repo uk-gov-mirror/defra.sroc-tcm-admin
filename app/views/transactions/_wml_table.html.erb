@@ -1,0 +1,34 @@
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><span class='sr-only'>Transaction Details</span></th>
+      <th><%= sortable :file_reference, view_model %></th>
+      <th><%= sortable :file_date, view_model %></th>
+      <th><%= sortable :customer_reference, view_model %></th>
+      <th><%= sortable :permit_reference, view_model %></th>
+      <th><%= sortable :sroc_category, view_model %></th>
+      <!-- NOT IN RELEASE_2_0
+      <th><span class='sr-only'>Confidence level indicator</span></th>
+      -->
+      <th><%= sortable :compliance_band, view_model %></th>
+      <th>
+        <span aria-hidden="true">TC</span>
+        <span class='sr-only'>Temporary Cessation</span>
+      </th>
+      <th><%= sortable :period, view_model %></th>
+      <th class="text-right">Amount (£)</th>
+      <th>
+        <span aria-hidden="true" class="oi oi-check"></span>
+        <span class='sr-only'>Approved for billing</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% view_model.present_paged_transactions.each do |transaction| %>
+      <%= render partial: 'wml_transaction',
+        locals: { transaction: transaction,
+                  data_path: regime_transaction_path(view_model.regime,
+                                                     transaction) } %>
+    <% end %>
+  </tbody>
+</table>

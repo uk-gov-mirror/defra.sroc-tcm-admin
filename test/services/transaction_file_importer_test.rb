@@ -90,4 +90,18 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
     end
   end
 
+  def test_extract_charge_code_extracts_code_when_present
+    d = 'Charge Code 1 at Wigwam Wood Landfill Site, Wigwam Road, Tepee,' \
+      'West Sussex, RH1 3AA, Permit Ref: AB1234AB/A001'
+    assert_equal '1', @importer.extract_charge_code(d)
+
+    d = 'In cancellation of Charge Code 3 at Haystack Wood Pig Site, Eggham Road,' \
+      'Ham, Peas and Chips, West County, AA12 1AA, Permit Ref: AA3700BB/A001'
+    assert_equal '3', @importer.extract_charge_code(d)
+  end
+
+  def test_extract_charge_code_returns_nil_when_no_code_found
+    d = 'There is no Charge Code here, so none shall be returned'
+    assert_nil @importer.extract_charge_code(d)
+  end
 end

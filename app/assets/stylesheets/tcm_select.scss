@@ -1,0 +1,194 @@
+.tcm-select {
+  box-sizing: border-box;
+  position: relative;
+/*   border: 1px solid #ced4da;
+  border-radius: 0.25rem; */
+  // display: inline-block;
+  // max-width: 8rem;
+  min-width: 6rem;
+  display: block;
+}
+
+.tcm-select-control {
+  box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 0.25em;
+  border-color: #d9d9d9 #ccc #b3b3b3;
+  border: 1px solid #ccc;
+  border-spacing: 0;
+  border-collapse: separate;
+  height: 2rem;
+  cursor: default;
+  display: table;
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.tcm-select-input-wrapper, .tcm-select-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0.15rem 0 0.15rem 0.25rem;
+}
+
+.tcm-select-input-wrapper {
+  display: table-cell;
+}
+
+.tcm-select-input {
+  width: 100%;
+}
+
+.tcm-select-clear-btn {
+  box-sizing: border-box;
+  color: #999;
+  cursor: pointer;
+  display: table-cell;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+  width: 1.25rem;
+}
+
+.tcm-select-btn {
+  box-sizing: border-box;
+  color: #999;
+  cursor: pointer;
+  display: table-cell;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+  width: 1.5rem;
+}
+
+.tcm-select-control > *:last-child {
+  padding-right: 0.5rem;
+}
+
+.tcm-select-btn-icon {
+  // background: #fff no-repeat center/contain image-url('down_caret.svg');
+  display: inline-block;
+  border-color: #aaa transparent transparent;
+  border-style: solid;
+  border-width: 5px 5px 2.5px;
+  height: 0;
+  width: 0;
+  position: relative;
+  // color: #aaa;
+  // border-left: 1px solid #ccc;
+  // cursor: pointer;
+  // display: table-cell;
+  // position: relative;
+  // text-align: center;
+  // vertical-align: middle;
+  // // width: 1.75rem;
+  // width: 1rem;
+}
+
+.tcm-select-clear-btn-icon {
+  // color: #aaa;
+  // cursor: pointer;
+  // display: table-cell;
+  // font-size: larger;
+  // position: relative;
+  // text-align: center;
+  // vertical-align: middle;
+  // width: 1rem;
+  display: inline-block;
+  font-size: larger;
+}
+
+/* .tcm-select-btn {
+  background: transparent;
+  color: #aaa;
+  cursor: pointer;
+  display: inline-block;
+}
+ */
+.tcm-select-btn:hover > .tcm-select-btn-icon {
+  border-color: #333 transparent transparent;
+  // background: #ccc no-repeat center/contain image-url('down_caret_focus.svg');
+}
+
+.tcm-select-clear-btn:hover > .tcm-select-clear-btn-icon {
+  color: red;
+}
+
+.tcm-select.has-focus.is-open > .tcm-select-control {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.tcm-select.has-focus > .tcm-select-control {
+  border-color: #007eff;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 0 3px rgba(0, 126, 255, 0.1);
+  background: #fff;
+}
+
+.tcm-select-list-wrapper {
+  box-sizing: border-box;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-color: #e6e6e6 #007eff #007eff #007eff;
+/*   border-top-color: #e6e6e6; */
+  
+  box-shadow: 2px 2px 2px 0 rgba(0, 126, 255, 0.16),
+    -2px 2px 2px 0 rgba(0, 0, 0, 0.16);
+  margin-top: -2px;
+  max-height: 200px;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.tcm-select-list {
+  box-sizing: border-box;
+  max-height: 198px;
+  overflow-y: auto;
+  padding: 0.1rem;
+}
+
+.tcm-select-list-item {
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #666666;
+  cursor: pointer;
+  display: block;
+/*   padding: 8px; 10px; */
+  padding: 0.5rem 0.4rem;
+}
+
+// .tcm-select-list-item:hover {
+//   background-color: #ebf5ff;
+// }
+
+.is-selected {
+  // background-color: #f5faff;
+  // background-color: rgba(0, 126, 255, 0.04);
+  font-weight: bold;
+  color: #333;
+}
+
+.is-focussed:not(.nothing-found) {
+  background-color: $blue;
+  // background-color: #ebf5ff;
+  color: $white;
+  // color: #333;
+  // background-color: rgba(0, 126, 255, 0.08);
+}
+
+.is-selected.is-focussed {
+  color: $white;
+}
+
+.item-desc {
+  font-size: 10px;
+}
+

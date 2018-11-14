@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+xmlns:xlink="http://www.w3.org/1999/xlink"
+width="48" height="96">
+  <defs>
+    <g id="caret">
+      <path d="M14 20l10 10 10-10z"/>
+    </g>
+  </defs>
+  <use x="0" y="0" style="fill:#888" xlink:href="#caret" />
+  <use x="0" y="48" style="fill:#000" xlink:href="#caret" />
+</svg>

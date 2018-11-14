@@ -1,56 +1,43 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  include RegimeScope
-  before_action :set_regime, only: [:index]
+  include RegimeScope, FinancialYear, CsvExporter, ViewModelBuilder
+  before_action :set_regime, only: [:index, :approve]
   before_action :set_transaction, only: [:show, :edit, :update]
-  before_action :set_current_user, only: [:update]
+  # before_action :set_current_user, only: [:update, :approve]
 
   # GET /regimes/:regime_id/transactions
   # GET /regimes/:regime_id/transactions.json
   def index
-    regions = transaction_store.unbilled_regions
-    mode = params.fetch(:view_mode, 'unbilled')
-    if mode == 'unbilled'
-      @region = params.fetch(:region, regions.first)
-      @region = regions.first unless regions.include? @region
-    else
-      @region = params.fetch(:region, '')
-    end
+    @view_model = build_transactions_view_model
 
-    q = params.fetch(:search, "")
-    sort_col = params.fetch(:sort, :customer_reference)
-    sort_dir = params.fetch(:sort_direction, 'asc')
+    # regions = Query::Regions.call(regime: @regime)
+    # @region = params.fetch(:region, cookies.fetch(:region, ''))
+    # @region = regions.first if @region.blank? || @region == 'all'
+    #
+    # pg = params.fetch(:page, cookies.fetch(:page, 1))
+    # per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
+    #
+    # financial_years = Query::FinancialYears.call(regime: @regime)
+    # financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
+    # financial_year = '' unless financial_years.include? financial_year
+
+    # transactions = Query::TransactionsToBeBilled.call(@view_model.attributes)
 
     respond_to do |format|
-      format.html
-      format.json do
-        pg = params.fetch(:page, 1)
-        per_pg = params.fetch(:per_page, 10)
-
-        @transactions = transaction_store.transactions_to_be_billed(
-          q,
-          pg,
-          per_pg,
-          @region,
-          sort_col,
-          sort_dir
-        )
-
-        # don't want to display these here for now
-        # summary = transaction_store.transactions_to_be_billed_summary(q, region)
-        summary = nil
-        @transactions = present_transactions(@transactions, @region, regions, summary)
-        render json: @transactions
+      format.html do
+        # transactions = transactions.page(@view_model.page).per(@view_model.per_page)
+        # @view_model.transactions = present_transactions(transactions)
+        if request.xhr?
+          render partial: "table", locals: { view_model: @view_model }
+        else
+          render
+        end
       end
       format.csv do
-        @transactions = transaction_store.transactions_to_be_billed_for_export(
-          q,
-          @region,
-          sort_col,
-          sort_dir
-        ).unexcluded.limit(15000)
-        send_data csv.export(presenter.wrap(@transactions)), csv_opts
+        send_data csv.export(@view_model.csv_transactions), csv_opts
+        # transactions = presenter.wrap(transactions.unexcluded.limit(15000))
+        # send_data csv.export(transactions), csv_opts
       end
     end
   end
@@ -58,6 +45,9 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions/1
   # GET /regimes/:regime_id/transactions/1.json
   def show
+    # @related_transactions = transaction_store.transactions_related_to(@transaction)
+    @related_transactions = Query::RelatedTransactions.call(transaction: @transaction)
+    @exclusion_reasons = Query::Exclusions.call(regime: @regime)
   end
 
   # GET /regimes/:regimes_id/transactions/1/edit
@@ -69,164 +59,98 @@ class TransactionsController < ApplicationController
   # PATCH/PUT /regimes/:regimes_id/transactions/1.json
   def update
     respond_to do |format|
-      if update_transaction
-        format.html { redirect_to edit_regime_transaction_path(@regime, @transaction),
-                      notice: 'Transaction was successfully updated.' }
+      result = UpdateTransaction.call(transaction: @transaction,
+                                      attributes: transaction_params,
+                                      user: current_user)
+      @transaction = result.transaction
+
+      if result.success?
+        format.html do
+          if request.xhr?
+            render partial: "#{@regime.to_param}_transaction",
+              locals: { transaction: presenter.new(@transaction, current_user),
+                        data_path: regime_transaction_path(@regime, @transaction) }
+          else
+            redirect_to regime_transaction_path(@regime, @transaction),
+              notice: 'Transaction was successfully updated.'
+          end
+        end
         format.json {
-          render json: { transaction: presenter.new(@transaction),
+          render json: { transaction: presenter.new(@transaction, current_user),
                          message: 'Transaction updated'
                         },
                         status: :ok,
                         location: regime_transaction_path(@regime, @transaction)
         }
       else
-        format.html { render :edit }
+        format.html do
+          if request.xhr?
+            render partial: "#{@regime.to_param}_transaction",
+              locals: { transaction: presenter.new(@transaction, current_user) }
+          else
+            redirect_to regime_transaction_path(@regime, @transaction),
+              notice: 'Transaction was not updated.'
+          end
+        end
         format.json { render json: @transaction, status: :unprocessable_entity }
       end
     end
   end
 
-  private
-    def csv_opts
-      ts = Time.zone.now.strftime("%Y%m%d%H%M%S")
-      {
-        filename: "transactions_to_be_billed_#{ts}.csv",
-        type: :csv
-      }
+  # PUT - approve all matching eligible transactions
+  def approve
+    regions = Query::Regions.call(regime: @regime)
+    # regions = transaction_store.unbilled_regions
+    @region = params.fetch(:region, cookies[:region])
+    msg = ""
+    
+    result = if regions.include? @region
+               true
+             else
+               msg = "Region #{@region} is not valid"
+               false
+             end
+
+    # error if blank or no legit region specified
+    count = 0
+
+    if result
+      q = params.fetch(:search, '')
+      approval = ApproveMatchingTransactions.call(regime: @regime,
+                                                  region: @region,
+                                                  search: q,
+                                                  user: current_user)
+      result = approval.success?
+      count = approval.count
     end
 
-    def update_transaction
-      if @transaction.updateable?
-        if @transaction.update(transaction_params)
-        # @transaction.assign_attributes(transaction_params)
-        # if @transaction.valid?
-          # category_changes = @transaction.changes[:category]
-          # tc_changes = @transaction.changes[:temporary_cessation]
-          category_changes = @transaction.previous_changes[:category]
-          tc_changes = @transaction.previous_changes[:temporary_cessation]
-          exclusion_changes = @transaction.previous_changes[:excluded]
-
-          if tc_changes 
-            if @transaction.category.present?
-              @transaction.charge_calculation = get_charge_calculation
-              if @transaction.charge_calculation_error?
-                @transaction.temporary_cessation = tc_changes[0]
-                @transaction.tcm_charge = nil
-              else
-                @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
-              end
-            else
-              # we might have an error from a previous interaction so remove it
-              @transaction.charge_calculation = nil
-            end
-            @transaction.save
-            # if @transaction.save
-            #   auditor.log_modify(@transaction)
-            #   true
-            # else
-            #   false
-            # end
-          elsif category_changes
-            # always get charge when category changes unless blank
-            @transaction.charge_calculation = get_charge_calculation
-            # restore category if charge calc error
-            if @transaction.charge_calculation_error?
-              @transaction.category = category_changes[0]
-              @transaction.tcm_charge = nil
-            else
-              # extract charge calculation and correctly sign it
-              @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
-            end
-            # auditor.log_modify(@transaction)
-            @transaction.save
-            # if @transaction.save
-            #   auditor.log_modify(@transaction)
-            #   true
-            # else
-            #   false
-            # end
-          elsif exclusion_changes
-            if exclusion_changes[0] == true
-              # was excluded now reinstate
-              @transaction.charge_calculation = get_charge_calculation
-              unless @transaction.charge_calculation_error?
-                @transaction.tcm_charge = TransactionCharge.extract_correct_charge(@transaction)
-              end
-            else
-              # become excluded
-              @transaction.charge_calculation = nil
-              @transaction.tcm_charge = nil
-            end
-            @transaction.save
-          else
-            # nothing changing but don't want to generate an error
-            true
-          end
-        else
-          false
-        end
-      else
-        @transaction.errors.add(:category, "Transaction cannot be updated")
-        false
+    respond_to do |format|
+      format.json do
+        render json: { success: result, message: msg, count: count }
+      end
+      format.any do
+        head :not_acceptable
       end
     end
+  end
 
-    def get_charge_calculation
-      TransactionCharge.invoke_charge_calculation(calculator,
-                                                  presenter.new(@transaction)) if @transaction.category.present?
-    end
-
-    def present_transactions(transactions, selected_region, regions, summary)
-      arr = Kaminari.paginate_array(presenter.wrap(transactions),
-                                    total_count: transactions.total_count,
-                                    limit: transactions.limit_value,
-                                    offset: transactions.offset_value)
-      {
-        pagination: {
-          current_page: arr.current_page,
-          prev_page: arr.prev_page,
-          next_page: arr.next_page,
-          per_page: arr.limit_value,
-          total_pages: arr.total_pages,
-          total_count: arr.total_count
-        },
-        transactions: arr,
-        selected_region: selected_region,
-        regions: region_options(regions)
-      }
-    end
-
-    def region_options(regions)
-      regions.map { |r| { label: r, value: r } }
+  private
+    def present_transactions(transactions)
+      Kaminari.paginate_array(presenter.wrap(transactions, current_user),
+                              total_count: transactions.total_count,
+                              limit: transactions.limit_value,
+                              offset: transactions.offset_value)
     end
 
     def set_transaction
       set_regime
-      @transaction = transaction_store.find(params[:id])
+      @transaction = Query::FindTransaction.call(regime: @regime,
+                                                 transaction_id: params[:id])
     end
 
     def transaction_params
       params.require(:transaction_detail).permit(:category, :temporary_cessation,
-                                                :excluded, :excluded_reason)
-    end
-
-    def transaction_store
-      @transaction_store ||= TransactionStorageService.new(@regime, current_user)
-    end
-
-    def calculator
-      @calculator ||= CalculationService.new
-    end
-
-    def csv
-      @csv ||= TransactionExportService.new(@regime)
-    end
-
-    def auditor
-      @auditor ||= AuditService.new(current_user)
-    end
-
-    def set_current_user
-      Thread.current[:current_user] = current_user
+                                                 :excluded, :excluded_reason,
+                                                 :approved_for_billing)
     end
 end

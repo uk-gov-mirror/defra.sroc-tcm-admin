@@ -1,20 +1,48 @@
-cfd:
+cfd_a:
   regime: cfd
   code: "2.3.4"
   description: "Sewage 50,000 - 150,000 m3/day"
   status: "active"
-  display_order: 1
+  valid_from: "1819"
 
-pas:
+cfd_b:
+  regime: cfd
+  code: "2.3.5"
+  description: "Sewage 50,000 - 150,000 m3/day"
+  status: "active"
+  valid_from: "1819"
+
+cfd_c:
+  regime: cfd
+  code: "2.3.6"
+  description: "Sewage 50,000 - 150,000 m3/day"
+  status: "active"
+  valid_from: "1819"
+
+pas_a:
   regime: pas
   code: "2.4.4"
   description: "Section 4.1 Organic; Organic other"
   status: "active"
-  display_order: 1
+  valid_from: "1819"
+
+pas_b:
+  regime: pas
+  code: "2.4.5"
+  description: "Section 4.1 Organic; Organic other"
+  status: "active"
+  valid_from: "1819"
+
+pas_c:
+  regime: pas
+  code: "2.4.6"
+  description: "Section 4.1 Organic; Organic other"
+  status: "active"
+  valid_from: "1819"
 
 wml:
   regime: wml
   code: "2.15.2"
   description: "Bespoke Deployment"
   status: "active"
-  display_order: 1
+  valid_from: "1819"

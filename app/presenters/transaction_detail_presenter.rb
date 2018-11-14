@@ -1,8 +1,18 @@
 class TransactionDetailPresenter < SimpleDelegator
   include FormattingUtils
 
-  def self.wrap(collection)
-    collection.map { |o| new o }
+  def initialize(obj, user = nil)
+    super obj
+    @user = user
+  end
+
+  def self.wrap(collection, user = nil)
+    collection.map { |o| new(o, user) }
+  end
+
+  def editable?
+    # NOTE: need user for this
+    unbilled? && !excluded? && !approved?
   end
 
   def file_reference
@@ -71,12 +81,34 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def category_description
-    if category.present?
-      desc = PermitCategory.find_by(code: category).description
-      desc.truncate(150, separator: /\s/, ommission: '...')
+    desc = transaction_detail.category_description
+    return desc unless desc.blank?
+
+    # category description is not present until the user generates
+    # a transaction file. However, is should probably be included
+    # in a TTBB export if a category has been set even at the risk
+    # of the category description changing between assignment and 
+    # file generation
+    if transaction_detail.unbilled? && category.present?
+      pc = permit_store.code_for_financial_year(category, tcm_financial_year)
+      desc = pc.description unless pc.nil?
+    end
+    desc
+  end
+
+  def category_locked
+    transaction_detail.suggested_category && transaction_detail.suggested_category.admin_lock?
+  end
+
+  def can_update_category?
+    if category_locked
+      # if the current_user is an admin we can allow editing
+      @user && @user.admin?
+    else
+      true
     end
   end
-  
+
   def baseline_charge
     if charge_calculated? && !charge_calculation_error?
       (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
@@ -142,6 +174,10 @@ class TransactionDetailPresenter < SimpleDelegator
     temporary_cessation? ? 'Y' : 'N'
   end
 
+  def temporary_cessation_yes_no
+    temporary_cessation ? 'Yes' : 'No'
+  end
+
   def period
     "#{transaction_detail.period_start.strftime("%d/%m/%y")} - #{transaction_detail.period_end.strftime("%d/%m/%y")}"
   end
@@ -171,6 +207,10 @@ class TransactionDetailPresenter < SimpleDelegator
     txt
   end
 
+  def pretty_status
+    status.to_s.capitalize
+  end
+
   def charge_amount
     tcm_charge
     # charge = transaction_detail.charge_calculation
@@ -193,8 +233,16 @@ class TransactionDetailPresenter < SimpleDelegator
     TransactionCharge.extract_calculation_error(transaction_detail)
   end
 
+  def confidence_level
+    transaction_detail.suggested_category.confidence_level unless transaction_detail.suggested_category.nil?
+  end
+
 protected
   def transaction_detail
     __getobj__
+  end
+
+  def permit_store
+    @permit_store ||= PermitStorageService.new(regime)
   end
 end

@@ -1,0 +1,23 @@
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><span class='sr-only'>Details</span></th>
+      <th><%= sortable :file_reference, view_model %></th>
+      <th><%= sortable :file_date, view_model %></th>
+      <th><%= sortable :customer_reference, view_model %></th>
+      <th><%= sortable :consent_reference, view_model %></th>
+      <th><%= sortable :version, view_model %></th>
+      <th><%= sortable :discharge, view_model %></th>
+      <th><%= sortable :variation, view_model %></th>
+      <th><%= sortable :period, view_model %></th>
+      <th><%= sortable :excluded_reason, view_model %></th>
+      <th class="text-right"><%= sortable :amount, view_model %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% view_model.present_paged_transactions.each do |transaction| %>
+      <%= render partial: 'cfd_transaction', locals: { transaction: transaction,
+      data_path: regime_transaction_path(view_model.regime, transaction) } %>
+    <% end %>
+  </tbody>
+</table>

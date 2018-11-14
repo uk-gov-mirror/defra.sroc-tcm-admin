@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180504135421) do
+ActiveRecord::Schema.define(version: 20180913134601) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,10 +62,11 @@ ActiveRecord::Schema.define(version: 20180504135421) do
     t.string "code", null: false
     t.string "description"
     t.string "status", null: false
-    t.integer "display_order", default: 1000, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["code", "regime_id"], name: "index_permit_categories_on_code_and_regime_id", unique: true
+    t.string "valid_from", default: "1819", null: false
+    t.string "valid_to"
+    t.index ["code", "regime_id", "valid_from"], name: "index_permit_categories_on_code_and_regime_id_and_valid_from", unique: true
     t.index ["regime_id"], name: "index_permit_categories_on_regime_id"
   end
 
@@ -122,6 +123,22 @@ ActiveRecord::Schema.define(version: 20180504135421) do
     t.datetime "updated_at", null: false
     t.index ["regime_id", "region"], name: "index_sequence_counters_on_regime_id_and_region", unique: true
     t.index ["regime_id"], name: "index_sequence_counters_on_regime_id"
+  end
+
+  create_table "suggested_categories", force: :cascade do |t|
+    t.bigint "transaction_detail_id"
+    t.string "category"
+    t.integer "confidence_level"
+    t.boolean "admin_lock", default: false, null: false
+    t.boolean "overridden", default: false, null: false
+    t.string "suggestion_stage", null: false
+    t.string "logic", null: false
+    t.bigint "matched_transaction_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["confidence_level"], name: "index_suggested_categories_on_confidence_level"
+    t.index ["matched_transaction_id"], name: "index_suggested_categories_on_matched_transaction_id"
+    t.index ["transaction_detail_id"], name: "index_suggested_categories_on_transaction_detail_id"
   end
 
   create_table "system_configs", force: :cascade do |t|
@@ -202,6 +219,11 @@ ActiveRecord::Schema.define(version: 20180504135421) do
     t.string "tcm_financial_year"
     t.boolean "excluded", default: false, null: false
     t.string "excluded_reason"
+    t.string "category_description"
+    t.boolean "approved_for_billing", default: false, null: false
+    t.bigint "approver_id"
+    t.datetime "approved_for_billing_at"
+    t.index ["approver_id"], name: "index_transaction_details_on_approver_id"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"
@@ -281,5 +303,7 @@ ActiveRecord::Schema.define(version: 20180504135421) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "suggested_categories", "transaction_details", column: "matched_transaction_id"
+  add_foreign_key "transaction_details", "users", column: "approver_id"
   add_foreign_key "transaction_files", "users"
 end

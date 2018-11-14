@@ -1,4 +1,19 @@
 $text-col: theme-color("dark");
+// $help-text-col: theme-color("gray");
+
+.help-text {
+  // color: $help-text-col;
+  color: $gray-600;
+}
+
+.timeline {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.table-sm {
+  font-size: 0.85rem;
+}
 
 .transaction-summary {
   // dt:after {
@@ -40,13 +55,29 @@ $text-col: theme-color("dark");
   margin-bottom: 0.75rem;
 }
 
-.error-popup a {
+.error-popup a, .error-popup button {
+  background-color: transparent;
   color: #660000;
 }
 
-.exclude-button {
-  margin-top: 0.75em;
+.approve-button {
+  // margin-bottom: 0.5em;
   margin-left: 0;
+  position: relative;
+}
+
+td.control-column {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+tr.error-bg {
+  color: theme-color('light');
+  background-color: theme-color('danger');
+}
+
+tr.success-bg {
+  background-color: theme-color('success');
 }
 
 tr.excluded {
@@ -59,6 +90,51 @@ tr.excluded {
   text-decoration: none;
 }
 
-.exclude-button:checked {
-  margin-top: .25em;
+// .exclude-button:checked {
+//   margin-top: .25em;
+// }
+
+.sortable-header {
+  white-space: nowrap;
+}
+
+@mixin dot($dot_color) {
+  height: 1em;
+  width: 1em;
+  background-color: $dot_color;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.green-dot {
+  @include dot(#0b0);
+}
+
+.amber-dot {
+  @include dot(#fb0);
+}
+
+.red-dot {
+  @include dot(#f00);
+}
+
+.temporary-cessation-select {
+  min-width: 3rem;
+}
+
+.table-sm td a.btn {
+  color: $text-col;
+  padding: 0 4px;
+}
+
+td.details-button-column {
+  padding: 0 !important;
+}
+
+td.indicator-column {
+  padding-left: 0;
+}
+
+.show-details-button {
+  background-color: transparent;
 }

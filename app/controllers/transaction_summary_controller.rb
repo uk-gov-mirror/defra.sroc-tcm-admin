@@ -7,16 +7,23 @@ class TransactionSummaryController < ApplicationController
   # GET /regimes/:regime_id/transaction_summary
   # GET /regimes/:regime_id/transaction_summary.json
   def index
+    @region = params.fetch(:region, '')
     respond_to do |format|
-      format.js
-      format.json do
-        region = params.fetch(:region, '')
-        @summary = transaction_summary.summarize(region)
-        render json: @summary
+      format.html do
+        if request.xhr?
+          @summary = Query::TransactionSummary.call(regime: @regime, region: @region)
+          @summary.title = "Generate Transaction File"
+          @summary.path = regime_transaction_files_path(@regime)
+          render partial: 'shared/summary_dialog', locals: { summary: @summary }
+        end
       end
-      format.any do
-        head :not_acceptable
-      end
+      # format.json do
+      #   @summary = transaction_summary.summarize(@region)
+      #   render json: @summary
+      # end
+      # format.any do
+      #   head :not_acceptable
+      # end
     end
   end
 

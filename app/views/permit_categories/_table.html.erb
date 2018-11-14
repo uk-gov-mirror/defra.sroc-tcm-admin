@@ -1,0 +1,35 @@
+<div class="tcm-table permit-categories"
+     data-path="<%= regime_permit_categories_path(@regime) %>"
+     data-financial-year="<%= view_model.financial_year %>"
+     data-search="<%= view_model.search %>"
+     data-page="<%= view_model.page %>"
+     data-per-page="<%= view_model.per_page %>"
+     data-sort-column="<%= view_model.sort %>"
+     data-sort-direction="<%= view_model.sort_direction %>">
+     <%= render partial: 'search_bar', locals: { view_model: view_model } %>
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><%= sortable :code, view_model %></th>
+      <th><%= sortable :description, view_model %></th>
+      <th>
+        <span class='sr-only'>Actions</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% view_model.permit_categories.each do |category| %>
+      <tr id="<%= category.id %>" class="<%= category.status %>">
+        <td><%= category.code %></td>
+        <td><%= category.description %></td>
+        <td class="align-middle control-column">
+          <%= link_to edit_regime_permit_category_path(@regime, category, fy: @financial_year),
+            class: "btn btn-sm btn-success" do -%>Edit<span class="sr-only"> permit category with code <%= category.code %></span>
+          <% end -%>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= render partial: "pagination", locals: { view_model: view_model } %>
+</div>

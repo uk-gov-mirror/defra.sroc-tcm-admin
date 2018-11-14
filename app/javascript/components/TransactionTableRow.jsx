@@ -90,48 +90,58 @@ export default class TransactionTableRow extends React.Component {
       if (c.editable && (!excluded || c.name === 'excluded')) {
         if (c.name === 'sroc_category') {
           const categories = this.props.categories
-          const catId = 'category-' + row['id']
+          const catId = 'category-' + row.id
           const helpTxt = this.accessHelpText(c, row)
 
-          return (
-            <td key={c.name} className={clz}>
-              <label htmlFor={catId} className='sr-only'>
-                {helpTxt}
-              </label>
-              <SelectionCell
-                id={catId}
-                name={c.name}
-                value={row[c.name]}
-                options={categories}
-                onChange={this.onChangeCategory}
-              />
-            </td>
-          )
+          if (row['can_update_category']) {
+            return (
+              <td key={c.name} className={clz + ' control-column'}>
+                <label htmlFor={catId} className='sr-only'>
+                  {helpTxt}
+                </label>
+                <SelectionCell
+                  id={catId}
+                  name={c.name}
+                  value={row[c.name]}
+                  options={categories}
+                  onChange={this.onChangeCategory}
+                />
+              </td>
+            )
+          } else {
+            return (
+              <td key={c.name} className={clz}>
+                { row[c.name] }
+              </td>
+            )
+          }
         } else if (c.name === 'temporary_cessation') {
-          const tcId = 'tc-' + row['id']
+          const tcId = 'tc-' + row.id
           const helpTxt = this.accessHelpText(c, row)
 
           return (
-            <td key={c.name} className={clz}>
-              <label htmlFor={tcId} className='sr-only'>
-                {helpTxt}
-              </label>
-              <OptionSelector
-                id={tcId}
-                className='form-control'
-                selectedValue={this.mapYN(row[c.name])}
-                options={ynOptions}
-                name={c.name}
-                onChange={this.onChangeTemporaryCessation}
-              />
+            <td key={c.name} className={clz + ' control-column'}>
+              <div className='tmp-cessation'>
+                <label htmlFor={tcId} className='sr-only'>
+                  {helpTxt}
+                </label>
+                <OptionSelector
+                  id={tcId}
+                  className='form-control'
+                  selectedValue={this.mapYN(row[c.name])}
+                  options={ynOptions}
+                  name={c.name}
+                  onChange={this.onChangeTemporaryCessation}
+                />
+              </div>
             </td>
           )
         } else if (c.name === 'excluded') {
-          const exId = 'ex-' + row['id']
+          const exId = 'ex-' + row.id
           const exHelpTxt = this.excludedHelpText(c, row)
 
           return (
-            <td key={c.name}>
+            <td key={c.name} className={clz + ' exclude-column'}>
                 <label htmlFor={exId} className='sr-only'>
                   {exHelpTxt}
                 </label>
@@ -146,15 +156,59 @@ export default class TransactionTableRow extends React.Component {
                 />
             </td>
           )
+        } else if (c.name === 'edit_link') {
+          const edId = 'ed-' + row.id
+          const helpTxt = this.accessHelpText(c, row)
+          const helpElem = (
+            <span className='sr-only'>{helpTxt}</span>
+          )
+          return (
+            <td key={edId}>
+              <button className="btn btn-sm btn-success"
+                onClick={() => this.props.onEditRow(row.id)}>
+                Edit <span className='sr-only'>{helpTxt}</span></button>
+            </td>
+          )
+        } else if (c.name === 'show_details') {
+          const shId = 'sh-' + row.id
+          const helpTxt = this.accessHelpText(c, row)
+          const helpElem = (
+            <span className='sr-only'>{helpTxt}</span>
+          )
+          return (
+            <td key={shId} className={clz + ' control-column'}>
+              <button className='btn btn-sm xxbtn-outline-secondary'
+                onClick={() => this.props.onShowRow(row.id)}>
+                <span className='sr-only'>{helpTxt}</span>
+                <span className="oi oi-magnifying-glass"></span>
+              </button>
+            </td>
+          )
         } else {
           return ( <td key={c.name}>Unknown editable</td>)
         }
       } else {
-        return (
-          <td key={c.name} className={clz}>
-            { row[c.name] }
-          </td>
-        )
+        if (c.name === 'confidence_level') {
+          const level = row[c.name]
+          let confidence = null
+          if (level) {
+            confidence = 
+              <span className={level + '-dot'}>
+                <span className='sr-only'>{ 'Confidence level ' + level }</span>
+              </span>
+          }
+          return (
+            <td key={c.name} className={clz}>
+              {confidence}
+            </td>
+          )
+        } else {
+          return (
+            <td key={c.name} className={clz}>
+              { row[c.name] }
+            </td>
+          )
+        }
       }
     })
       
@@ -175,7 +229,7 @@ export default class TransactionTableRow extends React.Component {
     if (row.error_message) {
       clz = 'alert-danger '
     }
-    if (row.excluded) {
+    if (row.excluded || row.status === 'excluded') {
       clz = clz + 'excluded'
     }
     return (

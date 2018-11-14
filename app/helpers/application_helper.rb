@@ -43,32 +43,57 @@ module ApplicationHelper
     date.strftime(fmt)
   end
 
-  def sortable(name)
-    sorted = params[:sort] == name.to_s
-    sort_dir = sorted ? params.fetch(:sort_direction, 'asc') : 'desc'
-    options = {
-      controller: controller_name,
-      action: 'index',
-      regime_id: @regime.slug,
-      sort: name,
-      sort_direction: switch_direction(sort_dir),
-      page: 1,
-      per_page: params[:per_page],
-      search: params[:search]
-    }
-    if sorted
+  def sortable(name, view_model)
+    sort_col = view_model.sort.to_sym
+    sort_dir = view_model.sort_direction
+
+    cls = 'sort-link'
+    if name.to_sym == sort_col
       span = "<span class='oi oi-caret-#{top_or_bottom(sort_dir)}'></span>"
+      cls = cls + " sorted sorted-#{sort_dir}"
     else
       span = ''
     end
 
-    link_to(url_for(options)) do
+    link_to('#', class: cls, data: { column: name }) do
       "#{th(name)} #{span}".html_safe
     end
   end
 
+  # def sortable(name, default_col = 'customer_reference')
+  #   sorted = params.fetch(:sort, default_col) == name.to_s
+  #   sort_dir = sorted ? params.fetch(:sort_direction, 'asc') : 'desc'
+  #   # options = {
+  #   #   controller: controller_name,
+  #   #   action: 'index',
+  #   #   regime_id: @regime.slug,
+  #   #   sort: name,
+  #   #   sort_direction: switch_direction(sort_dir),
+  #   #   page: 1,
+  #   #   per_page: params[:per_page],
+  #   #   search: params[:search]
+  #   # }
+  #   cls = "sort-link"
+  #   if sorted
+  #     span = "<span class='oi oi-caret-#{top_or_bottom(sort_dir)}'></span>"
+  #     cls = cls + " sorted sorted-#{sort_dir}"
+  #   else
+  #     span = ''
+  #   end
+  #
+  #   # link_to(url_for(options)) do
+  #   link_to('#', class: cls, data: { column: name }) do
+  #     "#{th(name)} #{span}".html_safe
+  #   end
+  # end
+
+  def view_scope
+    "table.heading.#{controller_name}"
+  end
+
   def th(name)
-    t(name, scope: 'table.heading')
+    t(name, scope: view_scope)
+    # t(name, scope: 'table.heading')
   end
 
   def switch_direction(dir)
@@ -81,5 +106,21 @@ module ApplicationHelper
 
   def top_or_bottom(dir)
     dir == 'asc' ? 'top' : 'bottom'
+  end
+
+  def param_or_cookie(key, default_value = nil)
+    v = params.fetch(key, nil)
+    v = cookies.fetch(key, default_value) if v.blank?
+    v
+  end
+
+  def app_version_info
+    if File.exist? Rails.root.join("APPVERSION")
+      File.read(Rails.root.join("APPVERSION")).chomp
+    elsif File.exist? Rails.root.join("REVISION")
+      File.read(Rails.root.join("REVISION")).chomp
+    end
+  rescue => e
+    TcmLogger.notify(e)
   end
 end

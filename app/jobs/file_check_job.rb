@@ -5,7 +5,9 @@ class FileCheckJob < ApplicationJob
     if SystemConfig.config.start_import
       begin
         # Look to see whether there are any files that need processing
-        service = FileStorageService.new
+        user = User.system_account
+        Thread.current[:current_user] = user
+        service = FileStorageService.new(user)
         importer = TransactionFileImporter.new
 
         files = service.list_files_in(:import)
@@ -31,6 +33,15 @@ class FileCheckJob < ApplicationJob
               # service.store_file_in(:export, out_file.path, f)
               service.delete_file_from(:import, f)
               success += 1
+
+              if transaction.regime.water_quality?
+                begin
+                  processor = category_processor(transaction, user)
+                  processor.suggest_categories unless processor.nil?
+                rescue => e
+                  Rails.logger.warn("Failed when suggesting permits: #{e.message}")
+                end
+              end
             else
               raise Exceptions::TransactionFileError, "File generated invalid transaction record [#{f}]"
             end
@@ -53,6 +64,10 @@ class FileCheckJob < ApplicationJob
         SystemConfig.config.stop_import
       end
     end
+  end
+
+  def category_processor(header, user)
+    "Permits::#{header.regime.slug.capitalize}CategoryProcessor".constantize.new(header, user)
   end
 
   def quarantine(service, tmp_file, filename)
