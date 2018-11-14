@@ -1,5 +1,6 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  config.web_console.whitelisted_ips = '10.0.0.0/8'
 
   # recompile webpack files as we make changes
   config.x.webpacker[:dev_server_host]

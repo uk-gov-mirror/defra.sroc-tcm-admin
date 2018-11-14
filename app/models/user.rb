@@ -6,7 +6,7 @@ class User < ApplicationRecord
   has_many :regimes, -> { merge(RegimeUser.enabled) }, through: :regime_users
   has_many :audit_logs, inverse_of: :user
   has_many :transaction_files, inverse_of: :user
-
+  has_many :approved_transactions, class_name: 'TransactionDetail', foreign_key: :approver_id, inverse_of: :approver
   after_save :ensure_a_default_regime_is_set
 
   accepts_nested_attributes_for :regime_users
@@ -21,6 +21,10 @@ class User < ApplicationRecord
   validates :last_name, presence: true
   validate :at_least_one_regime_selected
   validate :password_complexity
+
+  def self.system_account
+    find_by!(email: 'system@example.com')
+  end
 
   def full_name
     first_name + " " + last_name

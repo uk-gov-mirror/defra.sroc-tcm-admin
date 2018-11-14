@@ -7,20 +7,7 @@
 <%= form_with(model: [@regime, @upload], local: true,
               class: "annual-billing-upload",
               html: { multipart: true } ) do |form| %>
-  <% if @upload.errors.any? %>
-    <div class="row">
-      <div class="col">
-        <div id="error_explanation" class="alert error-banner" role="alert">
-          <h2 class="heading-small">Unable to process the selected file</h2>
-          <ul class="list-unstyled">
-            <% @upload.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
-      </div>
-    </div>
-  <% end %>
+  <%= error_header(@upload, title: "Unable to proceed") %>
   <div class="row">
     <div class="col">
       <p>Select the annual billing data file to upload (<strong>CSV</strong> format).</p>

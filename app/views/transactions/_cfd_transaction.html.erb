@@ -1,0 +1,84 @@
+<tr id=<%= transaction.id %>
+    class="<%= transaction_row_class(transaction) %>"
+>
+  <td class="align-middle details-button-column">
+    <button class="btn btn-sm show-details-button"
+      data-path="<%= data_path %>">
+      <span class='sr-only'>Show details for Consent <%= transaction.consent_reference %></span>
+      <span class="aria-hidden oi oi-magnifying-glass"></span>
+    </button>
+  </td>
+  <td class="align-middle">
+    <%= transaction.original_filename %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.original_file_date_table %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.customer_reference %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.consent_reference %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.version %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.discharge_reference %>
+  </td>
+  <td class="align-middle control-column">
+    <% if transaction.can_update_category? && transaction.editable? %>
+      <%= category_select_tag transaction %>
+    <% else %>
+      <%= transaction.category %>
+    <% end %>
+  </td>
+  <td class="align-middle indicator-column">
+    <% if !transaction.category_overridden? %>
+      <%= confidence_dot(transaction.confidence_level) %>
+    <% end %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.clean_variation_percentage %>
+  </td>
+  <td class="align-middle control-column">
+    <% if transaction.editable? %>
+      <%= select_tag :temporary_cessation,
+        temporary_cessation_options(transaction.temporary_cessation),
+        id: "tc-#{transaction.id}", class: "form-control temporary-cessation-select" %>
+    <% else %>
+      <%= transaction.temporary_cessation_flag %>
+    <% end %>
+  </td>
+  <td class="align-middle">
+    <%= transaction.period %>
+  </td>
+  <td class="align-middle text-right">
+    <%= transaction.amount %>
+  </td>
+  <% if transaction.charge_calculation_error? %>
+    <td class="align-middle error-popup">
+      <button type="button"
+              class="btn btn-sm"
+              title="Error"
+              data-container="body"
+              data-toggle="popover"
+              data-placement="left"
+              data-content="<%= transaction.error_message %>">
+        <span class="oi oi-warning" aria-hidden="true"></span>
+        <span class="sr-only">Error details</span>
+      </button>
+    </td>
+  <% else %>
+    <td class="align-middle approve-column">
+      <% if transaction.approved? || transaction.ready_for_approval? %>
+        <% apr_id = "apr#{transaction.id}" %>
+        <% desc = "Billing Approval for Consent #{transaction.consent_reference}" %>
+        <label for="<%= apr_id %>" class="sr-only"><%= desc %></label>
+        <%= check_box_tag :approved_for_billing, true,
+          transaction.approved_for_billing, id: apr_id,
+          class: "form-check-input approve-button", title: desc %>
+      <% end %>
+    </td>
+  <% end %>
+</tr>

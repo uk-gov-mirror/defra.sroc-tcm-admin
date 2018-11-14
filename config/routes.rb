@@ -11,8 +11,11 @@ Rails.application.routes.draw do
   end
 
   resources :regimes, only: [] do
-    resources :permit_categories, only: [:index]
-    resources :transactions, only: [:index, :show, :edit, :update]
+    resources :permit_categories  #, only: [:index]
+    resources :permit_categories_lookup, only: [:index]
+    resources :transactions, only: [:index, :show, :edit, :update] do
+      put 'approve', on: :collection
+    end
     resources :history, only: [:index, :show]
     resources :retrospectives, only: [:index, :show]
     resources :exclusions, only: [:index]

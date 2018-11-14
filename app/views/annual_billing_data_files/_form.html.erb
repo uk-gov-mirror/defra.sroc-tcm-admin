@@ -1,15 +1,5 @@
 <%= form_with(model: [@regime, upload], local: true, html: { multipart: true } ) do |form| %>
-  <% if upload.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(upload.errors.count, "error") %> prohibited this file from being processed:</h2>
-
-      <ul>
-      <% upload.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= error_header(upload) %>
 
   <div class="col-lg-6">
     <div class="form-group">

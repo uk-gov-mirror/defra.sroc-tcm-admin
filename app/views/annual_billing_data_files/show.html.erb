@@ -1,27 +1,35 @@
-<% content_for :head do %>
-  <meta name="turbolinks-cache-control000000" content="no-cache">
-  <%= javascript_pack_tag 'transactions' %>
-<% end %>
 <div class="row mb-4">
   <div class="col">
     <h1 id="annual-billing-data-heading">Annual Billing Data File Details</h1>
   </div>
 </div>
-<div id="data-file-view"
-     data-regime="<%= @regime.slug %>"
-     data-sort-col="line_number"
-     data-sort-dir="asc"
-     data-path="<%= regime_annual_billing_data_file_path(@regime, @upload, format: :json) %>"
-     data-filename="<%= File.basename @upload.filename %>"
-     data-upload-date="<%= formatted_date(@upload.created_at, true) %>"
-     data-status="<%= @upload.status.humanize %>"
-     data-success-count="<%= @upload.success_count %>"
-     data-failed-count="<%= @upload.failed_count %>"
-     data-errors="<%= @errors.to_json %>">
+<div class="panel">
+  <dl class="row">
+    <dt class="col-sm-4 col-md-3">Filename</dt>
+    <dd class="col-sm-7 col-md-8"><%= File.basename @view_model.upload.filename %></dd>
+    <dt class="col-sm-4 col-md-3">Date uploaded</dt>
+    <dd class="col-sm-7 col-md-8"><%= formatted_date(@view_model.upload.created_at, true) %></dd>
+    <dt class="col-sm-4 col-md-3">Status</dt>
+    <dd class="col-sm-7 col-md-8"><%= @view_model.upload.status.humanize %></dd>
+    <dt class="col-sm-4 col-md-3">Records updated</dt>
+    <dd class="col-sm-7 col-md-8"><%= @view_model.upload.success_count %></dd>
+    <dt class="col-sm-4 col-md-3">Errors detected</dt>
+    <dd class="col-sm-7 col-md-8"><%= @view_model.upload.failed_count %></dd>
+  </dl>
 </div>
+<% if @view_model.upload.failed_count.positive? %>
+  <div>
+    <div class="row mt-2">
+      <div class="col">
+        <h2>Errors</h2>
+      </div>
+    </div>
+    <%= render partial: "table", locals: { view_model: @view_model } %>
+  </div>
+<% end %>
 <div class="row">
   <div class="col-lg-6 actions">
-    <%= link_to 'Back', regime_annual_billing_data_files_path(@regime),
+    <%= link_to 'Back', regime_annual_billing_data_files_path(@view_model.regime),
       class: "btn btn-secondary", role: "button" %>
   </div>
 </div>

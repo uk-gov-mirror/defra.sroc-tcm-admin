@@ -31,9 +31,9 @@ class RetrospectiveFilesController < ApplicationController
     # Accept and continue to create transaction file
     msg = "Successfully generated retrospective file <b>#{retro_file.filename}</b>"
 
-    # flash[:success] = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
     flash[:success] = msg
-    redirect_to regime_transactions_path(@regime, view_mode: 'retrospective')
+    # force page 1 on redirect to prevent possibile invalid page selection
+    redirect_to regime_retrospectives_path(@regime, page: 1)
   end
 
   # GET /regimes/:regimes_id/transaction_files/1/edit

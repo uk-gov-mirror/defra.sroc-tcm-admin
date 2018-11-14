@@ -1,14 +1,16 @@
 require 'test_helper.rb'
 
 class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
+  include ChargeCalculation
+
   def setup
     @regime = regimes(:cfd)
-    @user = users(:billing_admin) 
+    @user = users(:billing_admin)
     @service = AnnualBillingDataFileService.new(@regime, @user)
-    # @service.stubs(:invoke_charge_calculation).returns(dummy_charge)
-    @calculator = mock('calculator')
-    @calculator.stubs(:calculate_transaction_charge).returns(dummy_charge)
-    @service.stubs(:calculator).returns(@calculator)
+
+    build_mock_calculator
+    # @calculator = build_mock_calculator
+    # @service.stubs(:calculator).returns(@calculator)
   end
 
   def test_new_upload_returns_instance_of_AnnualBillingDataFile
@@ -45,7 +47,7 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
 
   def test_import_updates_matching_transactions_in_regime
     file = file_fixture('cfd_abd.csv')
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     assert_nil transaction.category
     refute transaction.temporary_cessation
 
@@ -59,7 +61,7 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
 
   def test_import_calculates_charge_for_updated_transactions
     file = file_fixture('cfd_abd.csv')
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     assert_nil transaction.charge_calculation
 
     upload = prepare_upload(file)
@@ -71,7 +73,7 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
 
   def test_import_extracts_and_converts_calculated_charge_amount
     file = file_fixture('cfd_abd.csv')
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     assert_nil transaction.charge_calculation
 
     upload = prepare_upload(file)
@@ -102,7 +104,7 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
 
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     transaction_2 = transaction.dup
     transaction_2.reference_1 = "ANNF/1754/1/1"
     transaction_2.save
@@ -116,7 +118,7 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     file = file_fixture('cfd_abd_zero_variation.csv')
     upload = prepare_upload(file)
 
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     transaction_2 = transaction.dup
     transaction_2.reference_1 = "ANNF/1754/1/1"
     transaction_2.save
@@ -134,7 +136,7 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
 
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     transaction_2 = transaction.dup
     transaction_2.reference_1 = "ANNF/1754/1/1"
     transaction_2.save
@@ -147,7 +149,7 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
   def test_import_records_total_and_errors
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     transaction_2 = transaction.dup
     transaction_2.reference_1 = "ANNF/1754/1/1"
     transaction_2.save
@@ -161,10 +163,10 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
   def test_import_creates_audit_records
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
-    transaction = transaction_details(:cfd)
+    transaction = sroc_transaction
     transaction_2 = transaction.dup
     transaction_2.reference_1 = "ANNF/1754/1/1"
-    transaction_2.save
+    transaction_2.save!
 
     assert_difference('AuditLog.count', 2) do
       @service.import(upload, file)
@@ -175,7 +177,8 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
   def test_import_creates_audit_log_of_changes
     file = file_fixture('cfd_abd.csv')
     upload = prepare_upload(file)
-    transaction = transaction_details(:cfd)
+
+    transaction = sroc_transaction
 
     @service.import(upload, file)
 
@@ -195,22 +198,12 @@ class AnnualBillingDataFileServiceTest < ActiveSupport::TestCase
     upload
   end
 
-  def dummy_charge
-    {
-      "uuid" => "8ae80f67-3879-4dd0-b03b-8531f986740d0",
-      "generatedAt" => 2.seconds.ago.iso8601,
-      "calculation" => {
-        "chargeValue" => 1994.62,
-        "environmentFlag" => "TEST",
-        "decisionPoints" => {
-          "baselineCharge" => 8865,
-          "percentageAdjustment" => 3989.25,
-          "temporaryCessation" => 1994.625,
-          "complianceAdjustment" => 1994.625,
-          "chargeType" => nil
-        },
-        "messages" => nil
-      }
-    }
+  def sroc_transaction
+    transaction = transaction_details(:cfd)
+    transaction.tcm_financial_year = '1819'
+    transaction.period_start = '1-APR-2018'
+    transaction.period_end = '31-MAR-2019'
+    transaction.save!
+    transaction
   end
 end

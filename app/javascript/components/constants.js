@@ -44,6 +44,12 @@ Constants.PAS_COLUMNS = {
       sortable: true,
       editable: true
     }, {
+      name: 'confidence_level',
+      label: '',
+      accessLabel: 'SRoC Category Confidence Level',
+      sortable: false,
+      editable: false
+    }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
@@ -67,6 +73,13 @@ Constants.PAS_COLUMNS = {
       sortable: false,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'show_details',
+      label: '',
+      accessHelp: 'Show more transaction details for Permit ',
+      accessHelpColumn: 'permit_reference',
+      sortable: false,
+      editable: true
     }
   ],
   historic: [
@@ -276,6 +289,12 @@ Constants.CFD_COLUMNS = {
       sortable: true,
       editable: true
     }, {
+      name: 'confidence_level',
+      label: '',
+      accessLabel: 'SRoC Category Confidence Level',
+      sortable: false,
+      editable: false
+    }, {
       name: 'variation',
       label: '%',
       accessLabel: 'Variation Percentage',
@@ -300,6 +319,13 @@ Constants.CFD_COLUMNS = {
       sortable: false,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'show_details',
+      label: '',
+      accessHelp: 'Show more transaction details for Consent ',
+      accessHelpColumn: 'consent_reference',
+      sortable: false,
+      editable: true
     }
   ],
   historic: [
@@ -522,6 +548,12 @@ Constants.WML_COLUMNS = {
       sortable: true,
       editable: true
     }, {
+      name: 'confidence_level',
+      label: '',
+      accessLabel: 'SRoC Category Confidence Level',
+      sortable: false,
+      editable: false
+    }, {
       name: 'compliance_band',
       label: 'Compliance Band',
       sortable: true,
@@ -545,6 +577,13 @@ Constants.WML_COLUMNS = {
       sortable: false,
       editable: false,
       rightAlign: true
+    }, {
+      name: 'show_details',
+      label: '',
+      accessHelp: 'Show more transaction details for Permit ',
+      accessHelpColumn: 'permit_reference',
+      sortable: false,
+      editable: true
     }
   ],
   historic: [
@@ -692,6 +731,40 @@ Constants.DATA_FILE_COLUMNS = [
     sortable: true,
     editable: false
   }
+]
+
+Constants.PERMIT_CATEGORY_COLUMNS = [
+  {
+    name: 'code',
+    label: 'Code',
+    sortable: true,
+    editable: false
+  }, {
+    name: 'description',
+    label: 'Description',
+    sortable: true,
+    editable: false
+  }, {
+    name: 'edit_link',
+    label: '',
+    accessHelp: ' permit category ',
+    accessHelpColumn: 'code',
+    sortable: false,
+    editable: true
+  }
+]
+
+Constants.FINANCIAL_YEARS = [
+  { label: '18/19', value: '1819' },
+  { label: '19/20', value: '1920' },
+  { label: '20/21', value: '2021' },
+  { label: '21/22', value: '2122' },
+  { label: '22/23', value: '2223' },
+  { label: '23/24', value: '2324' },
+  { label: '24/25', value: '2425' },
+  { label: '25/26', value: '2526' },
+  { label: '26/27', value: '2627' },
+  { label: '27/28', value: '2728' }
 ]
 
 Constants.TRANSACTION_DOWNLOAD_LIMIT = 15000

@@ -1,41 +1,45 @@
 # frozen_string_literal: true
 
 class ExclusionsController < ApplicationController
-  include RegimeScope
+  include RegimeScope, CsvExporter, QueryTransactions, ViewModelBuilder
+
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
 
   # GET /regimes/:regime_id/exclusions
   # GET /regimes/:regime_id/exclusions.json
   def index
-    regions = transaction_store.exclusion_regions
-    @region = params.fetch(:region, '')
-    @region = regions.first unless @region.blank? || regions.include?(@region)
+    @view_model = build_exclusions_view_model
+
+    # @region = params.fetch(:region, cookies.fetch(:region, ''))
+    # @region = '' if @region == 'all'
+    #
+    # pg = params.fetch(:page, cookies.fetch(:page, 1))
+    # per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
+    #
+    # @financial_years = Query::FinancialYears.call(regime: @regime)
+    # @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
+    # @financial_year = '' unless @financial_years.include? @financial_year
+    #
+    # @transactions = Query::ExcludedTransactions.call(query_params)
 
     respond_to do |format|
       format.html do
-        render
-      end
-      format.js
-      format.json do
-        q = params.fetch(:search, "")
-        fy = params.fetch(:fy, '')
-        pg = params.fetch(:page, 1)
-        per_pg = params.fetch(:per_page, 10)
+        # @transactions = present_transactions(@transactions.page(pg).per(per_pg))
 
-        @transactions = transaction_store.excluded_transactions(
-          q,
-          fy,
-          pg,
-          per_pg,
-          @region,
-          params.fetch(:sort, :customer_reference),
-          params.fetch(:sort_direction, 'asc'))
-
-        financial_years = transaction_store.exclusion_financial_years.reject { |r| r.blank? }
-        @transactions = present_transactions(@transactions, @region, regions, financial_years)
-        render json: @transactions
+        if request.xhr?
+          render partial: 'table', locals: { view_model: @view_model }
+        else
+          render
+        end
       end
+      format.csv do
+        send_data csv.export(@view_model.csv_transactions), csv_opts
+        # send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
+      end
+      # format.json do
+      #   render json: present_transactions_for_json(@transactions.page(pg).per(per_pg))
+      # end
     end
   end
 
@@ -45,13 +49,18 @@ class ExclusionsController < ApplicationController
   end
 
   private
-    def present_transactions(transactions, selected_region, regions, financial_years)
-      name = "#{@regime.slug}_transaction_detail_presenter".camelize
-      presenter = str_to_class(name) || TransactionDetailPresenter
-      arr = Kaminari.paginate_array(presenter.wrap(transactions),
-                                    total_count: transactions.total_count,
-                                    limit: transactions.limit_value,
-                                    offset: transactions.offset_value)
+    def present_transactions(transactions)
+      Kaminari.paginate_array(presenter.wrap(transactions),
+                              total_count: transactions.total_count,
+                              limit: transactions.limit_value,
+                              offset: transactions.offset_value)
+    end
+
+    def present_transactions_for_json(transactions)
+      regions = Query::Regions.call(regime: @regime)
+      selected_region = params.fetch(:region, regions.first)
+      arr = present_transactions(transactions)
+
       {
         pagination: {
           current_page: arr.current_page,
@@ -72,6 +81,10 @@ class ExclusionsController < ApplicationController
       opts = regions.map { |r| { label: r, value: r } }
       opts = [{label: 'All', value: ''}] + opts if opts.count > 1
       opts
+    end
+
+    def financial_years
+      Query::FinancialYears.call(regime: @regime)
     end
 
     def financial_year_options(fy_list)

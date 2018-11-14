@@ -1,0 +1,60 @@
+<%= form_with(model: [@regime, permit_category], local: true) do |form| %>
+  <h2><%= "Financial Year #{pretty_financial_year @financial_year}"\
+    "#{' (Excluded)' if permit_category.excluded?}" -%></h2>
+  <%= error_header(permit_category) %>
+
+  <div class="col-lg-6">
+    <div class="form-group">
+      <%= form.label :code %>
+      <% if permit_category.new_record? %>
+        <%= form.text_field :code, id: :permit_category_code, class: "form-control" %>
+      <div class="panel pt-2 mt-2 pb-2 mb-4 help-text">
+        Code must be in dotted number format. It may have between
+        1 and 3 segments seperated by a period (.). Each segment
+        may be between 1 and 4 digits in length.<br/>
+        For example: 27, 9.23, 54.1.1234, 12.34.56
+      </div>
+      <% else %>
+        <%= form.text_field :code, class: "form-control", readonly: true %>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :description %>
+      <%= form.text_area :description, id: :permit_category_description,
+        maxlength: 150, class: "form-control", rows: 4 %>
+      <div class="panel pt-2 mt-2 pb-2 mb-4 help-text">
+        Description must not be longer than 150 characters and must not
+        contain any of the following characters: ?, ^, £, &le;, &ge;,
+        &mdash; (long dash).
+      </div>
+    </div>
+
+      <%= form.hidden_field :status %>
+      <%= form.hidden_field :valid_from %>
+      <%= form.hidden_field :valid_to %>
+      <%= hidden_field_tag :fy, @financial_year %>
+
+      <%= content_for :timeline %>
+
+    <div class="actions">
+      <% opts = { data: { turbolinks: false }} %>
+      <% if permit_category.new_record? %>
+        <%= form.submit opts.merge(class: "btn btn-primary") %>
+      <% else %>
+        <%= form.submit "Update description",
+          opts.merge(class: "btn btn-primary") %>
+        <% if permit_category.excluded? %>
+          <%= form.submit "Reinstate Category",
+            opts.merge(class: "btn btn-warning") %>
+        <% else %>
+          <%= form.submit "Remove Category", 
+            opts.merge(class: "btn btn-danger") %>
+        <% end %>
+      <% end %>
+      <%= link_to 'Cancel',
+        regime_permit_categories_path(@regime, fy: @financial_year),
+        opts.merge(class: 'btn btn-secondary', role: 'button') %>
+    </div>
+  </div>
+<% end %>

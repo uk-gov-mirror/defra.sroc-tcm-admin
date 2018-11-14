@@ -1,0 +1,14 @@
+<div class="tcm-table"
+     data-path="<%= regime_exclusions_path(view_model.regime) %>"
+     data-region="<%= view_model.region %>"
+     data-financial-year="<%= view_model.financial_year %>"
+     data-search="<%= view_model.search %>"
+     data-page="<%= view_model.page %>"
+     data-per-page="<%= view_model.per_page %>"
+     data-sort-column="<%= view_model.sort %>"
+     data-sort-direction="<%= view_model.sort_direction %>">
+     <%= render partial: 'search_bar', locals: { view_model: view_model,
+                                                 view_mode: 'excluded' } %>
+<%= render partial: view_model.table_partial_name, locals: { view_model: view_model } %>
+<%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions, include_export: false } %>
+</div>

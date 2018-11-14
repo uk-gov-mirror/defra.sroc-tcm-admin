@@ -1,0 +1,20 @@
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><%= sortable :file_reference, view_model %></th>
+      <th><%= sortable :file_date, view_model %></th>
+      <th><%= sortable :customer_reference, view_model %></th>
+      <th><%= sortable :permit_reference, view_model %></th>
+      <th><%= sortable :compliance_band, view_model %></th>
+      <th><%= sortable :period, view_model %></th>
+      <th class="text-right"><%= sortable :amount, view_model %></th>
+      <th><span class='sr-only'>Actions</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% view_model.present_paged_transactions.each do |transaction| %>
+      <%= render partial: 'wml_transaction', locals: { transaction: transaction,
+      data_path: regime_transaction_path(view_model.regime, transaction) } %>
+    <% end %>
+  </tbody>
+</table>

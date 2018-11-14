@@ -5,7 +5,7 @@
       <span class="sr-only"><%= raw(t 'views.pagination.last') %></span>
     </span>
   <% else %>
-    <%= link_to url, remote: remote, class: 'page-link' do %>
+    <%= link_to url, remote: remote, class: 'page-link', data: { page: current_page.total_pages } do %>
       <span aria-hidden="true">&raquo;</span>
       <span class="sr-only"><%= raw(t 'views.pagination.last') %></span>
     <% end %>

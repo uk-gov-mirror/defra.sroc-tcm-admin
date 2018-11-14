@@ -118,9 +118,11 @@ class AnnualBillingDataFileService
             elsif val.present?
               if col[:header] == :permit_category
                 # validate against categories first
-                if !regime.permit_categories.where(code: val).exists? 
-                  failed = true
-                end
+                # this needs to be against the new way of working now
+                # if !regime.permit_categories.where(code: val).exists 
+                failed = !Query::PermitCategoryExists.call(regime: @regime,
+                                                           category: val,
+                                                           financial_year: transaction.tcm_financial_year)
               elsif col[:header] == :variation
                 # check it's a positive number between 0 - 100
                 # will always be an integer as they round down any fractional values
@@ -156,7 +158,8 @@ class AnnualBillingDataFileService
         if !failed
           if transaction.changed?
             # (re)calculate the charge if the transaction has changed
-            transaction.charge_calculation = TransactionCharge.invoke_charge_calculation(calculator, presenter.new(transaction))
+            # transaction.charge_calculation = TransactionCharge.invoke_charge_calculation(calculator, presenter.new(transaction))
+            transaction.charge_calculation = CalculateCharge.call(transaction: transaction).charge_calculation
             if transaction.charge_calculation_error?
               # what should we do here? revoke the changes and mark as an error?
               upload.log_error(counter,
@@ -217,7 +220,7 @@ class AnnualBillingDataFileService
     Thread.current[:current_user] = user
   end
 
-  def calculator
-    @calculator ||= CalculationService.new
-  end
+  # def calculator
+  #   @calculator ||= CalculationService.new
+  # end
 end

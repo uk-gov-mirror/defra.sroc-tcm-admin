@@ -9,6 +9,8 @@ Minitest::Reporters.use!
 
 require 'mocha/mini_test'
 
+Dir[Rails.root.join("test/support/**/*.rb")].each { |f| require f }
+
 # remove http auth which is only for heroku deployment
 ENV['HEROKU'] = nil
 

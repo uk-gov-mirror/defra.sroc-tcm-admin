@@ -7,13 +7,11 @@ class TransactionFilesController < ApplicationController
   def create
     set_regime
     set_region
-    files = exporter.export
-    names = files.map(&:filename)
-    msg = "Successfully generated transaction #{'file'.pluralize(names.count)} "
-    msg += names.map { |f| "<b>#{f}</b>" }.join(", ")
+    file = exporter.export
+    msg = "Successfully generated transaction file <b>#{file.filename}</b>"
     flash[:success] = msg
-    # flash[:success] = "Successfully generated transaction file <b>#{transaction_file.filename}</b>"
-    redirect_to regime_transactions_path(@regime)
+    # force page 1 on redirect to prevent possibile invalid page selection
+    redirect_to regime_transactions_path(@regime, page: 1)
   end
 
   private

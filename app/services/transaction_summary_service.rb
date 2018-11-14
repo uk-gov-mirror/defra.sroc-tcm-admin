@@ -30,7 +30,6 @@ private
     credit_total = credits.sum
     invoice_total = invoices.sum
     excluded_count = excluded_query ? excluded_query.count : 0
-
     {
       credit_count:   credits.length,
       credit_total:   credit_total,

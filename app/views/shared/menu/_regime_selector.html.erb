@@ -7,14 +7,14 @@
        aria-haspopup="true"
        aria-expanded="false">
       Regime: <%= @regime.title %>
-  </a>
-  <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
-    <% current_user.regimes.order(:title).each do |r| %>
-      <%= link_to r.title,
-        menu_path(r, controller_name),
-        class: "dropdown-item" %>
-    <% end %>
-    <div>
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarRegimeSelectorLink">
+      <% current_user.regimes.order(:title).each do |r| %>
+        <%= link_to r.title,
+          menu_path(r, controller_name),
+          class: "dropdown-item" %>
+      <% end %>
+    </div>
   </li>
 <% else %>
   <li class="nav-item navbar-text mr-4">

@@ -27,7 +27,7 @@ export default class TransactionTableHeader extends React.Component {
   columnMarkup (col) {
     if (col.name === 'excluded') {
       if (col.editable) {
-        return <td key={col.name}/>
+        return <td key={col.name} className='exclude-column' />
       } else {
         return ''
       }
