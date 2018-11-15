@@ -42,4 +42,8 @@
       <span class="badge badge-pill badge-danger">Marked for Exclusion</span>
     <% end %>
   </dd>
+  <% if transaction.excluded? || transaction.permanently_excluded? %>
+    <dt>Exclusion Reason</dt>
+    <dd><%= transaction.excluded_reason %></dd>
+  <% end %>
 </dl>

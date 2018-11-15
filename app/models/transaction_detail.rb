@@ -108,6 +108,10 @@ class TransactionDetail < ApplicationRecord
     status == 'retrospective'
   end
 
+  def permanently_excluded?
+    status == 'excluded'
+  end
+
   def charge_calculated?
     charge_calculation.present?
   end
