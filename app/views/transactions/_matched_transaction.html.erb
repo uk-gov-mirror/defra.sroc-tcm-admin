@@ -17,15 +17,26 @@
           <% else %>
             <th><%= th :customer_reference %></th>
             <th><%= th :consent_reference %></th>
-            <th>Version</th>
-            <th>Discharge</th>
+            <th>
+              <span aria-hidden="true">Ver</span>
+              <span class="sr-only">Version</span>
+            </th>
+            <th>
+              <span aria-hidden="true">Dis</span>
+              <span class="sr-only">Discharge</span>
+            </th>
             <th><%= th :sroc_category %></th>
             <th><%= th :variation %></th>
           <% end %>
-          <th>Temporary Cessation</th>
+          <th>
+            <span aria-hidden="true">TC</span>
+            <span class="sr-only">Temporary Cessation</span>
+          </th>
           <th>Period</th>
           <th>File (TCM)</th>
-          <th>File Date (TCM)</th>
+          <% unless @regime.water_quality? %>
+            <th>File Date (TCM)</th>
+          <% end %>
           <th class="text-right">Amount (£)</th>
         </tr>
       </thead>
@@ -52,7 +63,9 @@
           <td><%= transaction.temporary_cessation_flag %></td>
           <td><%= transaction.period %></td>
           <td><%= transaction.generated_filename %></td>
-          <td><%= transaction.generated_file_date %></td>
+          <% unless @regime.water_quality? %>
+            <td><%= transaction.generated_file_date %></td>
+          <% end %>
           <td class="text-right"><%= transaction.amount %></td>
         </tr>
       </tbody>
