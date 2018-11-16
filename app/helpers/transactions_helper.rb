@@ -182,6 +182,11 @@ module TransactionsHelper
      c.description unless c.nil?
   end
 
+  def approval_check(approved)
+    "<span aria-hidden='true' class='oi oi-check'></span>" \
+      "<span class='sr-only'>Approved</span>".html_safe if approved
+  end
+
   def status_text(state)
     {
       billed: 'Billed',

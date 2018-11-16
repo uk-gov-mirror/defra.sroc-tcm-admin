@@ -5,56 +5,7 @@
 </div>
 <div class="row">
   <div class="col">
-    <table class="table table-sm table-responsive">
-      <thead>
-        <tr>
-          <td></td>
-          <% if @regime.waste_or_installations? %>
-            <th><%= th :customer_reference %></th>
-            <th><%= th :permit_reference %></th>
-            <th><%= th :sroc_category %></th>
-            <th><%= th :compliance_band %></th>
-          <% else %>
-            <th><%= th :customer_reference %></th>
-            <th><%= th :consent_reference %></th>
-            <th>Version</th>
-            <th>Discharge</th>
-            <th><%= th :category %></th>
-            <th><%= th :variation %></th>
-          <% end %>
-          <th>Temporary Cessation</th>
-          <th>Period</th>
-          <th class="text-right">Amount (£)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% transactions.each do |t| %>
-          <% transaction = present_transaction(t) %>
-          <tr>
-            <td>
-              <%= link_to regime_transaction_path(@regime, transaction),
-                class: 'btn btn-sm', role: 'button' do %>
-                <span class='sr-only'>Details for transaction for period <%= transaction.period %></span>
-                <span class='oi oi-magnifying-glass'></span>
-              <% end %>
-            </td>
-            <td><%= transaction.customer_reference %></td>
-            <td><%= transaction.permit_reference %></td>
-            <% if @regime.waste_or_installations? %>
-              <td><%= transaction.category %></td>
-              <td><%= transaction.compliance_band %></td>
-            <% else %>
-              <td><%= transaction.version %></td>
-              <td><%= transaction.discharge_reference %></td>
-              <td><%= transaction.category %></td>
-              <td><%= transaction.variation_percentage %></td>
-            <% end %>
-            <td><%= transaction.temporary_cessation_flag %></td>
-            <td><%= transaction.period %></td>
-            <td class="text-right"><%= transaction.amount %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <%= render partial: "#{@regime.to_param}_related_unbilled",
+      locals: { transactions: transactions } %>
   </div>
 </div>
