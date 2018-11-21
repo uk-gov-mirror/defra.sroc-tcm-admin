@@ -18,10 +18,21 @@ module Query
           or(q.where.not(reference_2: 'NA').
              where.not(reference_2: nil).
              where(reference_2: @transaction.reference_2))
+      elsif regime.water_quality?
+        q = q.where(at[:reference_1].matches("#{consent_reference}/%"))
       else
         q = q.where(reference_1: @transaction.reference_1)
       end
       q.order(:reference_1)
+    end
+  private
+    def consent_reference
+      m = /\A(.*)\/(?:\d+)\/(?:\d+)\z/.match(@transaction.reference_1)
+      if m.nil?
+        "invalid reference"
+      else
+        m[1]
+      end
     end
   end
 end
