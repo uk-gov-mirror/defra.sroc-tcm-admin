@@ -1,5 +1,5 @@
 module Query
-  class RelatedTransactions < QueryObject
+  class RelatedBilledTransactions < QueryObject
     def initialize(opts = {})
       @transaction = opts.fetch(:transaction)
     end
@@ -7,7 +7,7 @@ module Query
     def call
       regime = @transaction.regime
       at = TransactionDetail.arel_table
-      q = regime.transaction_details.unbilled.where.not(id: @transaction.id)
+      q = regime.transaction_details.historic.where.not(id: @transaction.id)
       if regime.installations?
         q = q.where.not(reference_3: nil).
           where.not(reference_3: 'NA').
@@ -27,7 +27,8 @@ module Query
           where(customer_reference: @transaction.customer_reference,
                 reference_1: @transaction.reference_1)
       end
-      q.order(:reference_1)
+      q = q.joins(:transaction_file).merge(TransactionFile.order(generated_at: :desc))
+      q
     end
   end
 end

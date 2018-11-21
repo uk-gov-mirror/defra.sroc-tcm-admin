@@ -7,18 +7,12 @@
       <th><%= th :customer_reference %></th>
       <th><%= th :permit_reference %></th>
       <th><%= th :sroc_category %></th>
-      <th><span class='sr-only'>Confidence level indicator</span></th>
+      <th><%= th :confidence_level_html %></th>
       <th><%= th :compliance_band %></th>
-      <th>
-        <span aria-hidden="true">TC</span>
-        <span class='sr-only'>Temporary Cessation</span>
-      </th>
-      <th>Period</th>
-      <th class="text-right">Amount (£)</th>
-      <th>
-        <span aria-hidden="true" class="oi oi-check"></span>
-        <span class='sr-only'>Approved for billing</span>
-      </th>
+      <th><%= th :temporary_cessation_html %></th>
+      <th><%= th :period %></th>
+      <th class="text-right"><%= th :amount %></th>
+      <th><%= th :approved_for_billing_html %></th>
     </tr>
   </thead>
   <tbody>

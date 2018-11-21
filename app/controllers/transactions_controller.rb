@@ -28,7 +28,11 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions/1
   # GET /regimes/:regime_id/transactions/1.json
   def show
-    @related_transactions = Query::RelatedTransactions.call(transaction: @transaction)
+    @related_unbilled_transactions = Query::RelatedUnbilledTransactions.call(
+      transaction: @transaction)
+    @related_billed_transactions = Query::RelatedBilledTransactions.call(
+      transaction: @transaction)
+
     @exclusion_reasons = Query::Exclusions.call(regime: @regime)
   end
 
@@ -45,16 +49,15 @@ class TransactionsController < ApplicationController
                                       attributes: transaction_params,
                                       user: current_user)
       @transaction = result.transaction
-
+      path = regime_transaction_path(@regime, @transaction)
       if result.success?
         format.html do
           if request.xhr?
             render partial: "#{@regime.to_param}_transaction",
               locals: { transaction: presenter.new(@transaction, current_user),
-                        data_path: regime_transaction_path(@regime, @transaction) }
+                        data_path: path }
           else
-            redirect_to regime_transaction_path(@regime, @transaction),
-              notice: 'Transaction was successfully updated.'
+            redirect_to path, notice: 'Transaction was successfully updated.'
           end
         end
         format.json {
@@ -62,16 +65,16 @@ class TransactionsController < ApplicationController
                          message: 'Transaction updated'
                         },
                         status: :ok,
-                        location: regime_transaction_path(@regime, @transaction)
+                        location: path
         }
       else
         format.html do
           if request.xhr?
             render partial: "#{@regime.to_param}_transaction",
-              locals: { transaction: presenter.new(@transaction, current_user) }
+              locals: { transaction: presenter.new(@transaction, current_user),
+                        data_path: path }
           else
-            redirect_to regime_transaction_path(@regime, @transaction),
-              notice: 'Transaction was not updated.'
+            redirect_to path, notice: 'Transaction was not updated.'
           end
         end
         format.json { render json: @transaction, status: :unprocessable_entity }

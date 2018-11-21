@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col">
+    <h2>Related billed transactions</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <%= render partial: "#{@regime.to_param}_related_billed",
+      locals: { transactions: transactions } %>
+  </div>
+</div>

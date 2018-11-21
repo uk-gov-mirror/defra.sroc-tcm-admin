@@ -1,0 +1,29 @@
+<table class="table table-sm table-responsive">
+  <thead>
+    <tr>
+      <th><span class='sr-only'>Details</span></th>
+      <th><%= th :customer_reference %></th>
+      <th><%= th :consent_reference %></th>
+      <th><%= th :version_html %></th>
+      <th><%= th :discharge_html %></th>
+      <th><%= th :sroc_category %></th>
+      <th><%= th :variation %></th>
+      <th><%= th :temporary_cessation_html %></th>
+      <th><%= th :period %></th>
+      <th class="text-right"><%= th :amount %></th>
+      <th><%= th :original_filename %></th>
+      <th><%= th :generated_filename %></th>
+      <th><%= th :generated_file_date %></th>
+      <th><%= th :tcm_transaction_reference %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.each do |t| %>
+      <% transaction = present_transaction(t) %>
+      <%= render partial: 'history/cfd_transaction', locals: {
+        transaction: transaction,
+        data_path: regime_transaction_path(@regime, transaction)
+      } %>
+    <% end %>
+  </tbody>
+</table>

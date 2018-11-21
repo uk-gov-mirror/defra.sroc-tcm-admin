@@ -1,0 +1,28 @@
+<table class="table table-sm table-responsive">
+  <thead>
+    <tr>
+      <th><span class='sr-only'>Details</span></th>
+      <th><%= th :customer_reference %></th>
+      <th><%= th :permit_reference %></th>
+      <th><%= th :original_permit_reference %></th>
+      <th><%= th :sroc_category %></th>
+      <th><%= th :compliance_band %></th>
+      <th><%= th :temporary_cessation_html %></th>
+      <th><%= th :period %></th>
+      <th class="text-right"><%= th :amount %></th>
+      <th><%= th :original_filename %></th>
+      <th><%= th :generated_filename %></th>
+      <th><%= th :generated_file_date %></th>
+      <th><%= th :tcm_transaction_reference %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.each do |t| %>
+      <% transaction = present_transaction(t) %>
+      <%= render partial: 'history/pas_transaction', locals: {
+        transaction: transaction,
+        data_path: regime_transaction_path(@regime, transaction)
+      } %>
+    <% end %>
+  </tbody>
+</table>

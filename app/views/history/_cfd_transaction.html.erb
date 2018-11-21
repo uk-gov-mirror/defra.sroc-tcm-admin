@@ -1,10 +1,9 @@
 <tr id=<%= transaction.id %>>
   <td class="align-middle details-button-column">
-    <button class="btn btn-sm show-details-button"
-      data-path="<%= data_path %>">
+    <%= link_to data_path, class: 'btn btn-sm', role: 'button' do %>
       <span class='sr-only'>Show details for Consent <%= transaction.consent_reference %></span>
-      <span class="aria-hidden oi oi-magnifying-glass"></span>
-    </button>
+      <span aria-hidden="true" class='oi oi-magnifying-glass'></span>
+    <% end %>
   </td>
   <td class="align-middle">
     <%= transaction.customer_reference %>

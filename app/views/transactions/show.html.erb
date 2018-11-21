@@ -41,9 +41,13 @@
   <% end %>
   <hr />
 <% end %>
-<% if @related_transactions.count.positive? %>
-  <%= render partial: "related_transactions",
-    locals: { transactions: @related_transactions } %>
+<% if @related_billed_transactions.count.positive? %>
+  <%= render partial: "related_billed_transactions",
+    locals: { transactions: @related_billed_transactions } %>
+<% end %>
+<% if @related_unbilled_transactions.count.positive? %>
+  <%= render partial: "related_unbilled_transactions",
+    locals: { transactions: @related_unbilled_transactions } %>
 <% end %>
 <div class="row">
   <div class="col">
