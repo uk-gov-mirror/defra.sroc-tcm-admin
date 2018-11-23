@@ -15,4 +15,12 @@ class HistoryControllerTest < ActionDispatch::IntegrationTest
     get regime_history_index_url(@regime, format: :csv)
     assert_response :success
   end
+
+  def test_it_should_use_history_export_for_csv
+    csv = mock
+    csv.expects(:export_history).returns("test")
+    HistoryController.any_instance.stubs(:csv).returns(csv)
+
+    get regime_history_index_url(@regime, format: :csv)
+  end
 end

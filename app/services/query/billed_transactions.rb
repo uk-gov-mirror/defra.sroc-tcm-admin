@@ -13,7 +13,7 @@ module Query
       query = @regime.transaction_details.historic
       query = query.region(@region) unless @region.blank? || @region == 'all'
       query = query.financial_year(@financial_year) unless @financial_year.blank?
-      query = query.search(@search) unless @search.blank?
+      query = query.history_search(@search) unless @search.blank?
       SortTransactions.call(regime: @regime,
                             query: query,
                             sort: @sort_column,

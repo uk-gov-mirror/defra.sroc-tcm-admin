@@ -6,7 +6,7 @@
         <dt>Suggested Category</dt>
         <dd>
           <% if sc.category.present? %>
-            <%= sc.category %> (<%= lookup_category_description(@regime, sc.category, transaction.tcm_financial_year) %>)i
+            <%= sc.category %> (<%= lookup_category_description(@regime, sc.category, transaction.tcm_financial_year) %>)
           <% else %>
             None
           <% end %>
