@@ -14,6 +14,10 @@ module ViewModels
                                      search: search)
     end
     
+    def csv_transactions(limit = 15000)
+      @csv ||= presenter.wrap(transactions.limit(limit), user)
+    end
+
     def region_options
       all_region_options
     end

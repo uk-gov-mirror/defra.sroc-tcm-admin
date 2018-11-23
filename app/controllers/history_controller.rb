@@ -33,8 +33,7 @@ class HistoryController < ApplicationController
         end
       end
       format.csv do
-        send_data csv.export(@view_model.csv_transactions), csv_opts
-        # send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
+        send_data csv.export_history(@view_model.csv_transactions), csv_opts
       end
     end
   end
