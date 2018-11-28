@@ -1,10 +1,503 @@
+DEFAULTS: &DEFAULTS
+  transaction_header: cfd
+  sequence_number: 1
+  transaction_type: "I"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  related_reference: ""
+  currency_code: "GBP"
+  header_narrative: ""
+  header_attr_1: "20-AUG-2017"
+  header_attr_2: ""
+  header_attr_3: ""
+  header_attr_4: ""
+  header_attr_5: ""
+  header_attr_6: ""
+  header_attr_7: ""
+  header_attr_8: ""
+  header_attr_9: ""
+  header_attr_10: ""
+  line_vat_code: ""
+  line_area_code: "3"
+  line_income_stream_code: "C"
+  line_context_code: "D"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/17 - 10/08/17"
+  line_attr_4: "365/132"
+  line_attr_5: "C 1"
+  line_attr_6: "E 1"
+  line_attr_7: "S 1"
+  line_attr_8: "684"
+  line_attr_9: "96%"
+  line_attr_10: ""
+  line_attr_11: ""
+  line_attr_12: ""
+  line_attr_13: ""
+  line_attr_14: ""
+  line_attr_15: ""
+  line_quantity: 1
+  unit_of_measure: "Each"
+  generated_filename:
+  generated_file_at:
+  temporary_cessation: false
+  category:
+  charge_calculation:
+
+###########################################################
+# CFD - Unbilled transactions
+#
+
+cfd_unbilled_invoice_1:
+  <<: *DEFAULTS
+  customer_reference: "A1234B"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  transaction_date: <%= 2.months.ago %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: 23747
+  line_description: "Consent No - TONY/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/17 - 10/08/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: 23747
+  status: "unbilled"
+  reference_1: "TONY/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "10-Aug-2017"
+  original_filename: 'CFDBI00123'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
+
+cfd_unbilled_credit_1:
+  <<: *DEFAULTS
+  customer_reference: "A1234B"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  transaction_date: <%= 2.months.ago %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: -32221
+  line_description: "Consent No - TONY/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/17 - 10/08/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: -32221
+  status: "unbilled"
+  reference_1: "TONY/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "10-Aug-2017"
+  original_filename: 'CFDBI00123'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
+
+cfd_unbilled_invoice_2:
+  <<: *DEFAULTS
+  customer_reference: "C332211A"
+  transaction_date: <%= 2.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: "20-AUG-2017"
+  line_amount: 83922
+  line_description: "Consent No - CF21AS/11/12/1/1"
+  line_attr_1: "Orange St. Wigwam Outlet"
+  line_attr_2: "STORM SEWAGE PUDDLE"
+  line_attr_3: "01/04/17 - 14/01/18"
+  line_attr_9: "96%"
+  unit_of_measure_price: 83922
+  status: "unbilled"
+  reference_1: "CF21AS/11/12/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "14-Jan-2018"
+  original_filename: 'CFDBI00131'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
+
+cfd_unbilled_credit_2:
+  <<: *DEFAULTS
+  customer_reference: "C332211A"
+  transaction_date: <%= 2.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: -43556
+  line_description: "Consent No - CF21AS/11/12/1/1"
+  line_attr_1: "Orange St. Wigwam Outlet"
+  line_attr_2: "STORM SEWAGE PUDDLE"
+  line_attr_3: "01/04/17 - 14/01/18"
+  line_attr_9: "96%"
+  unit_of_measure_price: -43556
+  status: "unbilled"
+  reference_1: "CF21AS/11/12/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "14-Jan-2018"
+  original_filename: 'CFDBI00131'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
+
+
+###########################################################
+# CFD - Historic billed transactions
+#
+
+cfd_billed_invoice_1:
+  <<: *DEFAULTS
+  transaction_header: cfd_billed
+  customer_reference: "A1234B"
+  transaction_date: <%= 6.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: <%= 6.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: 23747
+  line_description: "Consent No - ANQA/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/17 - 31/03/18"
+  line_attr_9: "96%"
+  unit_of_measure_price: 23747
+  status: "billed"
+  reference_1: "ANQA/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "31-Mar-2018"
+  original_filename: 'CFDBI00103'
+  original_file_date: <%= 5.months.ago.to_date %>
+  tcm_financial_year: "1718"
+  tcm_transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  category: "2.3.4"
+  category_description: "Sewage 50,000 - 150,000 m3/day"
+  approved_for_billing: true
+  approved_for_billing_at: <%= 2.months.ago %>
+  approver: billing_admin
+  generated_filename: "CFDBI00099T"
+  generated_file_at: <%= 2.months.ago %>
+  transaction_file: cfd_sroc_file
+  tcm_charge: 199462
+  charge_calculation:
+    uuid: "<%= SecureRandom.uuid %>"
+    generatedAt: "<%= 2.months.ago.iso8601 %>"
+    calculation:
+      chargeValue: 1994.62
+      environmentFlag: "TEST"
+      decisionPoints:
+        baselineCharge: 8865
+        percentageAdjustment: 3989.25
+        temporaryCessation: 1994.625
+        complianceAdjustment: 1994.625
+        chargeType: nil
+      messages: nil
+
+
+cfd_billed_credit_1:
+  <<: *DEFAULTS
+  transaction_header: cfd_billed
+  customer_reference: "A1234B"
+  transaction_date: <%= 4.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: <%= 4.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: -23747
+  line_description: "Consent No - ANQA/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/17 - 31/03/18"
+  line_attr_9: "96%"
+  unit_of_measure_price: -23747
+  status: "billed"
+  reference_1: "ANQA/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "31-Mar-2018"
+  original_filename: 'CFDBI00113'
+  original_file_date: <%= 3.months.ago.to_date %>
+  tcm_financial_year: "1718"
+  tcm_transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  category: "2.3.4"
+  category_description: "Sewage 50,000 - 150,000 m3/day"
+  approved_for_billing: true
+  approved_for_billing_at: <%= 2.months.ago %>
+  approver: billing_admin
+  generated_filename: "CFDBI00099T"
+  generated_file_at: <%= 2.months.ago %>
+  transaction_file: cfd_sroc_file
+  tcm_charge: -19489
+  charge_calculation:
+    uuid: <%= SecureRandom.uuid %>
+    generatedAt: <%= 2.months.ago.iso8601 %>
+    calculation:
+      chargeValue: 194.89
+      environmentFlag: "TEST"
+      decisionPoints:
+        baselineCharge: 8865
+        percentageAdjustment: 3989.25
+        temporaryCessation: 1994.625
+        complianceAdjustment: 1994.625
+        chargeType: nil
+      messages: nil
+
+
+cfd_billed_invoice_2:
+  <<: *DEFAULTS
+  transaction_header: cfd_billed
+  customer_reference: "C332211A"
+  transaction_date: <%= 2.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: 83922
+  line_description: "Consent No - CF21AS/11/12/1/1"
+  line_attr_1: "Orange St. Wigwam Outlet"
+  line_attr_2: "STORM SEWAGE PUDDLE"
+  line_attr_3: "01/04/17 - 22/11/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: 83922
+  status: "billed"
+  reference_1: "CF21AS/11/12/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "22-Nov-2017"
+  original_filename: 'CFDBI001I1'
+  original_file_date: <%= 4.months.ago.to_date %>
+  tcm_financial_year: "1718"
+  tcm_transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  category: "2.3.4"
+  category_description: "Sewage 50,000 - 150,000 m3/day"
+  approved_for_billing: true
+  approved_for_billing_at: <%= 2.months.ago %>
+  approver: billing_admin
+  generated_filename: "CFDBI00079T"
+  generated_file_at: <%= 2.months.ago %>
+  transaction_file: cfd_sroc_file
+  tcm_charge: 349489
+  charge_calculation:
+    uuid: <%= SecureRandom.uuid %>
+    generatedAt: <%= 2.months.ago.iso8601 %>
+    calculation:
+      chargeValue: 3494.89
+      environmentFlag: "TEST"
+      decisionPoints:
+        baselineCharge: 8865
+        percentageAdjustment: 3989.25
+        temporaryCessation: 1994.625
+        complianceAdjustment: 1994.625
+        chargeType: nil
+      messages: nil
+
+
+cfd_billed_credit_2:
+  <<: *DEFAULTS
+  transaction_header: cfd_billed
+  customer_reference: "C332211A"
+  transaction_date: <%= 2.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: -43556
+  line_description: "Consent No - CF21AS/11/12/1/1"
+  line_attr_1: "Orange St. Wigwam Outlet"
+  line_attr_2: "STORM SEWAGE PUDDLE"
+  line_attr_3: "01/04/17 - 14/01/18"
+  line_attr_9: "96%"
+  unit_of_measure_price: -43556
+  status: "billed"
+  reference_1: "CF21AS/11/12/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "14-Jan-2018"
+  original_filename: 'CFDBI00131'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
+  tcm_transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  category: "2.3.4"
+  category_description: "Sewage 50,000 - 150,000 m3/day"
+  approved_for_billing: true
+  approved_for_billing_at: <%= 2.months.ago %>
+  approver: billing_admin
+  generated_filename: "CFDBI00079T"
+  generated_file_at: <%= 2.months.ago %>
+  transaction_file: cfd_sroc_file
+  tcm_charge: -129499
+  charge_calculation:
+    uuid: <%= SecureRandom.uuid %>
+    generatedAt: <%= 2.months.ago.iso8601 %>
+    calculation:
+      chargeValue: 1294.99
+      environmentFlag: "TEST"
+      decisionPoints:
+        baselineCharge: 8865
+        percentageAdjustment: 3989.25
+        temporaryCessation: 1994.625
+        complianceAdjustment: 1994.625
+        chargeType: nil
+      messages: nil
+
+###########################################################
+# CFD - Retrospective transactions
+#
+
+cfd_retro_invoice_1:
+  <<: *DEFAULTS
+  transaction_header: cfd_retro
+  customer_reference: "A1234B"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  transaction_date: <%= 2.months.ago %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: 45456
+  line_description: "Consent No - ANQA/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/16 - 31/03/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: 45456
+  status: "retrospective"
+  reference_1: "ANQA/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2016"
+  period_end: "31-Mar-2017"
+  original_filename: 'CFDBI00023'
+  original_file_date: <%= 2.months.ago.to_date %>
+  tcm_financial_year: "1617"
+
+cfd_retro_credit_1:
+  <<: *DEFAULTS
+  transaction_header: cfd_retro
+  customer_reference: "A1234B"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  transaction_date: <%= 2.months.ago %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: -45456
+  line_description: "Consent No - ANQA/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/16 - 31/03/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: -45446
+  status: "retrospective"
+  reference_1: "ANQA/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2016"
+  period_end: "31-Mar-2017"
+  original_filename: 'CFDBI00032'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1617"
+
+cfd_retro_invoice_2:
+  <<: *DEFAULTS
+  transaction_header: cfd_retro
+  customer_reference: "C332211A"
+  transaction_date: <%= 2.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: "20-AUG-2017"
+  line_amount: 82211
+  line_description: "Consent No - CF21AS/11/12/1/1"
+  line_attr_1: "Orange St. Wigwam Outlet"
+  line_attr_2: "STORM SEWAGE PUDDLE"
+  line_attr_3: "01/04/16 - 14/01/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: 82211
+  status: "retrospective"
+  reference_1: "CF21AS/11/12/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2016"
+  period_end: "14-Jan-2017"
+  original_filename: 'CFDBI00031'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1617"
+
+cfd_unbilled_credit_2:
+  <<: *DEFAULTS
+  transaction_header: cfd_retro
+  customer_reference: "C332211A"
+  transaction_date: <%= 2.months.ago %>
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: -6643
+  line_description: "Consent No - CF21AS/11/12/1/1"
+  line_attr_1: "Orange St. Wigwam Outlet"
+  line_attr_2: "STORM SEWAGE PUDDLE"
+  line_attr_3: "01/04/16 - 14/01/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: -6643
+  status: "retrospective"
+  reference_1: "CF21AS/11/12/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2016"
+  period_end: "14-Jan-2017"
+  original_filename: 'CFDBI00011'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1617"
+
+
+###########################################################
+# CFD - Excluded transactions
+#
+
+cfd_excluded_invoice_1:
+  <<: *DEFAULTS
+  customer_reference: "A1234B"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  transaction_date: <%= 2.months.ago %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: 9322
+  line_description: "Consent No - ANQA/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/16 - 31/03/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: 9322
+  status: "excluded"
+  excluded_reason: "Reason for exclusion"
+  reference_1: "ANQA/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "31-Mar-2018"
+  original_filename: 'CFDBI00083'
+  original_file_date: <%= 2.months.ago.to_date %>
+  tcm_financial_year: "1718"
+
+cfd_excluded_credit_1:
+  <<: *DEFAULTS
+  customer_reference: "A1234B"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
+  transaction_date: <%= 2.months.ago %>
+  header_attr_1: <%= 2.months.ago.strftime("%d-%^b-%Y") %>
+  line_amount: -6578
+  line_description: "Consent No - ANQA/1234/1/1"
+  line_attr_1: "Green Rd. Pig Disposal"
+  line_attr_2: "STORM SEWAGE OVERFLOW"
+  line_attr_3: "01/04/16 - 31/03/17"
+  line_attr_9: "96%"
+  unit_of_measure_price: -6578
+  status: "excluded"
+  excluded_reason: "Another reason for exclusion"
+  reference_1: "ANQA/1234/1/1"
+  reference_2: "1"
+  reference_3: "1"
+  period_start: "01-Apr-2017"
+  period_end: "31-Mar-2018"
+  original_filename: 'CFDBI00082'
+  original_file_date: <%= 2.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
+
+
+# =======================
+
 cfd:
   transaction_header: cfd
   sequence_number: 1
   customer_reference: "A60425822C"
   transaction_date: <%= 2.months.ago %>
   transaction_type: "I"
-  transaction_reference: "826951A"
+  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
   related_reference: ""
   currency_code: "GBP"
   header_narrative: ""
@@ -289,7 +782,7 @@ wml:
   unit_of_measure: "Each"
   unit_of_measure_price: -5556
   status: "unbilled"
-  filename: 
+  filename:
   reference_1: "026101"
   reference_2: "XZ3333PG/A001"
   reference_3: "1"
@@ -351,7 +844,7 @@ wml_annual:
   unit_of_measure: "Each"
   unit_of_measure_price: 555667
   status: "unbilled"
-  filename: 
+  filename:
   reference_1: "026101"
   reference_2: "XZ3333PG/A001"
   reference_3: "1"
@@ -413,7 +906,7 @@ wml_invoice:
   unit_of_measure: "Each"
   unit_of_measure_price: 117000
   status: "unbilled"
-  filename: 
+  filename:
   reference_1: "012345"
   reference_2: "XZ3333PG/A001"
   reference_3:
@@ -429,4 +922,3 @@ wml_invoice:
   original_filename: 'WMLEI07892'
   original_file_date: <%= 6.weeks.ago.to_date %>
   tcm_financial_year: "1819"
-

@@ -11,7 +11,13 @@ module Query
       assert @regime.transaction_details.unbilled.count.positive?
 
       transactions = TransactionsToBeBilled.call(regime: @regime)
-      assert_equal @regime.transaction_details.unbilled, transactions
+      q = @regime.transaction_details.unbilled
+
+      assert_equal q.count, transactions.count
+
+      transactions.each do |t|
+        assert_includes q, t, "Where did #{t.reference_1} come from?"
+      end
     end
   end
 end

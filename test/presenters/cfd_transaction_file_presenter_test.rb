@@ -49,7 +49,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.details do |row|
       rows << row
     end
-    assert_equal(2, rows.count)
+    assert_equal(@file.transaction_details.count, rows.count)
   end
 
   def test_detail_records_have_correct_line_attr_4_pro_rata_days

@@ -19,11 +19,11 @@
         <div class="form-group">
           <%= label_tag(:per_page, 'Items per page', class: 'mr-sm-2') %>
           <%= select_tag(:per_page, per_page_options, class: "form-control") %>
-          <%= hidden_field_tag :page, param_or_cookie(:page, 1), id: 'page-number' %>
-          <%= hidden_field_tag :region, @region %>
-          <%= hidden_field_tag :search, param_or_cookie(:search) %>
-          <%= hidden_field_tag :sort, param_or_cookie(:sort) %>
-          <%= hidden_field_tag :sort_direction, param_or_cookie(:sort_direction) %>
+          <%#= hidden_field_tag :page, param_or_cookie(:page, 1), id: 'page-number' %>
+          <%#= hidden_field_tag :region, @region, id: 'hidden-region' %>
+          <%#= hidden_field_tag :search, param_or_cookie(:search) %>
+          <%#= hidden_field_tag :sort, param_or_cookie(:sort) %>
+          <%#= hidden_field_tag :sort_direction, param_or_cookie(:sort_direction) %>
         </div>
       </div>
     <% end %>
