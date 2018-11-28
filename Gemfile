@@ -88,6 +88,7 @@ group :test do
   gem 'factory_bot_rails', '~> 4.0'
   # gem 'shoulda-matchers'
   gem 'capybara'
+  gem 'capybara-selenium'
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
   gem 'minitest-reporters'

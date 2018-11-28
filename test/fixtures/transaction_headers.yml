@@ -9,7 +9,8 @@ cfd:
   transaction_count: 61
   invoice_total: 0
   credit_total: -279042
-cfd_b:
+
+cfd_billed:
   regime: cfd
   feeder_source_code: "CFD"
   region: "B"
@@ -20,6 +21,19 @@ cfd_b:
   transaction_count: 61
   invoice_total: 123450
   credit_total: -32455
+
+cfd_retro:
+  regime: cfd
+  feeder_source_code: "CFD"
+  region: "B"
+  file_type_flag: 'I'
+  file_sequence_number: 34
+  bill_run_id: ""
+  generated_at: <%= 6.months.ago.to_date %>
+  transaction_count: 4
+  invoice_total: 930220
+  credit_total: -64255
+
 cfd_annual:
   regime: cfd
   feeder_source_code: "CFD"
