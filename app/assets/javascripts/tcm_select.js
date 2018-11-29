@@ -23,7 +23,12 @@
       })
 
       input.on('blur', function (ev) {
-        handleBlur(ev, elements)
+        if (elements.mouseDown) {
+          elements.mouseDown = false
+          ev.target.focus()
+        } else {
+          handleBlur(ev, elements)
+        }
       })
 
       input.on('click', function (ev) {
@@ -277,6 +282,15 @@
     elements.list = list
     elements.wrapper.find(".tcm-select-list-wrapper").remove()
     elements.wrapper.append(list)
+
+    // this prevents clicks on the scrollbar from triggering a blur that closes the list
+    elements.wrapper.find(".tcm-select-list").on('mousedown', function (ev) {
+      elements.mouseDown = true
+      setTimeout(function () {
+        elements.mouseDown = false
+      }, 0)
+    })
+
     var coll = $(".tcm-select-list-item")
     coll.hover(
       function () {
