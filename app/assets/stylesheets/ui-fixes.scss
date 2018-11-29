@@ -1,0 +1,15 @@
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+}
+
+input[type="search"]::-ms-clear {
+  display: inline-block;
+  width: initial;
+  height: initial;
+}
+
+input[type="search"]::-ms-reveal {
+  display: block;
+  width: initial;
+  height: initial;
+}
