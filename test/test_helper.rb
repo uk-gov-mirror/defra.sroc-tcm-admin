@@ -34,7 +34,8 @@ Capybara.register_driver :headless_chrome do |app|
 end
 
 # Capybara.javascript_driver = :chrome
-Capybara.javascript_driver = :headless_chrome
+driver = ENV.fetch('TEST_DRIVER', :headless_chrome)
+Capybara.javascript_driver = driver.to_sym
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.

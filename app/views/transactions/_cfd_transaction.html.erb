@@ -59,10 +59,11 @@
   <% if transaction.charge_calculation_error? %>
     <td class="align-middle error-popup">
       <button type="button"
+              id="<%= transaction.id %>-error"
               class="btn btn-sm"
               title="Error"
-              data-container="body"
               data-toggle="popover"
+              data-trigger="focus"
               data-placement="left"
               data-content="<%= transaction.error_message %>">
         <span class="oi oi-warning" aria-hidden="true"></span>
