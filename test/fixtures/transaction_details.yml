@@ -686,8 +686,8 @@ pas:
   status: "unbilled"
   filename: "PASYI00337.dat.transfered-19062017"
   reference_1: "VP3839DA"
-  reference_2: "NA"
-  reference_3: "NA"
+  reference_2: "ABC1234A"
+  reference_3: "ZZ1234ZZ"
   generated_filename:
   generated_file_at:
   temporary_cessation: false
