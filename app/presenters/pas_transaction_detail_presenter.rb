@@ -49,6 +49,10 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
     reference_2
   end
 
+  def absolute_original_permit_reference
+    reference_3
+  end
+
   def site
     header_attr_3
   end

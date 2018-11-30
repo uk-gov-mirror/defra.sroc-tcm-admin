@@ -23,6 +23,14 @@ billing_admin:
   encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
   enabled: true
 
+pas_billing_admin:
+  role: 'billing'
+  email: "pas-billing@example.com"
+  first_name: "Xray"
+  last_name: "Peter"
+  encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
+  enabled: true
+
 system_account:
   role: 'admin'
   email: "system@example.com"

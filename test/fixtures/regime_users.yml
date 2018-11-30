@@ -23,3 +23,7 @@ cfd_sys_acc:
   user: system_account
   enabled: true
 
+pas_bill:
+  regime: pas
+  user: pas_billing_admin
+  enabled: true
