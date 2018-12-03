@@ -5,6 +5,7 @@ class RetrospectivesController < ApplicationController
 
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
+  before_action :redirect_if_waste
 
   # GET /regimes/:regime_id/history
   # GET /regimes/:regime_id/history.json
@@ -51,6 +52,10 @@ class RetrospectivesController < ApplicationController
   end
 
   private
+    def redirect_if_waste
+      redirect_to regime_transactions_path(@regime) if @regime.waste?
+    end
+
     def present_transactions(transactions)
       Kaminari.paginate_array(presenter.wrap(transactions, current_user),
                               total_count: transactions.total_count,

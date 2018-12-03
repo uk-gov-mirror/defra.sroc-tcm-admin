@@ -27,3 +27,8 @@ pas_bill:
   regime: pas
   user: pas_billing_admin
   enabled: true
+
+wml_bill:
+  regime: wml
+  user: wml_billing_admin
+  enabled: true

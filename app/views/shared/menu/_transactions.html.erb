@@ -4,21 +4,22 @@
      id="navbarTransactionsSelectorLink"
      data-toggle="dropdown"
      aria-haspopup="true"
-     aria-expanded="false">
-    Transactions
-  </a>
+     aria-expanded="false">Transactions</a>
+
   <div class="dropdown-menu" aria-labelledby="navbarTransactionsSelectorLink">
     <%= link_to t("title", scope: "transactions.index"),
       regime_transactions_path(@regime),
-      class: "dropdown-item" %>
+      class: "dropdown-item" -%>
     <%= link_to t("title", scope: "history.index"),
       regime_history_index_path(@regime),
-      class: "dropdown-item" %>
-    <%= link_to t("title", scope: "retrospectives.index"),
-      regime_retrospectives_path(@regime),
-      class: "dropdown-item" %>
+      class: "dropdown-item" -%>
+    <% unless @regime.waste? %>
+      <%= link_to t("title", scope: "retrospectives.index"),
+        regime_retrospectives_path(@regime),
+        class: "dropdown-item" -%>
+    <% end %>
     <%= link_to t("title", scope: "exclusions.index"),
       regime_exclusions_path(@regime),
-      class: "dropdown-item" %>
+      class: "dropdown-item" -%>
   </div>
 </li>
