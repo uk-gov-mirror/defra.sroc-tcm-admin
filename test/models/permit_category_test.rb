@@ -23,7 +23,7 @@ class PermitCategoryTest < ActiveSupport::TestCase
   end
 
   def test_invalid_when_code_not_formatted_correctly
-    %w[ wigwam 12a 1.9.11111111 1.egg.88 ].each do |code|
+    %w[ wigwam 12a 1.9.11111111 1.egg.88 11111.21 ].each do |code|
       @permit_category.code = code
       assert @permit_category.invalid?
       assert_not_nil @permit_category.errors[:code]
