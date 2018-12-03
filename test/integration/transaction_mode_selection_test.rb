@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class TransactionModeSelectionTest < ActionDispatch::IntegrationTest
+  include RegimeSetup
+
   def setup
     @retro_text = "Pre-April 2018 Transactions to be billed"
     @wml_options = [ "Transactions to be billed",
@@ -63,23 +65,5 @@ class TransactionModeSelectionTest < ActionDispatch::IntegrationTest
         visit path
         assert page.has_select? "mode", options: @all_options
       end
-  end
-
-  def setup_cfd
-    @regime = regimes(:cfd)
-    @user = users(:billing_admin)
-    sign_in @user
-  end
-
-  def setup_pas
-    @regime = regimes(:pas)
-    @user = users(:pas_billing_admin)
-    sign_in @user
-  end
-
-  def setup_wml
-    @regime = regimes(:wml)
-    @user = users(:wml_billing_admin)
-    sign_in @user
   end
 end
