@@ -76,8 +76,7 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def original_charge
-    ActiveSupport::NumberHelper.number_to_currency(
-          sprintf('%.2f', line_amount/100.0), unit: "")
+    pence_to_currency(line_amount)
   end
 
   def category_description

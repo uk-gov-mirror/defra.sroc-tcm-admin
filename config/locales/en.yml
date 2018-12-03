@@ -91,6 +91,7 @@ en:
         excluded_reason: "Exclusion Reason"
         amount: "Credit/Invoice"
   views:
+    amount_with_unit: "Amount (£)"
     pagination:
       first: "First"
       previous: "Previous"

@@ -9,28 +9,22 @@
   <dd><%= transaction.site %></dd>
   <dt>File Ref (Source)</dt>
   <dd><%= transaction.file_reference %></dd>
-  <% unless transaction.retrospective? %>
-    <dt>Category</dt>
-    <dd>
-      <%= transaction.category %>
-      <%= " (#{transaction.category_description})" unless
-        transaction.category_description.nil? %>
-    </dd>
-    <dt>Temporary Cessation</dt>
-    <dd><%= transaction.temporary_cessation_yes_no %></dd>
-  <% end %>
+  <dt>Category</dt>
+  <dd>
+    <%= transaction.category %>
+    <%= " (#{transaction.category_description})" unless
+      transaction.category_description.nil? %>
+  </dd>
+  <dt>Temporary Cessation</dt>
+  <dd><%= transaction.temporary_cessation_yes_no %></dd>
   <dt>File Date</dt>
   <dd><%= transaction.original_file_date %></dd>
   <dt>Compliance Band</dt>
   <dd><%= transaction.compliance_band %></dd>
   <dt>Period</dt>
   <dd><%= transaction.period %></dd>
-  <dt>Amount</dt>
-  <% if transaction.retrospective? %>
-    <dd><%= transaction.line_amount %></dd>
-  <% else %>
-    <dd><%= transaction.amount %></dd>
-  <% end %>
+  <dt><%= t('views.amount_with_unit') %></dt>
+  <dd><%= transaction.amount %></dd>
   <dt>Status</dt>
   <dd>
     <span class="<%= "badge badge-pill badge-#{status_colour(transaction.status)}" %>">

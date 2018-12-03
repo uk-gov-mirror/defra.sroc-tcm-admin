@@ -29,9 +29,9 @@
   <dd><%= transaction.compliance_band %></dd>
   <dt>Period</dt>
   <dd><%= transaction.period %></dd>
-  <dt>Amount</dt>
+  <dt><%= t('views.amount_with_unit') %></dt>
   <% if transaction.retrospective? %>
-    <dd><%= transaction.line_amount %></dd>
+    <dd><%= transaction.currency_line_amount %></dd>
   <% else %>
     <dd><%= transaction.amount %></dd>
   <% end %>
