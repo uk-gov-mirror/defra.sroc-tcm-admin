@@ -32,12 +32,19 @@ module TransactionsHelper
   end
 
   def view_options(selected_mode)
-    options_for_select([
-      [t("transactions.index.title"), 'unbilled', { 'data-path' => regime_transactions_path(@regime) }],
-      [t("history.index.title"), 'historic', { 'data-path' => regime_history_index_path(@regime) }],
-      [t("retrospectives.index.title"), 'retrospective', { 'data-path' => regime_retrospectives_path(@regime) }],
-      [t("exclusions.index.title"), 'excluded', { 'data-path' => regime_exclusions_path(@regime) }]
-    ], selected_mode)
+    opts = [
+      [t("transactions.index.title"), 'unbilled',
+       { 'data-path' => regime_transactions_path(@regime) }],
+      [t("history.index.title"), 'historic',
+       { 'data-path' => regime_history_index_path(@regime) }],
+      [t("retrospectives.index.title"), 'retrospective',
+       { 'data-path' => regime_retrospectives_path(@regime) }],
+      [t("exclusions.index.title"), 'excluded',
+       { 'data-path' => regime_exclusions_path(@regime) }]
+    ]
+
+    opts = opts.select { |o| o[1] != 'retrospective' } if @regime.waste?
+    options_for_select opts, selected_mode
   end
 
   def per_page_options(selected = nil)

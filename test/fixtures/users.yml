@@ -31,6 +31,14 @@ pas_billing_admin:
   encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
   enabled: true
 
+wml_billing_admin:
+  role: 'billing'
+  email: "wml-billing@example.com"
+  first_name: "Hawkeye"
+  last_name: "Gladys"
+  encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
+  enabled: true
+
 system_account:
   role: 'admin'
   email: "system@example.com"
