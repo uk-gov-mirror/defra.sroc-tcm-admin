@@ -51,6 +51,12 @@ class ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers, ActiveJob::TestHelper
   include Capybara::DSL, Capybara::Minitest::Assertions
 
+  def wait_for_ajax
+    Timeout.timeout(Capybara.default_max_wait_time) do
+      loop until page.evaluate_script('jQuery.active').zero?
+    end
+  end
+
   # call super whenever this is overridden in test classes
   def teardown
     Capybara.reset_sessions!
