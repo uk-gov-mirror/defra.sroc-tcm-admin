@@ -54,11 +54,28 @@ module ViewModels
     end
 
     def transactions
-      @transactions ||= fetch_transactions
+      @transactions ||= fetch_check_transactions
     end
 
     def paged_transactions
       @paged_transactions ||= transactions.page(page).per(per_page)
+    end
+
+    def check_params
+      @page = 1 if page.blank?
+      @page = 1 unless page.to_i.positive?
+      @per_page = 10 if per_page.blank?
+      @per_page = 10 unless per_page.to_i.positive?
+      # fetch transactions to validate/reset page
+      transactions
+    end
+
+    def fetch_check_transactions
+      t = fetch_transactions
+      pg = page.to_i
+      perp = per_page.to_i
+      @page = 1 if (pg * perp) > t.count
+      t
     end
 
     # override me for different views
