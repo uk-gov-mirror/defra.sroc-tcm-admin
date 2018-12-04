@@ -83,7 +83,7 @@ end
 group :test do
   gem 'rails-controller-testing'
   # gem 'rspec-rails'
-  gem 'cucumber-rails', require: false
+  # gem 'cucumber-rails', require: false
   # gem 'database_cleaner'
   gem 'factory_bot_rails', '~> 4.0'
   # gem 'shoulda-matchers'
