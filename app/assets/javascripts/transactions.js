@@ -114,9 +114,9 @@ function set_cookie_data (container) {
 
 function safe_val(val) {
   if (typeof val === 'undefined' || val == null) {
-    return ''
+    return ';path=/'
   } else {
-    return val
+    return val + ';path=/'
   }
 }
 
