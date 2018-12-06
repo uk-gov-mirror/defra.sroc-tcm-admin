@@ -19,16 +19,16 @@ module RegimeScope
     last_id = cookies[:regime_id]
     r_id = params.fetch(:regime_id, nil)
 
-    if last_id && r_id != last_id
-      # switch regime - clear cookies
-      cookies.delete(:regime_id)
-      cookies.delete(:region)
-      cookies.delete(:search)
-      cookies.delete(:sort)
-      cookies.delete(:sort_direction)
-      cookies.delete(:page)
-      cookies.delete(:per_page)
-    end
+    # if last_id && r_id != last_id
+    #   # switch regime - clear cookies
+    #   cookies.delete(:regime_id)
+    #   cookies.delete(:region)
+    #   cookies.delete(:search)
+    #   cookies.delete(:sort)
+    #   cookies.delete(:sort_direction)
+    #   cookies.delete(:page)
+    #   cookies.delete(:per_page)
+    # end
 
     if r_id
       @regime = current_user.set_selected_regime(r_id)

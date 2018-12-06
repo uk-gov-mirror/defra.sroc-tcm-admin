@@ -18,11 +18,11 @@ var CookiePolicy = (function () {
   function setMessageCookie () {
     var d = new Date()
     d.setYear(d.getFullYear() + 1)
-    document.cookie = cookieName + '=' + cookieValue + ';expires=' + d.toUTCString()
+    document.cookie = cookieName + '=' + cookieValue + ';path=/;expires=' + d.toUTCString()
   }
 
   function removeMessageCookie () {
-    var cookie = cookieName + '=; expires=' + new Date(0).toUTCString()
+    var cookie = cookieName + '=;path=/;expires=' + new Date(0).toUTCString()
     document.cookie = cookie
   }
 
