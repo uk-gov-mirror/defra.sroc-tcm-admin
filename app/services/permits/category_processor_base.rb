@@ -83,6 +83,16 @@ module Permits
       make_suggestion(where_args, :red, "No previous bill found", stage)
     end
 
+    def multiple_historic_matches(where_args, stage)
+      make_suggestion(where_args, :red,
+                      'Multiple historic matches found', stage)
+    end
+
+    def multiple_matching_transactions(where_args, stage)
+      make_suggestion(where_args, :red,
+                      "Multiple matching transactions found in file", stage)
+    end
+
     def set_logic_message(where_args, msg)
       unbilled_transactions(where_args) do |t|
         # FIXME: not using this now - only left until all
