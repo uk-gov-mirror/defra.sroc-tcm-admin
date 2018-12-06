@@ -56,7 +56,7 @@ module Permits
           if invoices.first.period_start != invoices.second.period_start
             set_category(transaction, invoices.first, :amber, stage)
           else
-            no_historic_transaction({ id: transaction.id }, stage)
+            multiple_historic_matches({ id: transaction.id }, stage)
           end
         end
       end
@@ -78,7 +78,7 @@ module Permits
           if invoices.first.period_start != invoices.second.period_start
             set_category(transaction, invoices.first, :green, stage, true)
           else
-            no_historic_transaction({ id: transaction.id }, stage)
+            multiple_historic_matches({ id: transaction.id }, stage)
           end
         end
       end

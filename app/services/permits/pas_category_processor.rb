@@ -60,7 +60,7 @@ module Permits
           if invoices.first.period_start != invoices.second.period_start
             set_category(transaction, invoices.first, :amber, stage)
           else
-            no_historic_transaction({ id: transaction.id }, stage)
+            multiple_historic_matches({ id: transaction.id }, stage)
           end
         end
       end
@@ -83,7 +83,7 @@ module Permits
           if invoices.first.period_start != invoices.second.period_start
             set_category(transaction, invoices.first, :green, stage, true)
           else
-            no_historic_transaction({ id: transaction.id }, stage)
+            multiple_historic_matches({ id: transaction.id }, stage)
           end
         end
       end
@@ -101,17 +101,6 @@ module Permits
         where(customer_reference: transaction.customer_reference).
         where(period_end: transaction.period_end).
         order(period_start: :desc)
-    end
-
-    def multiple_historic_matches(permit_args, stage)
-      make_suggestion(permit_args, :red,
-                      'Multiple historic matches found', stage)
-      # set_logic_message(permit_args, 'Multiple historic matches found')
-    end
-
-    def multiple_matching_transactions(permit_args, stage)
-      make_suggestion(permit_args, :red,
-                      "Multiple matching transactions found in file", stage)
     end
 
     def find_historic_transactions(args)

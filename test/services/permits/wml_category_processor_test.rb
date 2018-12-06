@@ -237,7 +237,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
 
     assert_nil t.category, "Category set!"
     sg = t.suggested_category
-    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Multiple historic matches found', sg.logic)
     assert_equal('Supplementary invoice stage 2', sg.suggestion_stage)
     refute sg.admin_lock?, "It is admin locked"
     assert sg.red?
@@ -311,7 +311,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
 
     assert_nil t.category, "Category set!"
     sg = t.suggested_category
-    assert_equal('No previous bill found', sg.logic)
+    assert_equal('Multiple historic matches found', sg.logic)
     assert_equal('Supplementary credit stage 2', sg.suggestion_stage)
     refute sg.admin_lock?, "It is admin locked"
     assert sg.red?
