@@ -74,7 +74,8 @@ module ViewModels
       t = fetch_transactions
       pg = page.to_i
       perp = per_page.to_i
-      @page = 1 if (pg * perp) > t.count
+      max_pages = (t.count / perp.to_f).ceil
+      @page = 1 if pg > max_pages
       t
     end
 
