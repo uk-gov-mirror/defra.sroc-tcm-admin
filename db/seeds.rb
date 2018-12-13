@@ -4,6 +4,19 @@ if Regime.count.zero?
   Regime.create!(name: 'WML', title: 'Waste')
 end
 
+Regime.all.each do |r|
+  r.transaction_details.historic.where(category_description: nil).each do |t|
+    fy = t.tcm_financial_year
+    code = t.category
+
+    if code
+      pc = r.permit_categories.by_financial_year(fy).active.
+        where(code: code).first
+      t.update_attributes(category_description: pc.description) unless pc.nil?
+    end
+  end
+end
+
 # r = Regime.find_by!(slug: 'pas')
 # r.permit_categories.destroy_all
 # PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'installations.csv'))
@@ -22,7 +35,7 @@ end
 #   end
 # end
 
-r = Regime.find_by!(slug: 'cfd')
+# r = Regime.find_by!(slug: 'cfd')
 # r.permit_categories.destroy_all
 # PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_quality.csv'))
 #
