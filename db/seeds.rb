@@ -5,17 +5,38 @@ if Regime.count.zero?
 end
 
 Regime.all.each do |r|
-  r.transaction_details.historic.where(category_description: nil).each do |t|
-    fy = t.tcm_financial_year
-    code = t.category
+  q = r.transaction_details.historic
+  missing = q.group(:category, :category_description, :tcm_financial_year).
+    having(category_description: nil).count
 
+  missing.keys.each do |k|
+    code = k[0]
+    fy = k[2]
     if code
       pc = r.permit_categories.by_financial_year(fy).active.
         where(code: code).first
-      t.update_attributes(category_description: pc.description) unless pc.nil?
+      if pc
+        q.where(category: code, tcm_financial_year: fy,
+                category_description: nil).
+                update_all(category_description: pc.description)
+      end
     end
   end
 end
+
+# Too memory intensive - ran out of memory in preprod with ~ 50,000 records to update
+# Regime.all.each do |r|
+#   r.transaction_details.historic.where(category_description: nil).each do |t|
+#     fy = t.tcm_financial_year
+#     code = t.category
+#
+#     if code
+#       pc = r.permit_categories.by_financial_year(fy).active.
+#         where(code: code).first
+#       t.update_attributes(category_description: pc.description) unless pc.nil?
+#     end
+#   end
+# end
 
 # r = Regime.find_by!(slug: 'pas')
 # r.permit_categories.destroy_all
