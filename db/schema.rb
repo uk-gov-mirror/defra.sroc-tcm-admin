@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181109141825) do
+ActiveRecord::Schema.define(version: 20190103140104) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,16 @@ ActiveRecord::Schema.define(version: 20181109141825) do
     t.datetime "updated_at", null: false
     t.index ["regime_id", "reason"], name: "index_exclusion_reasons_on_regime_id_and_reason", unique: true
     t.index ["regime_id"], name: "index_exclusion_reasons_on_regime_id"
+  end
+
+  create_table "export_data_files", force: :cascade do |t|
+    t.bigint "regime_id"
+    t.string "filename", null: false
+    t.datetime "last_exported_at"
+    t.integer "status", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["regime_id"], name: "index_export_data_files_on_regime_id"
   end
 
   create_table "permit_categories", force: :cascade do |t|
@@ -224,6 +234,7 @@ ActiveRecord::Schema.define(version: 20181109141825) do
     t.bigint "approver_id"
     t.datetime "approved_for_billing_at"
     t.string "customer_name"
+    t.string "region"
     t.index ["approver_id"], name: "index_transaction_details_on_approver_id"
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"

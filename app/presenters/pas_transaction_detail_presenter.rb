@@ -35,11 +35,12 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
     end
   end
 
-  def extract_compliance_performance
-    chg = transaction_detail.charge_calculation
-    chg['calculation']['compliancePerformanceBand'] unless chg.nil? ||
-      chg['calculation'].nil?
-  end
+  # Moved to base class
+  # def extract_compliance_performance
+  #   chg = transaction_detail.charge_calculation
+  #   chg['calculation']['compliancePerformanceBand'] unless chg.nil? ||
+  #     chg['calculation'].nil?
+  # end
 
   def permit_reference
     reference_1
@@ -107,7 +108,7 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
       temporary_cessation: temporary_cessation_flag,
       financial_year: charge_period,
       tcm_financial_year: tcm_financial_year,
-      region: region_from_ref,
+      region: region,
       period: period,
       line_amount: original_charge,
       amount: amount,

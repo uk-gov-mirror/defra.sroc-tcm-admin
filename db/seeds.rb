@@ -5,23 +5,33 @@ if Regime.count.zero?
 end
 
 Regime.all.each do |r|
-  q = r.transaction_details.historic
-  missing = q.group(:category, :category_description, :tcm_financial_year).
-    having(category_description: nil).count
-
-  missing.keys.each do |k|
-    code = k[0]
-    fy = k[2]
-    if code
-      pc = r.permit_categories.by_financial_year(fy).active.
-        where(code: code).first
-      if pc
-        q.where(category: code, tcm_financial_year: fy,
-                category_description: nil).
-                update_all(category_description: pc.description)
-      end
-    end
+  ExportDataFile.find_or_create_by!(regime_id: r.id) do |edf|
+    edf.status = 'pending'
   end
+
+  # # update fix for permit category
+  # q = r.transaction_details.historic
+  # missing = q.group(:category, :category_description, :tcm_financial_year).
+  #   having(category_description: nil).count
+  #
+  # missing.keys.each do |k|
+  #   code = k[0]
+  #   fy = k[2]
+  #   if code
+  #     pc = r.permit_categories.by_financial_year(fy).active.
+  #       where(code: code).first
+  #     if pc
+  #       q.where(category: code, tcm_financial_year: fy,
+  #               category_description: nil).
+  #               update_all(category_description: pc.description)
+  #     end
+  #   end
+  # end
+end
+
+# add region to all transactions
+TransactionHeader.all.each do |h|
+  h.transaction_details.update_all(region: h.region)
 end
 
 # Too memory intensive - ran out of memory in preprod with ~ 50,000 records to update
@@ -73,14 +83,14 @@ end
 #   end
 # end
 
-r = Regime.find_by!(slug: 'wml')
-tfi = TransactionFileImporter.new
+# r = Regime.find_by!(slug: 'wml')
+# tfi = TransactionFileImporter.new
 # retro extract the charge code and store in reference_3
 # this is needed for future years biling
-r.transaction_details.each do |td|
-  cc = tfi.extract_charge_code(td.line_description)
-  td.update_attributes(reference_3: cc) unless cc.nil?
-end
+# r.transaction_details.each do |td|
+#   cc = tfi.extract_charge_code(td.line_description)
+#   td.update_attributes(reference_3: cc) unless cc.nil?
+# end
 
 # r.permit_categories.destroy_all
 # PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'))

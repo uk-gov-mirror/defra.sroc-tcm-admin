@@ -11,6 +11,8 @@ class Regime < ApplicationRecord
   has_many :regime_users, inverse_of: :regime, dependent: :destroy
   has_many :users, through: :regime_users
 
+  has_one :export_data_file, inverse_of: :regime
+
   validates :name, presence: true, uniqueness: true
   validates :title, presence: true
   before_save :generate_slug

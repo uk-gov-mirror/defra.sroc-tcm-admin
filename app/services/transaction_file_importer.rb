@@ -78,7 +78,8 @@ class TransactionFileImporter
       line_context_code: row[Detail::LineContextCode],
       line_quantity: row[Detail::LineQuantity].to_i,
       unit_of_measure: row[Detail::LineUnitOfMeasure],
-      unit_of_measure_price: row[Detail::LineUOMPrice].to_i
+      unit_of_measure_price: row[Detail::LineUOMPrice].to_i,
+      region: header.region
     }
 
     period = nil
