@@ -71,7 +71,7 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
         temporary_cessation: @presenter.temporary_cessation_flag,
         financial_year: @presenter.charge_period,
         tcm_financial_year: @presenter.tcm_financial_year,
-        region: @presenter.region_from_ref,
+        region: @presenter.region,
         period: @presenter.period,
         line_amount: @presenter.original_charge,
         amount: @presenter.amount,
