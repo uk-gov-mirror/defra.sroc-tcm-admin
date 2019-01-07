@@ -5,13 +5,14 @@ class DataExportJob < ApplicationJob
     ActiveRecord::Base.connection_pool.with_connection do
       Regime.all.each do |regime|
         result = ExportTransactionData.call(regime: regime,
-                                            batch_size: 1000,
-                                            compress: true)
+                                            batch_size: 1000)
         if result.failed?
           TcmLogger.error("Failed to export transactions for #{regime.name}")
         else
           # move file to s3
-          storage.store_file_in(:csv_export, result.filename, File.basename(result.filename))
+          storage.store_file_in(:csv_export,
+                                result.filename,
+                                File.basename(result.filename))
         end
       end
     end

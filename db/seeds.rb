@@ -7,6 +7,7 @@ end
 Regime.all.each do |r|
   ExportDataFile.find_or_create_by!(regime_id: r.id) do |edf|
     edf.status = 'pending'
+    edf.compress = true
   end
 
   # # update fix for permit category

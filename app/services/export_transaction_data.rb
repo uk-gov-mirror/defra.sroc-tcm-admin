@@ -3,11 +3,10 @@ require 'csv'
 class ExportTransactionData < ServiceObject
   include RegimePresenter
 
-  attr_reader :regime, :compress, :batch_size, :filename
+  attr_reader :regime, :batch_size, :filename
 
   def initialize(params = {})
     @regime = params.fetch(:regime)
-    @compress = params.fetch(:compress, false)
     @batch_size = params.fetch(:batch_size, 1000)
   end
 
@@ -20,17 +19,16 @@ class ExportTransactionData < ServiceObject
     begin
       ExportDataFile.transaction do
         regime_file do |csv|
-          # csv << regime_headers
           batch_transactions(batch_size) do |transaction|
-          # transactions.find_each(batch_size: batch_size) do |transaction|
             t = presenter.new(transaction)
             csv << regime_columns.map { |c| t.send(c) }
           end
         end
       end
-      ext_compress_file if compress
+      ext_compress_file if edf.compress?
 
-      edf.update_attributes!(last_exported_at: Time.zone.now)
+      edf.update_attributes!(last_exported_at: Time.zone.now,
+                             exported_filename: File.basename(filename))
       edf.success!
       @result = true
     rescue => e
@@ -49,7 +47,6 @@ class ExportTransactionData < ServiceObject
       includes(:suggested_category,
                :transaction_header,
                :transaction_file).
-      # eager_load(:suggested_category).
       order(:region).
       order(:transaction_date).
       order(:id)

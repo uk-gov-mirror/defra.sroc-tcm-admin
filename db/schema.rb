@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190103140104) do
+ActiveRecord::Schema.define(version: 20190107074030) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,8 @@ ActiveRecord::Schema.define(version: 20190103140104) do
     t.integer "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "compress", default: true, null: false
+    t.string "exported_filename"
     t.index ["regime_id"], name: "index_export_data_files_on_regime_id"
   end
 
