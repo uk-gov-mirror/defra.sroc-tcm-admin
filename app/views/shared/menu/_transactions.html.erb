@@ -1,4 +1,4 @@
-<li class="nav-item dropdown <%= active_for_current_controller(["transactions", "history"]) %>">
+<li class="nav-item dropdown <%= active_for_current_controller(["transactions", "history", "retrospectives", "exclusions", "data_export"]) %>">
   <a class="nav-link dropdown-toggle"
      href="#"
      id="navbarTransactionsSelectorLink"
@@ -21,5 +21,9 @@
     <%= link_to t("title", scope: "exclusions.index"),
       regime_exclusions_path(@regime),
       class: "dropdown-item" -%>
+    <div class="dropdown-divider"></div>
+    <%= link_to "Download Transaction Data",
+      regime_data_export_index_path(@regime),
+      class: "dropdown-item", role: "menuitem" %>
   </div>
 </li>

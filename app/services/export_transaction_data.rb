@@ -1,4 +1,6 @@
 require 'csv'
+require 'digest'
+require 'fileutils'
 
 class ExportTransactionData < ServiceObject
   include RegimePresenter
@@ -26,9 +28,12 @@ class ExportTransactionData < ServiceObject
         end
       end
       ext_compress_file if edf.compress?
+      
+      sha1 = generate_file_hash(filename)
 
       edf.update_attributes!(last_exported_at: Time.zone.now,
-                             exported_filename: File.basename(filename))
+                             exported_filename: File.basename(filename),
+                             exported_filename_hash: sha1)
       edf.success!
       @result = true
     rescue => e
@@ -101,6 +106,10 @@ class ExportTransactionData < ServiceObject
     @filename = orig_file
   end
 
+  def generate_file_hash(file)
+    Digest::SHA1.file(file).hexdigest
+  end
+
   def regime_headers
     ExportFileFormat::ExportColumns.map { |c| c[:heading] }
   end
@@ -110,6 +119,12 @@ class ExportTransactionData < ServiceObject
   end
 
   def regime_filename
-    @filename ||= Rails.root.join('tmp', regime.export_data_file.filename).to_s
+    @filename ||= File.join(cache_path, regime.export_data_file.filename).to_s
+  end
+
+  def cache_path
+    path = Rails.root.join('tmp', 'cache', 'export_data')
+    FileUtils.mkdir_p path unless Dir.exist? path
+    path
   end
 end

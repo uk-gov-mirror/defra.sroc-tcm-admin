@@ -25,6 +25,10 @@ Rails.application.routes.draw do
     resources :retrospective_summary, only: [:index]
     resources :annual_billing_data_files, except: [:destroy]
     resources :exclusion_reasons, except: [:show]
+    resources :data_export, only: [:index] do
+      get 'download', on: :collection
+      get 'generate', on: :collection
+    end
   end
 
   root to: 'transactions#index'
