@@ -1,7 +1,17 @@
-<dl class="row">
-  <dt class="col-5 col-lg-6">Export file generated on:</dt>
-  <dd class="col-7 col-lg-6"><%= formatted_date(export_data_file.last_exported_at, true) unless export_data_file.last_export_at.nil? %></dd>
-</dl>
+<% if export_data_file.last_exported_at.nil? %>
+  <div class="row">
+    <div class="alert alert-info" role="alert">
+      The transaction data file has not yet been generated.
+      This file will be automatically generated overnight.
+      Please check again tomorrow.
+    </div>
+  </div>
+<% else %>
+  <dl class="row">
+    <dt class="col-5 col-lg-6">Export file generated on:</dt>
+    <dd class="col-7 col-lg-6"><%= formatted_date(export_data_file.last_exported_at, true) %></dd>
+  </dl>
+<% end %>
 <% if export_data_file.exported_filename %>
   <div class="mt-4">
     <%= link_to "Agree and Download Transaction Data",
