@@ -42,6 +42,7 @@ DEFAULTS: &DEFAULTS
   temporary_cessation: false
   category:
   charge_calculation:
+  region: 'A'
 
 ###########################################################
 # CFD - Unbilled transactions
@@ -173,6 +174,7 @@ cfd_unbilled_error_invoice:
 cfd_billed_invoice_1:
   <<: *DEFAULTS
   transaction_header: cfd_billed
+  region: 'B'
   customer_reference: "A1234B"
   transaction_date: <%= 6.months.ago %>
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
@@ -221,6 +223,7 @@ cfd_billed_invoice_1:
 cfd_billed_credit_1:
   <<: *DEFAULTS
   transaction_header: cfd_billed
+  region: 'B'
   customer_reference: "A1234B"
   transaction_date: <%= 4.months.ago %>
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
@@ -269,6 +272,7 @@ cfd_billed_credit_1:
 cfd_billed_invoice_2:
   <<: *DEFAULTS
   transaction_header: cfd_billed
+  region: 'B'
   customer_reference: "C332211A"
   transaction_date: <%= 2.months.ago %>
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
@@ -317,6 +321,7 @@ cfd_billed_invoice_2:
 cfd_billed_credit_2:
   <<: *DEFAULTS
   transaction_header: cfd_billed
+  region: 'B'
   customer_reference: "C332211A"
   transaction_date: <%= 2.months.ago %>
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
@@ -368,6 +373,7 @@ cfd_billed_credit_2:
 cfd_retro_invoice_1:
   <<: *DEFAULTS
   transaction_header: cfd_retro
+  region: 'B'
   customer_reference: "A1234B"
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
   transaction_date: <%= 2.months.ago %>
@@ -392,6 +398,7 @@ cfd_retro_invoice_1:
 cfd_retro_credit_1:
   <<: *DEFAULTS
   transaction_header: cfd_retro
+  region: 'B'
   customer_reference: "A1234B"
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
   transaction_date: <%= 2.months.ago %>
@@ -416,6 +423,7 @@ cfd_retro_credit_1:
 cfd_retro_invoice_2:
   <<: *DEFAULTS
   transaction_header: cfd_retro
+  region: 'B'
   customer_reference: "C332211A"
   transaction_date: <%= 2.months.ago %>
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
@@ -440,6 +448,7 @@ cfd_retro_invoice_2:
 cfd_unbilled_credit_2:
   <<: *DEFAULTS
   transaction_header: cfd_retro
+  region: 'B'
   customer_reference: "C332211A"
   transaction_date: <%= 2.months.ago %>
   transaction_reference: <%= rand(36**8).to_s(36).upcase %>
@@ -519,6 +528,7 @@ cfd_excluded_credit_1:
 
 cfd:
   transaction_header: cfd
+  region: 'A'
   sequence_number: 1
   customer_reference: "A60425822C"
   transaction_date: <%= 2.months.ago %>
@@ -580,6 +590,7 @@ cfd:
 
 cfd_annual:
   transaction_header: cfd_annual
+  region: 'B'
   sequence_number: 1
   customer_reference: "A60425822C"
   transaction_date: <%= 2.months.ago %>
@@ -641,6 +652,7 @@ cfd_annual:
 
 pas: &PAS_DEFAULTS
   transaction_header: pas
+  region: 'Y'
   sequence_number: 1
   customer_reference: "A16010889P"
   transaction_date: <%= 2.months.ago %>
@@ -700,49 +712,7 @@ pas: &PAS_DEFAULTS
   original_filename: 'PASYI00337'
   original_file_date: <%= 6.weeks.ago.to_date %>
   tcm_financial_year: "1718"
-  transaction_header: pas
-  sequence_number: 1
-  transaction_type: "I"
-  transaction_reference: <%= rand(36**8).to_s(36).upcase %>
-  related_reference: ""
-  currency_code: "GBP"
-  header_narrative: ""
-  header_attr_1: "20-AUG-2017"
-  header_attr_2: "Site"
-  header_attr_3: "Red St. Hill Farm"
-  header_attr_4: ""
-  header_attr_5: ""
-  header_attr_6: ""
-  header_attr_7: ""
-  header_attr_8: ""
-  header_attr_9: "Charge Period: "
-  header_attr_10: "21/04/2017 - 31/03/2018"
-  line_vat_code: ""
-  line_area_code: "Y05"
-  line_income_stream_code: "P"
-  line_context_code: "P1"
-  line_attr_1: ""
-  line_attr_2: ""
-  line_attr_3: ""
-  line_attr_4: ""
-  line_attr_5: ""
-  line_attr_6: ""
-  line_attr_7: ""
-  line_attr_8: ""
-  line_attr_9: ""
-  line_attr_10: ""
-  line_attr_11: "F 3.0"
-  line_attr_12: ""
-  line_attr_13: ""
-  line_attr_14: ""
-  line_attr_15: "Directly Associated Activity only"
-  line_quantity: 1
-  unit_of_measure: "Each"
-  generated_filename:
-  generated_file_at:
-  temporary_cessation: false
-  category:
-  charge_calculation:
+
 
 ###########################################################
 # PAS - Retrospective transactions
@@ -777,6 +747,7 @@ pas_retro_invoice_1:
 
 pas_annual:
   transaction_header: pas
+  region: 'Y'
   sequence_number: 1
   customer_reference: "A16010889P"
   transaction_date: <%= 2.months.ago %>
@@ -839,6 +810,7 @@ pas_annual:
 
 wml:
   transaction_header: wml
+  region: 'E'
   sequence_number: 1
   customer_reference: "E01001529J"
   transaction_date: <%= 2.months.ago %>
@@ -901,6 +873,7 @@ wml:
 
 wml_annual:
   transaction_header: wml_annual
+  region: 'E'
   sequence_number: 1
   customer_reference: "E01001529J"
   transaction_date: <%= 2.months.ago %>
@@ -963,6 +936,7 @@ wml_annual:
 
 wml_invoice:
   transaction_header: wml
+  region: 'E'
   sequence_number: 1
   customer_reference: "E01001529J"
   transaction_date: <%= 2.months.ago %>

@@ -1,0 +1,17 @@
+pas:
+  regime: pas
+  compress: false
+  status: 'pending'
+  filename: 'pas_transactions.csv'
+
+cfd:
+  regime: cfd
+  compress: false
+  status: 'pending'
+  filename: 'cfd_transactions.csv'
+
+wml:
+  regime: wml
+  compress: false
+  status: 'pending'
+  filename: 'wml_transactions.csv'
