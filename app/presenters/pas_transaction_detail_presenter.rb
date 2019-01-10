@@ -25,14 +25,15 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
   # end
 
   def compliance_band_adjustment
-    band = extract_compliance_performance
-    return "" if band.nil?
-    d = band.match /\A.*\((\d+%)\)\z/
-    if d.size == 2
-      d[1]
-    else
-      ""
-    end
+    tcm_compliance_percentage
+    # band = extract_compliance_performance
+    # return "" if band.nil?
+    # d = band.match /\A.*\((\d+%)\)\z/
+    # if d.size == 2
+    #   d[1]
+    # else
+    #   ""
+    # end
   end
 
   # Moved to base class

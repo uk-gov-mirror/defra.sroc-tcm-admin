@@ -295,10 +295,10 @@ class TransactionDetailPresenter < SimpleDelegator
 
   def tcm_compliance_percentage
     band = extract_compliance_performance
-    return "" if band.nil?
+    return "" if band.blank? || band == "()"
 
     d = band.match /\A.*\((\d+%)\)\z/
-    d.size == 2 ? d[1] : ""
+    d && d.size == 2 ? d[1] : ""
   end
 
   def confidence_level
