@@ -222,8 +222,15 @@ function init_page_size (container) {
 }
 
 function init_export_button (container) {
+  container.find(".accept-and-download-btn").on('click', function (ev) {
+    export_table(container)
+    ev.preventDefault()
+    $("#data-protection-dialog").modal('hide')
+  })
+
   container.find(".table-export-btn").on('click', function (ev) {
-    export_table(container);
+    $("#data-protection-dialog").modal()
+    ev.preventDefault()
   })
 }
 
