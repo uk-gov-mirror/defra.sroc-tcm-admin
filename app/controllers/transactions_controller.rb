@@ -15,8 +15,6 @@ class TransactionsController < ApplicationController
       format.html do
         if request.xhr?
           render partial: "table", locals: { view_model: @view_model }
-        # else
-        #   render
         end
       end
       format.csv do

@@ -11,29 +11,14 @@ class HistoryController < ApplicationController
   def index
     @view_model = build_history_view_model
 
-    # @region = params.fetch(:region, cookies.fetch(:region, ''))
-    # @region = '' if @region == 'all'
-    #
-    # pg = params.fetch(:page, cookies.fetch(:page, 1))
-    # per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
-    #
-    # @financial_years = Query::FinancialYears.call(regime: @regime)
-    # @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
-    # @financial_year = '' unless @financial_years.include? @financial_year
-    #
-    # @transactions = Query::BilledTransactions.call(query_params)
-
     respond_to do |format|
       format.html do
-        # @transactions = present_transactions(@transactions.page(pg).per(per_pg))
         if request.xhr?
           render partial: 'table', locals: { view_model: @view_model }
-        else
-          render
         end
       end
       format.csv do
-        send_data csv.export_history(@view_model.csv_transactions), csv_opts
+        send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
     end
   end
