@@ -11,8 +11,9 @@
      <%= render partial: 'search_bar', locals: { view_model: view_model,
                                                  view_mode: 'retrospective' } %>
      <%= render partial: view_model.table_partial_name, locals: { view_model: view_model } %>
-     <%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions, include_export: false } %>
+     <%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions, include_export: true } %>
   <div id="summary-dialog"
        data-summary-path="<%= regime_retrospective_summary_index_path(view_model.regime) %>">
   </div>
+  <%= render partial: "shared/data_protection_dialog" %>
 </div>
