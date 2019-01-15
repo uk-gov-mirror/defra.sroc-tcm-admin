@@ -15,12 +15,12 @@ class TransactionsController < ApplicationController
       format.html do
         if request.xhr?
           render partial: "table", locals: { view_model: @view_model }
-        else
-          render
+        # else
+        #   render
         end
       end
       format.csv do
-        send_data csv.export(@view_model.csv_transactions), csv_opts
+        send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
     end
   end
