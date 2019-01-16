@@ -145,7 +145,7 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def pre_sroc_flag
-    transaction_detail.retrospective? ? 'Y' : 'N'
+    (retrospective? || billed_retrospective?) ? 'Y' : 'N'
   end
 
   def excluded_flag

@@ -108,6 +108,10 @@ class TransactionDetail < ApplicationRecord
     status == 'retrospective'
   end
 
+  def billed_retrospective?
+    status == 'retro_billed'
+  end
+
   def permanently_excluded?
     status == 'excluded'
   end
