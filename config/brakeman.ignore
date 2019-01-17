@@ -1,6 +1,25 @@
 {
   "ignored_warnings": [
     {
+      "warning_type": "Cross-Site Request Forgery",
+      "warning_code": 7,
+      "fingerprint": "81654be028fa219953df42b67b1eb44466ef3d69b9400695b411bec8755e5bff",
+      "check_name": "ForgerySetting",
+      "message": "'protect_from_forgery' should be called in ErrorsController",
+      "file": "app/controllers/errors_controller.rb",
+      "line": 2,
+      "link": "https://brakemanscanner.org/docs/warning_types/cross-site_request_forgery/",
+      "code": null,
+      "render_path": null,
+      "location": {
+        "type": "controller",
+        "controller": "ErrorsController"
+      },
+      "user_input": null,
+      "confidence": "High",
+      "note": ""
+    },
+    {
       "warning_type": "Mass Assignment",
       "warning_code": 105,
       "fingerprint": "8d3c7949294a38e3a67fac03b2fcd8a838523c198baebc2cc53a2605ddf7eb90",
@@ -19,8 +38,28 @@
       "user_input": ":role",
       "confidence": "Medium",
       "note": "Controller access is restricted so only admin role can update :role attribute (or any user attribute)"
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "ee6e51a7de8043179d84993b6b6e00f6b3901239b094158160657432c40e3de2",
+      "check_name": "SendFile",
+      "message": "Parameter value used in file name",
+      "file": "app/controllers/data_export_controller.rb",
+      "line": 14,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "send_file(FetchDataExportFile.call(:regime => ((current_user.set_selected_regime(params.fetch(:regime_id, nil)) or current_user.selected_regime))).filename)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "DataExportController",
+        "method": "download"
+      },
+      "user_input": "params.fetch(:regime_id, nil)",
+      "confidence": "Weak",
+      "note": ""
     }
   ],
-  "updated": "2018-04-12 11:06:38 +0100",
-  "brakeman_version": "4.2.1"
+  "updated": "2019-01-16 14:47:41 +0000",
+  "brakeman_version": "4.3.1"
 }

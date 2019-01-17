@@ -4,6 +4,7 @@ class ApproveMatchingTransactions < ServiceObject
   def initialize(params = {})
     @regime = params.fetch(:regime)
     @region = params.fetch(:region)
+    @financial_year = params.fetch(:financial_year, '')
     @search = params.fetch(:search)
     @user = params.fetch(:user)
     @count = 0
@@ -19,8 +20,9 @@ class ApproveMatchingTransactions < ServiceObject
 
   private
   def update
-    @regime.transaction_details.region(@region).unbilled.
-      unexcluded.unapproved.with_charge.search(@search).each do |transaction|
+    q = @regime.transaction_details.region(@region).unbilled.unexcluded
+    q = q.financial_year(@financial_year) unless @financial_year.blank?
+    q.unapproved.with_charge.search(@search).each do |transaction|
       app = ApproveTransaction.call(transaction: transaction, approver: @user)
       if app.success?
         @count += 1

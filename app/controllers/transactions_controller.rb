@@ -87,6 +87,11 @@ class TransactionsController < ApplicationController
     regions = Query::Regions.call(regime: @regime)
     # regions = transaction_store.unbilled_regions
     @region = params.fetch(:region, cookies[:region])
+    fy = params.fetch(:fy, cookies[:fy])
+    
+    available_years = Query::FinancialYears.call(regime: @regime)
+    fy = '' unless available_years.include? fy
+
     msg = ""
     
     result = if regions.include? @region
@@ -103,6 +108,7 @@ class TransactionsController < ApplicationController
       q = params.fetch(:search, '')
       approval = ApproveMatchingTransactions.call(regime: @regime,
                                                   region: @region,
+                                                  financial_year: fy,
                                                   search: q,
                                                   user: current_user)
       result = approval.success?
