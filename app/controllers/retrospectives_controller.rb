@@ -16,12 +16,17 @@ class RetrospectivesController < ApplicationController
       format.html do
         if request.xhr?
           render partial: 'table', locals: { view_model: @view_model }
-        else
-          render
         end
       end
       format.csv do
-        send_data csv.full_export(@view_model.csv_transactions), csv_opts
+        result = BatchCsvExport.call(regime: @regime,
+                                     query: @view_model.fetch_transactions)
+        if result.success?
+          set_streaming_headers
+          self.response_body = result.csv_stream
+        end
+        # self.response_body = stream_csv_data(@view_model.fetch_transactions)
+        # send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
     end
   end
