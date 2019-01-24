@@ -6,6 +6,7 @@
 <div class="row">
   <div class="col col-lg-6">
     <% content_for :dp_content do %>
+      <p>The export process produces compressed data files. Use 7-Zip or a similar application to open files of this type.</p>
       <%= render partial: 'export_data_file',
         locals: { export_data_file: @regime.export_data_file } %>
     <% end %>
