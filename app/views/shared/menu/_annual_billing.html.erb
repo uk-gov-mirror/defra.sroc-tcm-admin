@@ -1,8 +1,8 @@
 <li class="nav-item dropdown <%= active_for_current_controller(["annual_billing_data_files"]) %>" role="none">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarAdminSelectorLink" data-toggle="dropdown" aria-haspopup="true" role="menuitem" aria-expanded="false">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarAnnualBillingSelectorLink" data-toggle="dropdown" aria-haspopup="true" role="menuitem" aria-expanded="false">
     Annual Billing
   </a>
-  <div class="dropdown-menu" aria-labelledby="navbarAdminSelectorLink">
+  <div class="dropdown-menu" aria-labelledby="navbarAnnualBillingSelectorLink">
     <%= link_to "Upload Annual Billing Data",
                 new_regime_annual_billing_data_file_path(@regime),
                 class: "dropdown-item",

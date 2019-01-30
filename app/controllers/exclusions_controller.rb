@@ -3,6 +3,7 @@
 class ExclusionsController < ApplicationController
   include RegimeScope, CsvExporter, QueryTransactions, ViewModelBuilder
 
+  before_action :read_only_user_check!
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
 

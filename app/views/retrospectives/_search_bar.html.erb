@@ -25,7 +25,9 @@
           <%= submit_tag "Search", class: 'btn btn-outline-primary' %>
         </span>
       </div>
-      <button class="btn btn-primary mr-4 generate-transaction-file-btn">Generate Pre-SRoC File</button>
+      <% unless current_user.can_read_only? %>
+        <button class="btn btn-primary mr-4 generate-transaction-file-btn">Generate Pre-SRoC File</button>
+      <% end %>
       <%= hidden_field_tag :page, 1 %>
       <%= hidden_field_tag :sort, params[:sort] %>
       <%= hidden_field_tag :sort_direction, params[:sort_direction] %>

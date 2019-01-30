@@ -44,6 +44,7 @@ module TransactionsHelper
     ]
 
     opts = opts.select { |o| o[1] != 'retrospective' } if @regime.waste?
+    opts = opts.select { |o| o[1] != 'excluded' } if current_user.can_read_only?
     options_for_select opts, selected_mode
   end
 

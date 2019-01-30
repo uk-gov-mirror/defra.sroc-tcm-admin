@@ -4,6 +4,7 @@ class TransactionsController < ApplicationController
   include RegimeScope, FinancialYear, CsvExporter, ViewModelBuilder
   before_action :set_regime, only: [:index, :approve]
   before_action :set_transaction, only: [:show, :edit, :update]
+  before_action :read_only_user_check!, only: [:update, :approve]
   # before_action :set_current_user, only: [:update, :approve]
 
   # GET /regimes/:regime_id/transactions
@@ -18,6 +19,7 @@ class TransactionsController < ApplicationController
         end
       end
       format.csv do
+        export_data_user_check!
         result = BatchCsvExport.call(regime: @regime,
                                      query: @view_model.fetch_transactions)
         if result.success?

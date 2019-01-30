@@ -9,7 +9,8 @@ class UsersController < AdminController
   end
 
   def new
-    @user = User.new
+    # default to role with lowest rights
+    @user = User.new(role: 'read_only')
     build_regimes
   end
 

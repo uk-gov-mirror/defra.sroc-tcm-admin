@@ -1,15 +1,18 @@
 require 'test_helper.rb'
 
 class TransactionSummaryControllerTest < ActionDispatch::IntegrationTest
-  def setup
-    @regime = regimes(:cfd)
-    @transaction = transaction_details(:cfd)
-    sign_in users(:billing_admin)
-  end
+  include RegimeSetup
 
   def test_it_should_get_index_for_xhr
+    setup_cfd
     get regime_transaction_summary_index_url(@regime), xhr: true
     assert_response :success
+  end
+
+  def test_read_only_user_should_not_get_index_for_xhr
+    setup_cfd_read_only
+    get regime_transaction_summary_index_url(@regime), xhr: true
+    assert_redirected_to root_path
   end
 
   # def test_index_should_return_406_if_not_json_request

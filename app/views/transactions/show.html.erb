@@ -5,7 +5,7 @@
 </div>
 <% transaction = present_transaction(@transaction) %>
 <%= render partial: "detail_summary", locals: { transaction: transaction } %>
-<% if transaction.unbilled? %>
+<% if !current_user.can_read_only? && transaction.unbilled? %>
   <div class="exclusion-zone">
     <% if transaction.excluded? %>
         <%= form_with(url: regime_transaction_path(@regime, transaction),
