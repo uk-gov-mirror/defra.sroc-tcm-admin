@@ -12,37 +12,23 @@ class RetrospectivesController < ApplicationController
   def index
     @view_model = build_retrospectives_view_model
 
-    # @region = params.fetch(:region, cookies.fetch(:region, ''))
-    # @region = '' if @region == 'all'
-    #
-    # pg = params.fetch(:page, 1)
-    # per_pg = params.fetch(:per_page, 10)
-    #
-    # @financial_years = Query::FinancialYears.call(regime: @regime)
-    # @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
-    # @financial_year = '' unless @financial_years.include? @financial_year
-    #
-    # @transactions = Query::PreSrocTransactions.call(query_params)
-    #
-    # summary = nil
-
     respond_to do |format|
       format.html do
-        # @transactions = present_transactions(@transactions.page(pg).per(per_pg))
         if request.xhr?
           render partial: 'table', locals: { view_model: @view_model }
-        else
-          render
         end
       end
       format.csv do
-        send_data csv.export(@view_model.csv_transactions), csv_opts
-        # send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
+        export_data_user_check!
+        result = BatchCsvExport.call(regime: @regime,
+                                     query: @view_model.fetch_transactions)
+        if result.success?
+          set_streaming_headers
+          self.response_body = result.csv_stream
+        end
+        # self.response_body = stream_csv_data(@view_model.fetch_transactions)
+        # send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
-      # format.json do
-      #   @transactions = present_transactions_for_json(@transactions, @region, regions)
-      #   render json: @transactions
-      # end
     end
   end
 

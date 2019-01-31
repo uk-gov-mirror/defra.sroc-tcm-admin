@@ -43,10 +43,11 @@
       <legend>Role</legend>
       <div class="row ml-2">
         <div class="col">
-          <% @user.defined_enums['role'].each do |k, _| %>
+          <%# @user.defined_enums['role'].each do |k, _| %>
+          <% User.ordered_roles.each do |r| %>
             <div class="form-check">
-              <%= form.radio_button :role, k, id: "role_#{k}", class: "form-check-input" %>
-              <%= form.label :role, role_label(k), for: "role_#{k}", class: 'form-check-label' %>
+              <%= form.radio_button :role, r, id: "role_#{r}", class: "form-check-input" %>
+              <%= form.label :role, role_label(r), for: "role_#{r}", class: 'form-check-label' %>
             </div>
           <% end %>
         </div>

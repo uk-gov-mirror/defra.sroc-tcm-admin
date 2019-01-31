@@ -11,6 +11,18 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  def read_only_user_check!
+    if user_signed_in? && current_user.can_read_only?
+      redirect_to root_path, notice: 'You are not permitted to access this area or make changes to data.'
+    end
+  end
+
+  def export_data_user_check!
+    if user_signed_in? && !current_user.can_export_data?
+      redirect_to root_path, notice: "You are not permitted to export data from the system."
+    end
+  end
+
   def set_thread_current_user
     # this enables us to access the :current_user in models which is used in
     # auditing changes

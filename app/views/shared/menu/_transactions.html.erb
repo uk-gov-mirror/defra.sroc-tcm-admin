@@ -18,12 +18,16 @@
         regime_retrospectives_path(@regime),
         class: "dropdown-item" -%>
     <% end %>
-    <%= link_to t("title", scope: "exclusions.index"),
-      regime_exclusions_path(@regime),
-      class: "dropdown-item" -%>
-    <div class="dropdown-divider"></div>
-    <%= link_to "Download Transaction Data",
-      regime_data_export_index_path(@regime),
-      class: "dropdown-item", role: "menuitem" %>
+    <% unless current_user.can_read_only? %>
+      <%= link_to t("title", scope: "exclusions.index"),
+        regime_exclusions_path(@regime),
+        class: "dropdown-item" -%>
+    <% end %>
+    <% if current_user.can_export_data? %>
+      <div class="dropdown-divider"></div>
+      <%= link_to "Download Transaction Data",
+        regime_data_export_index_path(@regime),
+        class: "dropdown-item", role: "menuitem" %>
+    <% end %>
   </div>
 </li>

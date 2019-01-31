@@ -3,6 +3,8 @@
 class TransactionFilesController < ApplicationController
   include RegimeScope
 
+  before_action :read_only_user_check!
+
   # POST /regimes/:regime_id/transaction_files
   def create
     set_regime

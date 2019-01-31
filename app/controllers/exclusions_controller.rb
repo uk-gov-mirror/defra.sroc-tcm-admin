@@ -3,6 +3,7 @@
 class ExclusionsController < ApplicationController
   include RegimeScope, CsvExporter, QueryTransactions, ViewModelBuilder
 
+  before_action :read_only_user_check!
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
 
@@ -11,35 +12,23 @@ class ExclusionsController < ApplicationController
   def index
     @view_model = build_exclusions_view_model
 
-    # @region = params.fetch(:region, cookies.fetch(:region, ''))
-    # @region = '' if @region == 'all'
-    #
-    # pg = params.fetch(:page, cookies.fetch(:page, 1))
-    # per_pg = params.fetch(:per_page, cookies.fetch(:per_page, 10))
-    #
-    # @financial_years = Query::FinancialYears.call(regime: @regime)
-    # @financial_year = params.fetch(:fy, cookies.fetch(:fy, ''))
-    # @financial_year = '' unless @financial_years.include? @financial_year
-    #
-    # @transactions = Query::ExcludedTransactions.call(query_params)
-
     respond_to do |format|
       format.html do
-        # @transactions = present_transactions(@transactions.page(pg).per(per_pg))
-
         if request.xhr?
           render partial: 'table', locals: { view_model: @view_model }
-        else
-          render
         end
       end
       format.csv do
-        send_data csv.export(@view_model.csv_transactions), csv_opts
-        # send_data csv.export(presenter.wrap(@transactions.limit(15000))), csv_opts
+        result = BatchCsvExport.call(regime: @regime,
+                                     query: @view_model.fetch_transactions)
+        if result.success?
+          set_streaming_headers
+          self.response_body = result.csv_stream
+        end
+        # set_streaming_headers
+        # self.response_body = stream_csv_data(@view_model.fetch_transactions)
+        # send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
-      # format.json do
-      #   render json: present_transactions_for_json(@transactions.page(pg).per(per_pg))
-      # end
     end
   end
 
@@ -49,6 +38,16 @@ class ExclusionsController < ApplicationController
   end
 
   private
+    def set_streaming_headers
+      ts = Time.zone.now.strftime("%Y%m%d%H%M%S")
+      filename = "exclusions_#{ts}.csv"
+
+      headers["Content-Type"] = "text/csv"
+      headers["Content-disposition"] = "attachment; filename=\"#{filename}\""
+      headers['X-Accel-Buffering'] = 'no'
+      headers.delete("Content-Length")
+    end
+
     def present_transactions(transactions)
       Kaminari.paginate_array(presenter.wrap(transactions),
                               total_count: transactions.total_count,

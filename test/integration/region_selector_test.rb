@@ -77,6 +77,7 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
 
     # select all regions
     page.select('All', from: 'region')
+    wait_for_ajax
     row_count = @regime.transaction_details.retrospective.count
     page.find(".tcm-table") do |t|
       # does region select have 'All' selected?

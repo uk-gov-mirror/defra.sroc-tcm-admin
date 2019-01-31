@@ -1,26 +1,24 @@
 require 'test_helper.rb'
 
 class HistoryControllerTest < ActionDispatch::IntegrationTest
-  def setup
-    @regime = regimes(:cfd)
-    sign_in users(:billing_admin)
-  end
+  include RegimeSetup
 
   def test_it_should_get_index
+    setup_cfd
     get regime_history_index_url(@regime)
     assert_response :success
   end
 
   def test_it_should_get_index_for_csv
+    setup_cfd
     get regime_history_index_url(@regime, format: :csv)
     assert_response :success
   end
 
-  def test_it_should_use_history_export_for_csv
-    csv = mock
-    csv.expects(:export_history).returns("test")
-    HistoryController.any_instance.stubs(:csv).returns(csv)
-
+  def test_read_only_cannot_export_data
+    setup_cfd_read_only
     get regime_history_index_url(@regime, format: :csv)
+    assert_redirected_to root_path
   end
+
 end

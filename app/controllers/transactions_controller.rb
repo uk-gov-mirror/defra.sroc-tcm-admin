@@ -4,6 +4,7 @@ class TransactionsController < ApplicationController
   include RegimeScope, FinancialYear, CsvExporter, ViewModelBuilder
   before_action :set_regime, only: [:index, :approve]
   before_action :set_transaction, only: [:show, :edit, :update]
+  before_action :read_only_user_check!, only: [:update, :approve]
   # before_action :set_current_user, only: [:update, :approve]
 
   # GET /regimes/:regime_id/transactions
@@ -15,12 +16,19 @@ class TransactionsController < ApplicationController
       format.html do
         if request.xhr?
           render partial: "table", locals: { view_model: @view_model }
-        else
-          render
         end
       end
       format.csv do
-        send_data csv.export(@view_model.csv_transactions), csv_opts
+        export_data_user_check!
+        result = BatchCsvExport.call(regime: @regime,
+                                     query: @view_model.fetch_transactions)
+        if result.success?
+          set_streaming_headers
+          self.response_body = result.csv_stream
+        end
+        # set_streaming_headers
+        # self.response_body = stream_csv_data(@view_model.fetch_transactions)
+        # send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
     end
   end
