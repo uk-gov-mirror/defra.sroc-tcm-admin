@@ -8,7 +8,7 @@ every 15.minutes do
 end
 
 every 1.day, at: '5:30 am' do
-  runner "TransactionsToBeBilledExportJob.perform_now"
+  runner "DataExportJob.perform_now"
 end
 
 # Example:

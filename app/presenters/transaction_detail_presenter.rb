@@ -32,7 +32,11 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def tcm_file_date
-    fmt_date transaction_file.created_at
+    if transaction_file
+      fmt_date transaction_file.created_at
+    else
+      ""
+    end
   end
 
   def generated_file_date
@@ -114,13 +118,18 @@ class TransactionDetailPresenter < SimpleDelegator
     end
   end
 
-  def region_from_ref
-    if tcm_transaction_reference.present?
-      tcm_transaction_reference[-2]
-    else
-      transaction_header.region
-    end
-  end
+  # region added to TransactionDetail now so no longer needed
+  # def region_from_ref
+  #   if tcm_transaction_reference.present?
+  #     tcm_transaction_reference[-2]
+  #   else
+  #     transaction_header.region
+  #   end
+  # end
+  #
+  # def region
+  #   transaction_header.region
+  # end
 
   def transaction_date
     # called when exporting to file
@@ -128,6 +137,26 @@ class TransactionDetailPresenter < SimpleDelegator
       charge_calculation['generatedAt'].to_date
     else
       transaction_detail.transaction_date
+    end
+  end
+
+  def original_transaction_date
+    transaction_detail.transaction_date.to_date
+  end
+
+  def pre_sroc_flag
+    (retrospective? || billed_retrospective?) ? 'Y' : 'N'
+  end
+
+  def excluded_flag
+    (permanently_excluded? || excluded?) ? 'Y' : 'N'
+  end
+
+  def excluded_reason
+    if permanently_excluded? || excluded?
+      transaction_detail.excluded_reason
+    else
+      ''
     end
   end
 
@@ -232,6 +261,46 @@ class TransactionDetailPresenter < SimpleDelegator
     TransactionCharge.extract_calculation_error(transaction_detail)
   end
 
+  def suggested_category_code
+    suggested_category.category unless suggested_category.nil?
+  end
+
+  def suggested_category_confidence_level
+    suggested_category.confidence_level.titlecase unless suggested_category.nil?
+  end
+
+  def suggested_category_overridden_flag
+    suggested_category.overridden ? 'Y' : 'N' unless suggested_category.nil?
+  end
+
+  def suggested_category_admin_lock_flag
+    suggested_category.admin_lock ? 'Y' : 'N' unless suggested_category.nil?
+  end
+
+  def suggested_category_logic
+    suggested_category.logic unless suggested_category.nil?
+  end
+
+  def suggested_category_stage
+    suggested_category.suggestion_stage unless suggested_category.nil?
+  end
+
+  def approved_flag
+    transaction_detail.approved_for_billing ? 'Y' : 'N'
+  end
+
+  def approved_date
+    approved_for_billing_at
+  end
+
+  def tcm_compliance_percentage
+    band = extract_compliance_performance
+    return "" if band.blank? || band == "()"
+
+    d = band.match /\A.*\((\d+%)\)\z/
+    d && d.size == 2 ? d[1] : ""
+  end
+
   def confidence_level
     transaction_detail.suggested_category.confidence_level unless transaction_detail.suggested_category.nil?
   end
@@ -247,6 +316,12 @@ class TransactionDetailPresenter < SimpleDelegator
 protected
   def transaction_detail
     __getobj__
+  end
+
+  def extract_compliance_performance
+    chg = transaction_detail.charge_calculation
+    chg['calculation']['compliancePerformanceBand'] unless chg.nil? ||
+      chg['calculation'].nil?
   end
 
   def permit_store

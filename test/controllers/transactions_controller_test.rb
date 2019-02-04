@@ -17,6 +17,19 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
   
+  def test_it_should_get_index_for_csv
+    get regime_transactions_path(@regime, format: :csv)
+    assert_response :success
+  end
+
+  def test_it_should_use_export_for_csv
+    csv = mock
+    csv.expects(:full_export).returns("test")
+    TransactionsController.any_instance.stubs(:csv).returns(csv)
+
+    get regime_transactions_path(@regime, format: :csv)
+  end
+
   def test_it_should_update_category
     stub_calculator
     @transaction = transaction_details(:cfd)

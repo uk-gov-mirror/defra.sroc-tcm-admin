@@ -25,7 +25,7 @@ class RetrospectivesControllerTest < ActionDispatch::IntegrationTest
 
   def test_it_should_use_export_for_csv
     csv = mock
-    csv.expects(:export).returns("test")
+    csv.expects(:full_export).returns("test")
     RetrospectivesController.any_instance.stubs(:csv).returns(csv)
 
     get regime_retrospectives_path(@regime, format: :csv)

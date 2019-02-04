@@ -15,12 +15,18 @@ class TransactionsController < ApplicationController
       format.html do
         if request.xhr?
           render partial: "table", locals: { view_model: @view_model }
-        else
-          render
         end
       end
       format.csv do
-        send_data csv.export(@view_model.csv_transactions), csv_opts
+        result = BatchCsvExport.call(regime: @regime,
+                                     query: @view_model.fetch_transactions)
+        if result.success?
+          set_streaming_headers
+          self.response_body = result.csv_stream
+        end
+        # set_streaming_headers
+        # self.response_body = stream_csv_data(@view_model.fetch_transactions)
+        # send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
     end
   end
@@ -87,6 +93,11 @@ class TransactionsController < ApplicationController
     regions = Query::Regions.call(regime: @regime)
     # regions = transaction_store.unbilled_regions
     @region = params.fetch(:region, cookies[:region])
+    fy = params.fetch(:fy, cookies[:fy])
+    
+    available_years = Query::FinancialYears.call(regime: @regime)
+    fy = '' unless available_years.include? fy
+
     msg = ""
     
     result = if regions.include? @region
@@ -103,6 +114,7 @@ class TransactionsController < ApplicationController
       q = params.fetch(:search, '')
       approval = ApproveMatchingTransactions.call(regime: @regime,
                                                   region: @region,
+                                                  financial_year: fy,
                                                   search: q,
                                                   user: current_user)
       result = approval.success?

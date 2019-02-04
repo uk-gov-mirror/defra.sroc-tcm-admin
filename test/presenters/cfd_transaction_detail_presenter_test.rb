@@ -120,6 +120,16 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal("Discharge Location: ", @presenter.discharge_location)
   end
 
+  def test_pre_sroc_flag_returns_Y_for_retrospective_transactions
+    @transaction.status = 'retrospective'
+    assert_equal 'Y', @presenter.pre_sroc_flag, "Pre-SRoC flag incorrect"
+  end
+
+  def test_pre_sroc_flag_returns_Y_for_retro_billed_transactions
+    @transaction.status = 'retro_billed'
+    assert_equal 'Y', @presenter.pre_sroc_flag, "Pre-SRoC flag incorrect"
+  end
+
   def test_it_transforms_into_json
     assert_equal({
       id: @transaction.id,
@@ -140,7 +150,7 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
       temporary_cessation: @presenter.temporary_cessation_flag,
       tcm_financial_year: @presenter.tcm_financial_year,
       financial_year: @presenter.charge_period,
-      region: @presenter.region_from_ref,
+      region: @presenter.region,
       period: @presenter.period,
       line_amount: @presenter.original_charge,
       amount: @presenter.amount,
