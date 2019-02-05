@@ -1,8 +1,17 @@
 class UsersController < AdminController
+  include ViewModelBuilder
   before_action :set_user, only: [:show, :edit, :update, :reinvite]
 
   def index
-    @users = User.order(:last_name)
+    @view_model = build_users_view_model
+    respond_to do |format|
+      format.html do
+        if request.xhr?
+          render partial: "table", locals: { view_model: @view_model }
+        end
+      end
+    end
+    # @users = User.order(:last_name)
   end
 
   def show

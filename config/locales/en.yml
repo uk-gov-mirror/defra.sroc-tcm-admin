@@ -1,4 +1,10 @@
 en:
+  user:
+    roles:
+      admin: 'System Admin'
+      billing: 'Billing Admin'
+      read_only: 'Read-only User'
+      read_only_export: 'Read-only + Export'
   exclusions:
     index:
       title: "Excluded Transactions"
@@ -90,6 +96,13 @@ en:
         period: "Period"
         excluded_reason: "Exclusion Reason"
         amount: "Credit/Invoice"
+      users:
+        last_name: 'Last Name'
+        first_name: 'First Name'
+        email: 'Email'
+        role: 'Role'
+        regime: 'Regime(s)'
+        enabled: 'Enabled?'
   views:
     amount_with_unit: "Amount (£)"
     pagination:

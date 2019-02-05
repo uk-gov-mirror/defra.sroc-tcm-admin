@@ -1,0 +1,37 @@
+<div class="row search-bar">
+  <div class="col mb-2">
+    <%= form_with controller: controller_name, action: action_name, method: "get",
+      class: 'form-inline', id: "search-bar", local: true do %>
+      <div class="form-group mr-4">
+        <%= label_tag(:regime, 'Regime', class: 'mr-2') %>
+        <%= select_tag(:regime, view_model.regime_options,
+                       class: 'form-control') %>
+      </div>
+      <div class="form-group mr-2">
+        <%= label_tag(:role, 'Role', class: 'mr-2') %>
+        <%= select_tag(:role, view_model.role_options,
+                       class: 'form-control') %>
+      </div>
+      <div class="input-group col-12 col-lg-3 col-md-3 col-sm-4 mr-2">
+        <%= label_tag(:search, 'Search', class: 'sr-only') %>
+        <%= search_field_tag(:search, view_model.search,
+                             class: 'form-control',
+                             placeholder: "Search First or Last Name") %>
+        <span class="input-group-btn">
+          <%= submit_tag "Search", class: 'btn btn-outline-primary' %>
+        </span>
+      </div>
+      <button class="btn btn-primary"
+              type="button"
+              id="new-user"
+              data-path="<%= new_user_path %>">
+        Add User Account
+      </button>
+      <%= hidden_field_tag :regime, view_model.regime %>
+      <%= hidden_field_tag :role, view_model.role %>
+      <%= hidden_field_tag :page, view_model.page %>
+      <%= hidden_field_tag :sort, view_model.sort %>
+      <%= hidden_field_tag :sort_direction, view_model.sort_direction %>
+    <% end %>
+  </div>
+</div>
