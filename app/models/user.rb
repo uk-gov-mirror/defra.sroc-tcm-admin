@@ -30,6 +30,12 @@ class User < ApplicationRecord
     [:read_only, :read_only_export, :billing, :admin]
   end
 
+  def self.search(str)
+    m = "%#{sanitize_sql_like(str)}%"
+    where(arel_table[:first_name].matches(m).
+          or(arel_table[:last_name].matches(m)))
+  end
+
   def full_name
     first_name + " " + last_name
   end

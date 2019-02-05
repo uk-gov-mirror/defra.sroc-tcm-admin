@@ -14,6 +14,9 @@ function init() {
     init_approve_all_button(container)
     init_generate_file_button(container)
     init_new_permit_category_button(container)
+    init_new_user_button(container)
+    init_regime_filter_select(container)
+    init_role_filter_select(container)
     init_row(container)
   }
 
@@ -44,7 +47,9 @@ function reload_table(container) {
       sort: data.sortColumn,
       sort_direction: data.sortDirection,
       region: data.region,
-      fy: data.financialYear
+      fy: data.financialYear,
+      regime: data.regime,
+      role: data.role
     },
     success: function (payload, status, xhr) {
       $(container).replaceWith(payload)
@@ -168,8 +173,6 @@ function init_region_select (container) {
       container.data('page', 1)
       reload_table(container)
     })
-  // } else {
-  //   console.log("Didn't find region select")
   }
 }
 
@@ -193,7 +196,8 @@ function init_search_form (container) {
       var val = form.find("input[name=search]").val()
       container.data('search', val)
       container.data('page', 1)
-      if (!container.hasClass('permit-categories')) {
+      if (!container.hasClass('permit-categories') &&
+        !container.hasClass('users')) {
         set_cookie_data(container)
       }
       reload_table(container)
@@ -248,6 +252,28 @@ function init_approve_all_button (container) {
     approve_transactions(container)
     ev.preventDefault()
   })
+}
+
+function init_regime_filter_select (container) {
+  var select = container.find('select#regime')
+  if (select.length > 0) {
+    select.on('change', function (ev) {
+      container.data('regime', $(this).val())
+      container.data('page', 1)
+      reload_table(container)
+    })
+  }
+}
+
+function init_role_filter_select (container) {
+  var select = container.find('select#role')
+  if (select.length > 0) {
+    select.on('change', function (ev) {
+      container.data('role', $(this).val())
+      container.data('page', 1)
+      reload_table(container)
+    })
+  }
 }
 
 function init_category_select (container) {
@@ -335,6 +361,13 @@ function init_new_permit_category_button (container) {
     var financialYear = container.data('financialYear')
     var path = $(this).data('path')
     window.location.assign(path + '?fy=' + financialYear)
+  })
+}
+
+function init_new_user_button (container) {
+  container.find("button#new-user").on('click', function (ev) {
+    var path = $(this).data('path')
+    window.location.assign(path)
   })
 }
 
