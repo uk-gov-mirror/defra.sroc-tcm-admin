@@ -100,6 +100,15 @@ function fetch_summary_and_show (container) {
     },
     success: function (payload, status, xhr) {
       $("#summary-dialog").replaceWith(payload)
+      $('#summary-dialog #confirm:not(:disabled)').on('click', function (ev) {
+        if ($(this).is(':checked')) {
+          // enable generate button
+          $("#summary-dialog input.file-generate-btn").prop('disabled', false)
+        } else {
+          // disable generate button
+          $("#summary-dialog input.file-generate-btn").prop('disabled', true)
+        }
+      })
       $("#summary-dialog").modal()
     },
     dataType: 'html'
