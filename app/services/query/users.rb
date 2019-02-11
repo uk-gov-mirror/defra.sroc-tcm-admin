@@ -30,6 +30,8 @@ module Query
       case @sort_column.to_sym
       when :first_name
         q.order(first_name: dir, last_name: dir, id: dir)
+      when :email
+        q.order(email: dir, last_name: dir, id: dir)
       when :role
         q.order("CASE role " \
                 "WHEN 1 THEN 0 " \
