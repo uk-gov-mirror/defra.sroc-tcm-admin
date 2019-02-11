@@ -5,6 +5,9 @@ en:
       billing: 'Billing Admin'
       read_only: 'Read-only User'
       read_only_export: 'Read-only + Export'
+  transaction_files:
+    index:
+      title: "Transaction File History"
   exclusions:
     index:
       title: "Excluded Transactions"

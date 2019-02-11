@@ -12,6 +12,9 @@ class TransactionFile < ApplicationRecord
 
   after_create :set_file_id
 
+  scope :pre_sroc, -> { where(retrospective: true) }
+  scope :post_sroc, -> { where(retrospective: false) }
+
   def path
     File.join(regime.to_param, filename)
   end
@@ -29,6 +32,11 @@ class TransactionFile < ApplicationRecord
   def base_filename
     @base_filename ||= "#{regime.to_param}#{region}I#{file_id}".upcase
   end
+
+  def generated_by
+    user.full_name unless user.nil?
+  end
+
 private
   def set_file_id
     update_attributes(file_id: generate_file_id)

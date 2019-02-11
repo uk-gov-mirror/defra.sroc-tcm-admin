@@ -1,0 +1,39 @@
+<div class="tcm-table transaction-files"
+     data-path="<%= regime_transaction_files_path(view_model.regime) %>"
+     data-region="<%= view_model.region %>"
+     data-search="<%= view_model.search %>"
+     data-page="<%= view_model.page %>"
+     data-per-page="<%= view_model.per_page %>"
+     data-sort-column="<%= view_model.sort %>"
+     data-sort-direction="<%= view_model.sort_direction %>">
+     <%= render partial: 'search_bar', locals: { view_model: view_model } %>
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><%= sortable :file_reference, view_model %></th>
+      <th><%= sortable :generated_at, view_model %></th>
+      <th><%= sortable :generated_by, view_model %></th>
+      <th><%= sortable :credit_count, view_model %></th>
+      <th><%= sortable :credit_total, view_model %></th>
+      <th><%= sortable :debit_count, view_model %></th>
+      <th><%= sortable :invoice_total, view_model %></th>
+      <th><%= sortable :net_total, view_model %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% view_model.paged_transaction_files.each do |file| %>
+      <tr id="<%= file.id %>">
+        <td><%= file.file_reference %></td>
+        <td><%= file.generated_at %></td>
+        <td><%= file.generated_by %></td>
+        <td><%= file.credit_count %></td>
+        <td><%= file.credit_total %></td>
+        <td><%= file.debit_count %></td>
+        <td><%= file.invoice_total %></td>
+        <td><%= file.net_total %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%#= render partial: "pagination", locals: { view_model: view_model } %>
+</div>

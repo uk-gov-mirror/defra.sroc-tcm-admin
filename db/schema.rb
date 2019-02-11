@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190109161938) do
+ActiveRecord::Schema.define(version: 20190208112415) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "annual_billing_data_files", force: :cascade do |t|
     t.bigint "regime_id"
@@ -258,6 +259,11 @@ ActiveRecord::Schema.define(version: 20190109161938) do
     t.datetime "updated_at", null: false
     t.boolean "retrospective", default: false, null: false
     t.bigint "user_id"
+    t.integer "credit_count"
+    t.integer "debit_count"
+    t.bigint "net_total"
+    t.string "file_reference"
+    t.index ["file_reference"], name: "index_transaction_files_on_file_reference"
     t.index ["regime_id"], name: "index_transaction_files_on_regime_id"
     t.index ["region"], name: "index_transaction_files_on_region"
     t.index ["state"], name: "index_transaction_files_on_state"
