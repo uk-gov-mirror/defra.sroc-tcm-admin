@@ -14,7 +14,7 @@ module ViewModels
       @per_page = 10
       @sort = 'file_reference'
       @sort_direction = 'asc'
-      @permit_all_regions = true
+      @permit_all_regions = false
     end
 
     def region=(val)
@@ -74,24 +74,14 @@ module ViewModels
 
     # override me for different views
     def fetch_transaction_files
-      regime.transaction_files
-      # Query::TransactionsToBeBilled.call(regime: regime,
-      #                                    region: region,
-      #                                    sort: sort,
-      #                                    sort_direction: sort_direction,
-      #                                    financial_year: financial_year,
-      #                                    search: search)
+      Query::TransactionFiles.call(regime: regime,
+                                   region: region,
+                                   prepost: prepost,
+                                   sort: sort,
+                                   sort_direction: sort_direction,
+                                   search: search)
     end
     
-    # override me for different views
-    def csv_transactions(limit = 15000)
-      @csv ||= presenter.wrap(transactions.unexcluded.limit(limit), user)
-    end
-
-    def present_paged_transactions
-      @ppt ||= page_and_present_transactions
-    end
-
     # override me if 'all' regions is permitted in the view
     def region_options
       options_for_select(available_regions.map { |r| [r, r] }, region)

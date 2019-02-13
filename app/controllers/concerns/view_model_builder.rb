@@ -9,7 +9,7 @@ module ViewModelBuilder
     vm.search = params.fetch(:search, '')
     vm.page = params.fetch(:page, 1)
     vm.per_page = params.fetch(:per_page, 10)
-    vm.sort = params.fetch(:sort, :last_name)
+    vm.sort = params.fetch(:sort, :file_reference)
     vm.sort_direction = params.fetch(:sort_direction, 'asc')
     vm.check_params
     vm

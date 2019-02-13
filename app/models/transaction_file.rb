@@ -15,6 +15,11 @@ class TransactionFile < ApplicationRecord
   scope :pre_sroc, -> { where(retrospective: true) }
   scope :post_sroc, -> { where(retrospective: false) }
 
+  def self.search(str)
+    m = "%#{sanitize_sql_like(str)}%"
+    where(arel_table[:file_reference].matches(m))
+  end
+
   def path
     File.join(regime.to_param, filename)
   end

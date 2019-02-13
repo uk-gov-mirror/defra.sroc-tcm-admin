@@ -24,16 +24,17 @@
     <% view_model.paged_transaction_files.each do |file| %>
       <tr id="<%= file.id %>">
         <td><%= file.file_reference %></td>
-        <td><%= file.generated_at %></td>
+        <td><%= slash_formatted_date file.generated_at %></td>
         <td><%= file.generated_by %></td>
         <td><%= file.credit_count %></td>
-        <td><%= file.credit_total %></td>
+        <td><%= formatted_pence_without_symbol file.credit_total %></td>
         <td><%= file.debit_count %></td>
-        <td><%= file.invoice_total %></td>
-        <td><%= file.net_total %></td>
+        <td><%= formatted_pence_without_symbol file.invoice_total %></td>
+        <td><%= formatted_pence_without_symbol file.net_total %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
-<%#= render partial: "pagination", locals: { view_model: view_model } %>
+<%# <%= render partial: "shared/pagination", locals: { collection: view_model.paged_transaction_files, include_export: false } %>
+<%= render partial: "pagination", locals: { view_model: view_model } %>
 </div>
