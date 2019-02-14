@@ -1,13 +1,24 @@
 # frozen_string_literal: true
 
 class TransactionFilesController < ApplicationController
-  include RegimeScope
+  include RegimeScope, ViewModelBuilder
 
-  before_action :read_only_user_check!
+  before_action :set_regime
+  before_action :read_only_user_check!, only: [:create]
+
+  def index
+    @view_model = build_transaction_files_view_model
+    respond_to do |format|
+      format.html do
+        if request.xhr?
+          render partial: "table", locals: { view_model: @view_model }
+        end
+      end
+    end
+  end
 
   # POST /regimes/:regime_id/transaction_files
   def create
-    set_regime
     set_region
     file = exporter.export
     msg = "Successfully generated transaction file <b>#{file.filename}</b>"

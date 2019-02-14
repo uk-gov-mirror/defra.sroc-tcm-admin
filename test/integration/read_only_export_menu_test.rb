@@ -24,11 +24,12 @@ class ReadOnlyExportMenuTest < ActionDispatch::IntegrationTest
     visit regime_transactions_path(@regime)
     page.click_link("Transactions")
     page.find("div.dropdown-menu") do |menu|
-      assert menu.has_selector?("a.dropdown-item", count: 4)
+      assert menu.has_selector?("a.dropdown-item", count: 5)
       assert menu.has_link?("Transactions to be billed")
       assert menu.has_link?("Transaction History")
       assert menu.has_link?("Pre-April 2018 Transactions to be billed")
       assert menu.has_no_link?("Excluded Transactions")
+      assert menu.has_link?("Transaction File History")
       assert menu.has_link?("Download Transaction Data")
     end
   end

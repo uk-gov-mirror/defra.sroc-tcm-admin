@@ -7,6 +7,7 @@ function init() {
     init_view_select(container)
     init_region_select(container)
     init_financial_year_select(container)
+    init_prepost_select(container)
     init_search_form(container)
     init_page_nav(container)
     init_page_size(container)
@@ -49,7 +50,8 @@ function reload_table(container) {
       region: data.region,
       fy: data.financialYear,
       regime: data.regime,
-      role: data.role
+      role: data.role,
+      prepost: data.prepost
     },
     success: function (payload, status, xhr) {
       $(container).replaceWith(payload)
@@ -169,8 +171,6 @@ function init_view_select (container) {
       container.data('page', 1)
       reload_table(container)
     })
-  // } else {
-  //   console.log("Didn't find view mode select")
   }
 }
 
@@ -193,8 +193,17 @@ function init_financial_year_select (container) {
       container.data('page', 1)
       reload_table(container)
     })
-  // } else {
-  //   console.log("Didn't find financial year select")
+  }
+}
+
+function init_prepost_select (container) {
+  var select = container.find('select#prepost')
+  if (select.length > 0) {
+    select.on('change', function (ev) {
+      container.data('prepost', $(this).val())
+      container.data('page', 1)
+      reload_table(container)
+    })
   }
 }
 
@@ -206,7 +215,8 @@ function init_search_form (container) {
       container.data('search', val)
       container.data('page', 1)
       if (!container.hasClass('permit-categories') &&
-        !container.hasClass('users')) {
+        !container.hasClass('users') &&
+        !container.hasClass('transactions-files')) {
         set_cookie_data(container)
       }
       reload_table(container)

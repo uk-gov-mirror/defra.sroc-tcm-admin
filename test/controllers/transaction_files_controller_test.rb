@@ -3,6 +3,12 @@ require 'test_helper.rb'
 class TransactionFilesControllerTest < ActionDispatch::IntegrationTest
   include RegimeSetup
 
+  def test_it_should_get_index
+    setup_cfd
+    get regime_transaction_files_path(@regime)
+    assert_response :success
+  end
+
   def test_create_should_redirect_to_transactions_to_be_billed
     setup_cfd
     post regime_transaction_files_url(@regime), params: { region: 'A' }

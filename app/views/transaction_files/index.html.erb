@@ -1,9 +1,8 @@
-<% content_for :head do %>
-  <meta name="turbolinks-cache-control" content="no-cache">
-  <%#= javascript_pack_tag 'transactions' %>
-<% end %>
-<div class="row mb-4">
-  <div class="col">
-    <h1>Generate Transaction File</h1>
+<div class="transaction-files">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 id="view-title"><%= t(".title") %></h1>
+    </div>
   </div>
+  <%= render partial: "table", locals: { view_model: @view_model } %>
 </div>
