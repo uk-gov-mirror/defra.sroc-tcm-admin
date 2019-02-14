@@ -14,13 +14,13 @@ module ViewModels
       @per_page = 10
       @sort = 'file_reference'
       @sort_direction = 'asc'
-      @permit_all_regions = false
+      @permit_all_regions = true
     end
 
     def region=(val)
       if val.blank? || val == 'all'
         if permit_all_regions
-          @region = 'all'
+          @region = ''
         else
           @region = available_regions.first
         end
@@ -35,7 +35,7 @@ module ViewModels
     end
 
     def region
-      if permit_all_regions && @region == 'all'
+      if permit_all_regions && @region.blank?
         @region
       else
         if available_regions.include?(@region)
@@ -84,11 +84,12 @@ module ViewModels
     
     # override me if 'all' regions is permitted in the view
     def region_options
-      options_for_select(available_regions.map { |r| [r, r] }, region)
+      all_region_options
+      # options_for_select(available_regions.map { |r| [r, r] }, region)
     end
 
     def all_region_options
-      opts = available_regions.length == 1 ? [] : [['All', 'all']]
+      opts = available_regions.length == 1 ? [] : [['All', '']]
       options_for_select(opts + available_regions.map { |r| [r, r] }, region)
     end
 
@@ -101,7 +102,8 @@ module ViewModels
     private
 
     def available_regions
-      @available_regions ||= Query::Regions.call(regime: regime)
+      # @available_regions ||= Query::Regions.call(regime: regime)
+      @available_regions ||= Query::TransactionFileRegions.call(regime: regime)
     end
   end
 end

@@ -11,7 +11,7 @@ class TransactionFilesTest < ActionDispatch::IntegrationTest
     setup_cfd
     visit regime_transaction_files_path(@regime)
 
-    regions = @regime.transaction_headers.distinct.pluck(:region).sort
+    regions = ['All'] + @regime.transaction_headers.distinct.pluck(:region).sort
 
     assert page.has_select? "region", options: regions
   end
