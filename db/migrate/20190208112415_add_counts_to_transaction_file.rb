@@ -7,15 +7,6 @@ class AddCountsToTransactionFile < ActiveRecord::Migration[5.1]
       t.string :file_reference
       t.index :file_reference
     end
-
-    Thread.current[:current_user] = User.system_account
-    TransactionFile.all.each do |f|
-      f.credit_count = f.transaction_details.credits.count
-      f.debit_count = f.transaction_details.invoices.count
-      f.net_total = f.invoice_total + f.credit_total
-      f.file_reference = f.base_filename
-      f.save!
-    end
   end
 
   def down
