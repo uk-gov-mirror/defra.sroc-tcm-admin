@@ -18,6 +18,14 @@ class TransactionFileExporter
     # get list of exportable transactions
     TransactionDetail.transaction do
       q = grouped_unbilled_transactions_by_region(region).lock(true)
+      credits = q.credits.pluck(:tcm_charge)
+      invoices = q.invoices.pluck(:tcm_charge)
+
+      credit_count = credits.count
+      debit_count = invoices.count
+
+      credit_total = credits.sum
+      invoice_total = invoices.sum
 
       # can't do a distinct query once locked for update, so have to do it locally
       # q.order(:tcm_financial_year).distinct.pluck(:tcm_financial_year).each do |fy|
@@ -26,14 +34,15 @@ class TransactionFileExporter
       # credit_total = fy_q.credits.pluck(:tcm_charge).sum
       # invoice_total = fy_q.invoices.pluck(:tcm_charge).sum
 
-      credit_total = q.credits.pluck(:tcm_charge).sum
-      invoice_total = q.invoices.pluck(:tcm_charge).sum
-
       file = regime.transaction_files.create!(region: region,
                                               user: user,
                                               generated_at: Time.zone.now,
                                               credit_total: credit_total,
-                                              invoice_total: invoice_total)
+                                              invoice_total: invoice_total,
+                                              credit_count: credit_count,
+                                              debit_count: debit_count,
+                                              net_total: invoice_total +
+                                              credit_total)
 
       # link transactions and update status
       q.update_all(transaction_file_id: file.id, status: 'exporting')
@@ -55,14 +64,20 @@ class TransactionFileExporter
       invoices = q.invoices.pluck(:line_amount)
       credit_total = credits.sum
       invoice_total = invoices.sum
+      credit_count = credits.count
+      debit_count = invoices.count
 
-      if credits.count > 0 || invoices.count > 0
+      if credit_count > 0 || debit_count > 0
         file = regime.transaction_files.create!(region: region,
-                                             user: user,
-                                             retrospective: true,
-                                             generated_at: Time.zone.now,
-                                             credit_total: credit_total,
-                                             invoice_total: invoice_total)
+                                                user: user,
+                                                retrospective: true,
+                                                generated_at: Time.zone.now,
+                                                credit_total: credit_total,
+                                                invoice_total: invoice_total,
+                                                credit_count: credit_count,
+                                                debit_count: debit_count,
+                                                net_total: invoice_total +
+                                                credit_total)
 
         # link transactions and update status
         q.update_all(transaction_file_id: file.id, status: 'retro_exporting')
