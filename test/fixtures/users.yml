@@ -23,6 +23,14 @@ billing_admin:
   encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
   enabled: true
 
+cfd_read_only:
+  role: 'read_only'
+  email: "cfd-ro@example.com"
+  first_name: "Gentle"
+  last_name: "Gregory"
+  encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
+  enabled: true
+
 pas_billing_admin:
   role: 'billing'
   email: "pas-billing@example.com"
@@ -31,11 +39,35 @@ pas_billing_admin:
   encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
   enabled: true
 
+pas_read_only:
+  role: 'read_only'
+  email: "pas-ro@example.com"
+  first_name: "Sideways"
+  last_name: "Edgar"
+  encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
+  enabled: true
+
+pas_read_only_export:
+  role: 'read_only_export'
+  email: "pas-export@example.com"
+  first_name: "Clarence"
+  last_name: "Handbag"
+  encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
+  enabled: true
+
 wml_billing_admin:
   role: 'billing'
   email: "wml-billing@example.com"
   first_name: "Hawkeye"
   last_name: "Gladys"
+  encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
+  enabled: true
+
+wml_read_only:
+  role: 'read_only'
+  email: "wml-ro@example.com"
+  first_name: "Orangy"
+  last_name: "Escapade"
   encrypted_password: <%= Devise::Encryptor.digest(User, "Passw0rd") %>
   enabled: true
 

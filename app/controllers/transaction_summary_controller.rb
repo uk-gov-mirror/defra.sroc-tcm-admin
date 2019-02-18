@@ -3,6 +3,7 @@
 class TransactionSummaryController < ApplicationController
   include RegimeScope
   before_action :set_regime, only: [:index]
+  before_action :read_only_user_check!
 
   def index
     @region = params.fetch(:region, '')

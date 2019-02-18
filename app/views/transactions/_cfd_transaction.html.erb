@@ -27,10 +27,14 @@
     <%= transaction.discharge_reference %>
   </td>
   <td class="align-middle control-column">
-    <% if transaction.can_update_category? && transaction.editable? %>
-      <%= category_select_tag transaction %>
-    <% else %>
+    <% if current_user.can_read_only? %>
       <%= transaction.category %>
+    <% else %>
+      <% if transaction.can_update_category? && transaction.editable? %>
+        <%= category_select_tag transaction %>
+      <% else %>
+        <%= transaction.category %>
+      <% end %>
     <% end %>
   </td>
   <td class="align-middle indicator-column">
@@ -42,12 +46,16 @@
     <%= transaction.clean_variation_percentage %>
   </td>
   <td class="align-middle control-column">
-    <% if transaction.editable? %>
-      <%= select_tag :temporary_cessation,
-        temporary_cessation_options(transaction.temporary_cessation),
-        id: "tc-#{transaction.id}", class: "form-control temporary-cessation-select" %>
-    <% else %>
+    <% if current_user.can_read_only? %>
       <%= transaction.temporary_cessation_flag %>
+    <% else %>
+      <% if transaction.editable? %>
+        <%= select_tag :temporary_cessation,
+          temporary_cessation_options(transaction.temporary_cessation),
+          id: "tc-#{transaction.id}", class: "form-control temporary-cessation-select" %>
+      <% else %>
+        <%= transaction.temporary_cessation_flag %>
+      <% end %>
     <% end %>
   </td>
   <td class="align-middle">
@@ -72,13 +80,17 @@
     </td>
   <% else %>
     <td class="align-middle approve-column">
-      <% if transaction.approved? || transaction.ready_for_approval? %>
-        <% apr_id = "apr#{transaction.id}" %>
-        <% desc = "Billing Approval for Consent #{transaction.consent_reference}" %>
-        <label for="<%= apr_id %>" class="sr-only"><%= desc %></label>
-        <%= check_box_tag :approved_for_billing, true,
-          transaction.approved_for_billing, id: apr_id,
-          class: "form-check-input approve-button", title: desc %>
+      <% if current_user.can_read_only? %>
+        <%= approval_check(transaction.approved_for_billing) %>
+      <% else %>
+        <% if transaction.approved? || transaction.ready_for_approval? %>
+          <% apr_id = "apr#{transaction.id}" %>
+          <% desc = "Billing Approval for Consent #{transaction.consent_reference}" %>
+          <label for="<%= apr_id %>" class="sr-only"><%= desc %></label>
+          <%= check_box_tag :approved_for_billing, true,
+            transaction.approved_for_billing, id: apr_id,
+            class: "form-check-input approve-button", title: desc %>
+        <% end %>
       <% end %>
     </td>
   <% end %>

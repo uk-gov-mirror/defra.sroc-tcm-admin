@@ -1,4 +1,8 @@
 module ApplicationHelper
+  def yn_flag(bool)
+    bool ? 'Y' : 'N'
+  end
+
   def tcm_form_with(*args, &block)
     options = args.extract_options!
 

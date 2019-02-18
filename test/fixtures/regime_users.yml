@@ -3,14 +3,34 @@ cfd_sys:
   user: system_admin
   enabled: true
 
+cfd_ro:
+  regime: cfd
+  user: cfd_read_only
+  enabled: true
+
 pas_sys:
   regime: pas
   user: system_admin
   enabled: true
 
+pas_ro:
+  regime: pas
+  user: pas_read_only
+  enabled: true
+
+pas_export:
+  regime: pas
+  user: pas_read_only_export
+  enabled: true
+
 wml_sys:
   regime: wml
   user: system_admin
+  enabled: true
+
+wml_ro:
+  regime: wml
+  user: wml_read_only
   enabled: true
 
 cfd_bill:

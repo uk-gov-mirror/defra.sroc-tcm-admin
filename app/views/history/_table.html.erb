@@ -10,6 +10,6 @@
      <%= render partial: 'search_bar', locals: { view_model: view_model,
                                                  view_mode: 'historic' } %>
 <%= render partial: view_model.table_partial_name, locals: { view_model: view_model } %>
-<%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions, include_export: true } %>
+<%= render partial: "shared/pagination", locals: { collection: view_model.present_paged_transactions, include_export: current_user.can_export_data? } %>
 <%= render partial: "shared/data_protection_dialog" %>
 </div>

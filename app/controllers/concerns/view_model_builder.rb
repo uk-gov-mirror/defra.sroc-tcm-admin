@@ -1,6 +1,19 @@
 module ViewModelBuilder
   extend ActiveSupport::Concern
 
+  def build_users_view_model
+    vm = ViewModels::Users.new
+    vm.regime = params.fetch(:regime, '')
+    vm.role = params.fetch(:role, '')
+    vm.search = params.fetch(:search, '')
+    vm.page = params.fetch(:page, 1)
+    vm.per_page = params.fetch(:per_page, 10)
+    vm.sort = params.fetch(:sort, :last_name)
+    vm.sort_direction = params.fetch(:sort_direction, 'asc')
+    vm.check_params
+    vm
+  end
+
   def build_annual_billing_view_model
     vm = ViewModels::AnnualBillingData.new(regime: @regime,
                                            upload: @upload,

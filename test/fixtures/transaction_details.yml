@@ -489,6 +489,7 @@ cfd_excluded_invoice_1:
   line_attr_9: "96%"
   unit_of_measure_price: 9322
   status: "excluded"
+  excluded: true
   excluded_reason: "Reason for exclusion"
   reference_1: "ANQA/1234/1/1"
   reference_2: "1"
@@ -513,6 +514,7 @@ cfd_excluded_credit_1:
   line_attr_9: "96%"
   unit_of_measure_price: -6578
   status: "excluded"
+  excluded: true
   excluded_reason: "Another reason for exclusion"
   reference_1: "ANQA/1234/1/1"
   reference_2: "1"
@@ -744,6 +746,36 @@ pas_retro_invoice_1:
   original_file_date: <%= 6.weeks.ago.to_date %>
   tcm_financial_year: "1718"
 
+  #####
+  # excluded
+pas_excluded_invoice_1:
+  <<: *PAS_DEFAULTS
+  customer_reference: "A929222P"
+  transaction_date: <%= 2.months.ago %>
+  transaction_type: "I"
+  transaction_reference: "PAS0003311Y"
+  related_reference:
+  currency_code: "GBP"
+  header_attr_10: "21/04/2017 - 31/03/2018"
+  line_amount: 323260
+  line_description: "Subsistence Charge Permit No: XP3999DA"
+  unit_of_measure_price: 323260
+  status: "retrospective"
+  filename: "PASYI00337.dat"
+  reference_1: "XP3999DA"
+  reference_2: "ABC9988V"
+  reference_3: "AB1234ZZ"
+  temporary_cessation: false
+  excluded: true
+  excluded_reason: 'Wigwam collapse'
+  status: 'excluded'
+  category:
+  charge_calculation:
+  period_start: "21-Apr-2017"
+  period_end: "31 Mar 2018"
+  original_filename: 'PASYI00337'
+  original_file_date: <%= 6.weeks.ago.to_date %>
+  tcm_financial_year: "1718"
 
 pas_annual:
   transaction_header: pas
@@ -800,7 +832,7 @@ pas_annual:
   temporary_cessation: false
   temporary_cessation_start:
   temporary_cessation_end:
-  category: '2.4.4'
+  category: '2.4.5'
   charge_calculation:
   period_start: "1-Apr-2020"
   period_end: "31-Mar-2021"
@@ -808,7 +840,7 @@ pas_annual:
   original_file_date: <%= 6.weeks.ago.to_date %>
   tcm_financial_year: "2021"
 
-wml:
+wml: &WML_DEFAULTS
   transaction_header: wml
   region: 'E'
   sequence_number: 1
@@ -933,6 +965,14 @@ wml_annual:
   original_filename: 'WMLEI07892'
   original_file_date: <%= 6.weeks.ago.to_date %>
   tcm_financial_year: "2021"
+
+wml_excluded:
+  <<: *WML_DEFAULTS
+  charge_calculation:
+  tcm_charge:
+  excluded: true
+  excluded_reason: 'Miscarriage of justice'
+  status: 'excluded'
 
 wml_invoice:
   transaction_header: wml

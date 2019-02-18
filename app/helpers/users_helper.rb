@@ -5,13 +5,7 @@ module UsersHelper
   end
 
   def role_label(name)
-    if name == 'billing'
-      'Billing Admin'
-    elsif name == 'admin'
-      'System Admin'
-    else
-      raise ArgumentError, "Unknown role '#{name}'"
-    end
+    t(name.to_s, scope: 'user.roles')
   end
 
   def regime_names(user)

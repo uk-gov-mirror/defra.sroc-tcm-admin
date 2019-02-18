@@ -15,7 +15,7 @@
       <ul class="navbar-nav" role="menubar">
         <%= render partial: 'shared/menu/admin' if current_user.admin? %>
         <%= render partial: 'shared/menu/transactions' %>
-        <%= render partial: 'shared/menu/annual_billing' %>
+        <%= render partial: 'shared/menu/annual_billing' unless current_user.can_read_only? %>
       </ul>
       <ul class="navbar-nav" role="menubar">
         <%= render partial: 'shared/menu/regime_selector' unless devise_controller? %>

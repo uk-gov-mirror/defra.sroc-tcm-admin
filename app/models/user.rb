@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  enum role: [:billing, :admin]
+  enum role: [:billing, :admin, :read_only, :read_only_export]
   enum active_regime: [:cfd, :pas, :wml]
 
   has_many :regime_users, inverse_of: :user, dependent: :destroy
@@ -24,6 +24,16 @@ class User < ApplicationRecord
 
   def self.system_account
     find_by!(email: 'system@example.com')
+  end
+
+  def self.ordered_roles
+    [:read_only, :read_only_export, :billing, :admin]
+  end
+
+  def self.search(str)
+    m = "%#{sanitize_sql_like(str)}%"
+    where(arel_table[:first_name].matches(m).
+          or(arel_table[:last_name].matches(m)))
   end
 
   def full_name
@@ -54,6 +64,14 @@ class User < ApplicationRecord
     else
       set_default_regime
     end
+  end
+
+  def can_read_only?
+    read_only? || read_only_export?
+  end
+
+  def can_export_data?
+    admin? || billing? || read_only_export?
   end
 
   private

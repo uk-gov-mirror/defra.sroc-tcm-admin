@@ -18,6 +18,7 @@ class HistoryController < ApplicationController
         end
       end
       format.csv do
+        export_data_user_check!
         result = BatchCsvExport.call(regime: @regime,
                                      query: @view_model.fetch_transactions)
         if result.success?

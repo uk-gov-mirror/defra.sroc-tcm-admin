@@ -25,7 +25,9 @@
           <%= submit_tag "Search", class: 'btn btn-outline-primary' %>
         </span>
       </div>
-      <button class="btn btn-primary generate-transaction-file-btn">Generate Transaction File</button>
+      <% unless view_model.user.can_read_only? %>
+        <button class="btn btn-primary generate-transaction-file-btn">Generate Transaction File</button>
+      <% end %>
       <% if view_model.user.admin? %>
         <button class="btn btn-success ml-4 approve-all-btn">Approve All</button>
       <% end %>
