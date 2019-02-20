@@ -30,21 +30,6 @@ Regime.all.each do |r|
   # end
 end
 
-# add region to all transactions
-TransactionHeader.all.each do |h|
-  h.transaction_details.update_all(region: h.region)
-end
-
-# fix up transaction files
-Thread.current[:current_user] = User.system_account
-TransactionFile.all.each do |f|
-  f.credit_count = f.transaction_details.credits.count
-  f.debit_count = f.transaction_details.invoices.count
-  f.net_total = f.invoice_total + f.credit_total
-  f.file_reference = f.base_filename
-  f.save!
-end
-
 # Too memory intensive - ran out of memory in preprod with ~ 50,000 records to update
 # Regime.all.each do |r|
 #   r.transaction_details.historic.where(category_description: nil).each do |t|
@@ -128,4 +113,19 @@ unless User.where(email: 'system@example.com').exists?
                password: "Ab0#{Devise.friendly_token.first(8)}")
   u.regime_users.build(regime_id: Regime.first.id, enabled: true) 
   u.save!
+end
+
+# add region to all transactions
+TransactionHeader.all.each do |h|
+  h.transaction_details.update_all(region: h.region)
+end
+
+# fix up transaction files
+# Thread.current[:current_user] = User.system_account
+TransactionFile.where(file_reference: nil).each do |f|
+  f.credit_count = f.transaction_details.credits.count
+  f.debit_count = f.transaction_details.invoices.count
+  f.net_total = f.invoice_total + f.credit_total
+  f.file_reference = f.base_filename
+  f.save!
 end
