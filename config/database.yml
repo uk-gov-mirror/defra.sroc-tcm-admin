@@ -9,7 +9,8 @@ development:
   <<: *default
   host: <%= ENV["POSTGRES_HOST"] %>
   port: <%= ENV["POSTGRES_PORT"] %>
-  database: sroc-tcm-admin_development
+  database: sroc
+  # database: sroc-tcm-admin_development
 
 test: &test
   <<: *default

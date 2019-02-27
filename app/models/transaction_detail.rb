@@ -38,8 +38,10 @@ class TransactionDetail < ApplicationRecord
   }
   scope :credits, -> { where(arel_table[:line_amount].lt 0) }
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
-  scope :region, ->(region) { joins(:transaction_header).
-                              merge(TransactionHeader.in_region(region)) }
+  # region is now a column in transaction_detail
+  scope :region, ->(r) { where(region: r) }
+  # scope :region, ->(region) { joins(:transaction_header).
+  #                             merge(TransactionHeader.in_region(region)) }
   # scope :without_charge, -> { where(charge_calculation: nil).
   #                             or(TransactionDetail.with_charge_errors) }
   scope :with_charge, -> { where.not(tcm_charge: nil) }

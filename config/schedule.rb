@@ -11,6 +11,12 @@ every 1.day, at: '5:30 am' do
   runner "DataExportJob.perform_now"
 end
 
+# want to run this on both app servers while we are using the filesystem
+# as a cache to prevent filling up all the diskspace
+every :day, at: '7:00pm', roles: [:app] do
+  rake "tmp:cache:clear"
+end
+
 # Example:
 #
 # set :output, "/path/to/my/cron_log.log"

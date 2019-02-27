@@ -14,6 +14,7 @@ module Query
       q = q.region(@region) unless @region.blank? || @region == 'all'
       q = q.financial_year(@financial_year) unless @financial_year.blank?
       q = q.search(@search) unless @search.blank?
+      q = q.includes(:suggested_category)
       SortTransactions.call(regime: @regime,
                             query: q,
                             sort: @sort_column,

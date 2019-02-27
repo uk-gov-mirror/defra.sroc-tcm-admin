@@ -10,10 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190208112415) do
+ActiveRecord::Schema.define(version: 20190221152034) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "citext"
+  enable_extension "hstore"
   enable_extension "pg_trgm"
 
   create_table "annual_billing_data_files", force: :cascade do |t|
@@ -126,6 +128,7 @@ ActiveRecord::Schema.define(version: 20190208112415) do
     t.string "title"
     t.datetime "retrospective_cut_off_date", default: "2018-04-01 00:00:00", null: false
     t.index ["name"], name: "index_regimes_on_name", unique: true
+    t.index ["slug"], name: "th_regime_slug", unique: true
   end
 
   create_table "sequence_counters", force: :cascade do |t|
@@ -244,6 +247,9 @@ ActiveRecord::Schema.define(version: 20190208112415) do
     t.index ["customer_reference"], name: "index_transaction_details_on_customer_reference"
     t.index ["sequence_number"], name: "index_transaction_details_on_sequence_number"
     t.index ["transaction_file_id"], name: "index_transaction_details_on_transaction_file_id"
+    t.index ["transaction_header_id", "status", "region", "tcm_financial_year"], name: "th_td_status_region_fy"
+    t.index ["transaction_header_id", "status", "tcm_financial_year"], name: "th_td_status_fy"
+    t.index ["transaction_header_id", "status"], name: "th_td_status"
     t.index ["transaction_header_id"], name: "index_transaction_details_on_transaction_header_id"
   end
 
