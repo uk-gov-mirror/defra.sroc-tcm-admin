@@ -60,10 +60,9 @@ class TransactionDetailTest < ActiveSupport::TestCase
   end
 
   def test_region_scope_returns_transactions_for_region
-    TransactionHeader.all.distinct.pluck(:region).each do |region|
-      transactions = TransactionDetail.joins(:transaction_header).
-        merge(TransactionHeader.where(region: region))
-      assert_equal transactions, TransactionDetail.region(region.to_param)
+    TransactionDetail.all.distinct.pluck(:region).each do |region|
+      transactions = TransactionDetail.where(region: region)
+      assert_equal transactions, TransactionDetail.region(region)
     end
   end
 
