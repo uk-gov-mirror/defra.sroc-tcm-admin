@@ -40,7 +40,8 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def generated_file_date
-    transaction_file.created_at.strftime("%d/%m/%y") if transaction_file
+    generated_file_at.strftime("%d/%m/%y") unless generated_file_at.nil?
+    # transaction_file.created_at.strftime("%d/%m/%y") if transaction_file
   end
 
   def pro_rata_days
