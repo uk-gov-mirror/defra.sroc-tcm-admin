@@ -41,6 +41,14 @@ module ApplicationHelper
     number_to_currency(value / 100.0)
   end
 
+  def formatted_pence_without_symbol(value)
+    number_to_currency(value / 100.0, format: "%n") unless value.blank?
+  end
+
+  def slash_formatted_date(date)
+    date.strftime("%d/%m/%y")
+  end
+
   def formatted_date(date, include_time = false)
     fmt = "%d-%b-%Y"
     fmt = fmt + " %H:%M:%S" if include_time

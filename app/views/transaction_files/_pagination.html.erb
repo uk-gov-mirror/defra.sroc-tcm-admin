@@ -1,29 +1,25 @@
 <div class="paging-info row">
   <div class="col-12 col-md-4">
     <div class="page-info">
-      <%= page_entries_info collection %>
+      <%= page_entries_info view_model.paged_transaction_files %>
     </div>
-    <% if include_export %>
-      <div class="ml-2 d-inline">
-        <button class="btn btn-sm btn-outline-secondary table-export-btn"
-                title="Export matching entries">
-          <span class="sr-only">Export matching entries</span>
-          <span class="oi oi-data-transfer-download" aria-hidden="true"></span>
-        </button>
-      </div>
-    <% end %>
   </div>
   <div class="col-12 col-md-3 d-flex justify-content-lg-end mb-4">
     <%= form_with controller: controller_name, action: action_name, method: "get", class: 'form-inline justify-content-lg-end', local: true do %>
       <div class="">
         <div class="form-group">
           <%= label_tag(:per_page, 'Items per page', class: 'mr-sm-2') %>
-          <%= select_tag(:per_page, per_page_options, class: "form-control") %>
+          <%= select_tag(:per_page, per_page_options(view_model.per_page),
+                         class: "form-control") %>
+          <%= hidden_field_tag :page, view_model.page, id: 'page-number' %>
+          <%= hidden_field_tag :search, view_model.search %>
+          <%= hidden_field_tag :sort, view_model.sort %>
+          <%= hidden_field_tag :sort_direction, view_model.sort_direction %>
         </div>
       </div>
     <% end %>
   </div>
   <div class="col-12 col-md-5">
-    <%= paginate collection %>
+    <%= paginate view_model.paged_transaction_files %>
   </div>
 </div>

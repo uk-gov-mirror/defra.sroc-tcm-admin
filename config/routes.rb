@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     resources :history, only: [:index, :show]
     resources :retrospectives, only: [:index, :show]
     resources :exclusions, only: [:index]
-    resources :transaction_files, only: [:create]
+    resources :transaction_files, only: [:index, :create]
     resources :transaction_summary, only: [:index]
     resources :retrospective_files, only: [:create]
     resources :retrospective_summary, only: [:index]

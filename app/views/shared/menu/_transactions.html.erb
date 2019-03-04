@@ -23,6 +23,10 @@
         regime_exclusions_path(@regime),
         class: "dropdown-item" -%>
     <% end %>
+    <div class="dropdown-divider"></div>
+    <%= link_to t("title", scope: "transaction_files.index"),
+      regime_transaction_files_path(@regime),
+      class: "dropdown-item" -%>
     <% if current_user.can_export_data? %>
       <div class="dropdown-divider"></div>
       <%= link_to "Download Transaction Data",
