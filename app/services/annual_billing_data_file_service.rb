@@ -28,7 +28,9 @@ class AnnualBillingDataFileService
           # upload to S3
           filename = File.basename(data_file.original_filename)
           dest_file = File.join(storage_path, filename)
-          storage.store_file_in(:annual_billing_data, data_file.tempfile.path, dest_file)
+          PutAnnualBillingDataFile.call(local_path: data_file.tempfile.path,
+                                        remote_path: dest_file)
+          # storage.store_file_in(:annual_billing_data, data_file.tempfile.path, dest_file)
           record.filename = dest_file
           record.state.upload!
         rescue => e
@@ -77,9 +79,9 @@ class AnnualBillingDataFileService
     send("#{regime.to_param}_columns")
   end
 
-  def storage
-    @storage ||= FileStorageService.new
-  end
+  # def storage
+  #   @storage ||= FileStorageService.new
+  # end
 
   def storage_path
     File.join(regime.to_param, Time.zone.now.strftime("%Y%m%d%H%M%S"))

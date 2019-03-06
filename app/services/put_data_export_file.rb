@@ -1,9 +1,9 @@
-class StoreDataExportFile < ServiceObject
+class PutDataExportFile < ServiceObject
+  include FileStorage
 
-  attr_reader :regime, :filename
+  attr_reader :filename
 
   def initialize(params = {})
-    @regime = params.fetch(:regime)
     @filename = params.fetch(:filename)
   end
 
@@ -13,9 +13,7 @@ class StoreDataExportFile < ServiceObject
       basename = File.basename(filename)
 
       begin
-        storage.store_file_in(:csv_export,
-                              filename,
-                              File.basename(filename))
+        archive_file_store.store_file(filename, csv_path)
 
         @result = true
       rescue => e
@@ -31,7 +29,7 @@ class StoreDataExportFile < ServiceObject
 
   private
 
-  def storage
-    @storage ||= FileStorageService.new
+  def csv_path
+    File.join('csv', File.basename(filename))
   end
 end

@@ -79,5 +79,8 @@ class TcmUtils
       dates << Date.strptime(d, date_format)
     end
     dates
+  rescue ArgumentError => e
+    Rails.logger.warn("Error in period date: [#{period}] - format: [#{date_format}]")
+    raise
   end
 end
