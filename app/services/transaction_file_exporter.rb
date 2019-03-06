@@ -107,8 +107,12 @@ class TransactionFileExporter
     # make footer
     # update transactions status
     # write file and copy to S3
-    storage.store_file_in(:export, out_file.path, tf.path)
-    storage.store_file_in(:export_archive, out_file.path, tf.path)
+    PutExportFile.call(local_path: out_file.path,
+                       remote_path: tf.path)
+    PutArchiveExportFile.call(local_path: out_file.path,
+                              remote_path: tf.path)
+    # storage.store_file_in(:export, out_file.path, tf.path)
+    # storage.store_file_in(:export_archive, out_file.path, tf.path)
 
     attrs = {
       generated_filename: tf.base_filename,
@@ -286,9 +290,9 @@ class TransactionFileExporter
     end
   end
 
-  def storage
-    @storage ||= FileStorageService.new
-  end
+  # def storage
+  #   @storage ||= FileStorageService.new
+  # end
 
   def permit_store
     @permit_store ||= PermitStorageService.new(regime)
