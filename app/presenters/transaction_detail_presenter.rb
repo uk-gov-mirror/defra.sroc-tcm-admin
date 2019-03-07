@@ -229,10 +229,10 @@ class TransactionDetailPresenter < SimpleDelegator
     txt = if line_amount.negative?
             'Credit'
           else
-            'Invoice'
+            'Debit'
           end
 
-    txt += ' (TBC)' if status != 'excluded'
+    txt += ' (TBC)' unless status == 'excluded'
     txt
   end
 
