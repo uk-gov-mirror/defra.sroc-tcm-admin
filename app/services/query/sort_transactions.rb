@@ -60,6 +60,8 @@ module Query
           order("transaction_files.created_at #{dir}, tcm_transaction_reference #{dir}")
       when :amount
         q.order(tcm_charge: dir, id: dir)
+      when :credit_debit
+        q.order(line_amount: dir, id: dir)
       when :excluded_reason
         q.order(excluded_reason: dir, reference_1: dir)
       when :temporary_cessation

@@ -2,6 +2,13 @@
 require "fileutils"
 
 class LocalFileStore
+  attr_reader :base_path
+
+  def initialize(base_path = "")
+    @base_path = Rails.root.join("tmp", "files", base_path)
+    FileUtils.mkdir_p @base_path unless Dir.exist? @base_path
+  end
+
   def list(path = "")
     file_root = Pathname.new(file_path(""))
     Dir.glob(File.join(file_path(path), "**", "*")).select { |f| File.file?(f) }.map {|f| Pathname.new(f).relative_path_from(file_root).to_s }
@@ -36,6 +43,7 @@ class LocalFileStore
   end
 private
   def file_path(path)
-    Rails.root.join("tmp", "files", path)
+    File.join(@base_path, path)
+    # Rails.root.join("tmp", "files", path)
   end
 end

@@ -1,0 +1,27 @@
+Hotfix to remove transaction data from transaction file 'cfdai422.dat.csv' sent to TCM in error:
+
+Instructions:
+
+From one of the application servers (doesn't matter which one) as the 'rails' user:
+
+cd /home/rails/sroc-tcm-admin/current && bundle exec rails c
+
+This will run the Rails console. From here enter:
+
+TransactionHeader.find_by(filename: 'cfdai422.dat.csv').destroy
+
+After about a minute the command will return with:
+
+=> #<TransactionHeader id: 822, regime_id: 2, feeder_source_code: "CFD", region: "A", file_sequence_number: 422, bill_run_id: nil, generated_at: "2019-03-12 00:00:00", transaction_count: 6419, invoice_total: 948162522, credit_total: 0, created_at: "2019-03-13 02:15:04", updated_at: "2019-03-13 02:15:37", file_type_flag: "I", filename: "cfdai422.dat.csv">
+
+Which is the deleted record. The 'destroy' command will have deleted this record and any associated transaction records (there are 6417 of them).
+
+Confirm deletion by entering:
+
+TransactionHeader.find_by(filename: 'cfdai422.dat.csv')
+
+Which should return with:
+
+=> nil
+
+Job done.

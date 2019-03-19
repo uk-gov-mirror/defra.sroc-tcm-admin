@@ -7,48 +7,49 @@ class FileCheckJob < ApplicationJob
         # Look to see whether there are any files that need processing
         user = User.system_account
         Thread.current[:current_user] = user
-        service = FileStorageService.new(user)
         importer = TransactionFileImporter.new
-
-        files = service.list_files_in(:import)
-        return unless files.count.positive?
 
         success = 0
         failed = 0
         quarantined = 0
 
-        files.each do |f|
+        result = ListEtlImportFiles.call
+        result.files.each do |f|
           begin
             in_file = Tempfile.new
             out_file = Tempfile.new
-            service.fetch_file_from(:import, f, in_file.path)
+            GetEtlImportFile.call(remote_path: f, local_path: in_file.path)
             in_file.rewind
 
-            transaction = importer.import(in_file.path, File.basename(f))
-            if transaction && transaction.valid?
+            transaction_file = importer.import(in_file.path, File.basename(f))
+            if transaction_file && transaction_file.valid?
               in_file.rewind
-              service.store_file_in(:import_archive, in_file.path, f)
-              # importer.export(transaction, out_file.path)
-              # out_file.rewind
-              # service.store_file_in(:export, out_file.path, f)
-              service.delete_file_from(:import, f)
+              PutArchiveImportFile.call(local_path: in_file.path,
+                                        remote_path: f)
+
+              DeleteEtlImportFile.call(remote_path: f)
               success += 1
 
               begin
-                processor = category_processor(transaction, user)
+                processor = category_processor(transaction_file, user)
                 processor.suggest_categories unless processor.nil?
               rescue => e
-                Rails.logger.warn("Failed when suggesting permits: #{e.message}")
+                Rails.logger.warn("Failed suggesting category: #{e.message}")
               end
             else
-              raise Exceptions::TransactionFileError, "File generated invalid transaction record [#{f}]"
+              raise Exceptions::TransactionFileError,
+                "File generated invalid transaction record [#{f}]"
             end
-          rescue Exceptions::TransactionFileError => e
+          rescue Exceptions::TransactionFileError, ArgumentError => e
             # invalid transaction file or some other file handling issue
-            quarantine(service, in_file, f)
+            # move file to quarantine
+            Rails.logger.warn("Quarantining file because: #{e}")
+            PutQuarantineFile.call(local_path: in_file.path,
+                                   remote_path: f)
+            DeleteEtlImportFile.call(remote_path: f)
             quarantined += 1
           rescue => e
-            Rails.logger.warn("Failed to copy file: #{e}")
+            Rails.logger.warn("Failed to import file: #{e}")
             failed += 1
           ensure
             in_file.close
@@ -57,6 +58,7 @@ class FileCheckJob < ApplicationJob
             out_file.unlink
           end
         end
+
         Rails.logger.info("Successfully copied #{success} files, failed to copy #{failed}, quarantined #{quarantined} files")
       ensure
         SystemConfig.config.stop_import
@@ -66,13 +68,5 @@ class FileCheckJob < ApplicationJob
 
   def category_processor(header, user)
     "Permits::#{header.regime.slug.capitalize}CategoryProcessor".constantize.new(header, user)
-  end
-
-  def quarantine(service, tmp_file, filename)
-    # move a dodgy or error file out of the import folder and stash smoewhere else
-    service.store_file_in(:quarantine, tmp_file.path, filename)
-    service.delete_file_from(:import, filename)
-  rescue => e
-    Rails.logger.warn "Error quarantining file [#{filename}]: #{e}"
   end
 end

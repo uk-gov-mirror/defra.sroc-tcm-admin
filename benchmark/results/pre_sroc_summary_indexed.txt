@@ -1,0 +1,19 @@
+
+--------------------------------------
+Regime: Installations
+Unbilled transactions: 2940
+Total regime transactions: 69673
+Total system transactions: 122672
+--------------------------------------
+
+Warming up --------------------------------------
+           summary A     2.000  i/100ms
+           summary B    33.000  i/100ms
+Calculating -------------------------------------
+           summary A     57.648  (± 3.5%) i/s -    288.000  in   5.005116s
+           summary B     11.290k (± 6.5%) i/s -     56.133k in   4.998794s
+
+Comparison:
+           summary B:    11289.7 i/s
+           summary A:       57.6 i/s - 195.84x  slower
+

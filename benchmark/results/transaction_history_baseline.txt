@@ -1,0 +1,32 @@
+--------------------------------------
+Regime: Installations
+Billed transactions: 25644
+Total regime transactions: 69673
+Total system transactions: 122672
+--------------------------------------
+
+Warming up --------------------------------------
+          base query     1.000  i/100ms
+         with region     1.000  i/100ms
+ with financial year     1.000  i/100ms
+         with search     1.000  i/100ms
+          sorted asc     1.000  i/100ms
+         sorted desc     1.000  i/100ms
+    multiple options     1.000  i/100ms
+Calculating -------------------------------------
+          base query     18.367  (± 5.4%) i/s -     92.000  in   5.013064s
+         with region     15.014  (± 0.0%) i/s -     76.000  in   5.065547s
+ with financial year     14.972  (± 6.7%) i/s -     75.000  in   5.016370s
+         with search      3.744  (± 0.0%) i/s -     19.000  in   5.074954s
+          sorted asc     16.863  (± 5.9%) i/s -     85.000  in   5.051335s
+         sorted desc     16.944  (± 5.9%) i/s -     85.000  in   5.025179s
+    multiple options      5.820  (± 0.0%) i/s -     30.000  in   5.156553s
+
+Comparison:
+          base query:       18.4 i/s
+         sorted desc:       16.9 i/s - same-ish: difference falls within error
+          sorted asc:       16.9 i/s - same-ish: difference falls within error
+         with region:       15.0 i/s - 1.22x  slower
+ with financial year:       15.0 i/s - 1.23x  slower
+    multiple options:        5.8 i/s - 3.16x  slower
+         with search:        3.7 i/s - 4.91x  slower

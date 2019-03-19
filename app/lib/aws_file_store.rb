@@ -4,7 +4,17 @@ class AwsFileStore
   def list(path = "")
     options = { bucket: s3_bucket_name }
     options[:prefix] = path if path.present?
-    s3.list_objects_v2(options).contents.map { |f| f.key }
+    resp = s3.list_objects_v2(options)
+    files = resp.contents.map { |f| f.key }
+
+    # handle 1000 file batching limit
+    while resp.is_truncated do
+      options[:continuation_token] = resp.next_continuation_token
+      resp = s3.list_objects_v2(options)
+      files += resp.contents.map { |f| f.key }
+    end
+
+    files
   rescue Aws::S3::Errors::AccessDenied => e
     raise Exceptions::PermissionError.new("No permission to list: #{path}")
   end

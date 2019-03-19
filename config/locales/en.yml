@@ -98,7 +98,7 @@ en:
         variation: "%"
         period: "Period"
         excluded_reason: "Exclusion Reason"
-        amount: "Credit/Invoice"
+        credit_debit: "Credit/Debit"
       users:
         last_name: 'Last Name'
         first_name: 'First Name'
