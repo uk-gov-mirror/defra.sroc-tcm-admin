@@ -1,0 +1,111 @@
+module ViewModels
+  class AuditDetail
+    attr_accessor :action, :attribute, :old_value, :new_value, :when, :who
+
+    def description
+      case action
+      when 'modify'
+        if old_value.nil?
+          # setting a value
+          if has_charge_calculation_error?(new_value)
+            I18n.t("error_html", scope: audit_scope, message: new_attr_value)
+          else
+            I18n.t("added_html", scope: audit_scope, value: new_attr_value)
+          end
+        elsif new_value.nil?
+          # removing a value
+          I18n.t("removed_html", scope: audit_scope, value: old_attr_value)
+        else
+          # changing a value
+          old_err = has_charge_calculation_error?(old_value)
+          new_err = has_charge_calculation_error?(new_value)
+          template = "changed_html"
+
+          if old_err && new_err
+            I18n.t("error_html",
+                 scope: audit_scope,
+                 message: new_attr_value)
+          elsif old_err
+            I18n.t("error_old_html",
+                 scope: audit_scope,
+                 value: new_attr_value)
+          elsif new_err
+            I18n.t("error_new_html",
+                 scope: audit_scope,
+                 old_value: old_attr_value,
+                 message: new_attr_value)
+          else
+            I18n.t("changed_html",
+                   scope: audit_scope,
+                   old_value: old_attr_value,
+                   new_value: new_attr_value)
+          end
+        end
+      when 'create'
+        "Transaction imported from file <b>#{new_attr_value}</b>"
+      when 'export'
+        "Transaction exported to file <b>#{new_attr_value}</b>"
+      end.html_safe
+    end
+
+    def occurred_at
+      self.when.strftime("%d/%m/%y %H:%M:%S")
+    end
+
+    def instigated_by
+      who.full_name
+    end
+
+  private
+    def old_attr_value
+      describe_value(old_value)
+    end
+
+    def new_attr_value
+      describe_value(new_value)
+    end
+
+    def has_charge_calculation_error?(val)
+      @attribute == 'charge_calculation' &&
+        val['calculation'] && val['calculation']['messages']
+    end
+
+    def audit_scope
+      @audit_scope ||= "audit.#{@attribute}"
+    end
+
+    def describe_value(value)
+      if @attribute == 'charge_calculation'
+        extract_calculation(value)
+      elsif @attribute == 'tcm_charge'
+        ActiveSupport::NumberHelper.number_to_currency(
+                  sprintf("%.2f", value/100.0), unit: "£")
+      elsif @attribute == 'approved_for_billing'
+        value ? 'approved' : 'unapproved'
+      elsif @attribute == 'excluded'
+        value ? 'excluded' : 'included'
+      elsif @attribute == 'temporary_cessation'
+        value ? 'Yes' : 'No'
+      else
+        value
+      end
+    end
+
+    def extract_calculation(val)
+      calc = val['calculation']
+      if calc
+        if calc['chargeValue']
+          calc['chargeValue']
+          # ActiveSupport::NumberHelper.number_to_currency(
+          #             sprintf("%.2f", v), unit: "")
+        elsif calc['messages']
+          calc['messages']
+        else
+          'Unknown'
+        end
+      else
+        'Unknown'
+      end
+    end
+  end
+end

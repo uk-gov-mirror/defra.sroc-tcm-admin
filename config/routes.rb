@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :permit_categories_lookup, only: [:index]
     resources :transactions, only: [:index, :show, :edit, :update] do
       put 'approve', on: :collection
+      get 'audit', on: :member
     end
     resources :history, only: [:index, :show]
     resources :retrospectives, only: [:index, :show]
@@ -29,6 +30,7 @@ Rails.application.routes.draw do
       get 'download', on: :collection
       get 'generate', on: :collection
     end
+    # resources :transaction_audits, only: [:show]
   end
 
   root to: 'transactions#index'

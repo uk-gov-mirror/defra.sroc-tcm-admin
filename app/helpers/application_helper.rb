@@ -25,6 +25,7 @@ module ApplicationHelper
   end
 
   def menu_path(regime, ctrl_name)
+    # ctrl_name = 'transactions' if ctrl_name == 'transaction_audits'
     url_for controller: ctrl_name, action: 'index', regime_id: regime.slug
   end
 

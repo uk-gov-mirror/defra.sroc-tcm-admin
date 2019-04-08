@@ -1,0 +1,32 @@
+<div class="unbilled">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 id="view-title"><%= t(".title") %></h1>
+    </div>
+  </div>
+<% transaction = present_transaction(@transaction) %>
+<%= render partial: "detail_summary", locals: { transaction: transaction } %>
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>When</th>
+      <th>Who</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @logs.each do |log| %>
+      <tr>
+        <td><%= log.description %></td>
+        <td><%= log.occurred_at %></td>
+        <td><%= log.instigated_by %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+<div class="row mt-2">
+  <div class="col">
+    <%= link_to 'Back', '#', class: "back-link" %>
+  </div>
+</div>

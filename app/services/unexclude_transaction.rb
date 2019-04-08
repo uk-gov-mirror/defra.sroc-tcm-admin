@@ -21,11 +21,14 @@ class UnexcludeTransaction < ServiceObject
   def unexclude
     if @transaction.updateable?
       @transaction.excluded = false
+      old_reason = @transaction.excluded_reason
+      @transaction.excluded_reason = nil
       if @transaction.category.present?
         charge = generate_charge
         if charge.failure?
           # revert
           @transaction.excluded = true
+          @transaction.excluded_reason = old_reason
         end
       end
       @transaction.save

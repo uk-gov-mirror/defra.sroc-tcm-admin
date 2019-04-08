@@ -3,8 +3,8 @@
 class TransactionsController < ApplicationController
   include RegimeScope, FinancialYear, CsvExporter, ViewModelBuilder
   before_action :set_regime, only: [:index, :approve]
-  before_action :set_transaction, only: [:show, :edit, :update]
-  before_action :read_only_user_check!, only: [:update, :approve]
+  before_action :set_transaction, only: [:show, :edit, :update, :audit]
+  before_action :read_only_user_check!, only: [:update, :approve, :audit]
   # before_action :set_current_user, only: [:update, :approve]
 
   # GET /regimes/:regime_id/transactions
@@ -42,6 +42,11 @@ class TransactionsController < ApplicationController
       transaction: @transaction)
 
     @exclusion_reasons = Query::Exclusions.call(regime: @regime)
+  end
+
+  def audit
+    result = ExtractAuditDetail.call(transaction: @transaction)
+    @logs = result.audit_details
   end
 
   # GET /regimes/:regimes_id/transactions/1/edit

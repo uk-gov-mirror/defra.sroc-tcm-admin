@@ -20,6 +20,8 @@ en:
   transactions:
     index:
       title: "Transactions to be billed"
+    audit:
+      title: "Transaction change history"
   table:
     heading:
       annual_billing_data_files:
@@ -123,6 +125,43 @@ en:
       next: "Next"
       last: "Last"
       truncate: "..."
+  audit:
+    charge_calculation:
+      added_html: "Charge calculated with charge value <b>%{value}</b>"
+      removed_html: "Removed charge calculation with charge value <b>%{value}</b>"
+      changed_html: "Updated charge calculation with charge value from <b>%{old_value}</b> to <b>%{new_value}</b>"
+      error_html: "Received an error when calculating charge:<br/><code>%{message}</code>"
+      error_old_html: "Failed charge calculation replaced with charge calculation containing charge value <b>%{value}</b>"
+      error_new_html: "Charge calculation with charge value <b>%{old_value}</b> replaced by charge calculation error:<br/><code>%{message}</code>"
+    category:
+      added_html: "Permit category <b>%{value}</b> added"
+      removed_html: "Permit category <b>%{value}</b> removed"
+      changed_html: "Permit category changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
+    tcm_charge:
+      added_html: "Set adjusted charge amount to <b>%{value}</b> from charge calculation"
+      removed_html: "Adjusted charge amount <b>%{value}</b> removed"
+      changed_html: "Adjusted charge amount changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
+    approved_for_billing:
+      added_html: "Approved for billing <b>checked</b>"
+      removed_html: "Approved for billing <b>unchecked</b>"
+      changed_html: "Approved for billing status changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
+    excluded:
+      added_html: "Excluded from billing <b>checked</b>"
+      removed_html: "Excluded from  billing <b>unchecked</b>"
+      changed_html: "Excluded from billing status changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
+    excluded_reason:
+      added_html: "Exclusion reason <b>%{value}</b> selected"
+      removed_html: "Exclusion reason <b>%{value}</b> removed"
+      changed_html: "Exclusion reason changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
+    temporary_cessation:
+      added_html: "Temporary cessation set to <b>%{value}</b>"
+      removed_html: "Temporary cessation set to <b>%{value}</b>"
+      changed_html: "Temporary cessation changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
+    variation:
+      added_html: "Variation set to <b>%{value}</b>"
+      removed_html: "Variation set to <b>%{value}</b>"
+      changed_html: "Variation changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
+
   helpers:
     page_entries_info:
       one_page:
