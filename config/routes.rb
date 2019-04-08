@@ -30,7 +30,6 @@ Rails.application.routes.draw do
       get 'download', on: :collection
       get 'generate', on: :collection
     end
-    # resources :transaction_audits, only: [:show]
   end
 
   root to: 'transactions#index'

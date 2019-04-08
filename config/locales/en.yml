@@ -126,6 +126,8 @@ en:
       last: "Last"
       truncate: "..."
   audit:
+    create_html: "Transaction imported from file <b>%{file}</b>"
+    export_html: "Transaction exported to file <b>%{file}</b>"
     charge_calculation:
       added_html: "Charge calculated with charge value <b>%{value}</b>"
       removed_html: "Removed charge calculation with charge value <b>%{value}</b>"
@@ -135,6 +137,7 @@ en:
       error_new_html: "Charge calculation with charge value <b>%{old_value}</b> replaced by charge calculation error:<br/><code>%{message}</code>"
     category:
       added_html: "Permit category <b>%{value}</b> added"
+      suggested_html: "Permit category <b>%{value}</b> added by suggestion process"
       removed_html: "Permit category <b>%{value}</b> removed"
       changed_html: "Permit category changed from <b>%{old_value}</b> to <b>%{new_value}</b>"
     tcm_charge:

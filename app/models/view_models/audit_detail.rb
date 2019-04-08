@@ -41,10 +41,12 @@ module ViewModels
                    new_value: new_attr_value)
           end
         end
+      when 'suggestion'
+        I18n.t('suggested_html', scope: audit_scope, value: new_attr_value)
       when 'create'
-        "Transaction imported from file <b>#{new_attr_value}</b>"
+        I18n.t('audit.create_html', file: new_attr_value)
       when 'export'
-        "Transaction exported to file <b>#{new_attr_value}</b>"
+        I18n.t('audit.export_html', file: new_attr_value)
       end.html_safe
     end
 

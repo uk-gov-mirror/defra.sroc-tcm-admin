@@ -30,7 +30,12 @@ class ExtractAuditDetail < ServiceObject
             mods.each do |k, v|
               d = ViewModels::AuditDetail.new
 
-              d.action = l.action
+              if k == 'category' && l.user == User.system_account
+                d.action = 'suggestion'
+              else
+                d.action = l.action
+              end
+
               d.when = l.created_at
               d.who = l.user
 
