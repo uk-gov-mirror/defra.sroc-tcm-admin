@@ -61,6 +61,10 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     "Discharge Location: #{site}"
   end
 
+  def tcm_compliance_percentage
+    ""
+  end
+
   # def period
   #   line_attr_3
   # end

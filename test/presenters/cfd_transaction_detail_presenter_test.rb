@@ -130,6 +130,14 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
     assert_equal 'Y', @presenter.pre_sroc_flag, "Pre-SRoC flag incorrect"
   end
 
+  def test_tcm_compliance_percentage_is_always_blank
+    [ 'A(100%)', 'B (87%)', '()' ].each do |cp|
+      @transaction.charge_calculation = build_compliance(cp)
+      v = @presenter.tcm_compliance_percentage
+      assert v.blank?, "Compliance percentage not blank: '#{v}'"
+    end
+  end
+
   def test_it_transforms_into_json
     assert_equal({
       id: @transaction.id,
@@ -183,5 +191,13 @@ class CfdTransactionDetailPresenterTest < ActiveSupport::TestCase
 
   def charge_period
     "FY#{@transaction.tcm_financial_year}"
+  end
+
+  def build_compliance(val)
+    {
+      'calculation' => {
+        'compliancePerformanceBand' => val
+      }
+    }
   end
 end
