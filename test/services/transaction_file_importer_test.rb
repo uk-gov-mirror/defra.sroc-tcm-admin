@@ -104,4 +104,24 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
     d = 'There is no Charge Code here, so none shall be returned'
     assert_nil @importer.extract_charge_code(d)
   end
+
+  def test_determine_financial_year_handles_2000_onwards_dates
+    [['10-JUL-2010', '1011'],
+     ['1-FEB-2019', '1819'],
+     ['22-MAR-2000', '9900'],
+     ['1-APR-2001', '0102']].each do |y|
+      d = Date.parse(y[0])
+      assert_equal y[1], @importer.determine_financial_year(d)
+     end
+  end
+
+  def test_determine_financial_year_handles_pre_2000_dates
+    [['10-JUL-1995', '9596'],
+     ['1-FEB-1997', '9697'],
+     ['22-MAR-1998', '9798'],
+     ['1-APR-1999', '9900']].each do |y|
+      d = Date.parse(y[0])
+      assert_equal y[1], @importer.determine_financial_year(d)
+     end
+  end
 end
