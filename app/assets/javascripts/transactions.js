@@ -211,7 +211,7 @@ function init_search_form (container) {
   var form = container.find("#search-bar")
   if (form.length) {
     form.on('submit', function (ev) {
-      var val = form.find("input[name=search]").val()
+      var val = form.find("input[name=search]").val().trim()
       container.data('search', val)
       container.data('page', 1)
       if (!container.hasClass('permit-categories') &&
