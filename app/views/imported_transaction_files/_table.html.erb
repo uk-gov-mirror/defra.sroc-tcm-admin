@@ -1,0 +1,43 @@
+<div class="tcm-table imported-transaction-files"
+     data-path="<%= regime_imported_transaction_files_path(view_model.regime) %>"
+     data-region="<%= view_model.region %>"
+     data-status="<%= view_model.status %>"
+     data-search="<%= view_model.search %>"
+     data-page="<%= view_model.page %>"
+     data-per-page="<%= view_model.per_page %>"
+     data-sort-column="<%= view_model.sort %>"
+     data-sort-direction="<%= view_model.sort_direction %>">
+     <%= render partial: 'search_bar', locals: { view_model: view_model } %>
+<table class="table table-responsive">
+  <thead>
+    <tr>
+      <th><span class='sr-only'>Imported transaction file details</span></th>
+      <th><%= sortable :file_reference, view_model %></th>
+      <th><%= sortable :generated_at, view_model %></th>
+      <th><%= sortable :created_at, view_model %></th>
+      <th class="text-right"><%= sortable :credit_total, view_model %></th>
+      <th class="text-right"><%= sortable :invoice_total, view_model %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% view_model.paged_imported_files.each do |file| %>
+      <tr id="<%= file.id %>" <%= "class=excluded" if file.removed? %>>
+        <td class="align-middle details-button-column">
+          <button class="btn btn-sm show-details-button"
+                  data-path="<%= regime_imported_transaction_file_path(
+                  view_model.regime, file) %>">
+                  <span class='sr-only'>Show details for file <%= file.file_reference %></span>
+                  <span class="aria-hidden oi oi-magnifying-glass"></span>
+          </button>
+        </td>
+        <td><%= file.file_reference %></td>
+        <td><%= slash_formatted_date file.generated_at %></td>
+        <td><%= slash_formatted_date file.created_at %></td>
+        <td class="text-right"><%= formatted_pence_without_symbol file.credit_total %></td>
+        <td class="text-right"><%= formatted_pence_without_symbol file.invoice_total %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= render partial: "pagination", locals: { view_model: view_model } %>
+</div>

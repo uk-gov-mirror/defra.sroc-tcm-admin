@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :audit_logs, inverse_of: :user
   has_many :transaction_files, inverse_of: :user
   has_many :approved_transactions, class_name: 'TransactionDetail', foreign_key: :approver_id, inverse_of: :approver
+  has_many :removed_transaction_files, class_name: 'TransactionHeader', foreign_key: :removed_by_id, inverse_of: :removed_by
   after_save :ensure_a_default_regime_is_set
 
   accepts_nested_attributes_for :regime_users

@@ -5,6 +5,9 @@ en:
       billing: 'Billing Admin'
       read_only: 'Read-only User'
       read_only_export: 'Read-only + Export'
+  imported_transaction_files:
+    index:
+      title: "Imported Transaction Files"
   transaction_files:
     index:
       title: "Transaction File History"
@@ -117,6 +120,17 @@ en:
         debit_count: 'Debit Lines'
         invoice_total: 'Value of Debit Lines (£)'
         net_total: 'Net Amount Billed (£)'
+      imported_transaction_files:
+        file_reference: 'File Reference'
+        generated_at: 'Date Generated'
+        created_at: 'Date Imported'
+        credit_total: 'Value of Credit Lines (£)'
+        invoice_total: 'Value of Debit Lines (£)'
+        net_total: 'Net Total Amount (£)'
+        removed_by: 'Removed By'
+        removed_at: 'Removal Date'
+        removal_reference: 'Support Incident No.'
+        removal_reason: 'Reason for Removal'
   views:
     amount_with_unit: "Amount (£)"
     pagination:

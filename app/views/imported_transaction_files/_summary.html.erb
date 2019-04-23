@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col">
+    <div class="panel">
+      <dl class="transaction-summary dl-horizontal">
+        <dt>Number of credits</dt>
+        <dd><%= summary[:credit_count] %></dd>
+        <dt>Value of credits</dt>
+        <dd><%= formatted_pence(summary[:credit_total] * -1) %></dd>
+        <dt>Number of invoices</dt>
+        <dd><%= summary[:invoice_count] %></dd>
+        <dt>Value of invoices</dt>
+        <dd><%= formatted_pence(summary[:invoice_total]) %></dd>
+        <dt>Net amount to be billed</dt>
+        <dd><%= formatted_pence(summary[:net_total]) %></dd>
+      </dl>
+    </div>
+  </div>
+</div>

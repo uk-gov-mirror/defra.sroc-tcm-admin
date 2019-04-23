@@ -1,0 +1,25 @@
+<div class="paging-info row">
+  <div class="col-12 col-md-4">
+    <div class="page-info">
+      <%= page_entries_info view_model.paged_imported_files %>
+    </div>
+  </div>
+  <div class="col-12 col-md-3 d-flex justify-content-lg-end mb-4">
+    <%= form_with controller: controller_name, action: action_name, method: "get", class: 'form-inline justify-content-lg-end', local: true do %>
+      <div class="">
+        <div class="form-group">
+          <%= label_tag(:per_page, 'Items per page', class: 'mr-sm-2') %>
+          <%= select_tag(:per_page, per_page_options(view_model.per_page),
+                         class: "form-control") %>
+          <%= hidden_field_tag :page, view_model.page, id: 'page-number' %>
+          <%= hidden_field_tag :search, view_model.search %>
+          <%= hidden_field_tag :sort, view_model.sort %>
+          <%= hidden_field_tag :sort_direction, view_model.sort_direction %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-12 col-md-5">
+    <%= paginate view_model.paged_imported_files %>
+  </div>
+</div>

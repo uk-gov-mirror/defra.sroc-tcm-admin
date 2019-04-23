@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190408123824) do
+ActiveRecord::Schema.define(version: 20190415081211) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -290,7 +290,14 @@ ActiveRecord::Schema.define(version: 20190408123824) do
     t.datetime "updated_at", null: false
     t.string "file_type_flag"
     t.string "filename"
+    t.boolean "removed", default: false, null: false
+    t.string "removal_reference"
+    t.text "removal_reason"
+    t.bigint "removed_by_id"
+    t.datetime "removed_at"
+    t.string "file_reference"
     t.index ["regime_id"], name: "index_transaction_headers_on_regime_id"
+    t.index ["removed_by_id"], name: "index_transaction_headers_on_removed_by_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -334,4 +341,5 @@ ActiveRecord::Schema.define(version: 20190408123824) do
   add_foreign_key "suggested_categories", "transaction_details", column: "matched_transaction_id"
   add_foreign_key "transaction_details", "users", column: "approver_id"
   add_foreign_key "transaction_files", "users"
+  add_foreign_key "transaction_headers", "users", column: "removed_by_id"
 end

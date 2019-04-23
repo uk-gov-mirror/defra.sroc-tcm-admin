@@ -1,7 +1,9 @@
 module ApplicationHelper
-  def yn_flag(bool)
-    bool ? 'Y' : 'N'
-  end
+  include FormattingUtils
+
+  # def yn_flag(bool)
+  #   bool ? 'Y' : 'N'
+  # end
 
   def tcm_form_with(*args, &block)
     options = args.extract_options!
@@ -38,24 +40,24 @@ module ApplicationHelper
     end
   end
 
-  def formatted_pence(value)
-    number_to_currency(value / 100.0)
-  end
-
-  def formatted_pence_without_symbol(value)
-    number_to_currency(value / 100.0, format: "%n") unless value.blank?
-  end
-
-  def slash_formatted_date(date)
-    date.strftime("%d/%m/%y")
-  end
-
-  def formatted_date(date, include_time = false)
-    fmt = "%d-%b-%Y"
-    fmt = fmt + " %H:%M:%S" if include_time
-    date.strftime(fmt)
-  end
-
+  # def formatted_pence(value)
+  #   number_to_currency(value / 100.0)
+  # end
+  #
+  # def formatted_pence_without_symbol(value)
+  #   number_to_currency(value / 100.0, format: "%n") unless value.blank?
+  # end
+  #
+  # def slash_formatted_date(date)
+  #   date.strftime("%d/%m/%y")
+  # end
+  #
+  # def formatted_date(date, include_time = false)
+  #   fmt = "%d-%b-%Y"
+  #   fmt = fmt + " %H:%M:%S" if include_time
+  #   date.strftime(fmt)
+  # end
+  #
   def sortable(name, view_model)
     sort_col = view_model.sort.to_sym
     sort_dir = view_model.sort_direction

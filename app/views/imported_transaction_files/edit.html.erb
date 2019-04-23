@@ -1,0 +1,41 @@
+<div class="row">
+  <div class="col">
+    <h1 class="heading">Remove Imported Transaction File</h1>
+  </div>
+</div>
+<%= form_with(model: [@regime, @file], url: regime_imported_transaction_file_path(@regime, @file), local: true) do |form| %>
+  <%= error_header(@file) %>
+
+  <div class="col-lg-6">
+    <div class="form-group">
+      <%= form.label :removal_reference %>
+      <%= form.text_field :removal_reference,
+        id: :transaction_header_removal_reference,
+        class: "form-control" %>
+      <div class="panel pt-2 mt-2 pb-2 mb-4 help-text">
+        If there is a support incident related to this transaction file removal, enter the reference number here.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :removal_reason %>
+      <%= form.text_area :removal_reason,
+        id: :transaction_header_removal_reason,
+        class: "form-control",
+        rows: 6 %>
+      <div class="panel pt-2 mt-2 pb-2 mb-4 help-text">
+        Be descriptive and avoid terse generic reasons such as 'Error' or 'Need to remove'. This will assist in the future when providing audit and management reporting information.
+      </div>
+    </div>
+
+    <div class="actions">
+      <%= form.submit "Remove File",
+          data: { turbolinks: false, confirm: 'I understand the consequences and wish to remove this file' },
+          class: "btn btn-danger" %>
+      <%= link_to 'Cancel',
+        regime_imported_transaction_file_path(@regime, @file),
+          data: { turbolinks: false },
+          class: 'btn btn-secondary', role: 'button' %>
+    </div>
+  </div>
+<% end %>

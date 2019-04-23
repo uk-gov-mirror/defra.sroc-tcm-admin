@@ -8,6 +8,7 @@ function init() {
     init_region_select(container)
     init_financial_year_select(container)
     init_prepost_select(container)
+    init_status_select(container)
     init_search_form(container)
     init_page_nav(container)
     init_page_size(container)
@@ -51,7 +52,8 @@ function reload_table(container) {
       fy: data.financialYear,
       regime: data.regime,
       role: data.role,
-      prepost: data.prepost
+      prepost: data.prepost,
+      status: data.status
     },
     success: function (payload, status, xhr) {
       $(container).replaceWith(payload)
@@ -207,6 +209,17 @@ function init_prepost_select (container) {
   }
 }
 
+function init_status_select (container) {
+  var select = container.find('select#status')
+  if (select.length > 0) {
+    select.on('change', function (ev) {
+      container.data('status', $(this).val())
+      container.data('page', 1)
+      reload_table(container)
+    })
+  }
+}
+
 function init_search_form (container) {
   var form = container.find("#search-bar")
   if (form.length) {
@@ -216,7 +229,8 @@ function init_search_form (container) {
       container.data('page', 1)
       if (!container.hasClass('permit-categories') &&
         !container.hasClass('users') &&
-        !container.hasClass('transactions-files')) {
+        !container.hasClass('transactions-files') &&
+        !container.hasClass('imported-transaction-files')) {
         set_cookie_data(container)
       }
       reload_table(container)
