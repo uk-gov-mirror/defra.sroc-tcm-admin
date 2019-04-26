@@ -4,7 +4,7 @@ module ViewModels
 
     attr_reader :regime, :user, :permit_all_regions
     attr_accessor :region, :financial_year, :search, :sort, :sort_direction,
-      :page, :per_page
+      :page, :per_page, :unapproved
 
     def initialize(params = {})
       @regime = params.fetch(:regime)
@@ -14,6 +14,7 @@ module ViewModels
       @sort = 'customer_reference'
       @sort_direction = 'asc'
       @permit_all_regions = false
+      @unapproved = false
     end
 
     def region=(val)
@@ -66,6 +67,7 @@ module ViewModels
       @page = 1 unless page.to_i.positive?
       @per_page = 10 if per_page.blank?
       @per_page = 10 unless per_page.to_i.positive?
+      @unapproved = ActiveModel::Type::Boolean.new.cast(@unapproved)
       # fetch transactions to validate/reset page
       transactions
     end
@@ -83,6 +85,7 @@ module ViewModels
     def fetch_transactions
       Query::TransactionsToBeBilled.call(regime: regime,
                                          region: region,
+                                         unapproved: unapproved,
                                          sort: sort,
                                          sort_direction: sort_direction,
                                          financial_year: financial_year,

@@ -15,7 +15,7 @@ class TransactionHeader < ApplicationRecord
   end
 
   def self.search(q)
-    m = "%#{q}%"
+    m = "%#{sanitize_sql_like(q)}%"
     where(arel_table[:file_reference].matches(m))
   end
 

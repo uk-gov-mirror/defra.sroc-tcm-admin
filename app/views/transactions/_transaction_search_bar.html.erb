@@ -11,9 +11,14 @@
         <%= select_tag(:region, view_model.region_options,
                        class: 'form-control') %>
       </div>
-      <div class="form-group mr-2">
+      <div class="form-group mr-4">
         <%= label_tag(:fy, 'FY', class: 'mr-2') %>
         <%= select_tag(:fy, view_model.financial_year_options,
+                       class: 'form-control') %>
+      </div>
+      <div class="form-group mr-2">
+        <%= label_tag(:unapproved, 'Unapproved Only', class: 'mr-2') %>
+        <%= check_box_tag(:unapproved, '1', view_model.unapproved,
                        class: 'form-control') %>
       </div>
       <div class="input-group col-12 col-lg-3 col-md-3 col-sm-4 mr-2">
@@ -26,10 +31,10 @@
         </span>
       </div>
       <% unless view_model.user.can_read_only? %>
-        <button class="btn btn-primary generate-transaction-file-btn">Generate Transaction File</button>
+        <button class="btn btn-primary generate-transaction-file-btn mr-4">Generate Transaction File</button>
       <% end %>
       <% if view_model.user.admin? %>
-        <button class="btn btn-success ml-4 approve-all-btn">Approve All</button>
+        <button class="btn btn-success approve-all-btn">Approve All</button>
       <% end %>
       <%= hidden_field_tag :page, 1 %>
       <%= hidden_field_tag :sort, params[:sort] %>

@@ -87,6 +87,7 @@ module ViewModelBuilder
     vm.search = param_or_cookie(:search, '')
     vm.sort = param_or_cookie(:sort, 'customer_reference')
     vm.sort_direction = param_or_cookie(:sort_direction, 'asc')
+    vm.unapproved = param_or_cookie(:unapproved, false)
     vm.check_params
     vm
   end

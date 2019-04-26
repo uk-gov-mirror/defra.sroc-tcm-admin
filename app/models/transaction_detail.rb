@@ -38,12 +38,7 @@ class TransactionDetail < ApplicationRecord
   }
   scope :credits, -> { where(arel_table[:line_amount].lt 0) }
   scope :invoices, -> { where(arel_table[:line_amount].gteq 0) }
-  # region is now a column in transaction_detail
   scope :region, ->(r) { where(region: r) }
-  # scope :region, ->(region) { joins(:transaction_header).
-  #                             merge(TransactionHeader.in_region(region)) }
-  # scope :without_charge, -> { where(charge_calculation: nil).
-  #                             or(TransactionDetail.with_charge_errors) }
   scope :with_charge, -> { where.not(tcm_charge: nil) }
   scope :without_charge, -> { where(tcm_charge: nil) }
   scope :financial_year, ->(fy) { where(tcm_financial_year: fy) }
@@ -51,14 +46,16 @@ class TransactionDetail < ApplicationRecord
   scope :unapproved, -> { where(approved_for_billing: false) }
 
   def self.search(q)
-    m = "%#{q}%"
+    m = "%#{sanitize_sql_like(q)}%"
+    # m = "%#{q}%"
     where(arel_table[:customer_reference].matches(m).
           or(arel_table[:reference_1].matches(m)).
           or(arel_table[:transaction_reference].matches(m)))
   end
 
   def self.history_search(q)
-    m = "%#{q}%"
+    m = "%#{sanitize_sql_like(q)}%"
+    # m = "%#{q}%"
     where(arel_table[:customer_reference].matches(m).
           or(arel_table[:reference_1].matches(m)).
           or(arel_table[:reference_2].matches(m)).
@@ -70,14 +67,16 @@ class TransactionDetail < ApplicationRecord
   end
 
   def self.retrospective_search(q)
-    m = "%#{q}%"
+    m = "%#{sanitize_sql_like(q)}%"
+    # m = "%#{q}%"
     where(arel_table[:customer_reference].matches(m).
           or(arel_table[:reference_1].matches(m)).
           or(arel_table[:transaction_reference].matches(m)))
   end
 
   def self.exclusion_search(q)
-    m = "%#{q}%"
+    m = "%#{sanitize_sql_like(q)}%"
+    # m = "%#{q}%"
     where(arel_table[:customer_reference].matches(m).
           or(arel_table[:reference_1].matches(m)).
           or(arel_table[:reference_2].matches(m)).

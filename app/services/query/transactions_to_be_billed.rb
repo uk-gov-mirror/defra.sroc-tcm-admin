@@ -3,6 +3,7 @@ module Query
     def initialize(opts = {})
       @regime = opts.fetch(:regime)
       @region = opts.fetch(:region, '')
+      @unapproved = opts.fetch(:unapproved, false)
       @sort_column = opts.fetch(:sort, :customer_reference)
       @sort_direction = opts.fetch(:sort_direction, 'asc')
       @financial_year = opts.fetch(:financial_year, '')
@@ -13,6 +14,7 @@ module Query
       q = @regime.transaction_details.unbilled
       q = q.region(@region) unless @region.blank? || @region == 'all'
       q = q.financial_year(@financial_year) unless @financial_year.blank?
+      q = q.unapproved if @unapproved
       q = q.search(@search) unless @search.blank?
       q = q.includes(:suggested_category)
       SortTransactions.call(regime: @regime,

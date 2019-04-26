@@ -70,7 +70,13 @@ $text-col: theme-color("dark");
 }
 
 .search-bar {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+#search-bar {
+  div, button {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .error-popup a, .error-popup button {

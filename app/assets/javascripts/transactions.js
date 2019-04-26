@@ -7,6 +7,7 @@ function init() {
     init_view_select(container)
     init_region_select(container)
     init_financial_year_select(container)
+    init_unapproved_checkbox(container)
     init_prepost_select(container)
     init_status_select(container)
     init_search_form(container)
@@ -50,6 +51,7 @@ function reload_table(container) {
       sort_direction: data.sortDirection,
       region: data.region,
       fy: data.financialYear,
+      unapproved: data.unapproved,
       regime: data.regime,
       role: data.role,
       prepost: data.prepost,
@@ -89,6 +91,7 @@ function export_table (container) {
     sort: data.sortColumn,
     sort_direction: data.sortDirection,
     region: data.region,
+    unapproved: data.unapproved,
     fy: data.financialYear
   }
   var path = data.path + '.csv?' + $.param(params)
@@ -128,6 +131,7 @@ function set_cookie_data (container) {
   document.cookie = "fy=" + safe_val(data.financialYear)
   document.cookie = "page=" + safe_val(data.page)
   document.cookie = "per_page=" + safe_val(data.perPage)
+  document.cookie = "unapproved=" + safe_val(data.unapproved)
 }
 
 function safe_val(val) {
@@ -181,6 +185,17 @@ function init_region_select (container) {
   if (select.length > 0) {
     select.on('change', function (ev) {
       container.data('region', $(this).val())
+      container.data('page', 1)
+      reload_table(container)
+    })
+  }
+}
+
+function init_unapproved_checkbox (container) {
+  var cb = container.find('input#unapproved')
+  if (cb.length > 0) {
+    cb.on('change', function (ev) {
+      container.data('unapproved', $(this).is(":checked"))
       container.data('page', 1)
       reload_table(container)
     })
