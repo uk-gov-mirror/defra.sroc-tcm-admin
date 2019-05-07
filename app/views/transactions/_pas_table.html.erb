@@ -24,9 +24,11 @@
   </thead>
   <tbody>
     <% view_model.present_paged_transactions.each do |transaction| %>
-      <%= render partial: 'pas_transaction',
-        locals: { transaction: transaction,
-                  data_path: regime_transaction_path(view_model.regime, transaction) } %>
+      <% cache [ current_user.role, transaction ] do %>
+        <%= render partial: 'pas_transaction',
+          locals: { transaction: transaction,
+                    data_path: regime_transaction_path(view_model.regime, transaction) } %>
+      <% end %>
     <% end %>
   </tbody>
 </table>
