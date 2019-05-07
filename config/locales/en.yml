@@ -1,4 +1,9 @@
 en:
+  activerecord:
+    models:
+      transaction_header:
+        one: 'transaction file'
+        other: 'transaction files'
   user:
     roles:
       admin: 'System Admin'
