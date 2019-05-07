@@ -34,7 +34,7 @@
         <button class="btn btn-primary generate-transaction-file-btn mr-4">Generate Transaction File</button>
       <% end %>
       <% if view_model.user.admin? %>
-        <button class="btn btn-success approve-all-btn">Approve All</button>
+        <button class="btn btn-success approve-all-btn">Approve</button>
       <% end %>
       <%= hidden_field_tag :page, 1 %>
       <%= hidden_field_tag :sort, params[:sort] %>
