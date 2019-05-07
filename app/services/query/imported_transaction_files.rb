@@ -5,7 +5,7 @@ module Query
       @region = opts.fetch(:region, '')
       @status = opts.fetch(:status, '')
       @sort_column = opts.fetch(:sort, :file_reference)
-      @sort_direction = opts.fetch(:sort_direction, 'asc')
+      @sort_direction = opts.fetch(:sort_direction, 'desc')
       @search = opts.fetch(:search, '')
     end
 
