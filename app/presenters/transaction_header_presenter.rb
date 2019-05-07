@@ -3,7 +3,7 @@ class TransactionHeaderPresenter < SimpleDelegator
 
   def can_be_removed?
     # TODO: can only be removed if no :transaction_details have been billed
-    !removed && billed_items.count.zero?
+    !removed && billed_items.count.zero? && excluded_items.count.zero?
   end
 
   def transactions
