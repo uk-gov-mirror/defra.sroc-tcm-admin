@@ -4,7 +4,7 @@ module Query
       @regime = opts.fetch(:regime)
       @region = opts.fetch(:region, '')
       @status = opts.fetch(:status, '')
-      @sort_column = opts.fetch(:sort, :file_reference)
+      @sort_column = opts.fetch(:sort, :created_at)
       @sort_direction = opts.fetch(:sort_direction, 'desc')
       @search = opts.fetch(:search, '')
     end
@@ -35,8 +35,8 @@ module Query
       case @sort_column.to_sym
       when :generated_at
         q.order(generated_at: dir, id: dir)
-      when :created_at
-        q.order(created_at: dir, id: dir)
+      when :file_reference
+        q.order(file_reference: dir, id: dir)
       when :credit_count
         q.order(credit_count: dir, id: dir)
       when :credit_total
@@ -44,7 +44,7 @@ module Query
       when :invoice_total
         q.order(invoice_total: dir, id: dir)
       else
-        q.order(file_reference: dir, id: dir)
+        q.order(created_at: dir, id: dir)
       end
     end
   end

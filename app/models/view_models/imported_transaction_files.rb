@@ -12,8 +12,8 @@ module ViewModels
       @status = params.fetch(:status, '')
       @page = 1
       @per_page = 10
-      @sort = 'file_reference'
-      @sort_direction = 'asc'
+      @sort = 'created_at'
+      @sort_direction = 'desc'
       @permit_all_regions = true
     end
 
