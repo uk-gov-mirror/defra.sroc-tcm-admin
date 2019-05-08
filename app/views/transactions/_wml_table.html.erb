@@ -23,12 +23,10 @@
   </thead>
   <tbody>
     <% view_model.present_paged_transactions.each do |transaction| %>
-      <% cache transaction do %>
-        <%= render partial: 'wml_transaction',
-          locals: { transaction: transaction,
-                    data_path: regime_transaction_path(view_model.regime,
+      <%= render partial: 'wml_transaction',
+        locals: { transaction: transaction,
+                  data_path: regime_transaction_path(view_model.regime,
                                                      transaction) } %>
-      <% end %>
     <% end %>
   </tbody>
 </table>
