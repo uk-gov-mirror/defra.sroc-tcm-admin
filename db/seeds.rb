@@ -129,3 +129,9 @@ TransactionFile.where(file_reference: nil).each do |f|
   f.file_reference = f.base_filename
   f.save!
 end
+
+# fix up TransactionHeader file references
+TransactionHeader.where(file_reference: nil).each do |th|
+  th.send :generate_file_reference
+  th.save!
+end
