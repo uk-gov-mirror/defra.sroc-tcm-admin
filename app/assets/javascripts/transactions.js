@@ -1,45 +1,48 @@
+'use strict'
+
 var $ = window.$
 
-function init() {
+function init () {
   var container = $('.tcm-table')
   if (container.length > 0) {
-    init_tcm_table(container)
-    init_view_select(container)
-    init_region_select(container)
-    init_financial_year_select(container)
-    init_unapproved_checkbox(container)
-    init_prepost_select(container)
-    init_status_select(container)
-    init_search_form(container)
-    init_page_nav(container)
-    init_page_size(container)
-    init_export_button(container)
-    init_approve_all_button(container)
-    init_generate_file_button(container)
-    init_new_permit_category_button(container)
-    init_new_user_button(container)
-    init_regime_filter_select(container)
-    init_role_filter_select(container)
-    init_row(container)
+    initTcmTable(container)
+    initViewSelect(container)
+    initRegionSelect(container)
+    initFinancialYearSelect(container)
+    initUnapproveCheckbox(container)
+    initPrePostSelect(container)
+    initStatusSelect(container)
+    initSearchForm(container)
+    initPageNav(container)
+    initPageSize(container)
+    initExportButton(container)
+    initApproveAllButton(container)
+    initGenerateFileButton(container)
+    initNewPermitCategoryButton(container)
+    initNewUserButton(container)
+    initRegimeFilterSelect(container)
+    initRoleFilterSelect(container)
+    initRow(container)
+    checkPermitCategoryCache(container)
   }
 
   container = $('.exclusion-zone')
   if (container.length > 0) {
-    init_exclusion_zone(container)
+    initExclusionZone(container)
   }
 }
 
-function init_row(container) {
-  init_category_select(container)
-  init_temporary_cessation_select(container)
-  init_show_details_button(container)
-  init_approve_button(container)
-  init_popups(container)
+function initRow (container) {
+  initCategorySelect(container)
+  initTemporaryCessationSelect(container)
+  initShowDetailsButton(container)
+  initApproveButton(container)
+  initPopups(container)
 }
 
-function reload_table(container) {
+function reloadTable (container) {
   var data = $(container).data()
-  set_cookie_data(container)
+  setCookieData(container)
 
   $.ajax({
     url: data.path,
@@ -65,7 +68,7 @@ function reload_table(container) {
   })
 }
 
-function approve_transactions(container) {
+function approveTransactions (container) {
   var data = $(container).data()
 
   $.ajax({
@@ -73,18 +76,17 @@ function approve_transactions(container) {
     url: data.approvePath,
     data: {
       search: data.search,
-      region: data.region,
+      region: data.region
     },
     success: function (payload, status, xhr) {
-      // console.log(payload)
-      reload_table(container)
+      reloadTable(container)
     },
     dataType: 'json'
   })
 }
 
-function export_table (container) {
-  set_cookie_data(container)
+function exportTable (container) {
+  setCookieData(container)
   var data = $(container).data()
   var params = {
     search: data.search,
@@ -98,7 +100,7 @@ function export_table (container) {
   window.location.assign(path)
 }
 
-function fetch_summary_and_show (container) {
+function fetchSummaryAndShow (container) {
   var data = container.data()
   $.ajax({
     url: data.summaryPath,
@@ -106,35 +108,35 @@ function fetch_summary_and_show (container) {
       region: data.region
     },
     success: function (payload, status, xhr) {
-      $("#summary-dialog").replaceWith(payload)
+      $('#summary-dialog').replaceWith(payload)
       $('#summary-dialog #confirm:not(:disabled)').on('click', function (ev) {
         if ($(this).is(':checked')) {
           // enable generate button
-          $("#summary-dialog input.file-generate-btn").prop('disabled', false)
+          $('#summary-dialog input.file-generate-btn').prop('disabled', false)
         } else {
           // disable generate button
-          $("#summary-dialog input.file-generate-btn").prop('disabled', true)
+          $('#summary-dialog input.file-generate-btn').prop('disabled', true)
         }
       })
-      $("#summary-dialog").modal()
+      $('#summary-dialog').modal()
     },
     dataType: 'html'
   })
 }
 
-function set_cookie_data (container) {
+function setCookieData (container) {
   var data = $(container).data()
-  document.cookie = "search=" + safe_val(data.search)
-  document.cookie = "sort=" + safe_val(data.sortColumn)
-  document.cookie = "sort_direction=" + safe_val(data.sortDirection)
-  document.cookie = "region=" + safe_val(data.region)
-  document.cookie = "fy=" + safe_val(data.financialYear)
-  document.cookie = "page=" + safe_val(data.page)
-  document.cookie = "per_page=" + safe_val(data.perPage)
-  document.cookie = "unapproved=" + safe_val(data.unapproved)
+  document.cookie = 'search=' + safeValue(data.search)
+  document.cookie = 'sort=' + safeValue(data.sortColumn)
+  document.cookie = 'sort_direction=' + safeValue(data.sortDirection)
+  document.cookie = 'region=' + safeValue(data.region)
+  document.cookie = 'fy=' + safeValue(data.financialYear)
+  document.cookie = 'page=' + safeValue(data.page)
+  document.cookie = 'per_page=' + safeValue(data.perPage)
+  document.cookie = 'unapproved=' + safeValue(data.unapproved)
 }
 
-function safe_val(val) {
+function safeValue (val) {
   if (typeof val === 'undefined' || val == null) {
     return ';path=/'
   } else {
@@ -142,7 +144,7 @@ function safe_val(val) {
   }
 }
 
-function init_tcm_table (container) {
+function initTcmTable (container) {
   container.find('.sort-link').on('click', function (ev) {
     var col = $(this).data('column')
     $(container).data('sort-column', col)
@@ -159,195 +161,195 @@ function init_tcm_table (container) {
     // revert to page 1 on reload
     container.data('page', 1)
     // do reload
-    reload_table(container)
+    reloadTable(container)
 
     ev.preventDefault()
   })
 }
 
-function init_view_select (container) {
+function initViewSelect (container) {
   var select = container.find('select#mode')
   if (select.length > 0) {
     select.on('change', function (ev) {
       var selected = $(this).children(':selected')
-      var url = selected.data('path') 
+      var url = selected.data('path')
       var title = selected.text()
-      $("#view-title").text(title)
+      $('#view-title').text(title)
       container.data('path', url)
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_region_select (container) {
+function initRegionSelect (container) {
   var select = container.find('select#region')
   if (select.length > 0) {
     select.on('change', function (ev) {
       container.data('region', $(this).val())
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_unapproved_checkbox (container) {
+function initUnapproveCheckbox (container) {
   var cb = container.find('input#unapproved')
   if (cb.length > 0) {
     cb.on('change', function (ev) {
-      container.data('unapproved', $(this).is(":checked"))
+      container.data('unapproved', $(this).is(':checked'))
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_financial_year_select (container) {
+function initFinancialYearSelect (container) {
   var select = container.find('select#fy')
   if (select.length > 0) {
     select.on('change', function (ev) {
       container.data('financial-year', $(this).val())
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_prepost_select (container) {
+function initPrePostSelect (container) {
   var select = container.find('select#prepost')
   if (select.length > 0) {
     select.on('change', function (ev) {
       container.data('prepost', $(this).val())
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_status_select (container) {
+function initStatusSelect (container) {
   var select = container.find('select#status')
   if (select.length > 0) {
     select.on('change', function (ev) {
       container.data('status', $(this).val())
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_search_form (container) {
-  var form = container.find("#search-bar")
+function initSearchForm (container) {
+  var form = container.find('#search-bar')
   if (form.length) {
     form.on('submit', function (ev) {
-      var val = form.find("input[name=search]").val().trim()
+      var val = form.find('input[name=search]').val().trim()
       container.data('search', val)
       container.data('page', 1)
       if (!container.hasClass('permit-categories') &&
         !container.hasClass('users') &&
         !container.hasClass('transactions-files') &&
         !container.hasClass('imported-transaction-files')) {
-        set_cookie_data(container)
+        setCookieData(container)
       }
-      reload_table(container)
+      reloadTable(container)
       ev.preventDefault()
     })
   }
 }
 
-function init_page_nav (container) {
-  container.find("li.page-item:not(.disabled):not(.active)>a.page-link").on('click', function (ev) {
+function initPageNav (container) {
+  container.find('li.page-item:not(.disabled):not(.active)>a.page-link').on('click', function (ev) {
     var pg = $(this).data('page')
     container.data('page', pg)
-    set_cookie_data(container)
-    reload_table(container)
+    setCookieData(container)
+    reloadTable(container)
     ev.preventDefault()
   })
 }
 
-function init_page_size (container) {
-  container.find("select#per_page").on('change', function (ev) {
+function initPageSize (container) {
+  container.find('select#per_page').on('change', function (ev) {
     container.data('per-page', $(this).val())
     container.data('page', 1)
-    set_cookie_data(container)
-    reload_table(container)
+    setCookieData(container)
+    reloadTable(container)
   })
 }
 
-function init_export_button (container) {
-  container.find(".accept-and-download-btn").on('click', function (ev) {
-    export_table(container)
+function initExportButton (container) {
+  container.find('.accept-and-download-btn').on('click', function (ev) {
+    exportTable(container)
     ev.preventDefault()
-    $("#data-protection-dialog").modal('hide')
+    $('#data-protection-dialog').modal('hide')
   })
 
-  container.find(".table-export-btn").on('click', function (ev) {
-    $("#data-protection-dialog").modal()
+  container.find('.table-export-btn').on('click', function (ev) {
+    $('#data-protection-dialog').modal()
     ev.preventDefault()
   })
 }
 
-function init_generate_file_button (container) {
-  container.find(".generate-transaction-file-btn").on('click', function (ev) {
+function initGenerateFileButton (container) {
+  container.find('.generate-transaction-file-btn').on('click', function (ev) {
     // console.log('generate file')
-    fetch_summary_and_show(container)
+    fetchSummaryAndShow(container)
     ev.preventDefault()
   })
 }
 
-function init_approve_all_button (container) {
-  container.find(".approve-all-btn").on('click', function (ev) {
+function initApproveAllButton (container) {
+  container.find('.approve-all-btn').on('click', function (ev) {
     // console.log('approve all')
-    approve_transactions(container)
+    approveTransactions(container)
     ev.preventDefault()
   })
 }
 
-function init_regime_filter_select (container) {
+function initRegimeFilterSelect (container) {
   var select = container.find('select#regime')
   if (select.length > 0) {
     select.on('change', function (ev) {
       container.data('regime', $(this).val())
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_role_filter_select (container) {
+function initRoleFilterSelect (container) {
   var select = container.find('select#role')
   if (select.length > 0) {
     select.on('change', function (ev) {
       container.data('role', $(this).val())
       container.data('page', 1)
-      reload_table(container)
+      reloadTable(container)
     })
   }
 }
 
-function init_category_select (container) {
-  var table = container.hasClass(".tcm-table") ? container : container.closest(".tcm-table")
-  container.find(".tcm-select").tcmSelect()
+function initCategorySelect (container) {
+  var table = container.hasClass('.tcm-table') ? container : container.closest('.tcm-table')
+  container.find('.tcm-select').tcmSelect()
     .on('tcm-select-change', function (ev, data) {
       var row = $(this).closest('tr')
-      row.find("td:nth-last-child(2)").html("Working ...")
-      update_row(row, table, { category: data.newValue })
+      row.find('td:nth-last-child(2)').html('Working ...')
+      updateRow(row, table, { category: data.newValue })
     })
 }
 
-function init_temporary_cessation_select (container) {
-  var table = container.hasClass(".tcm-table") ? container : container.closest(".tcm-table")
-  container.find(".temporary-cessation-select").on('change', function (ev) {
+function initTemporaryCessationSelect (container) {
+  var table = container.hasClass('.tcm-table') ? container : container.closest('.tcm-table')
+  container.find('.temporary-cessation-select').on('change', function (ev) {
     var row = $(this).closest('tr')
-    row.find("td:nth-last-child(2)").html("Working ...")
-    update_row(row, table, { temporary_cessation: $(this).val() })
+    row.find('td:nth-last-child(2)').html('Working ...')
+    updateRow(row, table, { temporary_cessation: $(this).val() })
   })
 }
 
-function init_exclusion_zone (container) {
+function initExclusionZone (container) {
   // console.log("init exclusion zone")
   var dlg = container.find('.exclusion-dialog')
-  if (dlg.length > 0 ) {
-    container.find(".exclude-button").on('click', function (ev) {
+  if (dlg.length > 0) {
+    container.find('.exclude-button').on('click', function (ev) {
       ev.preventDefault()
       // console.log('exclude transactions')
       dlg.modal()
@@ -355,10 +357,9 @@ function init_exclusion_zone (container) {
   }
 }
 
-function update_row(row, table, data) {
+function updateRow (row, table, data) {
   var id = row.attr('id')
   var path = table.data('path') + '/' + id
-  // console.log("update row: " + path)
 
   $.ajax({
     method: 'PUT',
@@ -369,12 +370,12 @@ function update_row(row, table, data) {
     dataType: 'html',
     success: function (data) {
       // reloading just the row is causing weird (focus?) problems in IE 11
-      reload_table(table)
+      reloadTable(table)
       // row.replaceWith(data)
       // setTimeout(function () {
       //   var newRow = $("tr#" + id)
-      //   init_row(newRow)
-      //   console.log("after init_row")
+      //   initRow(newRow)
+      //   console.log("after initRow")
       //   newRow.find('.approve-button').focus()
       //   // $("#search").focus()
       // }, 50)
@@ -382,41 +383,68 @@ function update_row(row, table, data) {
   })
 }
 
-function init_show_details_button (container) {
-  var table = container.hasClass(".tcm-table") ? container : container.closest(".tcm-table")
-  container.find(".show-details-button").on('click', function (ev) {
+function initShowDetailsButton (container) {
+  var table = container.hasClass('.tcm-table') ? container : container.closest('.tcm-table')
+  container.find('.show-details-button').on('click', function (ev) {
     var path = $(this).data('path')
-    set_cookie_data(table)
-    Turbolinks.visit(path)
-    // window.location.assign(path)
+    setCookieData(table)
+    Turbolinks.visit(path)  // eslint-disable-line
   })
 }
 
-function init_approve_button (container) {
-  var table = container.hasClass(".tcm-table") ? container : container.closest(".tcm-table")
-  container.find(".approve-button").on('change', function (ev) {
-    update_row($(this).closest('tr'), table,
-      { approved_for_billing: $(this).is(":checked") })
+function initApproveButton (container) {
+  var table = container.hasClass('.tcm-table') ? container : container.closest('.tcm-table')
+  container.find('.approve-button').on('change', function (ev) {
+    updateRow($(this).closest('tr'), table,
+      { approved_for_billing: $(this).is(':checked') })
   })
 }
 
-function init_popups (container) {
+function initPopups (container) {
   container.find("[data-toggle='popover']").popover()
 }
 
-function init_new_permit_category_button (container) {
-  container.find("button#new-category").on('click', function (ev) {
+function initNewPermitCategoryButton (container) {
+  container.find('button#new-category').on('click', function (ev) {
     var financialYear = container.data('financialYear')
     var path = $(this).data('path')
     window.location.assign(path + '?fy=' + financialYear)
   })
 }
 
-function init_new_user_button (container) {
-  container.find("button#new-user").on('click', function (ev) {
+function initNewUserButton (container) {
+  container.find('button#new-user').on('click', function (ev) {
     var path = $(this).data('path')
     window.location.assign(path)
   })
+}
+
+function checkPermitCategoryCache (container) {
+  var ts = container.data('permit-category-timestamp')
+  if (ts) {
+    var lastChange = parseInt(ts)
+    var regimePart = container.data('path').split('/').slice(0, 3).join('/')
+    var length = window.sessionStorage.length
+    var keysToClear = []
+    for (var n = 0; n < length; n++) {
+      var key = window.sessionStorage.key(n)
+      if (key.startsWith(regimePart)) {
+        var val = JSON.parse(window.sessionStorage.getItem(key))
+        if (val.timestamp) {
+          if (parseInt(val.timestamp) < lastChange) {
+            console.log('cache: removing stale data ' + key)
+            keysToClear.push(key)
+          }
+        } else {
+          keysToClear.push(key)
+        }
+      }
+    }
+
+    for (n = 0; n < keysToClear.length; n++) {
+      window.sessionStorage.removeItem(keysToClear[n])
+    }
+  }
 }
 
 $(document).on('turbolinks:load', function () {
