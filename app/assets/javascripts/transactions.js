@@ -428,7 +428,7 @@ function checkPermitCategoryCache (container) {
     var keysToClear = []
     for (var n = 0; n < length; n++) {
       var key = window.sessionStorage.key(n)
-      if (key.startsWith(regimePart)) {
+      if (key.indexOf(regimePart) === 0) {
         var val = JSON.parse(window.sessionStorage.getItem(key))
         if (val.timestamp) {
           if (parseInt(val.timestamp) < lastChange) {
