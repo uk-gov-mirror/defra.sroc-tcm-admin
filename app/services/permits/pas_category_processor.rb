@@ -105,6 +105,12 @@ module Permits
 
     def find_historic_transactions(args)
       q = regime.transaction_details.historic.invoices.where(args)
+      if q.count == 0
+        # try without customer ref
+        q = regime.transaction_details.historic.invoices.
+          where(args.except(:customer_reference))
+      end
+
       most_recent = q.order(period_start: :desc).first
       if most_recent
         q.where(period_start: most_recent.period_start)
@@ -112,6 +118,16 @@ module Permits
         q
       end
     end
+
+    # def find_historic_transactions(args)
+    #   q = regime.transaction_details.historic.invoices.where(args)
+    #   most_recent = q.order(period_start: :desc).first
+    #   if most_recent
+    #     q.where(period_start: most_recent.period_start)
+    #   else
+    #     q
+    #   end
+    # end
 
     def args_from_transaction(t)
       keys_to_args([t.reference_3, t.customer_reference])
