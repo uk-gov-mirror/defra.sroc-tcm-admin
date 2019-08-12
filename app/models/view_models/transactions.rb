@@ -119,6 +119,11 @@ module ViewModels
     def table_partial_name
       "#{regime.slug}_table"
     end
+    
+    def permit_category_timestamp
+      @permit_category_timestamp ||= Query::PermitCategoryLastChanged.call(
+        regime: regime)
+    end
 
     private
 
