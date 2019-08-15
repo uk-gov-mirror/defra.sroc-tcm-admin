@@ -139,6 +139,18 @@ module GenerateHistory
     t3.transaction_file_id = f.id
     t3.save!
     history << t3
+    t4 = t2.dup
+    t4.reference_3 = 'AAAA0009'
+    t4.customer_reference = 'A1234'
+    t4.transaction_reference = 'E93356'
+    t4.line_amount = 8443
+    t4.category = '2.4.5'
+    t4.period_start = '1-APR-2019'
+    t4.period_end = '31-MAR-2020'
+    t4.tcm_financial_year = '1920'
+    t4.transaction_file_id = f.id
+    t4.save!
+    history << t4
     history
   end
 end

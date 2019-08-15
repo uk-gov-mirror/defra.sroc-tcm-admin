@@ -6,7 +6,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   def setup
     @header = transaction_headers(:pas_annual)
     @transactions = fixup_transactions(@header)
- 
+
     @user = User.system_account
     Thread.current[:current_user] = @user
 
@@ -33,6 +33,20 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   def test_find_historic_transactions_returns_empty_collection_when_no_matches_found
     assert @processor.find_historic_transactions(
       reference_3: 'AAAA0001', customer_reference: 'A1234').empty?
+  end
+
+  def test_find_historic_transactions_tries_without_customer_reference_when_no_matches
+    historic = generate_historic_pas
+    matched = historic.select { |t| t.reference_3 == 'AAAA0009' }.first
+    args = { reference_3: 'AAAA0009', customer_reference: 'ZXC123' }
+    # matches = @processor.find_historic_transactions(
+    @processor.handle_single_annual_permit(args)
+    transaction = @header.transaction_details.find_by(args.except(:customer_reference))
+    sc = transaction.suggested_category
+    assert_equal matched, sc.matched_transaction, 'Matched transaction incorrect'
+    assert_equal 'Assigned matching category', sc.logic
+    assert sc.green?, 'Confidence not GREEN'
+    assert_equal 'Annual billing (single) - Stage 2', sc.suggestion_stage
   end
 
   def test_find_historic_transactions_returns_most_recent_transactions_if_possible
@@ -144,7 +158,9 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
 
   def test_suggest_categories_does_not_consider_historic_credits
     historic = generate_historic_pas
-    historic.last.update_attributes(line_amount: -1234)
+    historic.select { |t| t.reference_3 == 'AAAA0001' }.last.
+      update_attributes(line_amount: -1234)
+
     @processor.suggest_categories
     t = @header.transaction_details.find_by(reference_3: 'AAAA0001',
                                             customer_reference: 'A1234')
@@ -174,7 +190,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal count, (audit_after - audit_before)
   end
 
-  def test_annual_no_suggestion_when_multiple_invoices
+  def test_annual_no_suggestion_when_multiple_invoices_without_corresponding_multiple_historic_transactions
     t = @transactions.first.dup
     t.line_amount = 1234
     t.save!
@@ -182,12 +198,12 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     @processor.suggest_categories
 
     assert_nil t.reload.category, "Category set!"
-    sg = t.suggested_category
-    assert_not_nil sg, "No suggested_category"
-    assert_equal('Multiple matching transactions found in file', sg.logic)
-    assert_equal('Annual billing', sg.suggestion_stage)
-    refute sg.admin_lock?, "Admin lock is on"
-    assert sg.red?
+    sc = t.suggested_category
+    assert_not_nil sc, "No suggested_category"
+    assert_equal('Multiple historic matches found', sc.logic)
+    assert_equal('Annual billing (multi) - Stage 2', sc.suggestion_stage)
+    refute sc.admin_lock?, "Admin lock is on"
+    assert sc.red?
   end
 
   def test_supplemental_no_suggestion_when_more_than_one_invoice
@@ -238,7 +254,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal ht.category, t.category, "Category not equal"
     sg = t.suggested_category
     assert_equal('Assigned matching category', sg.logic)
-    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
+    assert_equal('Supplementary invoice (single) - stage 1', sg.suggestion_stage)
     refute sg.admin_lock?, "It is admin locked"
     assert sg.amber?
   end
@@ -294,7 +310,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_nil t.category, "Category set!"
     sg = t.suggested_category
     assert_equal('Multiple historic matches found', sg.logic)
-    assert_equal('Supplementary invoice stage 2', sg.suggestion_stage)
+    assert_equal('Supplementary invoice (single) - stage 1', sg.suggestion_stage)
     refute sg.admin_lock?, "It is admin locked"
     assert sg.red?
   end
@@ -347,7 +363,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert ht2.category != t.category, "Second category is equal"
     sg = t.suggested_category
     assert_equal('Assigned matching category', sg.logic)
-    assert_equal('Supplementary credit stage 2', sg.suggestion_stage)
+    assert_equal('Supplementary credit (single) - stage 2', sg.suggestion_stage)
     assert sg.admin_lock?, "Not admin locked"
     assert sg.green?
   end
@@ -423,7 +439,8 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       ["AAAA0007", -123991, "A1239"],
       ["AAAA0008", 34567, "A1230"],
       ["AAAA0008", -34567, "A1230"],
-      ["AAAA0008", 9854, "A1230"]
+      ["AAAA0008", 9854, "A1230"],
+      ["AAAA0009", 83292, "ZXC123"]
     ].each_with_index do |ref, i|
       tt = t.dup
       tt.sequence_number = 2 + i
