@@ -73,6 +73,7 @@ class TransactionHeaderTest < ActiveSupport::TestCase
 
   def test_generates_the_file_reference
     # expecting CFDAI00001
+    @header.save!
     ref = [ @header.feeder_source_code,
             @header.region,
             @header.file_type_flag,

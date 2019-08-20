@@ -1,11 +1,73 @@
 require 'test_helper.rb'
 
+# Tests for:
+# Annual Billing:
+#   Single permit - Stage 1
+#     Match 1 (green)
+#     Multiple matches (red)
+#   Single permit - Stage 2 (ignores customer_reference)
+#     Match 1 (green)
+#     Multiple matches (red)
+#     No matches (red)
+#   Mutliple permits - Stage 1
+#     Match same number (amber)
+#     Multiple matches (red)
+#   Multiple permits - Stage 2 (ignores customer_reference)
+#     Match same number (amber)
+#     Multiple matches (red)
+#     No matches (red)
+# Supplementary Billing:
+#   Debits:
+#     Single debit - Stage 1
+#       Match 1 (green)
+#       Multiple matches (only one most recent period start) (amber)
+#       Mutliple matches (no single recent) (red)
+#     Single debit - Stage 2 (ignores customer reference)
+#       Match 1 (green)
+#       Multiple matches (only one most recent period start) (amber)
+#       Mutliple matches (no single recent) (red)
+#       No matches (red)
+#     Multiple debits - Stage 1
+#       Match all (amber)
+#     Multiple debits - Stage 2 (ignores customer reference)
+#       Match all (amber)
+#       No matches (red)
+#     Mutliple debits - Stage 3
+#       Match all when using most recent period start (amber)
+#       Doesnt match all when using most recent period start (red)
+#     Multiple debits - Stage 4 (ignores customer reference)
+#       Match all when using most recent period start (amber)
+#       Doesnt match all when using most recent period start (red)
+#   Credits:
+#     Single credit - Stage 1
+#       Match 1 (green)
+#       Multiple matches (only one most recent period start) (amber)
+#       Mutliple matches (no single recent) (red)
+#     Single credit - Stage 2 (ignores customer reference)
+#       Match 1 (green)
+#       Multiple matches (only one most recent period start) (amber)
+#       Mutliple matches (no single recent) (red)
+#       No matches (red)
+#     Multiple credits - Stage 1
+#       Match all (amber)
+#     Multiple credits - Stage 2 (ignores customer reference)
+#       Match all (amber)
+#       No matches (red)
+#     Mutliple credits - Stage 3
+#       Match all when using most recent period start (amber)
+#       Doesnt match all when using most recent period start (red)
+#     Multiple credits - Stage 4 (ignores customer reference)
+#       Match all when using most recent period start (amber)
+#       Doesnt match all when using most recent period start (red)
+
+# valid category fixtures for 2.4.4, 2.4.5 and 2.4.6
+#
 class PasCategoryProcessorTest < ActiveSupport::TestCase
   include ChargeCalculation, GenerateHistory
 
   def setup
+    @regime = regimes(:pas)
     @header = transaction_headers(:pas_annual)
-    @transactions = fixup_transactions(@header)
 
     @user = User.system_account
     Thread.current[:current_user] = @user
@@ -15,61 +77,113 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_fetch_unique_pas_permits_returns_list_of_permits
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    set_file_content(file_data)
+
     permits = @header.transaction_details.
       group(:reference_3, :customer_reference).count
     assert_equal permits, @processor.fetch_unique_pas_permits
   end
 
   def test_only_invoices_in_file_returns_true_when_only_invoices_in_file_for_permit
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    set_file_content(file_data)
+
     assert @processor.only_invoices_in_file?(reference_3: 'AAAA0001',
-                                             customer_reference: 'A1234')
+                                             customer_reference: 'A')
   end
 
   def test_only_invoices_in_file_returns_false_when_credits_in_file_for_permit
-    refute @processor.only_invoices_in_file?(reference_3: 'AAAA0007',
-                                             customer_reference: 'A1239')
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    set_file_content(file_data)
+
+    refute @processor.only_invoices_in_file?(reference_3: 'AAAA0002',
+                                             customer_reference: 'B')
   end
 
   def test_find_historic_transactions_returns_empty_collection_when_no_matches_found
-    assert @processor.find_historic_transactions(
-      reference_3: 'AAAA0001', customer_reference: 'A1234').empty?
-  end
+    @regime.transaction_details.historic.where(reference_3: 'AAAA0001',
+                                               customer_reference: 'A').
+                                               destroy_all
 
-  def test_find_historic_transactions_tries_without_customer_reference_when_no_matches
-    historic = generate_historic_pas
-    matched = historic.select { |t| t.reference_3 == 'AAAA0009' }.first
-    args = { reference_3: 'AAAA0009', customer_reference: 'ZXC123' }
-    # matches = @processor.find_historic_transactions(
-    @processor.handle_single_annual_permit(args)
-    transaction = @header.transaction_details.find_by(args.except(:customer_reference))
-    sc = transaction.suggested_category
-    assert_equal matched, sc.matched_transaction, 'Matched transaction incorrect'
-    assert_equal 'Assigned matching category', sc.logic
-    assert sc.green?, 'Confidence not GREEN'
-    assert_equal 'Annual billing (single) - Stage 2', sc.suggestion_stage
+    assert @processor.find_historic_transactions(
+      reference_3: 'AAAA0001', customer_reference: 'A').empty?
   end
 
   def test_find_historic_transactions_returns_most_recent_transactions_if_possible
-    # newest == newest period_end date
-    historic = generate_historic_pas
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 2345, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    transactions = set_historic_content(historic_data)
+
     matches = @processor.find_historic_transactions(
-      reference_3: 'AAAA0001', customer_reference: 'A1234')
+      reference_3: 'AAAA0001', customer_reference: 'A')
     assert_equal 1, matches.count
-    assert_equal historic[1], matches.first
+    assert_equal transactions.second, matches.first
   end
 
   def test_find_historic_transactions_returns_collection_matching_period_start
-    historic = generate_historic_pas
-    historic[1].update_attributes!(period_start: historic[0].period_start)
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 1234, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 2345, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    transactions = set_historic_content(historic_data)
+
     matches = @processor.find_historic_transactions(
-      reference_3: 'AAAA0001', customer_reference: 'A1234')
+      reference_3: 'AAAA0001', customer_reference: 'A')
     assert_equal 2, matches.count
+    assert_equal transactions.first, matches.first
+    assert_equal transactions.second, matches.second
   end
 
   def test_set_category_sets_category
-    transaction = @header.transaction_details.find_by(reference_3: 'AAAA0001')
-    history = generate_historic_pas
-    matched = history.first
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+    ]
+
+    transaction = set_file_content(file_data).first
+
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 1234, period_start: '2-JUN-2019' }
+    ]
+
+    matched = set_historic_content(historic_data).first
+
     @processor.set_category(transaction, matched, :green, 'Level 99')
     assert_equal matched.category, transaction.reload.category
     sc = transaction.suggested_category
@@ -79,9 +193,19 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_set_category_sets_matched_transaction
-    history = generate_historic_pas
-    matched = history.first
-    transaction = @header.transaction_details.find_by(reference_3: 'AAAA0001')
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+    ]
+
+    transaction = set_file_content(file_data).first
+
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 1234, period_start: '2-JUN-2019' }
+    ]
+
+    matched = set_historic_content(historic_data).first
+
     @processor.set_category(transaction, matched, :amber, 'Level')
     assert_equal matched.category, transaction.reload.category
     sc = transaction.suggested_category
@@ -91,19 +215,34 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_set_category_sets_charge_info
-    transaction = @header.transaction_details.find_by(reference_3: 'AAAA0001')
-    history = generate_historic_pas
-    matched = history.first
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+    ]
+    transaction = set_file_content(file_data).first
+
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 1234, period_start: '2-JUN-2019' }
+    ]
+    matched = set_historic_content(historic_data).first
+
     @processor.set_category(transaction, matched, :green, 'Level')
     assert_not_nil transaction.charge_calculation, 'Charge calculation not set'
     assert_not_nil transaction.tcm_charge, 'Charge not extracted'
   end
 
   def test_set_category_does_not_set_category_when_category_removed
-    transaction = @header.transaction_details.
-      find_by(reference_3: 'AAAA0001', customer_reference: 'A1234')
-    history = generate_historic_pas
-    matched = history.first
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+    ]
+    transaction = set_file_content(file_data).first
+
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 1234, period_start: '2-JUN-2019' }
+    ]
+    matched = set_historic_content(historic_data).first
+
     p = PermitStorageService.new(@header.regime)
     p.update_or_create_new_version(matched.category, 'test', '1920', 'excluded')
     @processor.set_category(transaction, matched, :green, 'Level')
@@ -114,14 +253,19 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
   end
 
   def test_set_category_does_not_set_category_if_calculation_error
-    history = generate_historic_pas
-    matched = history.first
-    build_mock_calculator_with_error
-    # @calculator = build_mock_calculator_with_error
-    # @processor.stubs(:calculator).returns(@calculator)
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+    ]
+    transaction = set_file_content(file_data).first
 
-    transaction = @header.transaction_details.
-      find_by(reference_3: 'AAAA0001', customer_reference: 'A1234')
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A',
+        line_amount: 1234, period_start: '2-JUN-2019' }
+    ]
+    matched = set_historic_content(historic_data).first
+
+    build_mock_calculator_with_error
+
     @processor.set_category(transaction, matched, :green, 'Level')
     assert_nil transaction.reload.category
     sc = transaction.suggested_category
@@ -129,332 +273,1591 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert sc.red?, "Confidence not RED"
   end
 
-  def test_suggest_categories_processes_transactions_in_file
-    history = generate_historic_pas
+
+# Annual Billing:
+#   Single permit - Stage 1 ---------------------------------------
+  #     Match 1 (green)
+  def test_annual_single_stage_1_single_match_is_green
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
     @processor.suggest_categories
 
-    [
-      [ 'AAAA0001', 'A1234', '2.4.6', 'Assigned matching category' ],
-      [ 'AAAA0002', 'A1235', nil, 'No previous bill found' ],
-      [ 'AAAA0003', 'A1236', nil, 'No previous bill found' ],
-      [ 'AAAA0004', 'A1237', nil, 'No previous bill found' ],
-      [ 'AAAA0005', 'A1238', nil, 'No previous bill found' ],
-      [ 'AAAA0006', 'A1238', nil, 'No previous bill found' ],
-      [ 'AAAA0007', 'A1239', nil, 'No previous bill found' ],
-      [ 'AAAA0008', 'A1230', nil, 'Multiple matching transactions found in file' ]
-    ].each do |td|
-      t = @header.transaction_details.find_by(reference_3: td[0],
-                                              customer_reference: td[1])
-      assert_not_nil t, "Didnt find #{td[0]},#{td[1]}"
-      if td[2].nil?
-        assert_nil t.category, "Failed category #{td[0]}"
-      else
-        assert_equal td[2], t.category, "Failed category #{td[0]}"
-      end
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.green?, 'Not GREEN')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Annual billing (single) - Stage 1', sc.suggestion_stage,
+                'Wrong stage')
+  end
+
+#     Multiple matches (red)
+  def test_annual_single_stage_1_multiple_matches_are_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_nil(t.reload.category, 'Category was set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+    assert_equal('Annual billing (single) - Stage 1', sc.suggestion_stage,
+                'Wrong stage')
+  end
+
+  #     No matches (red) - will never happen in Stage 1 as this will try
+  #     again without :customer_reference and go into Stage 2
+  #     when no matches found
+
+#   Single permit - Stage 2 (ignores customer_reference) --------------
+#     Match 1 (green)
+  def test_annual_single_stage_2_single_match_is_green
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.green?, 'Not GREEN')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Annual billing (single) - Stage 2', sc.suggestion_stage,
+                'Wrong stage')
+  end
+
+#     Multiple matches (red)
+  def test_annual_single_stage_1_multiple_matches_are_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_nil(t.reload.category, 'Category was set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+    assert_equal('Annual billing (single) - Stage 2', sc.suggestion_stage,
+                'Wrong stage')
+  end
+
+#     No matches (red)
+  def test_annual_single_stage_2_no_matches_are_red
+    @regime.transaction_details.historic.where(reference_3: 'AAAA0001',
+                                               customer_reference: 'A').
+                                               destroy_all
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_nil(t.reload.category, 'Category was set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
+    assert_equal('Annual billing (single) - Stage 2', sc.suggestion_stage,
+                'Wrong stage')
+  end
+
+#   Mutliple permits - Stage 1 ---------------------------------------
+#     Match same number (amber)
+  def test_annual_multiple_stage_1_all_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 9876 },
+      { reference_3: 'AAAA0001', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+
+    expected = ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
       sc = t.suggested_category
-      assert_equal td[3], sc.logic, "Failed logic #{td[0]}"
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Annual billing (multiple) - Stage 1', sc.suggestion_stage,
+                'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#     Multiple matches (red)
+  def test_annual_multiple_stage_1_all_do_not_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 9876 },
+      { reference_3: 'AAAA0001', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Annual billing (multiple) - Stage 1', sc.suggestion_stage,
+                'Wrong stage')
     end
   end
 
-  def test_suggest_categories_does_not_consider_historic_credits
-    historic = generate_historic_pas
-    historic.select { |t| t.reference_3 == 'AAAA0001' }.last.
-      update_attributes(line_amount: -1234)
+  #     No matches (red) - will never happen in Stage 1 as this will try
+  #     again without :customer_reference and go into Stage 2
+  #     when no matches found
+
+#     No matches (red)
+
+
+#   Multiple permits - Stage 2 (ignores customer_reference)
+#     Match same number (amber)
+  def test_annual_multiple_stage_2_all_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 9876 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
 
     @processor.suggest_categories
-    t = @header.transaction_details.find_by(reference_3: 'AAAA0001',
-                                            customer_reference: 'A1234')
-    assert_equal('2.4.5', t.category)
+
+    expected = ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Annual billing (multiple) - Stage 2', sc.suggestion_stage,
+                'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#     Multiple matches (red)
+  def test_annual_multiple_stage_2_all_do_not_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 9876 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Annual billing (multiple) - Stage 2', sc.suggestion_stage,
+                'Wrong stage')
+    end
+  end
+
+#     No matches (red)
+  def test_annual_multiple_stage_2_none_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0002', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0002', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2019' },
+      { reference_3: 'AAAA0002', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0002', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0002', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'C', line_amount: 9876 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
+      assert_equal('Annual billing (multiple) - Stage 2', sc.suggestion_stage,
+                'Wrong stage')
+    end
+  end
+
+
+# Supplementary Billing:
+#   Debits:
+#     Single debit - Stage 1/2 ---------------------------------------
+#       Match 1 (green)
+  def test_supplemental_single_stage_1_single_match_is_green
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
     sc = t.suggested_category
-    assert_equal('Assigned matching category', sc.logic)
+    assert(sc.green?, 'Not GREEN')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary invoice (single) - Stage 1',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def test_suggest_categories_handles_multiple_matching_period_start
-    historic = generate_historic_pas
-    historic[1].update_attributes!(period_start: historic[0].period_start)
+#       Multiple matches (only one most recent period start) (amber)
+  def test_supplemental_single_stage_2_multiple_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
     @processor.suggest_categories
-    t = @header.transaction_details.find_by(reference_3: 'AAAA0001',
-                                            customer_reference: 'A1234')
-    assert_nil t.category
+
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
     sc = t.suggested_category
-    assert_equal('Multiple historic matches found', sc.logic)
+    assert(sc.amber?, 'Not AMBER')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary invoice (single) - Stage 2',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def test_suggest_categories_generates_audit_records
-    history = generate_historic_pas
-    audit_before = AuditLog.count
+#       Mutliple matches (no single recent) (red)
+  def test_supplemental_single_stage_2_multiple_no_single_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
     @processor.suggest_categories
-    audit_after = AuditLog.count
-    count = @header.transaction_details.where.not(category: nil).count
-    assert count.positive?
-    assert_equal count, (audit_after - audit_before)
-  end
 
-  def test_annual_no_suggestion_when_multiple_invoices_without_corresponding_multiple_historic_transactions
-    t = @transactions.first.dup
-    t.line_amount = 1234
-    t.save!
-
-    @processor.suggest_categories
-
-    assert_nil t.reload.category, "Category set!"
+    assert_nil(t.reload.category, 'Category set')
     sc = t.suggested_category
-    assert_not_nil sc, "No suggested_category"
-    assert_equal('Multiple historic matches found', sc.logic)
-    assert_equal('Annual billing (multi) - Stage 2', sc.suggestion_stage)
-    refute sc.admin_lock?, "Admin lock is on"
-    assert sc.red?
+    assert(sc.red?, 'Not RED')
+    assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary invoice (single) - Stage 2',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def test_supplemental_no_suggestion_when_more_than_one_invoice
-    generate_historic_wml
-    @processor.suggest_categories
+#     Single debit - Stage 3/4 (ignores customer reference) -----------
+#       Match 1 (green)
+  def test_supplemental_single_stage_3_single_match_is_green
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
 
-    t = @transactions.last.reload
+    set_historic_content(historic_data)
 
-    assert_nil t.category, "Category set!"
-    sg = t.suggested_category
-    assert_not_nil sg, "No suggested_category"
-    assert_equal('Multiple matching transactions found in file', sg.logic)
-    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
-    refute sg.admin_lock?, "Admin lock is on"
-    assert sg.red?
-  end
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
 
-  def test_supplemental_invoice_no_suggestion_when_no_history
-    @processor.suggest_categories
-
-    t = @transactions[6].reload
-
-    assert_nil t.category, "Category set!"
-    sg = t.suggested_category
-    assert_equal('No previous bill found', sg.logic)
-    assert_equal('Supplementary invoice stage 1', sg.suggestion_stage)
-    refute sg.admin_lock?, "It is admin locked"
-    assert sg.red?
-  end
-
-  def test_supplemental_invoice_amber_suggestion_when_single_match
-    historic = generate_historic_pas
-
-    # matches on :reference_3, :customer_reference and :period_end
-    ht = historic.last.dup
-    ht.reference_3 = "AAAA0007"
-    ht.customer_reference = 'A1239'
-    ht.period_start = "1-JAN-2021"
-    ht.period_end = "31-MAR-2021"
-    ht.tcm_financial_year = "2021"
-    ht.status = 'billed'
-    ht.save!
+    t = set_file_content(file_data).first
 
     @processor.suggest_categories
 
-    t = @transactions[6].reload
-
-    assert_equal ht.category, t.category, "Category not equal"
-    sg = t.suggested_category
-    assert_equal('Assigned matching category', sg.logic)
-    assert_equal('Supplementary invoice (single) - stage 1', sg.suggestion_stage)
-    refute sg.admin_lock?, "It is admin locked"
-    assert sg.amber?
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.green?, 'Not GREEN')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary invoice (single) - Stage 3',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def test_supplemental_invoice_amber_suggestion_when_multiple_match
-    historic = generate_historic_pas
-    ht = historic.last.dup
-    ht.reference_3 = "AAAA0007"
-    ht.customer_reference = 'A1239'
-    ht.period_start = "1-JAN-2021"
-    ht.period_end = "31-MAR-2021"
-    ht.tcm_financial_year = "2021"
-    ht.category = "2.4.5"
-    ht.status = 'billed'
-    ht.save!
-    ht2 = ht.dup
-    ht2.period_start = "30-SEP-2020"
-    ht2.category = "2.4.4"
-    ht2.save!
+#       Multiple matches (only one most recent period start) (amber)
+  def test_supplemental_single_stage_3_multiple_single_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
 
     @processor.suggest_categories
 
-    t = @transactions[6].reload
-
-    assert_equal ht.category, t.category, "Category not equal"
-    assert ht2.category != t.category, "Second category is equal"
-    sg = t.suggested_category
-    assert_equal('Assigned matching category', sg.logic)
-    assert_equal('Supplementary invoice stage 2', sg.suggestion_stage)
-    refute sg.admin_lock?, "It is admin locked"
-    assert sg.amber?
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.amber?, 'Not AMBER')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary invoice (single) - Stage 4',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def test_supplemental_invoice_red_suggestion_when_multiple_matching_dates
-    historic = generate_historic_pas
-    ht = historic.last.dup
-    ht.reference_3 = "AAAA0007"
-    ht.customer_reference = 'A1239'
-    ht.period_start = "1-JAN-2021"
-    ht.period_end = "31-MAR-2021"
-    ht.tcm_financial_year = "2021"
-    ht.category = "2.4.5"
-    ht.status = 'billed'
-    ht.save!
-    ht2 = ht.dup
-    ht2.category = "2.4.4"
-    ht2.save!
+#       Mutliple matches (no single recent) (red)
+  def test_supplemental_single_stage_4_multiple_no_single_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
 
     @processor.suggest_categories
 
-    t = @transactions[6].reload
-
-    assert_nil t.category, "Category set!"
-    sg = t.suggested_category
-    assert_equal('Multiple historic matches found', sg.logic)
-    assert_equal('Supplementary invoice (single) - stage 1', sg.suggestion_stage)
-    refute sg.admin_lock?, "It is admin locked"
-    assert sg.red?
+    assert_nil(t.reload.category, 'Category set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary invoice (single) - Stage 4',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def test_supplemental_credit_green_suggestion_when_single_match
-    historic = generate_historic_pas
-    ht = historic.last.dup
-    ht.reference_3 = "AAAA0007"
-    ht.customer_reference = 'A1239'
-    ht.period_start = "1-JAN-2021"
-    ht.period_end = "31-MAR-2021"
-    ht.tcm_financial_year = "2021"
-    ht.category = "2.4.5"
-    ht.status = 'billed'
-    ht.save!
+#       No matches (red)
+  def test_supplemental_single_stage_3_multiple_no_matches_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '2-JUN-2020',
+        period_end: '1-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-JAN-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
 
     @processor.suggest_categories
 
-    t = @transactions[7].reload
-
-    assert_equal ht.category, t.category, "Category not equal"
-    sg = t.suggested_category
-    assert_equal('Assigned matching category', sg.logic)
-    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
-    assert sg.admin_lock?, "Not admin locked"
-    assert sg.green?
+    assert_nil(t.reload.category, 'Category set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary invoice (single) - Stage 3',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def test_supplemental_credit_green_suggestion_when_multiple_match
-    historic = generate_historic_pas
-    ht = historic.last.dup
-    ht.reference_3 = "AAAA0007"
-    ht.customer_reference = 'A1239'
-    ht.period_start = "1-JAN-2021"
-    ht.period_end = "31-MAR-2021"
-    ht.tcm_financial_year = "2021"
-    ht.category = "2.4.5"
-    ht.status = 'billed'
-    ht.save!
-    ht2 = ht.dup
-    ht2.period_start = "30-SEP-2020"
-    ht2.category = "2.4.4"
-    ht2.save!
+#     Multiple debits - Stage 1 ---------------------------------------
+#       Match all (amber)
+  def test_supplemental_multiple_stage_1_all_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary invoice (multiple) - Stage 1',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#     Mutliple debits - Stage 2 ---------------------------------------
+#       Match all when using most recent period start (amber)
+  def test_supplemental_multiple_stage_2_period_start_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary invoice (multiple) - Stage 2',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#       Doesnt match all when using most recent period start (red)
+  def test_supplemental_multiple_stage_2_no_period_start_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUL-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
 
     @processor.suggest_categories
 
-    t = @transactions[7].reload
-
-    assert_equal ht.category, t.category, "Category not equal"
-    assert ht2.category != t.category, "Second category is equal"
-    sg = t.suggested_category
-    assert_equal('Assigned matching category', sg.logic)
-    assert_equal('Supplementary credit (single) - stage 2', sg.suggestion_stage)
-    assert sg.admin_lock?, "Not admin locked"
-    assert sg.green?
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary invoice (multiple) - Stage 2',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
   end
 
-  def test_supplemental_credit_red_suggestion_when_multiple_matching_dates
-    historic = generate_historic_pas
-    ht = historic.last.dup
-    ht.reference_3 = "AAAA0007"
-    ht.customer_reference = 'A1239'
-    ht.period_start = "1-JAN-2021"
-    ht.period_end = "31-MAR-2021"
-    ht.tcm_financial_year = "2021"
-    ht.category = "2.4.5"
-    ht.status = 'billed'
-    ht.save!
-    ht2 = ht.dup
-    ht2.category = "2.4.4"
-    ht2.save!
+#     Multiple debits - Stage 3 (ignores customer reference)
+#       Match all (amber)
+  def test_supplemental_multiple_stage_3_all_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary invoice (multiple) - Stage 3',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#       No matches (red)
+  def test_supplemental_multiple_stage_3_no_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '1-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '3-JAN-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
 
     @processor.suggest_categories
 
-    t = @transactions[7].reload
-
-    assert_nil t.category, "Category set!"
-    sg = t.suggested_category
-    assert_equal('Multiple historic matches found', sg.logic)
-    assert_equal('Supplementary credit stage 2', sg.suggestion_stage)
-    refute sg.admin_lock?, "It is admin locked"
-    assert sg.red?
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary invoice (multiple) - Stage 3',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
   end
 
-  def test_supplemental_no_suggestion_when_more_than_one_credit_in_file
-    generate_historic_pas
+#     Multiple debits - Stage 4 (ignores customer reference) ----------
+#       Match all when using most recent period start (amber)
+  def test_supplemental_multiple_stage_4_period_start_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
 
-    t = @transactions[7].dup
-    t.line_amount = -123000
-    t.save!
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary invoice (multiple) - Stage 4',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#       Doesnt match all when using most recent period start (red)
+  def test_supplemental_multiple_stage_4_no_period_start_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUL-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
 
     @processor.suggest_categories
 
-    assert_nil t.reload.category, "Category set!"
-    sg = t.suggested_category
-    assert_equal('Multiple matching transactions found in file', sg.logic)
-    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
-    refute sg.admin_lock?, "It is admin locked"
-    assert sg.red?
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary invoice (multiple) - Stage 4',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
   end
 
-  def test_supplemental_credit_no_suggestion_when_no_history
+#   Credits:
+#     Single credit - Stage 1/2 ---------------------------------------
+#       Match 1 (green)
+  def test_supplemental_credit_single_stage_1_single_match_is_green
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
     @processor.suggest_categories
 
-    t = @transactions[7].reload
-
-    assert_nil t.category, "Category set!"
-    sg = t.suggested_category
-    assert_equal('No previous bill found', sg.logic)
-    assert_equal('Supplementary credit stage 1', sg.suggestion_stage)
-    refute sg.admin_lock?, "It is admin locked"
-    assert sg.red?
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.green?, 'Not GREEN')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary credit (single) - Stage 1',
+                 sc.suggestion_stage, 'Wrong stage')
   end
 
-  def fixup_transactions(header)
+#       Multiple matches (only one most recent period start) (amber)
+  def test_supplemental_credit_single_stage_2_multiple_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.amber?, 'Not AMBER')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary credit (single) - Stage 2',
+                 sc.suggestion_stage, 'Wrong stage')
+  end
+
+#       Mutliple matches (no single recent) (red)
+  def test_supplemental_credit_single_stage_2_multiple_no_single_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_nil(t.reload.category, 'Category set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary credit (single) - Stage 2',
+                 sc.suggestion_stage, 'Wrong stage')
+  end
+
+#     Single credit - Stage 3/4 (ignores customer reference) ----------
+#       Match 1 (green)
+  def test_supplemental_credit_single_stage_3_single_match_is_green
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.green?, 'Not GREEN')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary credit (single) - Stage 3',
+                 sc.suggestion_stage, 'Wrong stage')
+  end
+
+#       Multiple matches (only one most recent period start) (amber)
+  def test_supplemental_credit_single_stage_3_multiple_single_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
+    sc = t.suggested_category
+    assert(sc.amber?, 'Not AMBER')
+    assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary credit (single) - Stage 4',
+                 sc.suggestion_stage, 'Wrong stage')
+  end
+
+#       Mutliple matches (no single recent) (red)
+  def test_supplemental_credit_single_stage_4_multiple_no_single_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_nil(t.reload.category, 'Category set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary credit (single) - Stage 4',
+                 sc.suggestion_stage, 'Wrong stage')
+  end
+
+#       No matches (red)
+  def test_supplemental_credit_single_stage_3_multiple_no_matches_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '2-JUN-2020',
+        period_end: '1-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-JAN-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1234 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    t = set_file_content(file_data).first
+
+    @processor.suggest_categories
+
+    assert_nil(t.reload.category, 'Category set')
+    sc = t.suggested_category
+    assert(sc.red?, 'Not RED')
+    assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
+    assert_equal('Supplementary credit (single) - Stage 3',
+                 sc.suggestion_stage, 'Wrong stage')
+  end
+
+#     Multiple credits - Stage 1 ---------------------------------------
+#       Match all (amber)
+  def test_supplemental_credit_multiple_stage_1_all_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 1345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary credit (multiple) - Stage 1',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#     Multiple credits - Stage 3 (ignores customer reference) ----------
+#       Match all (amber)
+  def test_supplemental_credit_multiple_stage_3_all_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary credit (multiple) - Stage 3',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#       No matches (red)
+  def test_supplemental_credit_multiple_stage_3_no_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2019',
+        period_end: '1-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '2-JUN-2020',
+        period_end: '3-JAN-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 3456, period_start: '1-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary credit (multiple) - Stage 3',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+  end
+
+#     Mutliple credits - Stage 2 ---------------------------------------
+#       Match all when using most recent period start (amber)
+  def test_supplemental_credit_multiple_stage_2_period_start_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary credit (multiple) - Stage 2',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#       Doesnt match all when using most recent period start (red)
+  def test_supplemental_credit_multiple_stage_2_no_period_start_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUL-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary credit (multiple) - Stage 2',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+  end
+
+#     Multiple credits - Stage 4 (ignores customer reference) ----------
+#       Match all when using most recent period start (amber)
+  def test_supplemental_credit_multiple_stage_4_period_start_match_is_amber
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+    expected =  ['2.4.5', '2.4.6']
+    assigned = []
+
+    file[0..1].each do |t|
+      assert_not_nil(t.reload.category, 'No category set')
+      assigned << t.category
+      sc = t.suggested_category
+      assert(sc.amber?, 'Not AMBER')
+      assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary credit (multiple) - Stage 4',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+    assert_equal(expected, assigned.sort, 'Categories not assigned correctly')
+  end
+
+#       Doesnt match all when using most recent period start (red)
+  def test_supplemental_credit_multiple_stage_4_no_period_start_match_is_red
+    historic_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.5',
+        line_amount: 1234, period_start: '1-JUN-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.6',
+        line_amount: 2345, period_start: '1-JUL-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'C', category: '2.4.4',
+        line_amount: 3456, period_start: '1-APR-2020',
+        period_end: '31-MAR-2021' },
+      { reference_3: 'AAAA0001', customer_reference: 'B', category: '2.4.4',
+        line_amount: 4567, period_start: '24-APR-2019' },
+      { reference_3: 'AAAA0001', customer_reference: 'A', category: '2.4.4',
+        line_amount: -2234, period_start: '3-JUN-2019' }
+    ]
+
+    set_historic_content(historic_data)
+
+    file_data = [
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -234 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: -345 },
+      { reference_3: 'AAAA0001', customer_reference: 'A', line_amount: 2345 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: 3456 },
+      { reference_3: 'AAAA0002', customer_reference: 'B', line_amount: -2234 }
+    ]
+
+    file = set_file_content(file_data)
+
+    @processor.suggest_categories
+
+    file[0..1].each do |t|
+      assert_nil(t.reload.category, 'Category set')
+      sc = t.suggested_category
+      assert(sc.red?, 'Not RED')
+      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Supplementary credit (multiple) - Stage 4',
+                   sc.suggestion_stage, 'Wrong stage')
+    end
+  end
+
+
+  def set_file_content(content)
     results = []
     t = transaction_details(:pas_annual)
-    [
-      ["AAAA0001", 12345, "A1234"],
-      ["AAAA0002", 67890, "A1235"],
-      ["AAAA0003", 12233, "A1236"],
-      ["AAAA0004", 22991, "A1237"],
-      ["AAAA0005", 43554, "A1238"],
-      ["AAAA0006", 23665, "A1238"],
-      ["AAAA0007", 124322, "A1239"],
-      ["AAAA0007", -123991, "A1239"],
-      ["AAAA0008", 34567, "A1230"],
-      ["AAAA0008", -34567, "A1230"],
-      ["AAAA0008", 9854, "A1230"],
-      ["AAAA0009", 83292, "ZXC123"]
-    ].each_with_index do |ref, i|
+
+    content.each_with_index do |attrs, i|
       tt = t.dup
+      tt.status = 'unbilled'
       tt.sequence_number = 2 + i
-      tt.reference_3 = ref[0]
-      tt.line_amount = ref[1]
-      tt.customer_reference = ref[2]
-      tt.transaction_header_id = header.id
+      tt.line_amount = 1234
+      tt.customer_reference = 'A'
+      tt.transaction_header_id = @header.id
       tt.period_start = '1-APR-2020'
       tt.period_end = '31-MAR-2021'
       tt.tcm_financial_year = '2021'
       tt.category = nil
       tt.save!
+      tt.update_attributes(attrs)
       results << tt
     end
     results
+  end
+
+  def set_historic_content(content)
+    f = transaction_files(:pas_sroc_file)
+    t = transaction_details(:pas)
+    history = []
+
+    content.each_with_index do |attrs, i|
+      t2 = t.dup
+      t2.reference_1 = '0123456'
+      t2.reference_2 = 'AAA/A0011'
+      t2.reference_3 = 'AAAA0001'
+      t2.transaction_reference = 'E12344'
+      t2.customer_reference = 'A'
+      t2.status = 'billed'
+      t2.line_amount = 12567
+      t2.category = '2.4.5'
+      t2.period_start = '1-APR-2018'
+      t2.period_end = '31-MAR-2019'
+      t2.tcm_financial_year = '1819'
+      t2.transaction_file_id = f.id
+      t2.save!
+      t2.update_attributes(attrs)
+      history << t2
+    end
+    history
   end
 end
