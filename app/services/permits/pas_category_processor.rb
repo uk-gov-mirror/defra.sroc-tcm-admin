@@ -12,7 +12,6 @@ module Permits
             handle_single_annual_permit(permit_args)
           else
             handle_multiple_annual_permits(permit_args, count)
-            # multiple_matching_transactions(permit_args, "Annual billing")
           end
         else
           handle_supplementary_billing(permit_args)
@@ -79,17 +78,19 @@ module Permits
 
       credits = header.transaction_details.credits.where(permit_args).
         group(:reference_3, :customer_reference, :period_end).count
-      
+
       credits.each do |args, count|
         handle_supplementary_credits(group_to_args(args), count)
       end
     end
 
+    ### Supplementary Debits ===============================
+    #
     def handle_supplementary_debits(query_args, count)
       if count > 1
         handle_multiple_supplementary_debits(query_args, count)
       else
-        stage = "Supplementary invoice (single) - stage 1"
+        stage = "Supplementary invoice (single) - Stage 1"
         transaction = header.transaction_details.invoices.find_by(query_args)
         with_customer_reference = true
         invoices = find_historic_debits(query_args)
@@ -97,7 +98,7 @@ module Permits
         if invoices.count.zero?
           invoices = find_historic_debits(
             query_args.except(:customer_reference))
-          stage = "Supplementary invoice (single) - stage 3"
+          stage = "Supplementary invoice (single) - Stage 3"
           with_customer_reference = false
         end
 
@@ -106,10 +107,10 @@ module Permits
         elsif invoices.count == 1
           set_category(transaction, invoices.first, :green, stage)
         else
-          stag = if with_customer_reference
-            "Supplementary invoice (single) - stage 2"
+          stage = if with_customer_reference
+            "Supplementary invoice (single) - Stage 2"
           else
-            "Supplementary invoice (single) - stage 4"
+            "Supplementary invoice (single) - Stage 4"
           end
 
           if invoices.first.period_start != invoices.second.period_start
@@ -123,14 +124,14 @@ module Permits
 
     def handle_multiple_supplementary_debits(query_args, count)
       # multiple invoices in file
-      stage = "Supplementary invoice (multiple) - stage 1"
+      stage = "Supplementary invoice (multiple) - Stage 1"
       invoices = find_historic_debits(query_args)
       with_customer_reference = true
 
       if invoices.count.zero?
         invoices = find_historic_debits(
           query_args.except(:customer_reference))
-        stage = "Supplementary invoice (multiple) - stage 3"
+        stage = "Supplementary invoice (multiple) - Stage 3"
         with_customer_reference = false
       end
 
@@ -146,10 +147,10 @@ module Permits
         end
       else
         if with_customer_reference
-          stage = "Supplementary invoice (multiple) - stage 2"
+          stage = "Supplementary invoice (multiple) - Stage 2"
           q = query_args
         else
-          stage = "Supplementary invoice (multiple) - stage 4"
+          stage = "Supplementary invoice (multiple) - Stage 4"
           q = query_args.except(:customer_reference)
         end
 
@@ -170,54 +171,10 @@ module Permits
       end
     end
 
-    # def handle_supplementary_invoice(transaction)
-    #   stage = "Supplementary invoice stage 1"
-    #   permit_args = args_from_transaction(transaction)
+    ### Supplementary Credits ===============================
     #
-    #   if more_than_one_invoice_in_file_for_permit?(permit_args)
-    #     multiple_matching_transactions({ id: transaction.id }, stage)
-    #   else
-    #     invoices = find_historic_invoices(transaction)
-    #     if invoices.count.zero?
-    #       no_historic_transaction({ id: transaction.id }, stage)
-    #     elsif invoices.count == 1
-    #       set_category(transaction, invoices.first, :amber, stage)
-    #     else
-    #       stage = "Supplementary invoice stage 2"
-    #       if invoices.first.period_start != invoices.second.period_start
-    #         set_category(transaction, invoices.first, :amber, stage)
-    #       else
-    #         multiple_historic_matches({ id: transaction.id }, stage)
-    #       end
-    #     end
-    #   end
-    # end
-
-    # def handle_supplementary_credit(transaction)
-    #   stage = "Supplementary credit stage 1"
-    #   permit_args = args_from_transaction(transaction)
-    #
-    #   if more_than_one_credit_in_file_for_permit?(permit_args)
-    #     multiple_matching_transactions({ id: transaction.id }, stage)
-    #   else
-    #     invoices = find_historic_invoices(transaction)
-    #     if invoices.count.zero?
-    #       no_historic_transaction({ id: transaction.id }, stage)
-    #     elsif invoices.count == 1
-    #       set_category(transaction, invoices.first, :green, stage, true)
-    #     else
-    #       stage = "Supplementary credit stage 2"
-    #       if invoices.first.period_start != invoices.second.period_start
-    #         set_category(transaction, invoices.first, :green, stage, true)
-    #       else
-    #         multiple_historic_matches({ id: transaction.id }, stage)
-    #       end
-    #     end
-    #   end
-    # end
-
     def handle_supplementary_credits(query_args, count)
-      stage = "Supplementary credit (single) - stage 1"
+      stage = "Supplementary credit (single) - Stage 1"
 
       if count > 1
         handle_multiple_supplementary_credits(query_args, count)
@@ -229,7 +186,7 @@ module Permits
         if invoices.count.zero?
           invoices = find_historic_debits(
             query_args.except(:customer_reference))
-          stage = "Supplementary credit (single) - stage 3"
+          stage = "Supplementary credit (single) - Stage 3"
           with_customer_reference = false
         end
 
@@ -239,9 +196,9 @@ module Permits
           set_category(transaction, invoices.first, :green, stage)
         else
           stage = if with_customer_reference
-            "Supplementary credit (single) - stage 2"
+            "Supplementary credit (single) - Stage 2"
           else
-            "Supplementary credit (single) - stage 4"
+            "Supplementary credit (single) - Stage 4"
           end
 
           if invoices.first.period_start != invoices.second.period_start
@@ -255,14 +212,14 @@ module Permits
 
     def handle_multiple_supplementary_credits(query_args, count)
       # multiple credits in file
-      stage = "Supplementary credit (multiple) - stage 1"
+      stage = "Supplementary credit (multiple) - Stage 1"
       invoices = find_historic_debits(query_args)
       with_customer_reference = true
 
       if invoices.count.zero?
         invoices = find_historic_debits(
           query_args.except(:customer_reference))
-        stage = "Supplementary credit (multiple) - stage 3"
+        stage = "Supplementary credit (multiple) - Stage 3"
         with_customer_reference = false
       end
 
@@ -278,10 +235,10 @@ module Permits
         end
       else
         if with_customer_reference
-          stage = "Supplementary credit (multiple) - stage 2"
+          stage = "Supplementary credit (multiple) - Stage 2"
           q = query_args
         else
-          stage = "Supplementary credit (multiple) - stage 4"
+          stage = "Supplementary credit (multiple) - Stage 4"
           q = query_args.except(:customer_reference)
         end
         invoices = find_historic_debits(
@@ -307,16 +264,8 @@ module Permits
       header.transaction_details.group(:reference_3, :customer_reference).count
     end
 
-    # def find_historic_invoices(transaction)
-    #   regime.transaction_details.historic.invoices.
-    #     where(reference_3: transaction.reference_3).
-    #     where(customer_reference: transaction.customer_reference).
-    #     where(period_end: transaction.period_end).
-    #     order(period_start: :desc)
-    # end
-    #
     def find_historic_debits(args)
-      q = regime.transaction_details.historic.invoices.where(args).
+      regime.transaction_details.historic.invoices.where(args).
         order(period_start: :desc)
     end
 
@@ -330,16 +279,6 @@ module Permits
         q
       end
     end
-
-    # def find_historic_transactions(args)
-    #   q = regime.transaction_details.historic.invoices.where(args)
-    #   most_recent = q.order(period_start: :desc).first
-    #   if most_recent
-    #     q.where(period_start: most_recent.period_start)
-    #   else
-    #     q
-    #   end
-    # end
 
     def args_from_transaction(t)
       keys_to_args([t.reference_3, t.customer_reference])
