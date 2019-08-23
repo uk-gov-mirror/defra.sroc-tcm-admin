@@ -1268,6 +1268,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
     sc = t.suggested_category
     assert(sc.green?, 'Not GREEN')
+    assert(sc.admin_lock?, 'Not locked')
     assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
     assert_equal('Supplementary credit (single) - Stage 1',
                  sc.suggestion_stage, 'Wrong stage')
@@ -1306,6 +1307,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
     sc = t.suggested_category
     assert(sc.amber?, 'Not AMBER')
+    assert(sc.admin_lock?, 'Not locked')
     assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
     assert_equal('Supplementary credit (single) - Stage 2',
                  sc.suggestion_stage, 'Wrong stage')
@@ -1344,6 +1346,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_nil(t.reload.category, 'Category set')
     sc = t.suggested_category
     assert(sc.red?, 'Not RED')
+    refute(sc.admin_lock?, 'Is locked')
     assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
     assert_equal('Supplementary credit (single) - Stage 2',
                  sc.suggestion_stage, 'Wrong stage')
@@ -1382,6 +1385,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
     sc = t.suggested_category
     assert(sc.green?, 'Not GREEN')
+    assert(sc.admin_lock?, 'Not locked')
     assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
     assert_equal('Supplementary credit (single) - Stage 3',
                  sc.suggestion_stage, 'Wrong stage')
@@ -1420,6 +1424,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_equal('2.4.6', t.reload.category, 'Incorrect category set')
     sc = t.suggested_category
     assert(sc.amber?, 'Not AMBER')
+    assert(sc.admin_lock?, 'Not locked')
     assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
     assert_equal('Supplementary credit (single) - Stage 4',
                  sc.suggestion_stage, 'Wrong stage')
@@ -1458,6 +1463,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_nil(t.reload.category, 'Category set')
     sc = t.suggested_category
     assert(sc.red?, 'Not RED')
+    refute(sc.admin_lock?, 'Is locked')
     assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
     assert_equal('Supplementary credit (single) - Stage 4',
                  sc.suggestion_stage, 'Wrong stage')
@@ -1496,6 +1502,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
     assert_nil(t.reload.category, 'Category set')
     sc = t.suggested_category
     assert(sc.red?, 'Not RED')
+    refute(sc.admin_lock?, 'Is locked')
     assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
     assert_equal('Supplementary credit (single) - Stage 3',
                  sc.suggestion_stage, 'Wrong stage')
@@ -1540,6 +1547,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       assigned << t.category
       sc = t.suggested_category
       assert(sc.amber?, 'Not AMBER')
+      assert(sc.admin_lock?, 'Not locked')
       assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
       assert_equal('Supplementary credit (multiple) - Stage 1',
                    sc.suggestion_stage, 'Wrong stage')
@@ -1586,6 +1594,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       assigned << t.category
       sc = t.suggested_category
       assert(sc.amber?, 'Not AMBER')
+      assert(sc.admin_lock?, 'Not locked')
       assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
       assert_equal('Supplementary credit (multiple) - Stage 3',
                    sc.suggestion_stage, 'Wrong stage')
@@ -1628,6 +1637,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       assert_nil(t.reload.category, 'Category set')
       sc = t.suggested_category
       assert(sc.red?, 'Not RED')
+      refute(sc.admin_lock?, 'Is locked')
       assert_equal('No previous bill found', sc.logic, 'Wrong outcome')
       assert_equal('Supplementary credit (multiple) - Stage 3',
                    sc.suggestion_stage, 'Wrong stage')
@@ -1674,6 +1684,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       assigned << t.category
       sc = t.suggested_category
       assert(sc.amber?, 'Not AMBER')
+      assert(sc.admin_lock?, 'Not locked')
       assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
       assert_equal('Supplementary credit (multiple) - Stage 2',
                    sc.suggestion_stage, 'Wrong stage')
@@ -1718,6 +1729,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       sc = t.suggested_category
       assert(sc.red?, 'Not RED')
       assert_equal('Number of matching transactions differs from number in file', sc.logic, 'Wrong outcome')
+      refute(sc.admin_lock?, 'Is locked')
       assert_equal('Supplementary credit (multiple) - Stage 2',
                    sc.suggestion_stage, 'Wrong stage')
     end
@@ -1763,6 +1775,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       assigned << t.category
       sc = t.suggested_category
       assert(sc.amber?, 'Not AMBER')
+      assert(sc.admin_lock?, 'Not locked')
       assert_equal('Assigned matching category', sc.logic, 'Wrong outcome')
       assert_equal('Supplementary credit (multiple) - Stage 4',
                    sc.suggestion_stage, 'Wrong stage')
@@ -1807,6 +1820,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       sc = t.suggested_category
       assert(sc.red?, 'Not RED')
       assert_equal('Number of matching transactions differs from number in file', sc.logic, 'Wrong outcome')
+      refute(sc.admin_lock?, 'Is locked')
       assert_equal('Supplementary credit (multiple) - Stage 4',
                    sc.suggestion_stage, 'Wrong stage')
     end
