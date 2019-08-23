@@ -165,7 +165,7 @@ module Permits
           end
         else
           header.transaction_details.invoices.where(query_args).each do |t|
-            multiple_historic_matches({ id: t.id }, stage)
+            different_number_of_matching_transactions({ id: t.id }, stage)
           end
         end
       end
@@ -252,7 +252,7 @@ module Permits
           end
         else
           header.transaction_details.credits.where(query_args).each do |t|
-            multiple_historic_matches({ id: t.id }, stage)
+            different_number_of_matching_transactions({ id: t.id }, stage)
           end
         end
       end
