@@ -193,7 +193,7 @@ module Permits
         if invoices.count.zero?
           no_historic_transaction({ id: transaction.id }, stage)
         elsif invoices.count == 1
-          set_category(transaction, invoices.first, :green, stage)
+          set_category(transaction, invoices.first, :green, stage, true)
         else
           stage = if with_customer_reference
             "Supplementary credit (single) - Stage 2"
@@ -202,7 +202,7 @@ module Permits
           end
 
           if invoices.first.period_start != invoices.second.period_start
-            set_category(transaction, invoices.first, :amber, stage)
+            set_category(transaction, invoices.first, :amber, stage, true)
           else
             multiple_historic_matches({ id: transaction.id }, stage)
           end
@@ -230,7 +230,7 @@ module Permits
       elsif invoices.count == count
         cnt = 0
         header.transaction_details.credits.where(query_args).each do |t|
-          set_category(t, invoices[cnt], :amber, stage)
+          set_category(t, invoices[cnt], :amber, stage, true)
           cnt += 1
         end
       else
@@ -247,7 +247,7 @@ module Permits
         if invoices.count == count
           cnt = 0
           header.transaction_details.credits.where(query_args).each do |t|
-            set_category(t, invoices[cnt], :amber, stage)
+            set_category(t, invoices[cnt], :amber, stage, true)
             cnt += 1
           end
         else
