@@ -93,6 +93,11 @@ module Permits
                       "Multiple matching transactions found in file", stage)
     end
 
+    def different_number_of_matching_transactions(where_args, stage)
+      make_suggestion(where_args, :red,
+                      "Number of matching transactions differs from number in file", stage)
+    end
+
     def set_logic_message(where_args, msg)
       unbilled_transactions(where_args) do |t|
         # FIXME: not using this now - only left until all
