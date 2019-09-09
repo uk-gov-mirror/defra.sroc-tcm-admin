@@ -63,7 +63,7 @@ module Permits
       elsif historic_transactions.count.zero?
         no_historic_transaction(permit_args, stage)
       else
-        multiple_historic_matches(permit_args, stage)
+        different_number_of_matching_transactions(permit_args, stage)
       end
     end
 

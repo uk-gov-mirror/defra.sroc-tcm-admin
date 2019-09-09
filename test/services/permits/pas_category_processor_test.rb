@@ -521,7 +521,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       assert_nil(t.reload.category, 'Category set')
       sc = t.suggested_category
       assert(sc.red?, 'Not RED')
-      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Number of matching transactions differs from number in file', sc.logic, 'Wrong outcome')
       assert_equal('Annual billing (multiple) - Stage 1', sc.suggestion_stage,
                 'Wrong stage')
     end
@@ -610,7 +610,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       assert_nil(t.reload.category, 'Category set')
       sc = t.suggested_category
       assert(sc.red?, 'Not RED')
-      assert_equal('Multiple historic matches found', sc.logic, 'Wrong outcome')
+      assert_equal('Number of matching transactions differs from number in file', sc.logic, 'Wrong outcome')
       assert_equal('Annual billing (multiple) - Stage 2', sc.suggestion_stage,
                 'Wrong stage')
     end
