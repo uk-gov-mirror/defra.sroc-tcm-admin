@@ -180,26 +180,14 @@ module Permits
         handle_multiple_supplementary_credits(query_args, count)
       else
         transaction = header.transaction_details.credits.find_by(query_args)
-        with_customer_reference = true
         invoices = find_historic_debits(query_args)
-
-        if invoices.count.zero?
-          invoices = find_historic_debits(
-            query_args.except(:customer_reference))
-          stage = "Supplementary credit (single) - Stage 3"
-          with_customer_reference = false
-        end
 
         if invoices.count.zero?
           no_historic_transaction({ id: transaction.id }, stage)
         elsif invoices.count == 1
           set_category(transaction, invoices.first, :green, stage, true)
         else
-          stage = if with_customer_reference
-            "Supplementary credit (single) - Stage 2"
-          else
-            "Supplementary credit (single) - Stage 4"
-          end
+          stage = "Supplementary credit (single) - Stage 2"
 
           if invoices.first.period_start != invoices.second.period_start
             set_category(transaction, invoices.first, :amber, stage, true)
@@ -214,14 +202,6 @@ module Permits
       # multiple credits in file
       stage = "Supplementary credit (multiple) - Stage 1"
       invoices = find_historic_debits(query_args)
-      with_customer_reference = true
-
-      if invoices.count.zero?
-        invoices = find_historic_debits(
-          query_args.except(:customer_reference))
-        stage = "Supplementary credit (multiple) - Stage 3"
-        with_customer_reference = false
-      end
 
       if invoices.count.zero?
         header.transaction_details.credits.where(query_args).each do |t|
@@ -234,15 +214,9 @@ module Permits
           cnt += 1
         end
       else
-        if with_customer_reference
-          stage = "Supplementary credit (multiple) - Stage 2"
-          q = query_args
-        else
-          stage = "Supplementary credit (multiple) - Stage 4"
-          q = query_args.except(:customer_reference)
-        end
+        stage = "Supplementary credit (multiple) - Stage 2"
         invoices = find_historic_debits(
-          q.merge({ period_start: invoices.first.period_start }))
+          query_args.merge({ period_start: invoices.first.period_start }))
 
         if invoices.count == count
           cnt = 0
