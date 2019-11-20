@@ -23,14 +23,23 @@ module Permits
     end
 
     def handle_annual_billing(consent_args)
+      stage = 'Annual billing - stage 1'
       last_invoice = find_latest_historic_invoice(consent_args)
       if last_invoice
-        # category = last_invoice.category
         header.transaction_details.unbilled.where(consent_args).each do |t|
-          set_category(t, last_invoice, :green, 'Annual billing')
+          set_category(t, last_invoice, :green, stage)
         end
       else
-        no_historic_transaction(consent_args, 'Annual billing')
+        stage = 'Annual billing - stage 2'
+        header.transaction_details.unbilled.where(consent_args).each do |t|
+          # debugger
+          last_invoice = find_latest_historic_invoice_version_for_annual(t)
+          if last_invoice
+            set_category(t, last_invoice, :green, stage)
+          else
+            no_historic_transaction({ id: t.id }, stage)
+          end
+        end
       end
     end
 
@@ -88,10 +97,18 @@ module Permits
     def find_latest_historic_invoice_version(transaction)
       like_clause = make_permit_discharge_matcher(transaction.reference_1)
       at = TransactionDetail.arel_table
-      invoice = regime.transaction_details.historic.invoices.
+      regime.transaction_details.historic.invoices.
         where(at[:reference_1].matches(like_clause)).
         where(period_end: transaction.period_end).
         order(reference_2: :desc, tcm_transaction_reference: :desc).first
+    end
+
+    def find_latest_historic_invoice_version_for_annual(transaction)
+      like_clause = make_permit_discharge_matcher(transaction.reference_1)
+      at = TransactionDetail.arel_table
+      regime.transaction_details.historic.invoices.
+        where(at[:reference_1].matches(like_clause)).
+        order(period_end: :desc, reference_2: :desc, tcm_transaction_reference: :desc).first
     end
 
     def consent_to_args(consent)

@@ -5,7 +5,7 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
   def setup
     @regime = Regime.find_by(slug: 'cfd')
     @header = transaction_headers(:cfd_annual)
- 
+
     @user = User.system_account
     Thread.current[:current_user] = @user
 
@@ -178,6 +178,40 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
     end
   end
 
+  # Scenario 8 (new v3) Annual bill, in-year variation without revised charge incremented version
+  def test_annual_bill_with_no_matches_retries_without_version
+    fixup_annual(@header)
+    history = generate_historic_cfd
+    t2 = history.first.dup
+    t2.customer_reference = 'BB11'
+    t2.reference_1 = 'AAAG/1/1'
+    t2.reference_2 = '1'
+    t2.reference_3 = '1'
+    t2.status = 'billed'
+    t2.line_amount = 18724
+    t2.category = '2.3.5'
+    t2.tcm_financial_year = '2021'
+    t2.period_start = '1-APR-2020'
+    t2.period_end = '31-MAR-2021'
+    t2.save!
+    t3 = t2.dup
+    t3.reference_1 = 'AAAG/1/2'
+    t3.reference_2 = '1'
+    t3.reference_3 = '2'
+    t3.line_amount = 4433
+    t3.category = '2.3.6'
+    t3.save!
+
+    @processor.suggest_categories
+    [t2, t3].each do |ht|
+      t = @header.transaction_details.find_by(customer_reference: 'BB11', reference_3: ht.reference_3)
+      assert_equal(ht.category, t.category)
+      sg = t.suggested_category
+      assert_equal('Assigned matching category', sg.logic)
+      assert sg.green?
+    end
+  end
+
   # Scenario 8 - Supplementary bill, permit category change, last bill was annual
   def test_supplemental_suggested_invoice_category_is_rated_green
     fixup_supplemental(@header)
@@ -298,7 +332,9 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
       ["AAAE", "1", "1", 435564, "A938392"],
       ["AAAE", "1", "2", 23665, "A938392"],
       ["AAAF", "2", "3", 124322, "A993022"],
-      ["AAAF", "2", "3", -123991, "A993022"]
+      ["AAAF", "2", "3", -123991, "A993022"],
+      ["AAAG", "2", "1", 45678, "BB11"],
+      ["AAAG", "2", "2", 3456, "BB11"]
     ].each_with_index do |ref, i|
       tt = t.dup
       tt.sequence_number = 2 + i
