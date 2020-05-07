@@ -8,7 +8,7 @@ class SystemConfig < ApplicationRecord
       if importing?
         false
       else
-        update_attributes(importing: true, import_started_at: Time.zone.now)
+        update(importing: true, import_started_at: Time.zone.now)
       end
     end
   end
@@ -16,7 +16,7 @@ class SystemConfig < ApplicationRecord
   def stop_import
     SystemConfig.transaction do
       if importing?
-        update_attributes(importing: false)
+        update(importing: false)
       else
         false
       end

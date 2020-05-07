@@ -78,6 +78,6 @@ private
       invitation_token: user.raw_invitation_token
     )
     UserMailer.invitation(user.email, user.full_name, invitation_link).deliver_later
-    user.update_attributes(invitation_sent_at: Time.now.utc)
+    user.update(invitation_sent_at: Time.now.utc)
   end
 end

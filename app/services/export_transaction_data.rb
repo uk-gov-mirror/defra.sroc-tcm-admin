@@ -31,7 +31,7 @@ class ExportTransactionData < ServiceObject
       
       sha1 = generate_file_hash(filename)
 
-      edf.update_attributes!(last_exported_at: Time.zone.now,
+      edf.update!(last_exported_at: Time.zone.now,
                              exported_filename: File.basename(filename),
                              exported_filename_hash: sha1)
       edf.success!

@@ -11,7 +11,7 @@ class RemoveImportedTransactionFile < ServiceObject
   def call
     if check_params
       TransactionHeader.transaction do
-        @transaction_header.update_attributes!(
+        @transaction_header.update!(
           removed: true,
           removed_by: @remover,
           removed_at: Time.zone.now,

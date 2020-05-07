@@ -125,7 +125,7 @@ class TransactionFileExporter
       attrs[:status] = 'billed'
     end
     tf.transaction_details.update_all(attrs)
-    tf.update_attributes(state: 'exported')
+    tf.update(state: 'exported')
 
   ensure
     out_file.close
@@ -145,7 +145,7 @@ class TransactionFileExporter
       transaction_file.transaction_details.each do |td|
         cat = permit_store.code_for_financial_year(td.category,
                                                    td.tcm_financial_year)
-        td.update_attributes(category_description: cat.description)
+        td.update(category_description: cat.description)
       end
     end
   end

@@ -1580,7 +1580,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       tt.tcm_financial_year = '2021'
       tt.category = nil
       tt.save!
-      tt.update_attributes(attrs)
+      tt.update(attrs)
       results << tt
     end
     results
@@ -1606,7 +1606,7 @@ class PasCategoryProcessorTest < ActiveSupport::TestCase
       t2.tcm_financial_year = '1819'
       t2.transaction_file_id = f.id
       t2.save!
-      t2.update_attributes(attrs)
+      t2.update(attrs)
       history << t2
     end
     history

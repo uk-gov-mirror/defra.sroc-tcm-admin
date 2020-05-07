@@ -13,7 +13,7 @@ Minitest::Reporters.use!
 
 require 'selenium/webdriver'
 
-require 'mocha/mini_test'
+require 'mocha/minitest'
 
 Dir[Rails.root.join("test/support/**/*.rb")].each { |f| require f }
 

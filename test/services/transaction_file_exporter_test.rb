@@ -57,7 +57,7 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
   end
 
   def test_export_creates_file_with_all_approved_transactions
-    @transaction_2.update_attributes(approved_for_billing: false)
+    @transaction_2.update(approved_for_billing: false)
     @exporter.export
 
     file = TransactionFile.last
@@ -125,7 +125,7 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
     
     file.transaction_details.update_all(customer_reference: 'ABCD1234',
                                         reference_1: 'ZZZZ9999')
-    @transaction_2.update_attributes(tcm_charge: @transaction_1.tcm_charge,
+    @transaction_2.update(tcm_charge: @transaction_1.tcm_charge,
                                      customer_reference: 'AABBCCDD')
     # 1,2 and 3 same permit reference
     # 1 and 2 different customer reference
@@ -143,7 +143,7 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
     file.transaction_details.update_all(customer_reference: 'ABCD1234',
                                         reference_1: 'ZZZZ9999',
                                         line_context_code: 'E')
-    @transaction_1.update_attributes(line_context_code: 'A')
+    @transaction_1.update(line_context_code: 'A')
 
     # 1,2 and 3 same consent reference
     # 1 different context code
@@ -172,7 +172,7 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
     
     file.transaction_details.update_all(customer_reference: 'ABCD1234',
                                         reference_1: 'ZZZZ9999')
-    @transaction_2.update_attributes(tcm_charge: @transaction_1.tcm_charge,
+    @transaction_2.update(tcm_charge: @transaction_1.tcm_charge,
                                      customer_reference: 'AABBCCDD')
     # 1,2 and 3 same permit reference
     # 1 and 2 different customer reference
@@ -219,7 +219,7 @@ class TransactionFileExporterTest < ActiveSupport::TestCase
     
     file.transaction_details.update_all(customer_reference: 'ABCD1234',
                                         reference_1: 'ZZZZ9999')
-    @transaction_2.update_attributes(tcm_charge: @transaction_1.tcm_charge,
+    @transaction_2.update(tcm_charge: @transaction_1.tcm_charge,
                                      customer_reference: 'AABBCCDD')
     # 1,2 and 3 same permit reference
     # 1 and 2 different customer reference

@@ -160,7 +160,7 @@ class CfdCategoryProcessorTest < ActiveSupport::TestCase
   def test_suggest_categories_assigns_categories_from_last_variation_and_version
     fixup_annual(@header)
     history = generate_historic_with_supplemental_cfd
-    history.last.update_attributes(category: '2.3.5')
+    history.last.update(category: '2.3.5')
     t = history.last.dup
     t.line_amount = 567123
     t.reference_1 = "AAAA/2/2"

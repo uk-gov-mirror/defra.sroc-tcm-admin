@@ -13,7 +13,7 @@ class ExcludeTransaction < ServiceObject
     if @transaction.updateable?
       old_user = Thread.current[:current_user]
       Thread.current[:current_user] = @user
-      @result = @transaction.update_attributes(excluded: true,
+      @result = @transaction.update(excluded: true,
                                                excluded_reason: @reason,
                                                charge_calculation: nil,
                                                tcm_charge: nil)

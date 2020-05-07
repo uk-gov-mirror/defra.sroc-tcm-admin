@@ -28,7 +28,7 @@ class TcmUtils
       r.transaction_details.each do |t|
         dates = self.extract_transaction_period_dates(t, r)
         if dates.present?
-          t.update_attributes(period_start: dates[0], period_end: dates[1])
+          t.update(period_start: dates[0], period_end: dates[1])
         end
       end
     end

@@ -47,7 +47,7 @@ private
     self.file_id = generate_file_id
     self.file_reference = base_filename
     save!
-    # update_attributes(file_id: fid, file_reference: base_filename)
+    # update(file_id: fid, file_reference: base_filename)
   end
 
   def generate_file_id

@@ -66,7 +66,7 @@ class UpdateCategory < ServiceObject
 
   def override_suggestion
     if @transaction.suggested_category
-      @transaction.suggested_category.update_attributes(overridden: true)
+      @transaction.suggested_category.update(overridden: true)
     end
   end
 

@@ -39,7 +39,7 @@ end
 #     if code
 #       pc = r.permit_categories.by_financial_year(fy).active.
 #         where(code: code).first
-#       t.update_attributes(category_description: pc.description) unless pc.nil?
+#       t.update(category_description: pc.description) unless pc.nil?
 #     end
 #   end
 # end
@@ -75,7 +75,7 @@ end
 # r.transaction_details.each do |t|
 #   refs = tfi.extract_consent_fields(t.line_description)
 #   if refs
-#     t.update_attributes(reference_4: refs[:reference_4])
+#     t.update(reference_4: refs[:reference_4])
 #   end
 # end
 
@@ -85,7 +85,7 @@ end
 # this is needed for future years biling
 # r.transaction_details.each do |td|
 #   cc = tfi.extract_charge_code(td.line_description)
-#   td.update_attributes(reference_3: cc) unless cc.nil?
+#   td.update(reference_3: cc) unless cc.nil?
 # end
 
 # r.permit_categories.destroy_all
