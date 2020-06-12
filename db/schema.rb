@@ -14,9 +14,6 @@ ActiveRecord::Schema.define(version: 20190415081211) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "citext"
-  enable_extension "hstore"
-  enable_extension "pg_trgm"
 
   create_table "annual_billing_data_files", force: :cascade do |t|
     t.bigint "regime_id"
