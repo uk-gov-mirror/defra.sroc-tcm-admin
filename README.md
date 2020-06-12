@@ -38,22 +38,31 @@ The SRoC Charging Service should be configured and running on the local system a
 
 Run the following to download the app dependencies ([rubygems](https://www.ruby-lang.org/en/libraries/))
 
-    cd sroc-tcm-admin
-    gem install bundler
-    bundle install
+```sh
+cd sroc-tcm-admin
+gem install bundler
+bundle install
+```
+
+#### .env configuration file
+
+The project uses the [dotenv](https://github.com/bkeepers/dotenv)
+gem which allows enviroment variables to be loaded from a
+`.env` configuration file in the project root.
+
+Duplicate `./dotenv.example` and rename the copy as `./.env`.
+Open it and update `SECRET_KEY_BASE` and settings for database, email etc.
+
 
 #### Databases _(local)_
 
 There are several databases per environment, therefore, ensure you run the following:
 
-    bundle exec rake db:create:all
-    bundle exec rake db:migrate db:seed
-
-#### .env configuration file
-
-The project uses the [dotenv](https://github.com/bkeepers/dotenv) gem which allows enviroment variables to be loaded from a ```.env``` configuration file in the project root.
-
-Duplicate ```./dotenv.example``` and rename the copy as ```./.env```. Open it and update SECRET_KEY_BASE and settings for database, email etc.
+```sh
+bundle exec rake db:create:all
+bundle exec rake db:migrate
+bundle exec rake db:seed
+```
 
 #### Start the service _(local)_
 
@@ -69,17 +78,27 @@ You can use mailcatcher to trap and view outgoing email.
 
 Make sure you have the following in your `.env` or `.env.development` file:
 
-    EMAIL_USERNAME=''
-    EMAIL_PASSWORD=''
-    EMAIL_APP_DOMAIN=''
-    EMAIL_HOST='localhost'
-    EMAIL_PORT='1025'
+```conf
+EMAIL_USERNAME=''
+EMAIL_PASSWORD=''
+EMAIL_APP_DOMAIN=''
+EMAIL_HOST='localhost'
+EMAIL_PORT='1025'
+```
 
 Start mailcatcher with `$ mailcatcher` and navigate to
 [http://127.0.0.1:1080](http://127.0.0.1:1080) in your browser.
 
 Note that [mail_safe](https://github.com/myronmarston/mail_safe) maybe also be running in which
 case any development email will seem to be sent to your global git config email address.
+
+
+##### To create and use a new user
+
+1. add a user to the DB with desired details: role:1 active_regime:1
+2. add row to regime_users
+3. start mailcatcher
+4. go through reset password flow
 
 ## Quality
 
