@@ -100,6 +100,29 @@ case any development email will seem to be sent to your global git config email 
 3. start mailcatcher
 4. go through reset password flow
 
+
+##### Running jobs and filling the database with example data
+
+Assuming you have `aws` installed and creds setup to access the
+relevant s3 buckets:
+
+
+```sh
+# ensure local dirs exist
+mkdir -p tmp/files/archive_bucket
+mkdir -p tmp/files/etl_bucket/import
+
+# copy/sync some transcation files from an aws environment
+# to local
+aws s3 --profile sroc-s3-test sync file-archive-tst-sroc-service-gov-uk/import ./tmp/files/etl_bucket/import
+
+# then drop into the rails console
+rails console
+
+# fire the import job
+FileCheckJob.perform_now
+```
+
 ## Quality
 
 We use tools like [rubocop](https://github.com/bbatsov/rubocop), [brakeman](https://github.com/presidentbeef/brakeman) to help maintain quality, reusable code.
