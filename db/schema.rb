@@ -10,13 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190415081211) do
+ActiveRecord::Schema.define(version: 20200611162222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "citext"
-  enable_extension "hstore"
-  enable_extension "pg_trgm"
 
   create_table "annual_billing_data_files", force: :cascade do |t|
     t.bigint "regime_id"
@@ -41,6 +38,14 @@ ActiveRecord::Schema.define(version: 20190415081211) do
     t.index ["action"], name: "index_audit_logs_on_action"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
+  end
+
+  create_table "bill_runs", force: :cascade do |t|
+    t.uuid "bill_run_id"
+    t.string "region"
+    t.string "regime"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "data_upload_errors", force: :cascade do |t|

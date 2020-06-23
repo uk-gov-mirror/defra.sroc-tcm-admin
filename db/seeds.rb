@@ -44,13 +44,13 @@ end
 #   end
 # end
 
-# r = Regime.find_by!(slug: 'pas')
-# r.permit_categories.destroy_all
-# PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'installations.csv'))
-#
-# %w[ A B E N S Y ].each do |region|
-#   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
-# end
+r = Regime.find_by!(slug: 'pas')
+r.permit_categories.destroy_all
+PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'installations.csv'))
+
+%w[ A B E N S Y ].each do |region|
+  SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
+end
 #
 # if r.exclusion_reasons.count.zero?
 #   [
@@ -62,15 +62,15 @@ end
 #   end
 # end
 
-# r = Regime.find_by!(slug: 'cfd')
-# r.permit_categories.destroy_all
-# PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_quality.csv'))
-#
-# %w[ A B E N S T Y ].each do |region|
-#   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
-# end
-#
-# one time task to extract consent references for cfd transactions
+r = Regime.find_by!(slug: 'cfd')
+r.permit_categories.destroy_all
+PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_quality.csv'))
+
+%w[ A B E N S T Y ].each do |region|
+  SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
+end
+
+# # one time task to extract consent references for cfd transactions
 # tfi = TransactionFileImporter.new
 # r.transaction_details.each do |t|
 #   refs = tfi.extract_consent_fields(t.line_description)
@@ -79,7 +79,7 @@ end
 #   end
 # end
 
-# r = Regime.find_by!(slug: 'wml')
+r = Regime.find_by!(slug: 'wml')
 # tfi = TransactionFileImporter.new
 # retro extract the charge code and store in reference_3
 # this is needed for future years biling
@@ -88,19 +88,29 @@ end
 #   td.update_attributes(reference_3: cc) unless cc.nil?
 # end
 
-# r.permit_categories.destroy_all
-# PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'))
-#
-# %w[ A B E N S T U Y ].each do |region|
-#   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
-# end
-#
+r.permit_categories.destroy_all
+PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'))
+
+%w[ A B E N S T U Y ].each do |region|
+  SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
+end
+
 if User.count.zero?
   u = User.new(first_name: 'Tony',
                last_name: 'Headford',
                email: 'tony@binarycircus.com',
                role: 'admin',
                password: "Ab0#{Devise.friendly_token.first(8)}")
+  u.regime_users.build(regime_id: Regime.first.id, enabled: true) 
+  u.save!
+end
+
+unless User.where(email: 'stu@silverka.co.uk').exists?
+  u = User.new(first_name: 'Stuart',
+                last_name: 'Adair',
+                email: 'stu@silverka.co.uk',
+                role: 'admin',
+                password: "Ab0#{Devise.friendly_token.first(8)}")
   u.regime_users.build(regime_id: Regime.first.id, enabled: true) 
   u.save!
 end
