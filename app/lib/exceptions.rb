@@ -5,4 +5,5 @@ module Exceptions
   class TransactionFileError < StandardError; end
   class PermissionError < StandardError; end
   class CalculationServiceError < StandardError; end
+  class BillRunServiceError < StandardError; end
 end
