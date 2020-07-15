@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 20200611162222) do
     t.uuid "bill_run_id"
     t.string "region"
     t.string "regime"
+    t.boolean "pre_sroc"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

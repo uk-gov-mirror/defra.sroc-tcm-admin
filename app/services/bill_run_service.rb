@@ -7,12 +7,10 @@ class BillRunService
     return bill_run.bill_run_id unless bill_run.nil?
 
     # A bill run isn't in the table so query the API
-    # TODO: account for pre_sroc = false
-    bill_run_id_from_api = api_get_bill_run(regime, region)
+    bill_run_id_from_api = api_get_bill_run(regime, region, pre_sroc)
 
     # If an initialised bill run doesn't exist then create one
     if bill_run_id_from_api.nil?
-      # TODO: account for pre_sroc = false
       bill_run_id_from_api = api_create_bill_run(regime, region)
     end
 
@@ -51,23 +49,23 @@ class BillRunService
       "being unavailable. Please log a call with the service desk.")
   end
 
-  def api_get_bill_run(regime, region)
+  def api_get_bill_run(regime, region, pre_sroc)
+    # TODO: Correctly handle error responses
     connection = http_connection(regime)
     response = api_request(connection, build_http_request(Net::HTTP::Get, regime))
 
-    # TODO: Correctly handle error responses
-
     bill_runs = JSON.parse(response.body)["data"]["billRuns"]
+
     bill_runs_for_region = bill_runs.select {|bill_run| bill_run["region"] == region}
-    initialised_bill_run = bill_runs_for_region.select {|bill_run| bill_run["status"] == "initialised"}
-    return initialised_bill_run.first["id"] unless initialised_bill_run.empty?
+    initialised_pre_sroc_bill_run = bill_runs_for_region.select {|bill_run| bill_run["status"] == "initialised" && bill_run["preSroc" == pre_sroc]}
+    return initialised_pre_sroc_bill_run.first["id"] unless initialised_bill_run.empty?
   end
 
   def api_create_bill_run(regime, region)
+    # TODO: will need to account for pre-sroc=FALSE when sroc is added
+    # TODO: Correctly handle error responses
     connection = http_connection(regime)
     response = api_request(connection, build_http_request(Net::HTTP::Post, regime, { region: region }))
-  
-    # TODO: Correctly handle error response
 
     created_bill_run = JSON.parse(response.body)
     return created_bill_run["billRun"]["id"]
@@ -75,8 +73,8 @@ class BillRunService
 
   def build_http_request(http, regime, payload = '')
     request = http.new(bill_run_url(regime).request_uri,
-                                  'Content-Type': 'application/json',
-                                  'Authorization': "Bearer #{ENV.fetch('CHARGING_MODULE_AUTH_TOKEN')}")
+      'Content-Type': 'application/json',
+      'Authorization': "Bearer #{ENV.fetch('CHARGING_MODULE_AUTH_TOKEN')}")
     request.body = payload.to_json
     request
   end
