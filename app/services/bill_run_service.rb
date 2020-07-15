@@ -20,7 +20,7 @@ class BillRunService
       regime: regime,
       pre_sroc: pre_sroc)
 
-    # Return the id
+      # Return the id
     return new_bill_run_entry.bill_run_id
   end
 
@@ -55,10 +55,10 @@ class BillRunService
     response = api_request(connection, build_http_request(Net::HTTP::Get, regime))
 
     bill_runs = JSON.parse(response.body)["data"]["billRuns"]
-
+    
     bill_runs_for_region = bill_runs.select {|bill_run| bill_run["region"] == region}
-    initialised_pre_sroc_bill_run = bill_runs_for_region.select {|bill_run| bill_run["status"] == "initialised" && bill_run["preSroc" == pre_sroc]}
-    return initialised_pre_sroc_bill_run.first["id"] unless initialised_bill_run.empty?
+    initialised_pre_sroc_bill_run = bill_runs_for_region.select {|bill_run| bill_run["status"] == "initialised" && bill_run["preSroc"] == pre_sroc}
+    return initialised_pre_sroc_bill_run.first["id"] unless initialised_pre_sroc_bill_run.empty?
   end
 
   def api_create_bill_run(regime, region)

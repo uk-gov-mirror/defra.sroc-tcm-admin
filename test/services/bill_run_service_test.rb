@@ -1,199 +1,134 @@
-# require 'test_helper.rb'
+require 'test_helper.rb'
+require 'webmock/minitest'
 
-# class BillRunServiceTest < ActiveSupport::TestCase
-#   include ActiveJob::TestHelper
+class BillRunServiceTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
 
-#   def setup
-#     @regime = regimes(:cfd)
-#     @user = users(:billing_admin)
-#     Thread.current[:current_user] = @user
+  def setup
+    # Disable network connections to enforce API mocking
+    WebMock.disable_net_connect!
 
-#     @service = PermitStorageService.new(@regime, @user)
-#   end
+    @regime = regimes(:cfd)
+    @region = 'W'
+    @pre_sroc = true
+    @service = BillRunService.new()
+    @bill_run_url ||= URI.parse("#{ENV.fetch('CHARGING_MODULE_API')}/v1/#{@regime.slug}/billruns")
+  end
 
-#   def test_all_for_financial_year_returns_all_permits_for_the_financial_year
-#     pcs = @service.all_for_financial_year("1819")
-#     # not the same query but should be same result
-#     all = @regime.permit_categories.where(valid_from: "1819")
+  def teardown
+    # Re-enable network connections
+    WebMock.allow_net_connect!
+  end
 
-#     assert_equal all, pcs
-#     pc = @regime.permit_categories.last
-#     pc2 = pc.dup
-#     pc2.valid_from = pc.valid_to = "1920"
-#     pc2.description = "New version"
-#     pc.save!
-#     pc2.save!
-#     pcs2 = @service.all_for_financial_year("1920")
-#     assert_not_equal all, pcs2
-#     assert_not_includes pcs2, pc
-#     assert_includes pcs2, pc2
-#   end
+  def test_creates_new_record
+    mock_id = '11111111-1111-1111-1111-111111111111'
+    stub_request(:get, @bill_run_url).to_return(:body => single_bill_run_summary(mock_id, @region, @pre_sroc))
 
-#   def test_all_for_financial_year_includes_excluded_categories
-#     pc = @regime.permit_categories.last
-#     pc2 = pc.dup
-#     pc2.valid_from = pc.valid_to = "2021"
-#     pc2.status = "excluded"
-#     pc.save!
-#     pc2.save!
-#     q = @service.all_for_financial_year("1920")
-#     assert_includes q, pc
-#     assert_not_includes q, pc2
-#     q = @service.all_for_financial_year("2223")
-#     assert_includes q, pc2
-#     assert_not_includes q, pc
-#   end
+    # Confirm that a record doesn't yet exist in the bill run table
+    br = BillRun.find_by(bill_run_id: mock_id)
+    assert_nil br
 
-#   def test_active_for_financial_year_does_not_return_excluded_categories
-#     pc = @regime.permit_categories.last
-#     pc2 = pc.dup
-#     pc2.valid_from = pc.valid_to = "2021"
-#     pc2.status = "excluded"
-#     pc.save!
-#     pc2.save!
-#     assert_includes @service.active_for_financial_year("1920"), pc
-#     assert_not_includes @service.active_for_financial_year("2223"), pc
-#     assert_not_includes @service.active_for_financial_year("2223"), pc2
-#   end
+    id = @service.get_bill_run_id(@regime.slug, @region, @pre_sroc)
 
-#   def test_code_for_financial_year_does_not_return_excluded_categories
-#     pc = @regime.permit_categories.last
-#     code = pc.code
-#     pc2 = pc.dup
-#     pc2.valid_from = pc.valid_to = "2021"
-#     pc2.status = "excluded"
-#     pc.save!
-#     pc2.save!
-#     assert_equal pc, @service.code_for_financial_year(code, "1819")
-#     assert_equal pc, @service.code_for_financial_year(code, "1920")
-#     assert_nil @service.code_for_financial_year(code, "2021")
-#     assert_nil @service.code_for_financial_year(code, "2122")
-#   end
+    # Test that a record is now in the bill run table
+    br = BillRun.find_by(bill_run_id: id)
+    assert_equal br.bill_run_id, mock_id
+    assert_equal br.regime, @regime.slug
+    assert_equal br.region, @region
+    assert_equal br.pre_sroc, @pre_sroc
+  end
 
-#   def test_code_for_financial_year_with_any_status_returns_excluded_categories
-#     pc = @regime.permit_categories.last
-#     code = pc.code
-#     pc2 = pc.dup
-#     pc2.valid_from = pc.valid_to = "2021"
-#     pc2.status = "excluded"
-#     pc.save!
-#     pc2.save!
-#     assert_equal pc, @service.code_for_financial_year_with_any_status(code, "1819")
-#     assert_equal pc, @service.code_for_financial_year_with_any_status(code, "1920")
-#     assert_equal pc2, @service.code_for_financial_year_with_any_status(code, "2021")
-#     assert_equal pc2, @service.code_for_financial_year_with_any_status(code, "2122")
-#   end
+  def test_reads_existing_bill_run
+    bill_run_id = '11111111-1111-1111-1111-111111111111'
+    mock_id = '22222222-2222-2222-2222-222222222222'
+    stub_request(:get, @bill_run_url).to_return(:body => single_bill_run_summary(mock_id, @region, @pre_sroc))
 
-#   def test_permit_category_versions_returns_all_versions_of_a_code
-#     pc = @regime.permit_categories.last
-#     code = pc.code
-#     pc2 = pc.dup
-#     pc2.valid_from = pc.valid_to = "2021"
-#     pc2.status = "excluded"
-#     pc3 = pc2.dup
-#     pc3.valid_from = pc2.valid_to = "2425"
-#     pc3.status = "active"
-#     pc.save!
-#     pc2.save!
-#     pc3.save!
+    # Create an entry in the bill run table
+    br = BillRun.create(bill_run_id: bill_run_id, region: @region, regime: @regime.slug, pre_sroc: @pre_sroc)
 
-#     q = @service.permit_category_versions(code)
-#     assert_equal [pc, pc2, pc3], q.to_a
-#   end
+    id = @service.get_bill_run_id(@regime.slug, @region, @pre_sroc)
 
-#   def test_new_permit_category_creates_a_new_record
-#     pc = nil
-#     assert_difference 'PermitCategory.count' do
-#       pc = @service.new_permit_category('9.8.7', "A new category", "1819")
-#     end
-#     assert_equal pc, PermitCategory.last
-#   end
+    # Test that the returned id is the original entry and not one from the API
+    assert_equal bill_run_id, id
+  end
 
-#   def test_new_permit_category_creates_excluded_record_when_future_date
-#     # when adding a new category from a financial year after 1819
-#     # we create an duplicate excluded record from 1819 to the requested
-#     # financial year.
-#     pc = nil
-#     assert_difference 'PermitCategory.count', 2 do
-#       pc = @service.new_permit_category('9.8.7', "A new category", "2122")
-#     end
-#     assert_equal pc, PermitCategory.second_to_last
-#     pc2 = PermitCategory.last
-#     assert_equal pc.code, pc2.code
-#     assert_equal pc.description, pc2.description
-#     assert_equal '1819', pc2.valid_from
-#     assert_equal pc.valid_from, pc2.valid_to
-#     assert_equal pc2.status, 'excluded'
-#   end
+  def test_creates_new_bill_run
+    mock_id = '11111111-1111-1111-1111-111111111111'
+    stub_request(:get, @bill_run_url).to_return(:body => empty_bill_run_summary)
+    stub_request(:post, @bill_run_url).to_return(:body => create_bill_run(mock_id))
 
-#   def test_new_permit_category_returns_unsaved_object_if_invalid
-#     pc = nil
-#     assert_no_difference 'PermitCategory.count' do
-#       pc = @service.new_permit_category('2.3.4', "An existing category",
-#                                         "1819")
-#     end
-#     assert_not_nil pc
-#     assert_not pc.persisted?
-#     assert pc.invalid?
-#   end
+    id = @service.get_bill_run_id(@regime.slug, @region, @pre_sroc)
 
-#   def test_add_permit_category_version_creates_a_new_record
-#     pc = nil
-#     assert_difference 'PermitCategory.count' do
-#       pc = @service.add_permit_category_version('2.3.4', "A new category version", "1920")
-#     end
-#     assert_equal pc, PermitCategory.last
-#   end
+    br = BillRun.find_by(bill_run_id: id)
+    assert_equal br.bill_run_id, mock_id
+    assert_equal br.regime, @regime.slug
+    assert_equal br.region, @region
+    assert_equal br.pre_sroc, @pre_sroc
+  end
 
-#   def test_add_permit_category_version_updates_valid_to_in_previous_version
-#     pc = permit_categories(:cfd_a)
-#     assert_nil pc.valid_to
+  def single_bill_run_summary(mock_id, region, pre_sroc)
+    %Q(
+      {
+        "pagination": {
+        "page": 1,
+        "perPage": 50,
+        "pageCount": 1,
+        "recordCount": 1
+      },
+      "data": {
+        "billRuns": [
+          {
+            "id": "#{mock_id}",
+            "region": "#{region}",
+            "billRunNumber": 10003,
+            "fileId": null,
+            "transactionFileReference": null,
+            "transactionFileDate": null,
+            "status": "initialised",
+            "approvedForBilling": false,
+            "preSroc": #{pre_sroc},
+            "creditCount": 0,
+            "creditValue": 0,
+            "invoiceCount": 0,
+            "invoiceValue": 0,
+            "creditLineCount": 0,
+            "creditLineValue": 0,
+            "debitLineCount": 0,
+            "debitLineValue": 0,
+            "netTotal": 0
+          }
+        ]
+      }
+    }
+    )
+  end
 
-#     pc2 = @service.add_permit_category_version(pc.code, "A new category version", "1920")
-#     assert_equal "1920", pc.reload.valid_to
-#   end
+  def empty_bill_run_summary
+    %Q(
+      {
+        "pagination": {
+            "page": 1,
+            "perPage": 50,
+            "pageCount": 0,
+            "recordCount": 0
+        },
+        "data": {
+            "billRuns": []
+        }
+    }
+    )
+  end
 
-#   def test_add_permit_category_version_updates_valid_to_when_next_version_exists
-#     pc = permit_categories(:cfd_a)
-#     assert_nil pc.valid_to
-#     pc2 = @service.add_permit_category_version(pc.code, "A later version", "2223")
-#     assert_equal "2223", pc.reload.valid_to
+  def create_bill_run(bill_run_id)
+    %Q(
+      {
+        "billRun": {
+            "id": "#{bill_run_id}",
+            "billRunNumber": 10001
+        }
+    }
+    )
 
-#     pc3 = @service.add_permit_category_version(pc.code, "A between version", "1920")
-#     assert_equal "1920", pc.reload.valid_to
-#     assert_equal "2223", pc3.valid_to
-#   end
+  end
 
-#   def test_update_or_create_new_version_updates_description
-#     pc = permit_categories(:cfd_a)
-
-#     assert_no_difference 'PermitCategory.count' do
-#       @service.update_or_create_new_version(pc.code, "Wigwam", pc.valid_from)
-#     end
-
-#     assert_equal "Wigwam", pc.reload.description
-#   end
-
-#   def test_update_or_create_new_version_creates_new_version
-#     pc = permit_categories(:cfd_a)
-#     old_desc = pc.description
-
-#     assert_difference 'PermitCategory.count' do
-#       @service.update_or_create_new_version(pc.code, "Wigwam", "2223")
-#     end
-
-#     assert_equal old_desc, pc.reload.description
-#     assert_equal "Wigwam", PermitCategory.last.description
-#   end
-
-#   # def test_export_creates_audit_record
-#   #   assert_difference 'AuditLog.count' do
-#   #     @service.do_something
-#   #   end
-#   #
-#   #   permit = @regime.permit_categories.last
-#   #   log = AuditLog.last
-#   #   assert_equal('create', log.action)
-#   #   assert_equal(permit.audit_logs.last.id, log.id)
-#   # end
-# end
+end

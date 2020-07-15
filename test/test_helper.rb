@@ -13,6 +13,10 @@ Minitest::Reporters.use!
 
 require 'selenium/webdriver'
 
+require 'webmock/minitest'
+# Allow connections by default
+WebMock.allow_net_connect!
+
 require 'mocha/mini_test'
 
 Dir[Rails.root.join("test/support/**/*.rb")].each { |f| require f }
