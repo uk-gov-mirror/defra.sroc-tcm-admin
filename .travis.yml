@@ -1,0 +1,63 @@
+dist: xenial
+
+addons:
+  postgresql: 9.5
+  chrome: stable
+  sonarcloud:
+    organization: "defra"
+
+env:
+  global:
+    - DEVISE_MAILER_SENDER=no-reply@example.com
+    - REDIS_URL="redis://localhost:6379"
+
+services:
+  - redis
+  # We need xvfb to support running chrome and chromedriver for our selenium
+  # based integration tests
+  - xvfb
+
+language: ruby
+os: linux
+rvm: 2.4.1
+cache: bundler
+
+# Travis CI uses shallow clone to speed up build times, but a truncated SCM
+# history may cause issues when SonarCloud computes blame data. To avoid this,
+# you can access the full SCM history with `depth: false`
+git:
+  depth: false
+
+before_install:
+  - export TZ=UTC
+  - gem install -v 1.17.3 bundler --no-document
+
+before_script:
+  # To support running selenium on Travis we have told Travis to install Chrome
+  # (see addons). You also need the chromedriver which Travis doesn't install.
+  # To make this 'future-proof' we use a couple of scripts to determine the
+  # current version of Chrome. We can then use this to work out the matching
+  # version of Chromedriver. Once we have that we download and unzip
+  # Chromedriver to our drivers/ folder ready for use in the script section.
+  #
+  # Thanks to https://travis-ci.community/u/sheean for his response which solved
+  # this problem for us
+  # https://travis-ci.community/t/how-to-setup-chromedriver-74-with-chrome-74-for-travis/2678/10
+  - CHROME_INSTALLED_VERSION=`google-chrome-stable --version | sed -E 's/(^Google Chrome |\.[0-9]+ )//g'`
+  - CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_INSTALLED_VERSION"`
+  - curl "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O
+  - unzip chromedriver_linux64.zip -d /home/travis
+  - sudo mv -f /home/travis/chromedriver /usr/local/bin/chromedriver
+  - sudo chown root:root /usr/local/bin/chromedriver
+  - sudo chmod 0755 /usr/local/bin/chromedriver
+  #
+  # Replace database.yml with database.travis.yml (but leave filename as
+  # database.yml). database.travis.yml is the config needed for Travis, and it
+  # needs to be in place before we run the migrations.
+  - cp config/database.travis.yml config/database.yml
+  - RAILS_ENV=test bundle exec rake db:create --trace
+  - RAILS_ENV=test bundle exec rake db:migrate --trace
+
+script:
+  - bundle exec rails test
+  - sonar-scanner

@@ -1,5 +1,12 @@
 # Strategic Review of Charges - Tactical Charging Module
 
+[![Build Status](https://travis-ci.com/DEFRA/sroc-tcm-admin.svg?branch=master)](https://travis-ci.com/DEFRA/sroc-tcm-admin)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=sqale_index)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
+[![security](https://hakiri.io/github/DEFRA/sroc-tcm-admin/master.svg)](https://hakiri.io/github/DEFRA/sroc-tcm-admin/master)
+[![Licence](https://img.shields.io/badge/Licence-OGLv3-blue.svg)](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3)
+
 The Tactical Charging Module (TCM) is a web application designed to enable billing adminstrators to apply new categories to permit charges to enable correct amounts to be processed.
 
 This service is an internally facing service only, used by billing administration staff.  Despite being a tactical solution the system is developed in accordance with the [Digital by Default service standard](https://www.gov.uk/service-manual/digital-by-default), where possible, putting user needs first and delivered iteratively.
