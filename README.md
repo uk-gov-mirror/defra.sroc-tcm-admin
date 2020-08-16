@@ -5,6 +5,7 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=sqale_index)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
 [![security](https://hakiri.io/github/DEFRA/sroc-tcm-admin/master.svg)](https://hakiri.io/github/DEFRA/sroc-tcm-admin/master)
+[![Known Vulnerabilities](https://snyk.io/test/github/DEFRA/sroc-tcm-admin/badge.svg)](https://snyk.io/test/github/DEFRA/sroc-tcm-admin)
 [![Licence](https://img.shields.io/badge/Licence-OGLv3-blue.svg)](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3)
 
 The Tactical Charging Module (TCM) is a web application designed to enable billing adminstrators to apply new categories to permit charges to enable correct amounts to be processed.
