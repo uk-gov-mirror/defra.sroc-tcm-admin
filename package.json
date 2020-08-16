@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@rails/webpacker": "^3.0.2",
-    "axios": "^0.17.0",
+    "axios": "^0.18.1",
     "babel-polyfill": "6.26.0",
     "babel-preset-react": "^6.24.1",
     "coffeescript": "1.12.7",
