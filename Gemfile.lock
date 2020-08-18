@@ -170,7 +170,7 @@ GEM
     passenger (5.3.7)
       rack
       rake (>= 0.8.1)
-    pg (0.20.0)
+    pg (0.21.0)
     popper_js (1.11.1)
     public_suffix (3.0.3)
     puma (3.12.6)
