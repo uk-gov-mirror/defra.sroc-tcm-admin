@@ -32,7 +32,7 @@ gem 'uglifier', '>= 1.3.0'
 # gem 'therubyracer', platforms: :ruby
 
 # bootstrap 4
-gem 'bootstrap', '~> 4.0.0.beta'
+gem 'bootstrap', '~> 4.3.1'
 # gem 'bootstrap', '~> 4.1.3'
 # jquery needed by bootstrap for rails 5.1+
 gem 'jquery-rails'
