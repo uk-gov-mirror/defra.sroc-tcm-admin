@@ -24,7 +24,7 @@
     "jest": "21.2.1",
     "react-test-renderer": "16.1.1",
     "standard": "^10.0.3",
-    "webpack-dev-server": "^2.9.2"
+    "webpack-dev-server": "^3.1.11"
   },
   "scripts": {
     "test": "standard app/assets/javascripts/*.js && jest"
