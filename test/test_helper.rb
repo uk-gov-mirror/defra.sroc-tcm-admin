@@ -1,5 +1,6 @@
-require 'simplecov'
-SimpleCov.start
+# Require and run our simplecov initializer as the very first thing we do.
+# This is as per its docs https://github.com/colszowka/simplecov#getting-started
+require "./test/support/simplecov"
 
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
