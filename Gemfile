@@ -66,6 +66,10 @@ gem 'devise_invitable'
 
 gem 'secure_headers'
 
+# Wrapper for the OAuth 2.0 specification (https://oauth.net/2/). Needed to
+# authenticate with the Charging Module API
+gem 'oauth2'
+
 group :production do
   gem 'airbrake', "~> 5.0"
 end
@@ -105,6 +109,8 @@ group :test do
   gem 'simplecov', require: false
   gem 'minitest-reporters'
   gem 'mocha'
+  # Stubbing HTTP requests
+  gem 'webmock'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

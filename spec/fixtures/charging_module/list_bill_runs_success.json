@@ -1,0 +1,54 @@
+{
+  "pagination": {
+      "page": 1,
+      "perPage": 50,
+      "pageCount": 1,
+      "recordCount": 2
+  },
+  "data": {
+      "billRuns": [
+          {
+              "id": "adb3d105-43ae-4cdd-9421-d18b1d32e484",
+              "region": "A",
+              "billRunNumber": 10002,
+              "fileId": 50001,
+              "transactionFileReference": "nalai50001.dat",
+              "transactionFileDate": null,
+              "status": "billed",
+              "approvedForBilling": false,
+              "preSroc": true,
+              "creditCount": 8,
+              "creditValue": -3928,
+              "invoiceCount": 48,
+              "invoiceValue": 1017868,
+              "creditLineCount": 8,
+              "creditLineValue": -3928,
+              "debitLineCount": 58,
+              "debitLineValue": 1017868,
+              "zeroValueLineCount": 0,
+              "netTotal": 1013940
+          },
+          {
+              "id": "27deb988-469f-4a88-ae65-6b32f925523d",
+              "region": "E",
+              "billRunNumber": 10001,
+              "fileId": 50001,
+              "transactionFileReference": "nalei50001.dat",
+              "transactionFileDate": null,
+              "status": "billed",
+              "approvedForBilling": true,
+              "preSroc": true,
+              "creditCount": 0,
+              "creditValue": 0,
+              "invoiceCount": 1,
+              "invoiceValue": 1386326,
+              "creditLineCount": 0,
+              "creditLineValue": 0,
+              "debitLineCount": 2,
+              "debitLineValue": 1386326,
+              "zeroValueLineCount": 0,
+              "netTotal": 1386326
+          }
+      ]
+  }
+}
