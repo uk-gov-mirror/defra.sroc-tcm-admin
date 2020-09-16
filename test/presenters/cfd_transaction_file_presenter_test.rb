@@ -4,6 +4,9 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
   include TransactionFileFormat
 
   def setup
+    @user = users(:billing_admin)
+    Thread.current[:current_user] = @user
+
     @transaction_1 = transaction_details(:cfd)
     @transaction_2 = @transaction_1.dup
 
