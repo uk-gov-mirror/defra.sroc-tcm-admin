@@ -1,0 +1,60 @@
+{
+  "users" : [
+    {
+      "email": "system@example.com",
+      "role": "admin",
+      "firstname": "System",
+      "lastname": "Account",
+      "regimes": ["PAS"]
+    },
+    {
+      "email": "installations@sroc.gov.uk",
+      "role": "billing",
+      "firstname": "Installations",
+      "lastname": "User",
+      "regimes": ["PAS"]
+    },
+    {
+      "email" : "waste@sroc.gov.uk",
+      "role" : "billing",
+      "firstname": "Waste",
+      "lastname": "User",
+      "regimes": ["WML"]
+    },
+    {
+      "email" : "water@sroc.gov.uk",
+      "role" : "billing",
+      "firstname": "Water",
+      "lastname": "User",
+      "regimes": ["CFD"]
+    },
+    {
+      "email" : "admin@sroc.gov.uk",
+      "role" : "admin",
+      "firstname": "Admin",
+      "lastname": "User",
+      "regimes": ["CFD", "PAS", "WML"]
+    },
+    {
+      "email" : "billing@sroc.gov.uk",
+      "role" : "billing",
+      "firstname": "Billing",
+      "lastname": "User",
+      "regimes": ["CFD", "PAS", "WML"]
+    },
+    {
+      "email" : "export@sroc.gov.uk",
+      "role" : "read_only_export",
+      "firstname": "Export",
+      "lastname": "User",
+      "regimes": ["CFD", "PAS", "WML"]
+    },
+    {
+      "email" : "readonly@sroc.gov.uk",
+      "role" : "read_only",
+      "firstname": "Readonly",
+      "lastname": "User",
+      "regimes": ["CFD", "PAS", "WML"]
+    }
+  ]
+}

@@ -5,3 +5,6 @@ REDIS_URL="localhost:6379"
 FILE_UPLOAD_ACCESS_KEY="aws_access_key_here"
 FILE_UPLOAD_SECRET_KEY="aws_secret_key_here"
 FILE_UPLOAD_BUCKET="aws_s3_bucket_url_here"
+
+# Used for seeding test accounts
+DEFAULT_PASSWORD=TestDefaultPassword1

@@ -1,3 +1,33 @@
+def create_user(details)
+  user = User.new(
+    first_name: details['firstname'],
+    last_name: details['lastname'],
+    email: details['email'],
+    role: details['role'],
+    password: ENV['DEFAULT_PASSWORD']
+  )
+
+  add_regimes_to_user(user, details['regimes'])
+
+  user.save!
+end
+
+def add_regimes_to_user(user, regimes)
+  regimes.each do |name|
+    regime = Regime.find_by(name: name)
+    user.regime_users.build(regime_id: regime.id, enabled: true)
+  end
+end
+
+def seed_users
+  seeds = JSON.parse(File.read("#{Rails.root}/db/seeds/users.json"))
+  users = seeds['users']
+
+  users.each do |user|
+    create_user(user) unless User.where(email: user['email']).exists?
+  end
+end
+
 if Regime.count.zero?
   Regime.create!(name: 'PAS', title: 'Installations')
   Regime.create!(name: 'CFD', title: 'Water Quality')
@@ -11,25 +41,7 @@ Regime.all.each do |r|
   end
 end
 
-if User.count.zero?
-  u = User.new(first_name: 'System',
-               last_name: 'Account',
-               email: 'system@example.com',
-               role: 'admin',
-               password: "Ab0#{Devise.friendly_token.first(8)}")
-  u.regime_users.build(regime_id: Regime.first.id, enabled: true)
-  u.save!
-end
-
-unless User.where(email: 'stu@silverka.co.uk').exists?
-  u = User.new(first_name: 'Stuart',
-               last_name: 'Adair',
-               email: 'stu@silverka.co.uk',
-               role: 'admin',
-               password: "Ab0#{Devise.friendly_token.first(8)}")
-  u.regime_users.build(regime_id: Regime.first.id, enabled: true)
-  u.save!
-end
+seed_users
 
 r = Regime.find_by!(slug: 'pas')
 r.permit_categories.destroy_all
