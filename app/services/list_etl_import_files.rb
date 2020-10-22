@@ -5,12 +5,13 @@ class ListEtlImportFiles < ServiceObject
 
   attr_reader :files
 
-  def initialize(params = {})
+  def initialize(_params = {})
+    super()
     @files = []
   end
 
   def call
-    @files = etl_file_store.list('import').reject do |f|
+    @files = etl_file_store.list("import").reject do |f|
       # reject any "directories"
       f.end_with?(File::Separator)
     end

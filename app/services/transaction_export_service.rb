@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "csv"
 
 class TransactionExportService
@@ -20,7 +22,7 @@ class TransactionExportService
     CSV.generate(options) do |csv|
       csv << regime_columns
       transactions.each do |transaction|
-        csv << ExportFileFormat::Columns.map { |c| transaction.send(c) }
+        csv << ExportFileFormat::COLUMNS.map { |c| transaction.send(c) }
       end
     end
   end
@@ -29,24 +31,24 @@ class TransactionExportService
     CSV.generate(options) do |csv|
       csv << regime_history_columns
       transactions.each do |transaction|
-        csv << ExportFileFormat::HistoryColumns.map { |c| transaction.send(c) }
+        csv << ExportFileFormat::HISTORY_COLUMNS.map { |c| transaction.send(c) }
       end
     end
   end
 
   def batch_regime_headers
-    ExportFileFormat::ExportColumns.map { |c| c[:heading] }
+    ExportFileFormat::EXPORT_COLUMNS.map { |c| c[:heading] }
   end
 
   def batch_regime_columns
-    ExportFileFormat::ExportColumns.map { |c| c[:accessor] }
+    ExportFileFormat::EXPORT_COLUMNS.map { |c| c[:accessor] }
   end
 
   def regime_columns
-    ExportFileFormat::Columns.map { |c| c.to_s.humanize.titlecase }
+    ExportFileFormat::COLUMNS.map { |c| c.to_s.humanize.titlecase }
   end
 
   def regime_history_columns
-    ExportFileFormat::HistoryColumns.map { |c| c.to_s.humanize.titlecase }
+    ExportFileFormat::HISTORY_COLUMNS.map { |c| c.to_s.humanize.titlecase }
   end
 end

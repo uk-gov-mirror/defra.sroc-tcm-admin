@@ -2,6 +2,7 @@
 
 class FileStorageService
   attr_reader :user
+
   # STORAGE_ZONES = [:import, :export, :archive, :quarantine].freeze
   STORAGE_ZONES = {
     import: "import",
@@ -11,7 +12,7 @@ class FileStorageService
     export_archive: "archive/export",
     csv_export: "csv",
     quarantine: "quarantine"
-  }
+  }.freeze
 
   def initialize(user = nil)
     # when instantiated from a controller the 'current_user' should
@@ -22,7 +23,7 @@ class FileStorageService
   def list_files_in(zone)
     path = zone_path(zone)
     files = storage.list path
-    files.select { |f| f != path }.map { |f| f.sub(path, "") }
+    files.reject { |f| f == path }.map { |f| f.sub(path, "") }
   end
 
   def fetch_file_from(zone, from_path, to_path)
@@ -37,14 +38,16 @@ class FileStorageService
     storage.delete_file(zone_path(zone, file_path))
   end
 
-private
+  private
+
   def storage
     @storage ||= determine_storage_handler
   end
 
-  def zone_path(z, path = "")
-    raise ArgumentError.new("Unknown zone: #{z}") unless STORAGE_ZONES.include?(z)
-    File.join(STORAGE_ZONES[z], path)
+  def zone_path(zone, path = "")
+    raise(ArgumentError, "Unknown zone: #{zone}") unless STORAGE_ZONES.include?(z)
+
+    File.join(STORAGE_ZONES[zone], path)
   end
 
   def determine_storage_handler

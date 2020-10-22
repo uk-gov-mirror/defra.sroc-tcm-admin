@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransactionCsvPresenter < SimpleDelegator
   include FormattingUtils
 
@@ -77,7 +79,8 @@ class TransactionCsvPresenter < SimpleDelegator
     ]
   end
 
-private
+  private
+
   def transaction_header
     __getobj__
   end

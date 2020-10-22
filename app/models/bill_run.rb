@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BillRun < ApplicationRecord
   has_one :regimes
   has_one :regions

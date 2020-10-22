@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class SystemConfigTest < ActiveSupport::TestCase
   def test_start_import_sets_importing_flag

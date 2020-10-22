@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class ExclusionsExportTest < ActionDispatch::IntegrationTest
   include RegimeSetup
@@ -21,6 +23,3 @@ class ExclusionsExportTest < ActionDispatch::IntegrationTest
     end
   end
 end
-
-
-

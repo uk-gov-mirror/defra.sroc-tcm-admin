@@ -1,4 +1,6 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 module Query
   class BilledTransactionsTest < ActiveSupport::TestCase
@@ -29,7 +31,7 @@ module Query
                             generated_filename: "wig77wam")
       end
       # search category, tcm_transaction_reference, generated_filename
-      [ '3.4', 'y2z', 'wig77' ].each do |v|
+      ["3.4", "y2z", "wig77"].each do |v|
         transactions = BilledTransactions.call(regime: @regime,
                                                search: v)
         assert transactions.count.positive?, "Failed on [#{v}]"

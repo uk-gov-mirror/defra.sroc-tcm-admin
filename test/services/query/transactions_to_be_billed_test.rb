@@ -1,4 +1,6 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 module Query
   class TransactionsToBeBilledTest < ActiveSupport::TestCase

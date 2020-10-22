@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreatePermits < ActiveRecord::Migration[5.1]
   def change
     create_table :permits do |t|

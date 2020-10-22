@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 module Query
   class Exclusions < QueryObject
     def initialize(opts = {})
+      super()
       @regime = opts.fetch(:regime)
     end
 
@@ -10,4 +13,3 @@ module Query
     end
   end
 end
-

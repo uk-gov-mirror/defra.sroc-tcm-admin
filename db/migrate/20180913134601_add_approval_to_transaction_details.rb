@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddApprovalToTransactionDetails < ActiveRecord::Migration[5.1]
   def change
     add_column :transaction_details, :approved_for_billing, :boolean, null: false, default: false

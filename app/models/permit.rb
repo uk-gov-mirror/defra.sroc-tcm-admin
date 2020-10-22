@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Permit < ApplicationRecord
   belongs_to :regime, inverse_of: :permits
 

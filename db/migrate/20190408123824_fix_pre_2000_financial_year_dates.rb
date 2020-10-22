@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FixPre2000FinancialYearDates < ActiveRecord::Migration[5.1]
   def up
     importer = TransactionFileImporter.new

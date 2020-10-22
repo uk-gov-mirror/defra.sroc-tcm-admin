@@ -1,4 +1,6 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
   include TransactionFileFormat
@@ -7,26 +9,26 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     @user = users(:billing_admin)
     Thread.current[:current_user] = @user
 
-    @transaction_1 = transaction_details(:cfd)
-    @transaction_2 = @transaction_1.dup
+    @transaction1 = transaction_details(:cfd)
+    @transaction2 = @transaction1.dup
 
-    @transaction_2.customer_reference ='A1234000A'
-    @transaction_2.transaction_type = 'C'
-    @transaction_2.line_description = 'Consent No - ABCD/9999/1/2'
-    @transaction_2.reference_1 = 'ABCD/9999/1/2'
-    @transaction_2.line_amount = -1234
-    @transaction_2.unit_of_measure_price = -1234
+    @transaction2.customer_reference = "A1234000A"
+    @transaction2.transaction_type = "C"
+    @transaction2.line_description = "Consent No - ABCD/9999/1/2"
+    @transaction2.reference_1 = "ABCD/9999/1/2"
+    @transaction2.line_amount = -1234
+    @transaction2.unit_of_measure_price = -1234
 
-    [@transaction_1, @transaction_2].each do |t|
-      t.category = '2.3.4'
-      t.status = 'billed'
+    [@transaction1, @transaction2].each do |t|
+      t.category = "2.3.4"
+      t.status = "billed"
       t.tcm_charge = t.line_amount
-      set_charge_calculation(t)
+      apply_charge_calculation(t)
     end
 
     @file = transaction_files(:cfd_sroc_file)
-    @file.transaction_details << @transaction_1
-    @file.transaction_details << @transaction_2
+    @file.transaction_details << @transaction1
+    @file.transaction_details << @transaction2
 
     @presenter = CfdTransactionFilePresenter.new(@file)
   end
@@ -66,7 +68,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
   def test_detail_records_have_correct_temporary_cessation_value
     @presenter.transaction_details.each_with_index do |td, i|
       td.temporary_cessation = i.odd?
-      expected_value = i.odd? ? '50%' : ''
+      expected_value = i.odd? ? "50%" : ""
 
       p = CfdTransactionDetailPresenter.new(td)
       row = @presenter.detail_row(p, i)
@@ -88,10 +90,10 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     @presenter.transaction_details.each_with_index do |td, i|
       p = CfdTransactionDetailPresenter.new(td)
       if i.odd?
-        p.line_attr_9 = '100%'
+        p.line_attr_9 = "100%"
         p.variation = nil
       else
-        p.variation = '100%'
+        p.variation = "100%"
       end
       row = @presenter.detail_row(p, i)
       assert row[Detail::LineAttr7].blank?
@@ -99,7 +101,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
   end
 
   def test_detail_record_consent_number_not_prefixed
-    # consent no. shouldn't be prefixed with 'Consent No - ' or 
+    # consent no. shouldn't be prefixed with 'Consent No - ' or
     # 'Authorization No ' as per the incoming file value
     @presenter.transaction_details.each_with_index do |td, i|
       expected_value = td.reference_1
@@ -110,7 +112,7 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
   end
 
   def test_detail_record_has_correct_category_description
-    expected_value = 'Wigwam'
+    expected_value = "Wigwam"
     @presenter.transaction_details.each_with_index do |td, i|
       td.category_description = expected_value
 
@@ -125,25 +127,25 @@ class CfdTransactionFilePresenterTest < ActiveSupport::TestCase
     assert_equal(
       [
         "T",
-        (count + 1).to_s.rjust(7, '0'),
-        (count + 2).to_s.rjust(7, '0'),
-        @presenter.transaction_details.where(tcm_transaction_type: 'I').sum(:tcm_charge).to_i,
-        @presenter.transaction_details.where(tcm_transaction_type: 'C').sum(:tcm_charge).to_i
+        (count + 1).to_s.rjust(7, "0"),
+        (count + 2).to_s.rjust(7, "0"),
+        @presenter.transaction_details.where(tcm_transaction_type: "I").sum(:tcm_charge).to_i,
+        @presenter.transaction_details.where(tcm_transaction_type: "C").sum(:tcm_charge).to_i
       ],
       @presenter.trailer
     )
   end
 
-  def set_charge_calculation(transaction)
+  def apply_charge_calculation(transaction)
     transaction.charge_calculation = {
-      'calculation' => {
-        'chargeAmount' => transaction.tcm_charge.abs,
-        'decisionPoints' => {
-          'baselineCharge' => 196803,
-          'percentageAdjustment' => 0
+      "calculation" => {
+        "chargeAmount" => transaction.tcm_charge.abs,
+        "decisionPoints" => {
+          "baselineCharge" => 196_803,
+          "percentageAdjustment" => 0
         }
       },
-      'generatedAt' => '10-AUG-2017'
+      "generatedAt" => "10-AUG-2017"
     }
     transaction.save
   end

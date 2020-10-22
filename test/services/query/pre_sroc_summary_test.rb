@@ -1,4 +1,6 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 module Query
   class PreSrocSummaryTest < ActiveSupport::TestCase
@@ -6,9 +8,9 @@ module Query
 
     def setup
       @regime = regimes(:cfd)
-      @region = 'A'
+      @region = "A"
       @user = users(:billing_admin)
-      @regime.transaction_details.update_all(status: 'retrospective')
+      @regime.transaction_details.update_all(status: "retrospective")
     end
 
     def test_returns_summary_data
@@ -29,4 +31,3 @@ module Query
     end
   end
 end
-

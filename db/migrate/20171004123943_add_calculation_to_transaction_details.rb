@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCalculationToTransactionDetails < ActiveRecord::Migration[5.1]
   def change
     add_column :transaction_details, :calculated_charge, :integer, limit: 8

@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 class CfdTransactionDetailPresenter < TransactionDetailPresenter
   def charge_params
     {
       permitCategoryRef: category,
       percentageAdjustment: clean_variation_percentage,
       temporaryCessation: temporary_cessation,
-      compliancePerformanceBand: 'B',
+      compliancePerformanceBand: "B",
       billableDays: billable_days,
       financialDays: financial_year_days,
       chargePeriod: charge_period,
       preConstruction: false,
-      environmentFlag: 'TEST'
+      environmentFlag: "TEST"
     }
   end
 
@@ -19,7 +21,8 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
 
   def clean_variation_percentage
     return 100 if variation_percentage.blank?
-    variation_percentage.gsub(/%/,'')
+
+    variation_percentage.gsub(/%/, "")
   end
 
   def variation_percentage
@@ -28,13 +31,13 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
 
   def variation_percentage_file
     val = variation_percentage
-    return "" if val == '100%'
+    return "" if val == "100%"
+
     val
   end
 
   def consent_reference
     reference_1
-    # "#{permit_reference}/#{version}/#{discharge_reference}"
   end
 
   def permit_reference
@@ -65,11 +68,7 @@ class CfdTransactionDetailPresenter < TransactionDetailPresenter
     ""
   end
 
-  # def period
-  #   line_attr_3
-  # end
-
-  def as_json(options = {})
+  def as_json(_options = {})
     {
       id: id,
       customer_reference: customer_reference,

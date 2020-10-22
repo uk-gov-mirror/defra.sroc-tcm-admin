@@ -1,16 +1,11 @@
-class TransactionSummary
-  include ActiveModel::AttributeAssignment, ActionView::Helpers::NumberHelper
+# frozen_string_literal: true
 
-  attr_accessor(
-    :title,
-    :credit_count,
-    :credit_total,
-    :invoice_count,
-    :invoice_total,
-    :net_total,
-    :excluded_count,
-    :path
-  )
+class TransactionSummary
+  include ActionView::Helpers::NumberHelper
+  include ActiveModel::AttributeAssignment
+
+  attr_writer :credit_total, :invoice_total, :net_total
+  attr_accessor :title, :credit_count, :invoice_count, :excluded_count, :path
 
   def initialize(regime)
     @regime = regime
@@ -28,7 +23,7 @@ class TransactionSummary
     number_to_currency(@net_total / 100.0)
   end
 
-  def has_transactions_to_bill?
+  def transactions_to_bill?
     credit_count.positive? || invoice_count.positive?
   end
 end

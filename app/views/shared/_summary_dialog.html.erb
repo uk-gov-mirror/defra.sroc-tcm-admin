@@ -42,7 +42,7 @@
             </div>
           </div>
         <% end %>
-        <% has_transactions = summary.has_transactions_to_bill? %>
+        <% has_transactions = summary.transactions_to_bill? %>
         <div class='row'>
           <div class='col form-check'>
             <label class='form-check-label <%= 'text-muted' unless has_transactions %>' for='confirm'>I have checked the summary and wish to proceed</label>

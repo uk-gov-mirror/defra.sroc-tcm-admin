@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExclusionReason < ApplicationRecord
   belongs_to :regime, inverse_of: :exclusion_reasons
 

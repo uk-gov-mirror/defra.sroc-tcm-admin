@@ -1,7 +1,10 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class TransactionExportServiceTest < ActiveSupport::TestCase
-  include RegimePresenter, GenerateHistory
+  include GenerateHistory
+  include RegimePresenter
 
   def setup
     @regime = regimes(:cfd)
@@ -11,11 +14,11 @@ class TransactionExportServiceTest < ActiveSupport::TestCase
 
   def test_export_generates_csv_data
     transactions = @regime.transaction_details.unbilled
-    assert transactions.count > 0, "No TTBB data"
+    assert transactions.count.positive?, "No TTBB data"
     data = @exporter.export(presenter.wrap(transactions))
     idx = 0
     CSV.parse(data, headers: true) do |row|
-      assert_equal @exporter.regime_columns, row.headers()
+      assert_equal @exporter.regime_columns, row.headers
       assert_equal row["Reference 1"], transactions[idx].reference_1
       idx += 1
     end
@@ -25,14 +28,14 @@ class TransactionExportServiceTest < ActiveSupport::TestCase
     transactions = @regime.transaction_details.unbilled
     code = permit_categories(:cfd_a).code
 
-    assert transactions.count > 0, "No TTBB data"
+    assert transactions.count.positive?, "No TTBB data"
     transactions.update_all(category: code, category_description: nil)
 
     data = @exporter.export(presenter.wrap(transactions))
     idx = 0
 
     CSV.parse(data, headers: true) do |row|
-      assert_equal @exporter.regime_columns, row.headers()
+      assert_equal @exporter.regime_columns, row.headers
       category = @permit_store.code_for_financial_year(code, row["Tcm Financial Year"])
       if category
         assert_equal category.description, row["Category Description"]
@@ -46,11 +49,11 @@ class TransactionExportServiceTest < ActiveSupport::TestCase
   def test_export_history_generates_csv_data
     generate_historic_cfd
     transactions = @regime.transaction_details.historic
-    assert transactions.count > 0, "No historic test data"
+    assert transactions.count.positive?, "No historic test data"
     data = @exporter.export_history(presenter.wrap(transactions))
     idx = 0
     CSV.parse(data, headers: true) do |row|
-      assert_equal @exporter.regime_history_columns, row.headers()
+      assert_equal @exporter.regime_history_columns, row.headers
       assert_equal row["Reference 1"], transactions[idx].reference_1
       idx += 1
     end
@@ -113,7 +116,8 @@ class TransactionExportServiceTest < ActiveSupport::TestCase
       "Original File Date",
       "Pro Rata Days",
       "Currency Baseline Charge",
-      "Currency Tcm Charge"]
+      "Currency Tcm Charge"
+    ]
     assert_equal expected, @exporter.regime_columns
   end
 
@@ -178,8 +182,8 @@ class TransactionExportServiceTest < ActiveSupport::TestCase
       "Generated Filename",
       "Tcm File Date",
       "Tcm Transaction Type",
-      "Tcm Transaction Reference"]
+      "Tcm Transaction Reference"
+    ]
     assert_equal expected, @exporter.regime_history_columns
   end
 end
-

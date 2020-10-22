@@ -4,6 +4,7 @@ class DeleteEtlImportFile < ServiceObject
   include FileStorage
 
   def initialize(params = {})
+    super()
     @remote_path = params.fetch(:remote_path)
   end
 
@@ -13,4 +14,3 @@ class DeleteEtlImportFile < ServiceObject
     self
   end
 end
-

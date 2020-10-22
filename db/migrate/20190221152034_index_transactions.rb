@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class IndexTransactions < ActiveRecord::Migration[5.1]
   def change
     add_index :transaction_details, [:transaction_header_id, :status],

@@ -4,6 +4,7 @@ class RemoveTemporaryCessation < ServiceObject
   attr_reader :transaction
 
   def initialize(params = {})
+    super()
     @transaction = params.fetch(:transaction)
     @user = params.fetch(:user)
   end
@@ -14,6 +15,7 @@ class RemoveTemporaryCessation < ServiceObject
   end
 
   private
+
   def update
     if @transaction.updateable?
       @transaction.temporary_cessation = false
@@ -34,11 +36,7 @@ class RemoveTemporaryCessation < ServiceObject
   def generate_charge
     charge = CalculateCharge.call(transaction: @transaction)
     @transaction.charge_calculation = charge.charge_calculation
-    if charge.success?
-      @transaction.tcm_charge = charge.amount
-    else
-      @transaction.tcm_charge = nil
-    end
+    @transaction.tcm_charge = (charge.amount if charge.success?)
     charge
   end
 end

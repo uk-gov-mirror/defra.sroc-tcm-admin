@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransactionDetailPresenter < SimpleDelegator
   include FormattingUtils
 
@@ -40,8 +42,7 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def generated_file_date
-    generated_file_at.strftime("%d/%m/%y") unless generated_file_at.nil?
-    # transaction_file.created_at.strftime("%d/%m/%y") if transaction_file
+    generated_file_at&.strftime("%d/%m/%y")
   end
 
   def pro_rata_days
@@ -49,7 +50,7 @@ class TransactionDetailPresenter < SimpleDelegator
     fyd = financial_year_days
 
     if bd == fyd
-      ''
+      ""
     else
       "#{bd}/#{fyd}"
     end
@@ -57,9 +58,6 @@ class TransactionDetailPresenter < SimpleDelegator
 
   def calculated_amount
     tcm_charge
-    # charge = (charge_calculation['calculation']['chargeValue'] * 100).round
-    # charge = -charge if line_amount.negative?
-    # charge
   end
 
   def currency_line_amount
@@ -72,11 +70,13 @@ class TransactionDetailPresenter < SimpleDelegator
 
   def currency_baseline_charge
     return "" if baseline_charge.nil?
+
     pence_to_currency(baseline_charge)
   end
 
   def currency_tcm_charge
     return "" if transaction_detail.tcm_charge.nil?
+
     pence_to_currency(transaction_detail.tcm_charge)
   end
 
@@ -91,7 +91,7 @@ class TransactionDetailPresenter < SimpleDelegator
     # category description is not present until the user generates
     # a transaction file. However, is should probably be included
     # in a TTBB export if a category has been set even at the risk
-    # of the category description changing between assignment and 
+    # of the category description changing between assignment and
     # file generation
     if transaction_detail.unbilled? && category.present?
       pc = permit_store.code_for_financial_year(category, tcm_financial_year)
@@ -101,41 +101,28 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def category_locked
-    transaction_detail.suggested_category && transaction_detail.suggested_category.admin_lock?
+    transaction_detail.suggested_category&.admin_lock?
   end
 
   def can_update_category?
     if category_locked
       # if the current_user is an admin we can allow editing
-      @user && @user.admin?
+      @user&.admin?
     else
       true
     end
   end
 
   def baseline_charge
-    if charge_calculated? && !charge_calculation_error?
-      (charge_calculation['calculation']['decisionPoints']['baselineCharge'] * 100).round
-    end
-  end
+    return unless charge_calculated? && !charge_calculation_error?
 
-  # region added to TransactionDetail now so no longer needed
-  # def region_from_ref
-  #   if tcm_transaction_reference.present?
-  #     tcm_transaction_reference[-2]
-  #   else
-  #     transaction_header.region
-  #   end
-  # end
-  #
-  # def region
-  #   transaction_header.region
-  # end
+    (charge_calculation["calculation"]["decisionPoints"]["baselineCharge"] * 100).round
+  end
 
   def transaction_date
     # called when exporting to file
-    if charge_calculation && charge_calculation['generatedAt']
-      charge_calculation['generatedAt'].to_date
+    if charge_calculation && charge_calculation["generatedAt"]
+      charge_calculation["generatedAt"].to_date
     else
       transaction_detail.transaction_date
     end
@@ -146,18 +133,18 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def pre_sroc_flag
-    (retrospective? || billed_retrospective?) ? 'Y' : 'N'
+    retrospective? || billed_retrospective? ? "Y" : "N"
   end
 
   def excluded_flag
-    (permanently_excluded? || excluded?) ? 'Y' : 'N'
+    permanently_excluded? || excluded? ? "Y" : "N"
   end
 
   def excluded_reason
     if permanently_excluded? || excluded?
       transaction_detail.excluded_reason
     else
-      ''
+      ""
     end
   end
 
@@ -174,8 +161,6 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def charge_period
-    # year = financial_year - 2000
-    #sik76mzz iFY#{year}#{year + 1}"
     "FY#{tcm_financial_year}"
   end
 
@@ -188,7 +173,7 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def credit_debit_indicator
-    line_amount < 0 ? 'C' : 'D'
+    line_amount.negative? ? "C" : "D"
   end
 
   def date_received
@@ -196,19 +181,19 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def temporary_cessation_file
-    temporary_cessation? ? '50%' : ''
+    temporary_cessation? ? "50%" : ""
   end
 
   def temporary_cessation_flag
-    temporary_cessation? ? 'Y' : 'N'
+    temporary_cessation? ? "Y" : "N"
   end
 
   def temporary_cessation_yes_no
-    temporary_cessation ? 'Yes' : 'No'
+    temporary_cessation ? "Yes" : "No"
   end
 
   def period
-    "#{transaction_detail.period_start.strftime("%d/%m/%y")} - #{transaction_detail.period_end.strftime("%d/%m/%y")}"
+    "#{transaction_detail.period_start.strftime('%d/%m/%y')} - #{transaction_detail.period_end.strftime('%d/%m/%y')}"
   end
 
   def amount
@@ -218,7 +203,8 @@ class TransactionDetailPresenter < SimpleDelegator
         credit_debit
       else
         ActiveSupport::NumberHelper.number_to_currency(
-          sprintf('%.2f', value/100.0), unit: "")
+          format("%<value>.2f", value: (value / 100.0)), unit: ""
+        )
       end
     else
       credit_debit
@@ -227,12 +213,12 @@ class TransactionDetailPresenter < SimpleDelegator
 
   def credit_debit
     txt = if line_amount.negative?
-            'Credit'
+            "Credit"
           else
-            'Debit'
+            "Debit"
           end
 
-    txt += ' (TBC)' unless status == 'excluded'
+    txt += " (TBC)" unless status == "excluded"
     txt
   end
 
@@ -242,15 +228,6 @@ class TransactionDetailPresenter < SimpleDelegator
 
   def charge_amount
     tcm_charge
-    # charge = transaction_detail.charge_calculation
-    # if charge && charge["calculation"] && charge["calculation"]["messages"].nil?
-    #   amt = charge["calculation"]["chargeValue"]
-    #   # FIXME: is this the /best/ way to determine a credt?
-    #   amt *= -1 if !amt.nil? && line_amount.negative?
-    #   amt
-    # else
-    #   nil
-    # end
   end
 
   def generated_at
@@ -263,31 +240,31 @@ class TransactionDetailPresenter < SimpleDelegator
   end
 
   def suggested_category_code
-    suggested_category.category unless suggested_category.nil?
+    suggested_category&.category
   end
 
   def suggested_category_confidence_level
-    suggested_category.confidence_level.titlecase unless suggested_category.nil?
+    suggested_category&.confidence_level&.titlecase
   end
 
   def suggested_category_overridden_flag
-    suggested_category.overridden ? 'Y' : 'N' unless suggested_category.nil?
+    suggested_category&.overridden ? "Y" : "N"
   end
 
   def suggested_category_admin_lock_flag
-    suggested_category.admin_lock ? 'Y' : 'N' unless suggested_category.nil?
+    suggested_category&.admin_lock ? "Y" : "N"
   end
 
   def suggested_category_logic
-    suggested_category.logic unless suggested_category.nil?
+    suggested_category&.logic
   end
 
   def suggested_category_stage
-    suggested_category.suggestion_stage unless suggested_category.nil?
+    suggested_category&.suggestion_stage
   end
 
   def approved_flag
-    transaction_detail.approved_for_billing ? 'Y' : 'N'
+    transaction_detail.approved_for_billing ? "Y" : "N"
   end
 
   def approved_date
@@ -298,12 +275,12 @@ class TransactionDetailPresenter < SimpleDelegator
     band = extract_compliance_performance
     return "" if band.blank? || band == "()"
 
-    d = band.match /\A.*\((\d+%)\)\z/
+    d = band.match(/\A.*\((\d+%)\)\z/)
     d && d.size == 2 ? d[1] : ""
   end
 
   def confidence_level
-    transaction_detail.suggested_category.confidence_level unless transaction_detail.suggested_category.nil?
+    transaction_detail.suggested_category&.confidence_level
   end
 
   def customer_name
@@ -314,15 +291,16 @@ class TransactionDetailPresenter < SimpleDelegator
     end
   end
 
-protected
+  protected
+
   def transaction_detail
     __getobj__
   end
 
   def extract_compliance_performance
     chg = transaction_detail.charge_calculation
-    chg['calculation']['compliancePerformanceBand'] unless chg.nil? ||
-      chg['calculation'].nil?
+    chg["calculation"]["compliancePerformanceBand"] unless chg.nil? ||
+                                                           chg["calculation"].nil?
   end
 
   def permit_store

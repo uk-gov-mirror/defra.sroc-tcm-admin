@@ -10,42 +10,38 @@ class PermitStorageService
     @user = user
   end
 
-  def search_all(fy, search, sort_col, sort_dir)
-    q = all_for_financial_year(fy)
+  def search_all(financial_year, search, sort_col, sort_dir)
+    q = all_for_financial_year(financial_year)
     q = q.search(search) unless search.blank?
     order_query(q, sort_col, sort_dir)
   end
 
-  def all_for_financial_year(fy)
-    regime.permit_categories.by_financial_year(fy)
-    # t = PermitCategory.arel_table
-    # regime.permit_categories.where(t[:valid_from].lteq(fy)).
-    #   where(t[:valid_to].eq(nil).or(t[:valid_to].gt(fy)))
+  def all_for_financial_year(financial_year)
+    regime.permit_categories.by_financial_year(financial_year)
   end
 
-  def active_for_financial_year(fy)
-    all_for_financial_year(fy).active
+  def active_for_financial_year(financial_year)
+    all_for_financial_year(financial_year).active
   end
 
-  def active_list_for_selection(fy)
-    all_for_financial_year(fy).active.
-      order("string_to_array(code, '.')::int[]")
+  def active_list_for_selection(financial_year)
+    all_for_financial_year(financial_year).active.order("string_to_array(code, '.')::int[]")
   end
 
-  def code_for_financial_year(code, fy)
-    active_for_financial_year(fy).find_by(code: code)
+  def code_for_financial_year(code, financial_year)
+    active_for_financial_year(financial_year).find_by(code: code)
   end
 
-  def code_for_financial_year!(code, fy)
-    active_for_financial_year(fy).find_by!(code: code)
+  def code_for_financial_year!(code, financial_year)
+    active_for_financial_year(financial_year).find_by!(code: code)
   end
 
-  def code_for_financial_year_with_any_status(code, fy)
-    all_for_financial_year(fy).find_by(code: code)
+  def code_for_financial_year_with_any_status(code, financial_year)
+    all_for_financial_year(financial_year).find_by(code: code)
   end
 
-  def code_for_financial_year_with_any_status!(code, fy)
-    all_for_financial_year(fy).find_by!(code: code)
+  def code_for_financial_year_with_any_status!(code, financial_year)
+    all_for_financial_year(financial_year).find_by!(code: code)
   end
 
   def code_exists?(code)
@@ -57,57 +53,37 @@ class PermitStorageService
   end
 
   def build_permit_category(code, description, valid_from,
-                            status = 'active')
+                            status = "active")
     regime.permit_categories.build(code: code,
-                                  description: description,
-                                  valid_from: valid_from,
-                                  status: status)
+                                   description: description,
+                                   valid_from: valid_from,
+                                   status: status)
   end
 
-  def new_permit_category(code, description, valid_from, status = 'active')
+  def new_permit_category(code, description, valid_from, status = "active")
     pc = build_permit_category(code, description, valid_from, status)
 
     if code_exists?(code)
       pc.errors.add(:code, "^Code '#{code}' is already in use.")
-    elsif pc.save && valid_from != '1819'
+    elsif pc.save && valid_from != "1819"
       create_permit_category(code: code,
                              description: description,
-                             valid_from: '1819',
+                             valid_from: "1819",
                              valid_to: valid_from,
-                             status: 'excluded')
+                             status: "excluded")
     end
     pc
   end
-  #
-  #   if code_exists?(code)
-  #     update_or_create_new_version(code, description, valid_from, status)
-  #   else
-  #     # create excluded one from 1819 until the requested valid_from
-  #     # unless valid_from is 1819
-  #     pc = create_permit_category(code: code,
-  #                                 description: description,
-  #                                 valid_from: valid_from,
-  #                                 status: status)
-  #     if pc.valid? && valid_from != '1819'
-  #       create_permit_category(code: code,
-  #                              description: description,
-  #                              valid_from: '1819',
-  #                              valid_to: valid_from,
-  #                              status: 'excluded')
-  #     end 
-  #     pc
-  #   end
-  # end
 
-  def find(code, fy)
-    regime.permit_categories.find_by(code: code, valid_from: fy)
+  def find(code, financial_year)
+    regime.permit_categories.find_by(code: code, valid_from: financial_year)
   end
 
-  def update_or_create_new_version(code, description, fy, status = 'active')
-    pc = regime.permit_categories.find_by(code: code, valid_from: fy)
+  def update_or_create_new_version(code, description, financial_year, status = "active")
+    pc = regime.permit_categories.find_by(code: code, valid_from: financial_year)
     if pc.nil?
       # no version to update so create a new one
-      pc = add_permit_category_version(code, description, fy, status)
+      pc = add_permit_category_version(code, description, financial_year, status)
     else
       pc.description = description
       pc.status = status
@@ -116,7 +92,7 @@ class PermitStorageService
     pc
   end
 
-  def add_permit_category_version(code, description, valid_from, status = 'active')
+  def add_permit_category_version(code, description, valid_from, status = "active")
     pc = build_permit_category(code, description, valid_from, status)
 
     return pc unless pc.valid?
@@ -134,26 +110,6 @@ class PermitStorageService
       pc_prev = c
     end
 
-    # populate_future_categories = false
-    # matching = []
-    #
-    # if pc_prev && pc_next && pc_prev.description == pc_next.description &&
-    #     pc_prev.status == pc_next.status
-    #   populate_future_categories = true
-    #   matching << pc_next
-    #
-    #   cats.each do |c|
-    #     if c.valid_from > pc_next.valid_from
-    #       if c.description == pc_prev.description &&
-    #         c.status == pc_prev.status
-    #         matching << c
-    #       else
-    #         break
-    #       end
-    #     end
-    #   end
-    # end
-
     PermitCategory.transaction do
       if pc_prev
         pc_prev.valid_to = valid_from
@@ -165,33 +121,18 @@ class PermitStorageService
       if pc_next
         pc.valid_to = pc_next.valid_from
         pc.save!
-
-        # if populate_future_categories
-        #   matching.each do |mc|
-        #     mc.description = pc.description
-        #     mc.status = pc.status
-        #     mc.save!
-        #   end
-        # end
       end
     end
     pc
   end
 
-  # def update_permit_category_description(code, fy, description)
-  #   # update a permit category description without creating a new version
-  #   pc = code_for_financial_year_with_any_status!(code, fy)
-  #   pc.description = description
-  #   pc.save!
-  # end
-
-  def order_query(q, col, dir)
-    dir = dir == 'desc' ? :desc : :asc
+  def order_query(query, col, dir)
+    dir = dir == "desc" ? :desc : :asc
 
     if col.to_sym == :description
-      q.order(description: dir)
+      query.order(description: dir)
     else
-      q.order("string_to_array(code, '.')::int[] #{dir}")
+      query.order("string_to_array(code, '.')::int[] #{dir}")
     end
   end
 

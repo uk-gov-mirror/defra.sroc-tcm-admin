@@ -1,4 +1,6 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class ExclusionsControllerTest < ActionDispatch::IntegrationTest
   include RegimeSetup

@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 class WmlTransactionDetailPresenter < TransactionDetailPresenter
   def charge_params
     {
       permitCategoryRef: category,
-      # percentageAdjustment: clean_variation_percentage,
       temporaryCessation: temporary_cessation,
       compliancePerformanceBand: compliance_band,
       billableDays: billable_days,
       financialDays: financial_year_days,
       chargePeriod: charge_period,
       preConstruction: false,
-      environmentFlag: 'TEST'
+      environmentFlag: "TEST"
     }
   end
 
@@ -27,48 +28,48 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def credit_line_description
-    if transaction_detail.line_description.present?
-      txt = transaction_detail.line_description.gsub(/Permit Ref:/, 'EPR Ref:')
-      prefix = "Credit of subsistence charge for permit category #{category}"
-      pos = txt.index /\sdue\s/
+    return unless transaction_detail.line_description.present?
+
+    txt = transaction_detail.line_description.gsub(/Permit Ref:/, "EPR Ref:")
+    prefix = "Credit of subsistence charge for permit category #{category}"
+    pos = txt.index(/\sdue\s/)
+    if pos
+      prefix + txt[pos..-1]
+    else
+      pos = txt.index(/\sat\s/)
       if pos
-        prefix + txt[pos..-1]
+        "#{prefix}. At #{txt[(pos + 4)..-1]}"
       else
-        pos = txt.index /\sat\s/
-        if pos
-          prefix + '. At ' + txt[(pos + 4)..-1]
+        m = /\AIn cancellation of invoice no. [A-Z0-9]+:\s*(.*)\z/.match(txt)
+        if m
+          "#{prefix}. #{m[1]}"
         else
-          m = /\AIn cancellation of invoice no. [A-Z0-9]+:\s*(.*)\z/.match(txt)
-          if m
-            prefix + '. ' + m[1]
-          else
-            prefix + '. ' + txt
-          end
+          "#{prefix}. #{txt}"
         end
       end
     end
   end
 
   def invoice_line_description
-    if transaction_detail.line_description.present?
-      txt = transaction_detail.line_description.gsub(/Permit Ref:/, 'EPR Ref:')
-      # remove leading text either "Compliance Adjustment at " or "Charge code n at "
-      pos = txt.index /\sat\s/
-      if pos
-        "Site: " + txt[(pos + 4)..-1]
-      else
-        txt
-      end
+    return unless transaction_detail.line_description.present?
+
+    txt = transaction_detail.line_description.gsub(/Permit Ref:/, "EPR Ref:")
+    # remove leading text either "Compliance Adjustment at " or "Charge code n at "
+    pos = txt.index(/\sat\s/)
+    if pos
+      "Site: #{txt[(pos + 4)..-1]}"
+    else
+      txt
     end
   end
 
   def compliance_band_with_percent
     val = ""
     chg = transaction_detail.charge_calculation
-    if !chg.nil? && !chg['calculation'].nil?
-      band = chg['calculation']['compliancePerformanceBand']
+    if !chg.nil? && !chg["calculation"].nil?
+      band = chg["calculation"]["compliancePerformanceBand"]
       unless band.nil?
-        d = band.match /\A(.*)(\(\d+%\))\z/
+        d = band.match(/\A(.*)(\(\d+%\))\z/)
         val = "#{d[1]} #{d[2]}" if d.size == 3 && d[1].strip.present?
       end
     end
@@ -82,14 +83,14 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
 
   def extract_site_from_description
     if transaction_detail.line_description.present?
-      m = transaction_detail.line_description.match /\Wat\W(.*),\s/
+      m = transaction_detail.line_description.match(/\Wat\W(.*),\s/)
       m.nil? ? "" : m[1]
     else
       ""
     end
   end
 
-  def as_json(options = {})
+  def as_json(_options = {})
     {
       id: id,
       customer_reference: customer_reference,
@@ -121,8 +122,6 @@ class WmlTransactionDetailPresenter < TransactionDetailPresenter
       errors.full_messages_for(:base)
     elsif charge_calculation_error?
       charge_calculation["calculation"]["messages"]
-    else
-      nil
     end
   end
 end

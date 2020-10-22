@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TransactionFileFormat
   module Common
     RecordType          = 0

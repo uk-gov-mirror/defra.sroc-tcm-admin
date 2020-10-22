@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RegimeTransactionExportJob < ApplicationJob
   queue_as :default
 
@@ -14,7 +16,7 @@ class RegimeTransactionExportJob < ApplicationJob
         TcmLogger.error("Failed to store export data file for #{regime.name}") if result.failed?
       end
     end
-  rescue => e
+  rescue StandardError => e
     TcmLogger.notify(e)
   end
 end

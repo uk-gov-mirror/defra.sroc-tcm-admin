@@ -2,7 +2,7 @@
 
 class RetrospectiveFilesController < ApplicationController
   include RegimeScope
-  before_action :set_regime, only: [:index, :create]
+  before_action :set_regime, only: %i[index create]
 
   # GET /regimes/:regime_id/transaction_files
   # GET /regimes/:regime_id/transaction_files.json
@@ -15,13 +15,6 @@ class RetrospectiveFilesController < ApplicationController
   def show
     # TODO: this could be detail of one file
   end
-
-  # GET /regimes/:regime_id/transaction_files/new
-  # def new
-  #   # This can be invoked from generate transaction file on TTBB
-  #   set_region
-  #   @summary = collate_summary
-  # end
 
   # POST /regimes/:regime_id/transaction_files
   def create
@@ -37,27 +30,26 @@ class RetrospectiveFilesController < ApplicationController
   end
 
   # GET /regimes/:regimes_id/transaction_files/1/edit
-  def edit
-  end
+  def edit; end
 
   # PATCH/PUT /regimes/:regimes_id/transaction_files/1
-  def update
-  end
+  def update; end
 
   private
-    # :nocov:
-    def set_region
-      # TODO: this could be defaulted to a user's region if there are
-      # restrictions around this
-      @region = params.fetch(:region, '')
-    end
-    # :nocov:
 
-    def exporter
-      @exporter ||= TransactionFileExporter.new(@regime, @region, current_user)
-    end
+  # :nocov:
+  def set_region
+    # TODO: this could be defaulted to a user's region if there are
+    # restrictions around this
+    @region = params.fetch(:region, "")
+  end
+  # :nocov:
 
-    def transaction_store
-      @transaction_store ||= TransactionStorageService.new(@regime, current_user)
-    end
+  def exporter
+    @exporter ||= TransactionFileExporter.new(@regime, @region, current_user)
+  end
+
+  def transaction_store
+    @transaction_store ||= TransactionStorageService.new(@regime, current_user)
+  end
 end

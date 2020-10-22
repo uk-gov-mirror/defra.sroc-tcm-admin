@@ -1,25 +1,27 @@
+# frozen_string_literal: true
+
 # Require and run our simplecov initializer as the very first thing we do.
 # This is as per its docs https://github.com/colszowka/simplecov#getting-started
 require "./test/support/simplecov"
 
-require File.expand_path('../../config/environment', __FILE__)
-require 'rails/test_help'
+require File.expand_path("../config/environment", __dir__)
+require "rails/test_help"
 
-require 'capybara/rails'
-require 'capybara/minitest'
-require 'capybara/minitest/spec'
+require "capybara/rails"
+require "capybara/minitest"
+require "capybara/minitest/spec"
 
-require 'minitest/reporters'
+require "minitest/reporters"
 Minitest::Reporters.use!
 
-require 'selenium/webdriver'
+require "selenium/webdriver"
 
-require 'mocha/mini_test'
+require "mocha/mini_test"
 
-Dir[Rails.root.join("test/support/**/*.rb")].each { |f| require f }
+Dir[Rails.root.join("test/support/**/*.rb")].sort.each { |f| require f }
 
 # remove http auth which is only for heroku deployment
-ENV['HEROKU'] = nil
+ENV["HEROKU"] = nil
 
 Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, browser: :chrome)
@@ -27,9 +29,9 @@ end
 
 Capybara.register_driver :headless_chrome do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
-    chromeOptions: { args: %w[ headless disable-gpu no-sandbox disable-dev-shm-usage window-size=1600,1000 ] }
+    chromeOptions: { args: %w[headless disable-gpu no-sandbox disable-dev-shm-usage window-size=1600,1000] }
   )
-  driver_options = { verbose: true, log_path: 'tmp/chromedriver.log' }
+  driver_options = { verbose: true, log_path: "tmp/chromedriver.log" }
   Capybara::Selenium::Driver.new(app,
                                  browser: :chrome,
                                  desired_capabilities: capabilities,
@@ -37,7 +39,7 @@ Capybara.register_driver :headless_chrome do |app|
 end
 
 # Capybara.javascript_driver = :chrome
-driver = ENV.fetch('TEST_DRIVER', :headless_chrome)
+driver = ENV.fetch("TEST_DRIVER", :headless_chrome)
 Capybara.javascript_driver = driver.to_sym
 
 class ActiveSupport::TestCase
@@ -45,18 +47,20 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
-  def set_audit_user(user = nil)
+  def apply_audit_user(user = nil)
     Thread.current[:current_user] = user || users(:billing_admin)
   end
 end
 
 class ActionDispatch::IntegrationTest
-  include Devise::Test::IntegrationHelpers, ActiveJob::TestHelper
-  include Capybara::DSL, Capybara::Minitest::Assertions
+  include ActiveJob::TestHelper
+  include Devise::Test::IntegrationHelpers
+  include Capybara::Minitest::Assertions
+  include Capybara::DSL
 
   def wait_for_ajax
     Timeout.timeout(Capybara.default_max_wait_time) do
-      loop until page.evaluate_script('jQuery.active').zero?
+      loop until page.evaluate_script("jQuery.active").zero?
     end
   end
 

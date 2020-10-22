@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCountsToTransactionFile < ActiveRecord::Migration[5.1]
   def up
     change_table :transaction_files do |t|

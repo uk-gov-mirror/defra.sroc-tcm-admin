@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class TransactionFilesController < ApplicationController
-  include RegimeScope, ViewModelBuilder
+  include ViewModelBuilder
+  include RegimeScope
 
   before_action :set_regime
   before_action :read_only_user_check!, only: [:create]
@@ -10,9 +11,7 @@ class TransactionFilesController < ApplicationController
     @view_model = build_transaction_files_view_model
     respond_to do |format|
       format.html do
-        if request.xhr?
-          render partial: "table", locals: { view_model: @view_model }
-        end
+        render partial: "table", locals: { view_model: @view_model } if request.xhr?
       end
     end
   end
@@ -28,15 +27,16 @@ class TransactionFilesController < ApplicationController
   end
 
   private
-    # :nocov:
-    def set_region
-      # TODO: this could be defaulted to a user's region if there are
-      # restrictions around this
-      @region = params.fetch(:region, '')
-    end
-    # :nocov:
 
-    def exporter
-      @exporter ||= TransactionFileExporter.new(@regime, @region, current_user)
-    end
+  # :nocov:
+  def set_region
+    # TODO: this could be defaulted to a user's region if there are
+    # restrictions around this
+    @region = params.fetch(:region, "")
+  end
+  # :nocov:
+
+  def exporter
+    @exporter ||= TransactionFileExporter.new(@regime, @region, current_user)
+  end
 end

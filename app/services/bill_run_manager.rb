@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require 'net/http'
+require "net/http"
 
 class BillRunManager < ServiceObject
   attr_reader :regime, :region, :pre_sroc, :bill_run_id
 
   def initialize(params = {})
+    super()
     @regime = params.fetch(:regime)
     @region = params.fetch(:region)
     @pre_sroc = params.fetch(:pre_sroc)
@@ -48,7 +49,7 @@ class BillRunManager < ServiceObject
   def api_get_bill_run
     list_bill_runs_call = ChargingModule::ListBillRunsService.call(regime: @regime,
                                                                    region: @region,
-                                                                   status: 'initialised')
+                                                                   status: "initialised")
     data = list_bill_runs_call.response[:data]
     initialised_pre_sroc_bill_run = data[:billRuns].select { |bill_run| bill_run[:preSroc] == @pre_sroc }
 

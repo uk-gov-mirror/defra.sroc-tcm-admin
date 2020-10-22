@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PasTransactionDetailPresenter < TransactionDetailPresenter
   def charge_params
     {
@@ -8,7 +10,7 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
       financialDays: financial_year_days,
       chargePeriod: charge_period,
       preConstruction: false,
-      environmentFlag: 'TEST'
+      environmentFlag: "TEST"
     }
   end
 
@@ -17,31 +19,9 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
     band || ""
   end
 
-  # def percentage_adjustment
-  #   # FIXME: this is wrong - this is not a percentage value
-  #   # charge calculation adjustment as a percentage - ie. 95%
-  #   val = charge_calculation['calculation']['decisionPoints']['percentageAdjustment']
-  #   "#{val}%"
-  # end
-
   def compliance_band_adjustment
     tcm_compliance_percentage
-    # band = extract_compliance_performance
-    # return "" if band.nil?
-    # d = band.match /\A.*\((\d+%)\)\z/
-    # if d.size == 2
-    #   d[1]
-    # else
-    #   ""
-    # end
   end
-
-  # Moved to base class
-  # def extract_compliance_performance
-  #   chg = transaction_detail.charge_calculation
-  #   chg['calculation']['compliancePerformanceBand'] unless chg.nil? ||
-  #     chg['calculation'].nil?
-  # end
 
   def permit_reference
     reference_1
@@ -64,19 +44,19 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
   end
 
   def make_site_address
-    cols = [ :header_attr_2,
-             :header_attr_3,
-             :header_attr_4,
-             :header_attr_5,
-             :header_attr_6,
-             :header_attr_7,
-             :header_attr_8 ]
+    cols = %i[header_attr_2
+              header_attr_3
+              header_attr_4
+              header_attr_5
+              header_attr_6
+              header_attr_7
+              header_attr_8]
 
     parts = cols.map { |c| value_or_space(c) }
     first = parts.shift
-    first += ':' unless first.ends_with?(':')
-    addr = first + ' ' + parts.shift + ','
-    addr += parts.join(',')
+    first += ":" unless first.ends_with?(":")
+    addr = "#{first} #{parts.shift},"
+    addr += parts.join(",")
     addr
   end
 
@@ -89,7 +69,7 @@ class PasTransactionDetailPresenter < TransactionDetailPresenter
     end
   end
 
-  def as_json(options = {})
+  def as_json(_options = {})
     {
       id: id,
       customer_reference: customer_reference,

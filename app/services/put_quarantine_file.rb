@@ -5,6 +5,7 @@ class PutQuarantineFile < ServiceObject
   include FileStorage
 
   def initialize(params = {})
+    super()
     @local_path = params.fetch(:local_path)
     @remote_path = params.fetch(:remote_path)
   end
@@ -18,6 +19,6 @@ class PutQuarantineFile < ServiceObject
   private
 
   def quarantine_path
-    File.join('quarantine', File.basename(@remote_path))
+    File.join("quarantine", File.basename(@remote_path))
   end
 end

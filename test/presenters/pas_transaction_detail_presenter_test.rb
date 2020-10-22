@@ -1,26 +1,14 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
   def setup
-    set_audit_user
+    apply_audit_user
     @transaction = transaction_details(:pas)
     @presenter = PasTransactionDetailPresenter.new(@transaction)
   end
 
-  # def test_it_returns_charge_params
-  #   assert_equal(@presenter.charge_params, {
-  #     permitCategoryRef: @transaction.category,
-  #     percentageAdjustment: clean_variation,
-  #     temporaryCessation: false,
-  #     compliancePerformanceBand: 'B',
-  #     billableDays: billable_days,
-  #     financialDays: financial_year_days,
-  #     chargePeriod: charge_period,
-  #     preConstruction: false,
-  #     environmentFlag: 'TEST'
-  #   })
-  # end
-  #
   def test_it_returns_compliance_band
     band = @transaction.line_attr_11
     band = band.present? ? band.first : ""
@@ -28,7 +16,7 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_returns_calculated_compliance_adjustment
-    set_charge_calculation_compliance(@transaction, "A (110%)")
+    apply_charge_calculation_compliance(@transaction, "A (110%)")
     assert_equal("110%", @presenter.compliance_band_adjustment)
   end
 
@@ -45,19 +33,19 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_builds_site_address
-    @transaction.header_attr_8 = 'AB12 1AB'
+    @transaction.header_attr_8 = "AB12 1AB"
     addr = "Site: Red St. Hill Farm, , , , ,AB12 1AB"
     assert_equal(addr, @presenter.site_address)
   end
 
-  def test_pre_sroc_flag_returns_Y_for_retrospective_transactions
-    @transaction.status = 'retrospective'
-    assert_equal 'Y', @presenter.pre_sroc_flag, "Pre-SRoC flag incorrect"
+  def test_pre_sroc_flag_returns_y_for_retrospective_transactions
+    @transaction.status = "retrospective"
+    assert_equal "Y", @presenter.pre_sroc_flag, "Pre-SRoC flag incorrect"
   end
 
-  def test_pre_sroc_flag_returns_Y_for_retro_billed_transactions
-    @transaction.status = 'retro_billed'
-    assert_equal 'Y', @presenter.pre_sroc_flag, "Pre-SRoC flag incorrect"
+  def test_pre_sroc_flag_returns_y_for_retro_billed_transactions
+    @transaction.status = "retro_billed"
+    assert_equal "Y", @presenter.pre_sroc_flag, "Pre-SRoC flag incorrect"
   end
 
   def test_it_transforms_into_json
@@ -93,7 +81,7 @@ class PasTransactionDetailPresenterTest < ActiveSupport::TestCase
     )
   end
 
-  def set_charge_calculation_compliance(transaction, band)
+  def apply_charge_calculation_compliance(transaction, band)
     transaction.charge_calculation = {
       "calculation": {
         "compliancePerformanceBand": band

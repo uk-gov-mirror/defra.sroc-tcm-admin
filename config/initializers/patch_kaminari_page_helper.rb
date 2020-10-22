@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'kaminari/helpers/tags'
+
+require "kaminari/helpers/tags"
 
 module Kaminari
   module Helpers

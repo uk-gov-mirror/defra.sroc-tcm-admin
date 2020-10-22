@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Use this file to easily define all of your cron jobs.
 #
 # It's helpful, but not entirely necessary to understand cron before proceeding.
@@ -7,13 +9,13 @@ every 15.minutes, roles: [:db] do
   runner "FileCheckJob.perform_now"
 end
 
-every 1.day, at: '5:30 am', roles: [:db] do
+every 1.day, at: "5:30 am", roles: [:db] do
   runner "DataExportJob.perform_now"
 end
 
 # want to run this on both app servers while we are using the filesystem
 # as a cache to prevent filling up all the diskspace
-every :day, at: '7:00pm', roles: [:app] do
+every :day, at: "7:00pm", roles: [:app] do
   rake "tmp:cache:clear"
 end
 

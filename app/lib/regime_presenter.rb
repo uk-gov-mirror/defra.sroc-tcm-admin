@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RegimePresenter
   def presenter
     name = "#{@regime.slug}_transaction_detail_presenter".camelize
@@ -5,10 +7,8 @@ module RegimePresenter
   end
 
   def str_to_class(name)
-    begin
-      name.constantize
-    rescue NameError => e
-      nil
-    end
+    name.constantize
+  rescue NameError
+    nil
   end
 end

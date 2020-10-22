@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddFileDetailsToTransactions < ActiveRecord::Migration[5.1]
   def change
     add_column :transaction_headers, :filename, :string, index: true

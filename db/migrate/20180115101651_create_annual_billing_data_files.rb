@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateAnnualBillingDataFiles < ActiveRecord::Migration[5.1]
   def change
     create_table :annual_billing_data_files do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ViewModels
   class Exclusions < Transactions
     def initialize(params = {})
@@ -13,13 +15,13 @@ module ViewModels
                                        financial_year: financial_year,
                                        search: search)
     end
-    
+
     def region_options
       all_region_options
     end
 
-    def csv_transactions(limit = 15000)
-      @csv ||= presenter.wrap(transactions.limit(limit), user)
+    def csv_transactions(limit = 15_000)
+      @csv_transactions ||= presenter.wrap(transactions.limit(limit), user)
     end
   end
 end

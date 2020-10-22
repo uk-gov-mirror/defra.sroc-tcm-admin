@@ -7,7 +7,9 @@ module ChargingModule
 
     # The current design of the base service object requires us to provide an
     # initialise method even if we don't need it
-    def initialize(_params = {}); end
+    def initialize(_params = {})
+      super()
+    end
 
     def call
       @result = true

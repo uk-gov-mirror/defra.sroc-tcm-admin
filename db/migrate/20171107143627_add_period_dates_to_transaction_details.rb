@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPeriodDatesToTransactionDetails < ActiveRecord::Migration[5.1]
   def change
     add_column :transaction_details, :period_start, :datetime, index: true

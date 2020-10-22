@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddTemporaryCessationToTransactionDetails < ActiveRecord::Migration[5.1]
   def change
     add_column :transaction_details, :temporary_cessation, :boolean, null: false, default: false

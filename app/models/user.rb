@@ -1,13 +1,20 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
-  enum role: [:billing, :admin, :read_only, :read_only_export]
-  enum active_regime: [:cfd, :pas, :wml]
+  enum role: %i[billing admin read_only read_only_export]
+  enum active_regime: %i[cfd pas wml]
 
   has_many :regime_users, inverse_of: :user, dependent: :destroy
   has_many :regimes, -> { merge(RegimeUser.enabled) }, through: :regime_users
   has_many :audit_logs, inverse_of: :user
   has_many :transaction_files, inverse_of: :user
-  has_many :approved_transactions, class_name: 'TransactionDetail', foreign_key: :approver_id, inverse_of: :approver
-  has_many :removed_transaction_files, class_name: 'TransactionHeader', foreign_key: :removed_by_id, inverse_of: :removed_by
+  has_many :approved_transactions, class_name: "TransactionDetail", foreign_key: :approver_id, inverse_of: :approver
+  has_many(
+    :removed_transaction_files,
+    class_name: "TransactionHeader",
+    foreign_key: :removed_by_id,
+    inverse_of: :removed_by
+  )
   after_save :ensure_a_default_regime_is_set
 
   accepts_nested_attributes_for :regime_users
@@ -15,7 +22,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :invitable, :database_authenticatable, :recoverable, :rememberable,
-    :trackable, :lockable, :timeoutable, :registerable, :validatable
+         :trackable, :lockable, :timeoutable, :registerable, :validatable
 
   validates :email, presence: true
   validates :first_name, presence: true
@@ -24,21 +31,20 @@ class User < ApplicationRecord
   validate :password_complexity
 
   def self.system_account
-    find_by!(email: 'system@example.com')
+    find_by!(email: "system@example.com")
   end
 
   def self.ordered_roles
-    [:read_only, :read_only_export, :billing, :admin]
+    %i[read_only read_only_export billing admin]
   end
 
   def self.search(str)
     m = "%#{sanitize_sql_like(str)}%"
-    where(arel_table[:first_name].matches(m).
-          or(arel_table[:last_name].matches(m)))
+    where(arel_table[:first_name].matches(m).or(arel_table[:last_name].matches(m)))
   end
 
   def full_name
-    first_name + " " + last_name
+    "#{first_name} #{last_name}"
   end
 
   def can_reinvite?
@@ -57,7 +63,7 @@ class User < ApplicationRecord
     end
   end
 
-  def set_selected_regime(regime_id)
+  def apply_regime(regime_id)
     reg = regimes.find_by(slug: regime_id)
     if reg
       send("#{reg.to_param}!") unless active_regime == reg.to_param
@@ -76,6 +82,7 @@ class User < ApplicationRecord
   end
 
   private
+
   def set_default_regime
     reg = regimes.order(:title).first
     send("#{reg.to_param}!")
@@ -83,7 +90,7 @@ class User < ApplicationRecord
   end
 
   def at_least_one_regime_selected
-    selected = regime_users.select { |ru| ru.enabled? }.count
+    selected = regime_users.select(&:enabled?).count
     errors.add :regime, "^Access to at least one Regime is required" if selected.zero?
   end
 
@@ -92,10 +99,9 @@ class User < ApplicationRecord
   end
 
   def password_complexity
-    if password.present?
-      if !password.match /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/
-        errors.add :password, "does not meet complexity requirements"
-      end
-    end
+    return unless password.present?
+    return if password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+
+    errors.add :password, "does not meet complexity requirements"
   end
 end

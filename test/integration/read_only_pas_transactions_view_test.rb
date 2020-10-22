@@ -1,7 +1,10 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class ReadOnlyPasTransactionsViewTest < ActionDispatch::IntegrationTest
-  include RegimeSetup, ChargeCalculation
+  include ChargeCalculation
+  include RegimeSetup
 
   def setup
     Capybara.current_driver = Capybara.javascript_driver
@@ -30,7 +33,7 @@ class ReadOnlyPasTransactionsViewTest < ActionDispatch::IntegrationTest
     t = page.find("div.tcm-table table tbody")
     assert t.has_selector?("tr.active", minimum: 1), "No rows to test"
     assert t.has_no_selector?("select.temporary-cessation-select"),
-      "Temporary Cessation selector found"
+           "Temporary Cessation selector found"
   end
 
   def test_approval_flag_is_read_only
@@ -39,10 +42,10 @@ class ReadOnlyPasTransactionsViewTest < ActionDispatch::IntegrationTest
     admin_user = users(:pas_billing_admin)
     Thread.current[:current_user] = admin_user
     transactions = Query::TransactionsToBeBilled.call(regime: @regime)
-    assert transactions.count > 0, "No transactions"
+    assert transactions.count.positive?, "No transactions"
     transactions.each do |transaction|
       assert UpdateCategory.call(transaction: transaction,
-                                 category: '2.4.4',
+                                 category: "2.4.4",
                                  user: admin_user).success?
     end
     Thread.current[:current_user] = @user
@@ -56,6 +59,6 @@ class ReadOnlyPasTransactionsViewTest < ActionDispatch::IntegrationTest
   def test_no_csv_export_button
     visit regime_transactions_path(@regime)
     assert page.has_no_selector?("button.table-export-btn"),
-      "CSV export button found"
+           "CSV export button found"
   end
 end

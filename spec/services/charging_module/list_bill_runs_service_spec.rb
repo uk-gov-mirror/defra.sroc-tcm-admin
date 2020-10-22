@@ -5,8 +5,8 @@ require "rails_helper"
 module ChargingModule
   RSpec.describe ListBillRunsService do
     before(:each) do
-      allow(ENV).to receive(:fetch).with('CHARGING_MODULE_API')
-                                   .and_return('http://localhost:3002/')
+      allow(ENV).to receive(:fetch).with("CHARGING_MODULE_API")
+                                   .and_return("http://localhost:3002/")
 
       allow(AuthorisationService).to receive(:call).and_return(authorisation_service)
 
@@ -14,7 +14,7 @@ module ChargingModule
         .with(
           body: "null",
           headers: {
-            "Accept" => '*/*',
+            "Accept" => "*/*",
             "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
             "Authorization" => token,
             "Content-Type" => "application/json",

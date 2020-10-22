@@ -1,22 +1,23 @@
+# frozen_string_literal: true
+
 class PutDataExportFile < ServiceObject
   include FileStorage
 
   attr_reader :filename
 
   def initialize(params = {})
+    super()
     @filename = params.fetch(:filename)
   end
 
   def call
     # store data export file in S3 (or local in DEV mode)
-    if File.exists? filename
-      basename = File.basename(filename)
-
+    if File.exist? filename
       begin
         archive_file_store.store_file(filename, csv_path)
 
         @result = true
-      rescue => e
+      rescue StandardError => e
         @result = false
         TcmLogger.notify(e)
       end
@@ -30,6 +31,6 @@ class PutDataExportFile < ServiceObject
   private
 
   def csv_path
-    File.join('csv', File.basename(filename))
+    File.join("csv", File.basename(filename))
   end
 end

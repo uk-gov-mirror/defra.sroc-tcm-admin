@@ -1,48 +1,46 @@
+# frozen_string_literal: true
+
 module ViewModels
   class ImportedTransactionFiles
-    include RegimeScope, ActionView::Helpers::FormOptionsHelper
+    include ActionView::Helpers::FormOptionsHelper
+    include RegimeScope
 
     attr_reader :regime, :user, :permit_all_regions
-    attr_accessor :region, :status, :search, :sort, :sort_direction,
-      :page, :per_page
+    attr_accessor :status, :search, :sort, :sort_direction,
+                  :page, :per_page
 
     def initialize(params = {})
       @regime = params.fetch(:regime)
       @user = params.fetch(:user)
-      @status = params.fetch(:status, '')
+      @status = params.fetch(:status, "")
       @page = 1
       @per_page = 10
-      @sort = 'created_at'
-      @sort_direction = 'desc'
+      @sort = "created_at"
+      @sort_direction = "desc"
       @permit_all_regions = true
     end
 
     def region=(val)
-      if val.blank? || val == 'all'
-        if permit_all_regions
-          @region = ''
-        else
-          @region = available_regions.first
-        end
-      else
-        if available_regions.include?(val)
-          @region = val
-        else
-          @region = available_regions.first
-        end
-      end
-      @region
+      @region = if val.blank? || val == "all"
+                  if permit_all_regions
+                    ""
+                  else
+                    available_regions.first
+                  end
+                elsif available_regions.include?(val)
+                  val
+                else
+                  available_regions.first
+                end
     end
 
     def region
       if permit_all_regions && @region.blank?
         @region
+      elsif available_regions.include?(@region)
+        @region
       else
-        if available_regions.include?(@region)
-          @region
-        else
-          @region = available_regions.first
-        end
+        @region = available_regions.first
       end
     end
 
@@ -81,22 +79,21 @@ module ViewModels
                                            sort_direction: sort_direction,
                                            search: search)
     end
-    
+
     # override me if 'all' regions is permitted in the view
     def region_options
       all_region_options
-      # options_for_select(available_regions.map { |r| [r, r] }, region)
     end
 
     def all_region_options
-      opts = available_regions.length == 1 ? [] : [['All', '']]
+      opts = available_regions.length == 1 ? [] : [["All", ""]]
       options_for_select(opts + available_regions.map { |r| [r, r] }, region)
     end
 
     def status_options
       options_for_select([
-        [ 'All', ''], ['Active', 'included'], ['Removed', 'removed']
-      ], status)
+                           ["All", ""], %w[Active included], %w[Removed removed]
+                         ], status)
     end
 
     private

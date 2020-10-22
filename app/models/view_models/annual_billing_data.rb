@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ViewModels
   class AnnualBillingData
     attr_reader :regime, :upload, :user
@@ -7,8 +9,8 @@ module ViewModels
       @regime = params.fetch(:regime)
       @upload = params.fetch(:upload)
       @user = params.fetch(:user)
-      @sort = 'line_number'
-      @sort_direction = 'asc'
+      @sort = "line_number"
+      @sort_direction = "asc"
       @page = 1
       @per_page = 10
     end
@@ -16,7 +18,7 @@ module ViewModels
     def errors
       @errors ||= sorted_paged_errors
     end
-    
+
     private
 
     def sorted_paged_errors

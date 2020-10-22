@@ -1,8 +1,10 @@
-module FinancialYear
-  ValidYears = %w[ 1819 1920 2021 2122 2223 2324 2425 2526 2627 2728 ].freeze
+# frozen_string_literal: true
 
-  def valid_financial_year?(fy)
-    ValidYears.include?(fy)
+module FinancialYear
+  VALID_YEARS = %w[1819 1920 2021 2122 2223 2324 2425 2526 2627 2728].freeze
+
+  def valid_financial_year?(financial_year)
+    VALID_YEARS.include?(financial_year)
   end
 
   def current_financial_year

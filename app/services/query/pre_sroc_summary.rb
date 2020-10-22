@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 module Query
   class PreSrocSummary < QueryObject
     include TransactionGroupFilters
 
     def initialize(params = {})
+      super()
       @regime = params.fetch(:regime)
       @region = params.fetch(:region)
     end
@@ -13,6 +16,7 @@ module Query
     end
 
     private
+
     def package_summary(query, charge_field, excluded_query = nil)
       credits = query.credits.pluck(charge_field)
       invoices = query.invoices.pluck(charge_field)
@@ -22,19 +26,17 @@ module Query
 
       summary = ::TransactionSummary.new(@regime)
       summary.assign_attributes(
-        credit_count:   credits.length,
-        credit_total:   credit_total,
-        invoice_count:  invoices.length,
-        invoice_total:  invoice_total,
-        net_total:      invoice_total + credit_total,
+        credit_count: credits.length,
+        credit_total: credit_total,
+        invoice_count: invoices.length,
+        invoice_total: invoice_total,
+        net_total: invoice_total + credit_total,
         excluded_count: excluded_count
       )
       summary
     end
 
     # for group filters
-    def regime
-      @regime
-    end
+    attr_reader :regime
   end
 end

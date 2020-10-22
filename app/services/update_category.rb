@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 class UpdateCategory < ServiceObject
   attr_reader :transaction
 
   def initialize(params = {})
+    super()
     @transaction = params.fetch(:transaction)
     @category = params.fetch(:category)
     @user = params.fetch(:user)
@@ -15,6 +18,7 @@ class UpdateCategory < ServiceObject
   end
 
   private
+
   def update
     if @transaction.updateable?
       if @transaction.category != @category
@@ -51,11 +55,7 @@ class UpdateCategory < ServiceObject
   def generate_charge
     charge = CalculateCharge.call(transaction: @transaction)
     @transaction.charge_calculation = charge.charge_calculation
-    if charge.success?
-      @transaction.tcm_charge = charge.amount
-    else
-      @transaction.tcm_charge = nil
-    end
+    @transaction.tcm_charge = (charge.amount if charge.success?)
     charge
   end
 
@@ -65,9 +65,9 @@ class UpdateCategory < ServiceObject
   end
 
   def override_suggestion
-    if @transaction.suggested_category
-      @transaction.suggested_category.update_attributes(overridden: true)
-    end
+    return unless @transaction.suggested_category
+
+    @transaction.suggested_category.update_attributes(overridden: true)
   end
 
   def approve_transaction

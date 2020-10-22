@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransactionFile < ApplicationRecord
   include Auditable
 
@@ -28,7 +30,7 @@ class TransactionFile < ApplicationRecord
     unless @filename
       base = base_filename
       base.downcase! if regime.water_quality?
-      ext = regime.waste? ? '.DAT' : '.dat'
+      ext = regime.waste? ? ".DAT" : ".dat"
       @filename = "#{base}#{ext}"
     end
     @filename
@@ -39,20 +41,20 @@ class TransactionFile < ApplicationRecord
   end
 
   def generated_by
-    user.full_name unless user.nil?
+    user&.full_name
   end
 
-private
+  private
+
   def set_file_id
     self.file_id = generate_file_id
     self.file_reference = base_filename
     save!
-    # update_attributes(file_id: fid, file_reference: base_filename)
   end
 
   def generate_file_id
-    fid = "#{SequenceCounter.next_file_number(regime, region).to_s.rjust(5, "0")}"
-    fid += 'T' unless retrospective?
+    fid = SequenceCounter.next_file_number(regime, region).to_s.rjust(5, "0").to_s
+    fid += "T" unless retrospective?
     fid
   end
 end

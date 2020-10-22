@@ -1,12 +1,15 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 module Query
   class TransactionSummaryTest < ActiveSupport::TestCase
-    include ActionView::Helpers::NumberHelper, ChargeCalculation
+    include ChargeCalculation
+    include ActionView::Helpers::NumberHelper
 
     def setup
       @regime = regimes(:cfd)
-      @region = 'A'
+      @region = "A"
       @user = users(:billing_admin)
       Thread.current[:current_user] = @user
       @regime.transaction_details.unbilled.region(@region).each do |transaction|

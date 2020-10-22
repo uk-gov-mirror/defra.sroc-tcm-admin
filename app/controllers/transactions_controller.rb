@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  include RegimeScope, FinancialYear, CsvExporter, ViewModelBuilder
-  before_action :set_regime, only: [:index, :approve]
-  before_action :set_transaction, only: [:show, :edit, :update, :audit]
-  before_action :read_only_user_check!, only: [:update, :approve, :audit]
-  # before_action :set_current_user, only: [:update, :approve]
+  include ViewModelBuilder
+  include CsvExporter
+  include FinancialYear
+  include RegimeScope
+  before_action :set_regime, only: %i[index approve]
+  before_action :set_transaction, only: %i[show edit update audit]
+  before_action :read_only_user_check!, only: %i[update approve audit]
 
   # GET /regimes/:regime_id/transactions
   # GET /regimes/:regime_id/transactions.json
@@ -14,9 +16,7 @@ class TransactionsController < ApplicationController
 
     respond_to do |format|
       format.html do
-        if request.xhr?
-          render partial: "table", locals: { view_model: @view_model }
-        end
+        render partial: "table", locals: { view_model: @view_model } if request.xhr?
       end
       format.csv do
         export_data_user_check!
@@ -26,9 +26,6 @@ class TransactionsController < ApplicationController
           set_streaming_headers
           self.response_body = result.csv_stream
         end
-        # set_streaming_headers
-        # self.response_body = stream_csv_data(@view_model.fetch_transactions)
-        # send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
     end
   end
@@ -37,9 +34,11 @@ class TransactionsController < ApplicationController
   # GET /regimes/:regime_id/transactions/1.json
   def show
     @related_unbilled_transactions = Query::RelatedUnbilledTransactions.call(
-      transaction: @transaction)
+      transaction: @transaction
+    )
     @related_billed_transactions = Query::RelatedBilledTransactions.call(
-      transaction: @transaction)
+      transaction: @transaction
+    )
 
     @exclusion_reasons = Query::Exclusions.call(regime: @regime)
   end
@@ -50,9 +49,7 @@ class TransactionsController < ApplicationController
   end
 
   # GET /regimes/:regimes_id/transactions/1/edit
-  def edit
-    # @related_transactions = transaction_store.transactions_related_to(@transaction)
-  end
+  def edit; end
 
   # PATCH/PUT /regimes/:regimes_id/transactions/1
   # PATCH/PUT /regimes/:regimes_id/transactions/1.json
@@ -67,27 +64,26 @@ class TransactionsController < ApplicationController
         format.html do
           if request.xhr?
             render partial: "#{@regime.to_param}_transaction",
-              locals: { transaction: presenter.new(@transaction, current_user),
-                        data_path: path }
+                   locals: { transaction: presenter.new(@transaction, current_user),
+                             data_path: path }
           else
-            redirect_to path, notice: 'Transaction was successfully updated.'
+            redirect_to path, notice: "Transaction was successfully updated."
           end
         end
-        format.json {
+        format.json do
           render json: { transaction: presenter.new(@transaction, current_user),
-                         message: 'Transaction updated'
-                        },
-                        status: :ok,
-                        location: path
-        }
+                         message: "Transaction updated" },
+                 status: :ok,
+                 location: path
+        end
       else
         format.html do
           if request.xhr?
             render partial: "#{@regime.to_param}_transaction",
-              locals: { transaction: presenter.new(@transaction, current_user),
-                        data_path: path }
+                   locals: { transaction: presenter.new(@transaction, current_user),
+                             data_path: path }
           else
-            redirect_to path, notice: 'Transaction was not updated.'
+            redirect_to path, notice: "Transaction was not updated."
           end
         end
         format.json { render json: @transaction, status: :unprocessable_entity }
@@ -101,12 +97,12 @@ class TransactionsController < ApplicationController
     # regions = transaction_store.unbilled_regions
     @region = params.fetch(:region, cookies[:region])
     fy = params.fetch(:fy, cookies[:fy])
-    
+
     available_years = Query::FinancialYears.call(regime: @regime)
-    fy = '' unless available_years.include? fy
+    fy = "" unless available_years.include? fy
 
     msg = ""
-    
+
     result = if regions.include? @region
                true
              else
@@ -118,7 +114,7 @@ class TransactionsController < ApplicationController
     count = 0
 
     if result
-      q = params.fetch(:search, '')
+      q = params.fetch(:search, "")
       approval = ApproveMatchingTransactions.call(regime: @regime,
                                                   region: @region,
                                                   financial_year: fy,
@@ -139,22 +135,23 @@ class TransactionsController < ApplicationController
   end
 
   private
-    def present_transactions(transactions)
-      Kaminari.paginate_array(presenter.wrap(transactions, current_user),
-                              total_count: transactions.total_count,
-                              limit: transactions.limit_value,
-                              offset: transactions.offset_value)
-    end
 
-    def set_transaction
-      set_regime
-      @transaction = Query::FindTransaction.call(regime: @regime,
-                                                 transaction_id: params[:id])
-    end
+  def present_transactions(transactions)
+    Kaminari.paginate_array(presenter.wrap(transactions, current_user),
+                            total_count: transactions.total_count,
+                            limit: transactions.limit_value,
+                            offset: transactions.offset_value)
+  end
 
-    def transaction_params
-      params.require(:transaction_detail).permit(:category, :temporary_cessation,
-                                                 :excluded, :excluded_reason,
-                                                 :approved_for_billing)
-    end
+  def set_transaction
+    set_regime
+    @transaction = Query::FindTransaction.call(regime: @regime,
+                                               transaction_id: params[:id])
+  end
+
+  def transaction_params
+    params.require(:transaction_detail).permit(:category, :temporary_cessation,
+                                               :excluded, :excluded_reason,
+                                               :approved_for_billing)
+  end
 end

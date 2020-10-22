@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TcmLogger
   def self.notify(exception)
     Airbrake.notify(exception) if defined? Airbrake

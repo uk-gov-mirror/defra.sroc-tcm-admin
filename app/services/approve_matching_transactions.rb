@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 class ApproveMatchingTransactions < ServiceObject
   attr_reader :transaction, :count
 
   def initialize(params = {})
+    super()
     @regime = params.fetch(:regime)
     @region = params.fetch(:region)
-    @financial_year = params.fetch(:financial_year, '')
+    @financial_year = params.fetch(:financial_year, "")
     @search = params.fetch(:search)
     @user = params.fetch(:user)
     @count = 0
@@ -19,6 +22,7 @@ class ApproveMatchingTransactions < ServiceObject
   end
 
   private
+
   def update
     q = @regime.transaction_details.region(@region).unbilled.unexcluded
     q = q.financial_year(@financial_year) unless @financial_year.blank?

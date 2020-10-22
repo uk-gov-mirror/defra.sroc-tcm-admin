@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class ErrorsController < ActionController::Base
   def not_found
     render status: 404

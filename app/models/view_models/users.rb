@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 module ViewModels
   class Users
-    include RegimeScope, ActionView::Helpers::FormOptionsHelper
+    include ActionView::Helpers::FormOptionsHelper
+    include RegimeScope
 
     attr_accessor :regime, :role, :search, :sort,
-      :sort_direction, :page, :per_page
+                  :sort_direction, :page, :per_page
 
     def initialize(params = {})
       @regime = params.fetch(:regime, "")
@@ -11,8 +14,8 @@ module ViewModels
       @role = ""
       @page = 1
       @per_page = 10
-      @sort = 'last_name'
-      @sort_direction = 'asc'
+      @sort = "last_name"
+      @sort_direction = "asc"
     end
 
     def users
@@ -24,8 +27,8 @@ module ViewModels
     end
 
     def check_params
-      @regime = '' if regime == 'all'
-      @role = '' if role == 'all'
+      @regime = "" if regime == "all"
+      @role = "" if role == "all"
       @page = 1 if page.blank?
       @page = 1 unless page.to_i.positive?
       @per_page = 10 if per_page.blank?
@@ -51,15 +54,15 @@ module ViewModels
                         sort_direction: sort_direction,
                         search: search)
     end
-    
+
     def regime_options
-      options_for_select([['All', '']] +
+      options_for_select([["All", ""]] +
                          available_regimes.map { |r| [r.title, r.slug] },
                          regime)
     end
 
     def role_options
-      options_for_select([['All', '']] +
+      options_for_select([["All", ""]] +
                          available_roles.map { |r| [r[:name], r[:value]] },
                          role)
     end
@@ -72,7 +75,7 @@ module ViewModels
 
     def available_roles
       @available_roles ||= User.ordered_roles.map do |r|
-        { name: I18n.t(r, scope: 'user.roles'), value: User.roles[r] }
+        { name: I18n.t(r, scope: "user.roles"), value: User.roles[r] }
       end
     end
 

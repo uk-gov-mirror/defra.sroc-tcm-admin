@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddStatusAndExclusionReasonToTransactionHeader < ActiveRecord::Migration[5.1]
   def change
     change_table :transaction_headers do |t|

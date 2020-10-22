@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 class PermitCategoryPresenter < SimpleDelegator
   def self.wrap(collection)
     collection.map { |o| new o }
   end
 
-  def as_json(options = {})
-     path = Rails.application.routes.url_helpers.
-       edit_regime_permit_category_path(regime, self)
+  def as_json(_options = {})
+    path = Rails.application.routes.url_helpers.edit_regime_permit_category_path(regime, self)
     {
       id: id,
       code: code,
@@ -17,7 +18,8 @@ class PermitCategoryPresenter < SimpleDelegator
     }
   end
 
-protected
+  protected
+
   def permit_category
     __getobj__
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddFinancialYearConstraintsToPermitCategories < ActiveRecord::Migration[5.1]
   def change
     remove_index :permit_categories, [:code, :regime_id]

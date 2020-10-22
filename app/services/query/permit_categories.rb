@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 module Query
   class PermitCategories < QueryObject
     def initialize(opts = {})
+      super()
       @regime = opts.fetch(:regime)
       @financial_year = opts.fetch(:financial_year)
-      @search = opts.fetch(:search, '')
+      @search = opts.fetch(:search, "")
       @sort_column = opts.fetch(:sort, :code)
-      @sort_direction = opts.fetch(:sort_direction, 'asc')
+      @sort_direction = opts.fetch(:sort_direction, "asc")
     end
 
     def call

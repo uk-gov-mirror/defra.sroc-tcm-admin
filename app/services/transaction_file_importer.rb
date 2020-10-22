@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "csv"
 
 class TransactionFileImporter
@@ -11,42 +13,42 @@ class TransactionFileImporter
       CSV.foreach(path) do |row|
         record_type = row[Common::RecordType]
 
-        if record_type == "H"
-          if header.nil?
-            file_type = row[Header::FileType]
-            if file_type == "I"
-              source = row[Header::FileSource]
-              region = row[Header::Region]
-              file_type_flag = row[Header::FileType]
-              file_seq_no = row[Header::FileSequenceNumber]
-              bill_run_id = row[Header::BillRunId]
-              generated_at = sanitize_date(row[Header::FileDate])
+        case record_type
+        when "H"
+          raise Exceptions::TransactionFileError, "Header record already exists?!" unless header.nil?
 
-              header = TransactionHeader.create!(
-                regime: Regime.find_by(name: source),
-                feeder_source_code: source,
-                region: region,
-                file_type_flag: file_type_flag,
-                file_sequence_number: file_seq_no,
-                bill_run_id: bill_run_id,
-                generated_at: generated_at,
-                filename: original_filename
-              )
-            else
-              raise Exceptions::TransactionFileError, "Not a transaction file!"
-            end
-          else
-            raise Exceptions::TransactionFileError, "Header record already exists?!"
-          end
-        elsif record_type == "D"
+          file_type = row[Header::FileType]
+          raise Exceptions::TransactionFileError, "Not a transaction file!" unless file_type == "I"
+
+          source = row[Header::FileSource]
+          region = row[Header::Region]
+          file_type_flag = row[Header::FileType]
+          file_seq_no = row[Header::FileSequenceNumber]
+          bill_run_id = row[Header::BillRunId]
+          generated_at = sanitize_date(row[Header::FileDate])
+
+          header = TransactionHeader.create!(
+            regime: Regime.find_by(name: source),
+            feeder_source_code: source,
+            region: region,
+            file_type_flag: file_type_flag,
+            file_sequence_number: file_seq_no,
+            bill_run_id: bill_run_id,
+            generated_at: generated_at,
+            filename: original_filename
+          )
+        when "D"
           # detail record
           raise Exceptions::TransactionFileError, "Detail record but no header record" if header.nil?
+
           detail = extract_detail(header, row, process_retrospectives)
           raise Exceptions::TransactionFileError, "Detail record has no reference_1" if detail[:reference_1].nil?
+
           header.transaction_details.create(detail)
-        elsif record_type == "T"
+        when "T"
           # trailer record
           raise Exceptions::TransactionFileError, "Trailer record but no header record" if header.nil?
+
           # pull totals from trailer record
           header.transaction_count = row[Trailer::RecordCount].to_i
           header.invoice_total = row[Trailer::DebitTotal].to_i
@@ -82,26 +84,25 @@ class TransactionFileImporter
       region: header.region
     }
 
-    period = nil
     regime = header.regime
     if regime.installations?
       data.merge!({
-        filename: row[Detail::Filename],
-        reference_1: row[Detail::PermitReference],
-        reference_2: row[Detail::OriginalPermitReference],
-        reference_3: row[Detail::AbsOriginalPermitReference],
-        customer_name: row[Detail::PasCustomerName]
-      })
+                    filename: row[Detail::Filename],
+                    reference_1: row[Detail::PermitReference],
+                    reference_2: row[Detail::OriginalPermitReference],
+                    reference_3: row[Detail::AbsOriginalPermitReference],
+                    customer_name: row[Detail::PasCustomerName]
+                  })
     elsif regime.water_quality?
       consent_parts = extract_consent_fields(row[Detail::LineDescription])
       data.merge!(consent_parts) unless consent_parts.empty?
       data.merge!({
-        variation: extract_variation(row),
-        customer_name: row[Detail::CfdCustomerName]
-      })
+                    variation: extract_variation(row),
+                    customer_name: row[Detail::CfdCustomerName]
+                  })
     elsif regime.waste?
       line = row[Detail::LineDescription]
-      ref = if row[Detail::TransactionType] == 'C'
+      ref = if row[Detail::TransactionType] == "C"
               row[Detail::LineAttr2]
             else
               row[Detail::LineAttr3]
@@ -109,7 +110,7 @@ class TransactionFileImporter
 
       refs = {
         reference_1: ref,
-        reference_2: line.split(':').last.strip,
+        reference_2: line.split(":").last.strip,
         customer_name: row[Detail::WmlCustomerName]
       }
       cc = extract_charge_code(line)
@@ -126,7 +127,7 @@ class TransactionFileImporter
     (1..15).each do |n|
       data["line_attr_#{n}".to_sym] = row[24 + n]
     end
-    
+
     # period dates
     period = TcmUtils.extract_csv_period_dates(regime, row)
     if period.present?
@@ -134,9 +135,7 @@ class TransactionFileImporter
       data["period_end"] = period[1]
       data["tcm_financial_year"] = determine_financial_year(period[0])
 
-      if process_retrospectives && regime.retrospective_date?(period[1])
-        data["status"] = 'retrospective'
-      end
+      data["status"] = "retrospective" if process_retrospectives && regime.retrospective_date?(period[1])
     end
 
     # original file details
@@ -160,7 +159,7 @@ class TransactionFileImporter
       # - or -
       # Consent No - TS/18/25124/O   R/11/1
 
-      m = /\A(?>\w+\s+\w+\s+-\s+)((?:.*)\/(\d+)\/(\d+))$\z/.match(consent_data)
+      m = %r{\A(?>\w+\s+\w+\s+-\s+)((?:.*)/(\d+)/(\d+))$\z}.match(consent_data)
       if m
         parts = {
           # consent
@@ -179,7 +178,7 @@ class TransactionFileImporter
     v = row[Detail::LineAttr9]
     if v.blank?
       "100%"
-    elsif v.ends_with?('%')
+    elsif v.ends_with?("%")
       v
     else
       "#{v}%"
@@ -193,13 +192,13 @@ class TransactionFileImporter
 
   def determine_financial_year(date)
     y = (date.month < 4 ? date.year - 1 : date.year) % 100
-    sprintf('%02d%02d', y, (y + 1) % 100)
+    format("%<year>02d%<year_plus_one>02d", year: y, year_plus_one: ((y + 1) % 100))
   end
 
-  def sanitize_date(d)
-    Date.parse(d)
-  rescue ArguementError => e
-    Rails.logger.warn("Invalid date in transaction file: #{d}") 
+  def sanitize_date(date)
+    Date.parse(date)
+  rescue ArguementError
+    Rails.logger.warn("Invalid date in transaction file: #{date}")
     nil
   end
 end

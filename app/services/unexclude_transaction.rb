@@ -4,20 +4,22 @@ class UnexcludeTransaction < ServiceObject
   attr_reader :transaction
 
   def initialize(params = {})
+    super()
     @transaction = params.fetch(:transaction)
     @user = params.fetch(:user)
   end
 
   def call
-    if @transaction.excluded?
-      @result = unexclude
-    else
-      @result = false
-    end
+    @result = if @transaction.excluded?
+                unexclude
+              else
+                false
+              end
     self
   end
 
   private
+
   def unexclude
     if @transaction.updateable?
       @transaction.excluded = false
@@ -41,11 +43,7 @@ class UnexcludeTransaction < ServiceObject
   def generate_charge
     charge = CalculateCharge.call(transaction: @transaction)
     @transaction.charge_calculation = charge.charge_calculation
-    if charge.success?
-      @transaction.tcm_charge = charge.amount
-    else
-      @transaction.tcm_charge = nil
-    end
+    @transaction.tcm_charge = (charge.amount if charge.success?)
     charge
   end
 end

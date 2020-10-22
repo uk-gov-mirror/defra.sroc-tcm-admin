@@ -4,6 +4,7 @@ class GetDataExportFile < ServiceObject
   include FileStorage
 
   def initialize(params = {})
+    super()
     @remote_path = params.fetch(:remote_path)
     @local_path = params.fetch(:local_path)
   end

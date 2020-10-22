@@ -1,11 +1,14 @@
-require 'digest'
-require 'fileutils'
+# frozen_string_literal: true
+
+require "digest"
+require "fileutils"
 
 class FetchDataExportFile < ServiceObject
 
   attr_reader :regime, :filename
 
   def initialize(params = {})
+    super()
     @regime = params.fetch(:regime)
     @edf = @regime.export_data_file
     @filename = nil
@@ -13,7 +16,7 @@ class FetchDataExportFile < ServiceObject
 
   def call
     # retrieve file from cache or S3
-    @filename = cache_or_retrieve @edf.exported_filename      
+    @filename = cache_or_retrieve @edf.exported_filename
     @result = filename.present?
     self
   end
@@ -28,10 +31,9 @@ class FetchDataExportFile < ServiceObject
     # pull file from S3
     GetDataExportFile.call(remote_path: file,
                            local_path: cached_filename)
-    # storage.fetch_file_from(:csv_export, file, cached_filename)
 
     # verify checksum
-    raise RuntimeError.new("Checksum does not match stored file") unless check_file_hash(cached_filename)
+    raise "Checksum does not match stored file" unless check_file_hash(cached_filename)
 
     cached_filename
   end
@@ -53,12 +55,8 @@ class FetchDataExportFile < ServiceObject
   end
 
   def cache_path
-    path = Rails.root.join('tmp', 'cache', 'export_data')
+    path = Rails.root.join("tmp", "cache", "export_data")
     FileUtils.mkdir_p path unless Dir.exist? path
     path
   end
-
-  # def storage
-  #   @storage ||= FileStorageService.new
-  # end
 end

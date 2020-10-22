@@ -5,12 +5,12 @@ require "rails_helper"
 module ChargingModule
   RSpec.describe AuthorisationService do
     before(:each) do
-      allow(ENV).to receive(:fetch).with('COGNITO_HOST')
-                                   .and_return('http://example.com')
-      allow(ENV).to receive(:fetch).with('COGNITO_USERNAME')
-                                   .and_return('auser')
-      allow(ENV).to receive(:fetch).with('COGNITO_PASSWORD')
-                                   .and_return('password12345')
+      allow(ENV).to receive(:fetch).with("COGNITO_HOST")
+                                   .and_return("http://example.com")
+      allow(ENV).to receive(:fetch).with("COGNITO_USERNAME")
+                                   .and_return("auser")
+      allow(ENV).to receive(:fetch).with("COGNITO_PASSWORD")
+                                   .and_return("password12345")
 
       allow(OAuth2::Client).to receive(:new)
         .with("auser", "password12345", site: "http://example.com", token_url: "/oauth2/token")

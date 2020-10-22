@@ -23,7 +23,8 @@ class TransactionSummaryService
     package_summary(q, :line_amount)
   end
 
-private
+  private
+
   def package_summary(query, charge_field, excluded_query = nil)
     credits = query.credits.pluck(charge_field)
     invoices = query.invoices.pluck(charge_field)
@@ -31,11 +32,11 @@ private
     invoice_total = invoices.sum
     excluded_count = excluded_query ? excluded_query.count : 0
     {
-      credit_count:   credits.length,
-      credit_total:   credit_total,
-      invoice_count:  invoices.length,
-      invoice_total:  invoice_total,
-      net_total:      invoice_total + credit_total,
+      credit_count: credits.length,
+      credit_total: credit_total,
+      invoice_count: invoices.length,
+      invoice_total: invoice_total,
+      net_total: invoice_total + credit_total,
       excluded_count: excluded_count
     }
   end

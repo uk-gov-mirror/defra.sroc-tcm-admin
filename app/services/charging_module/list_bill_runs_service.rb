@@ -9,6 +9,7 @@ module ChargingModule
     attr_reader :response
 
     def initialize(params = {})
+      super()
       regime = params.fetch(:regime)
       @endpoint = "#{regime}/billruns"
       @params = params.except(:regime)

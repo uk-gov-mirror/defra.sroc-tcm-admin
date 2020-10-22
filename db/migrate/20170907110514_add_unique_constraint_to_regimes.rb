@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddUniqueConstraintToRegimes < ActiveRecord::Migration[5.1]
   def change
     remove_index :regimes, :name

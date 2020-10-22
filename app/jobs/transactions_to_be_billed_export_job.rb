@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class TransactionsToBeBilledExportJob < ApplicationJob
   queue_as :default
 
-  def perform()
+  def perform
     ActiveRecord::Base.connection_pool.with_connection do
       Regime.all.each do |regime|
         service = TransactionExportService.new(regime)
@@ -15,11 +17,12 @@ class TransactionsToBeBilledExportJob < ApplicationJob
         end
       end
     end
-  rescue => e
+  rescue StandardError => e
     TcmLogger.notify(e)
   end
 
-private
+  private
+
   def storage
     @storage ||= FileStorageService.new
   end

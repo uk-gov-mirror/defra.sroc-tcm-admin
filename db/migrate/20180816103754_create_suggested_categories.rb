@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSuggestedCategories < ActiveRecord::Migration[5.1]
   def change
     create_table :suggested_categories do |t|

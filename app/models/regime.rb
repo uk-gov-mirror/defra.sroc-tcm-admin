@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Regime < ApplicationRecord
   has_many :sequence_counters, inverse_of: :regime, dependent: :destroy
   has_many :transaction_headers, inverse_of: :regime, dependent: :destroy
@@ -26,15 +28,15 @@ class Regime < ApplicationRecord
   end
 
   def waste?
-    slug == 'wml'
+    slug == "wml"
   end
 
   def installations?
-    slug == 'pas'
+    slug == "pas"
   end
 
   def water_quality?
-    slug == 'cfd'
+    slug == "cfd"
   end
 
   def retrospective_date?(end_date)
@@ -43,17 +45,18 @@ class Regime < ApplicationRecord
 
   def regions
     if water_quality?
-      %w[ A B E N S T Y]
+      %w[A B E N S T Y]
     elsif installations?
-      %w[ A B E N S Y]
+      %w[A B E N S Y]
     elsif waste?
-      %w[ A B E N S T U Y]
+      %w[A B E N S T U Y]
     else
       raise "Unknown regime #{slug}"
     end
   end
 
-private
+  private
+
   def generate_slug
     self.slug = name.parameterize.downcase
   end

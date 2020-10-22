@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RegimeSetup
   def setup_cfd
     @regime = regimes(:cfd)

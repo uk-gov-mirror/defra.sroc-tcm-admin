@@ -23,7 +23,7 @@ module ChargingModule
     def build_http_request(endpoint, payload, params, http)
       request = http.new(
         build_uri(endpoint, params),
-        'Content-Type': 'application/json',
+        'Content-Type': "application/json",
         'Authorization': auth_token
       )
       request.body = payload.to_json
@@ -40,7 +40,7 @@ module ChargingModule
 
     def send_request(request)
       http = Net::HTTP.new(url.host, url.port)
-      http.use_ssl = url.scheme.downcase == 'https'
+      http.use_ssl = url.scheme.downcase == "https"
 
       http.request(request)
     end
@@ -56,7 +56,7 @@ module ChargingModule
     end
 
     def url
-      @url ||= URI.parse(ENV.fetch('CHARGING_MODULE_API'))
+      @url ||= URI.parse(ENV.fetch("CHARGING_MODULE_API"))
     end
 
     def auth_token

@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 module ViewModelBuilder
   extend ActiveSupport::Concern
 
   def build_imported_transaction_files_view_model
     vm = ViewModels::ImportedTransactionFiles.new(regime: @regime,
                                                   user: current_user)
-    vm.region = params.fetch(:region, '')
-    vm.status = params.fetch(:status, '')
-    vm.search = params.fetch(:search, '')
+    vm.region = params.fetch(:region, "")
+    vm.status = params.fetch(:status, "")
+    vm.search = params.fetch(:search, "")
     vm.page = params.fetch(:page, 1)
     vm.per_page = params.fetch(:per_page, 10)
     vm.sort = params.fetch(:sort, :created_at)
-    vm.sort_direction = params.fetch(:sort_direction, 'desc')
+    vm.sort_direction = params.fetch(:sort_direction, "desc")
     vm.check_params
     vm
   end
@@ -18,26 +20,26 @@ module ViewModelBuilder
   def build_transaction_files_view_model
     vm = ViewModels::TransactionFiles.new(regime: @regime,
                                           user: current_user)
-    vm.region = params.fetch(:region, '')
-    vm.prepost = params.fetch(:prepost, '')
-    vm.search = params.fetch(:search, '')
+    vm.region = params.fetch(:region, "")
+    vm.prepost = params.fetch(:prepost, "")
+    vm.search = params.fetch(:search, "")
     vm.page = params.fetch(:page, 1)
     vm.per_page = params.fetch(:per_page, 10)
     vm.sort = params.fetch(:sort, :file_reference)
-    vm.sort_direction = params.fetch(:sort_direction, 'asc')
+    vm.sort_direction = params.fetch(:sort_direction, "asc")
     vm.check_params
     vm
   end
 
   def build_users_view_model
     vm = ViewModels::Users.new
-    vm.regime = params.fetch(:regime, '')
-    vm.role = params.fetch(:role, '')
-    vm.search = params.fetch(:search, '')
+    vm.regime = params.fetch(:regime, "")
+    vm.role = params.fetch(:role, "")
+    vm.search = params.fetch(:search, "")
     vm.page = params.fetch(:page, 1)
     vm.per_page = params.fetch(:per_page, 10)
     vm.sort = params.fetch(:sort, :last_name)
-    vm.sort_direction = params.fetch(:sort_direction, 'asc')
+    vm.sort_direction = params.fetch(:sort_direction, "asc")
     vm.check_params
     vm
   end
@@ -49,7 +51,7 @@ module ViewModelBuilder
     vm.page = params.fetch(:page, 1)
     vm.per_page = params.fetch(:per_page, 10)
     vm.sort = params.fetch(:sort, :line_number)
-    vm.sort_direction = params.fetch(:sort_direction, 'asc')
+    vm.sort_direction = params.fetch(:sort_direction, "asc")
     vm
   end
 
@@ -79,17 +81,17 @@ module ViewModelBuilder
     populate_view_model(vm)
   end
 
-  def populate_view_model(vm)
-    vm.region = param_or_cookie(:region, '')
-    vm.page = param_or_cookie(:page, 1)
-    vm.per_page = param_or_cookie(:per_page, 10)
-    vm.financial_year = param_or_cookie(:fy, '')
-    vm.search = param_or_cookie(:search, '')
-    vm.sort = param_or_cookie(:sort, 'customer_reference')
-    vm.sort_direction = param_or_cookie(:sort_direction, 'asc')
-    vm.unapproved = param_or_cookie(:unapproved, false)
-    vm.check_params
-    vm
+  def populate_view_model(view_model)
+    view_model.region = param_or_cookie(:region, "")
+    view_model.page = param_or_cookie(:page, 1)
+    view_model.per_page = param_or_cookie(:per_page, 10)
+    view_model.financial_year = param_or_cookie(:fy, "")
+    view_model.search = param_or_cookie(:search, "")
+    view_model.sort = param_or_cookie(:sort, "customer_reference")
+    view_model.sort_direction = param_or_cookie(:sort_direction, "asc")
+    view_model.unapproved = param_or_cookie(:unapproved, false)
+    view_model.check_params
+    view_model
   end
 
   def param_or_cookie(attr, default_value)

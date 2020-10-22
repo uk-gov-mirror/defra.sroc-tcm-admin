@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class PermitCategoryTest < ActiveSupport::TestCase
   def setup
@@ -16,14 +18,14 @@ class PermitCategoryTest < ActiveSupport::TestCase
   end
 
   def test_valid_when_code_formatted_correctly
-    %w[ 1 12.1111.2 1.9.9999 1.88 1234.1234.1234 ].each do |code|
+    %w[1 12.1111.2 1.9.9999 1.88 1234.1234.1234].each do |code|
       @permit_category.code = code
       assert @permit_category.valid?
     end
   end
 
   def test_invalid_when_code_not_formatted_correctly
-    %w[ wigwam 12a 1.9.11111111 1.egg.88 11111.21 ].each do |code|
+    %w[wigwam 12a 1.9.11111111 1.egg.88 11111.21].each do |code|
       @permit_category.code = code
       assert @permit_category.invalid?
       assert_not_nil @permit_category.errors[:code]
@@ -31,14 +33,14 @@ class PermitCategoryTest < ActiveSupport::TestCase
   end
 
   def test_invalid_without_description_when_active
-    @permit_category.status = 'active'
+    @permit_category.status = "active"
     @permit_category.description = nil
     assert @permit_category.invalid?
     assert_not_nil @permit_category.errors[:description]
   end
 
   def test_valid_without_description_when_excluded
-    @permit_category.status = 'excluded'
+    @permit_category.status = "excluded"
     @permit_category.description = nil
     assert @permit_category.valid?
   end
@@ -54,7 +56,7 @@ class PermitCategoryTest < ActiveSupport::TestCase
     assert @permit_category.invalid?
     assert_not_nil @permit_category.errors[:status]
 
-    @permit_category.status = 'bananas'
+    @permit_category.status = "bananas"
     assert @permit_category.invalid?
     assert_not_nil @permit_category.errors[:status]
 
@@ -73,7 +75,7 @@ class PermitCategoryTest < ActiveSupport::TestCase
     assert p2.valid?
 
     p2.valid_from = @permit_category.valid_from
-    p2.code = p2.code + "1"
+    p2.code = "#{p2.code}1"
     assert p2.valid?
 
     p2.code = @permit_category.code
@@ -83,22 +85,22 @@ class PermitCategoryTest < ActiveSupport::TestCase
   end
 
   def test_valid_from_is_4_digit_financial_year
-    %w[ 12345 ABCD 1822 3311 ].each do |invalid_val|
+    %w[12345 ABCD 1822 3311].each do |invalid_val|
       @permit_category.valid_from = invalid_val
       assert @permit_category.invalid?
       assert_not_nil @permit_category.errors[:valid_from]
-    end 
+    end
 
     @permit_category.valid_from = "2122"
     assert @permit_category.valid?
   end
 
   def test_valid_to_is_4_digit_financial_year_or_nil
-    %w[ 11223344 WXYZ 2224 3311 ].each do |invalid_val|
+    %w[11223344 WXYZ 2224 3311].each do |invalid_val|
       @permit_category.valid_to = invalid_val
       assert @permit_category.invalid?
       assert_not_nil @permit_category.errors[:valid_to]
-    end 
+    end
 
     @permit_category.valid_to = "2425"
     assert @permit_category.valid?

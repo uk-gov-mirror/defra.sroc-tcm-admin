@@ -1,26 +1,14 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
   def setup
-    set_audit_user
+    apply_audit_user
     @transaction = transaction_details(:wml)
     @presenter = WmlTransactionDetailPresenter.new(@transaction)
   end
 
-  # def test_it_returns_charge_params
-  #   assert_equal(@presenter.charge_params, {
-  #     permitCategoryRef: @transaction.category,
-  #     percentageAdjustment: clean_variation,
-  #     temporaryCessation: false,
-  #     compliancePerformanceBand: 'B',
-  #     billableDays: billable_days,
-  #     financialDays: financial_year_days,
-  #     chargePeriod: charge_period,
-  #     preConstruction: false,
-  #     environmentFlag: 'TEST'
-  #   })
-  # end
-  #
   def test_it_returns_compliance_band
     band = @transaction.line_attr_6
     band = band.present? ? band.first : ""
@@ -28,17 +16,17 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
   end
 
   def test_it_formats_compliance_band_with_percentage
-    set_charge_calculation_compliance(@transaction, "A(95%)")
+    apply_charge_calculation_compliance(@transaction, "A(95%)")
     assert_equal("A (95%)", @presenter.compliance_band_with_percent)
 
-    set_charge_calculation_compliance(@transaction,
-                                      "Significant Improvement Needed(100%)")
+    apply_charge_calculation_compliance(@transaction,
+                                        "Significant Improvement Needed(100%)")
     assert_equal("Significant Improvement Needed (100%)",
                  @presenter.compliance_band_with_percent)
   end
 
   def test_it_returns_blank_if_compliance_band_100_percent
-    set_charge_calculation_compliance(@transaction, " (100%)")
+    apply_charge_calculation_compliance(@transaction, " (100%)")
     assert @presenter.compliance_band_with_percent.blank?
   end
 
@@ -99,7 +87,7 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
 
     presenter = WmlTransactionDetailPresenter.new(transaction)
 
-    assert_equal(val.gsub(/Permit/, 'EPR'), presenter.invoice_line_description)
+    assert_equal(val.gsub(/Permit/, "EPR"), presenter.invoice_line_description)
   end
 
   def test_it_returns_permit_reference
@@ -108,30 +96,30 @@ class WmlTransactionDetailPresenterTest < ActiveSupport::TestCase
 
   def test_it_transforms_into_json
     assert_equal({
-      id: @transaction.id,
-      customer_reference: @presenter.customer_reference,
-      tcm_transaction_reference: @presenter.tcm_transaction_reference,
-      generated_filename: @presenter.generated_filename,
-      generated_file_date: @presenter.generated_file_date,
-      original_filename: @presenter.original_filename,
-      original_file_date: @presenter.original_file_date_table,
-      permit_reference: @presenter.permit_reference,
-      compliance_band: @presenter.compliance_band,
-      sroc_category: @presenter.category,
-      confidence_level: @presenter.confidence_level,
-      category_locked: @presenter.category_locked,
-      can_update_category: @presenter.can_update_category?,
-      temporary_cessation: @presenter.temporary_cessation_flag,
-      tcm_financial_year: @presenter.tcm_financial_year,
-      period: @presenter.period,
-      amount: @presenter.amount,
-      excluded: @presenter.excluded,
-      excluded_reason: @presenter.excluded_reason,
-      error_message: nil
-    }, @presenter.as_json)
+                   id: @transaction.id,
+                   customer_reference: @presenter.customer_reference,
+                   tcm_transaction_reference: @presenter.tcm_transaction_reference,
+                   generated_filename: @presenter.generated_filename,
+                   generated_file_date: @presenter.generated_file_date,
+                   original_filename: @presenter.original_filename,
+                   original_file_date: @presenter.original_file_date_table,
+                   permit_reference: @presenter.permit_reference,
+                   compliance_band: @presenter.compliance_band,
+                   sroc_category: @presenter.category,
+                   confidence_level: @presenter.confidence_level,
+                   category_locked: @presenter.category_locked,
+                   can_update_category: @presenter.can_update_category?,
+                   temporary_cessation: @presenter.temporary_cessation_flag,
+                   tcm_financial_year: @presenter.tcm_financial_year,
+                   period: @presenter.period,
+                   amount: @presenter.amount,
+                   excluded: @presenter.excluded,
+                   excluded_reason: @presenter.excluded_reason,
+                   error_message: nil
+                 }, @presenter.as_json)
   end
 
-  def set_charge_calculation_compliance(transaction, band)
+  def apply_charge_calculation_compliance(transaction, band)
     transaction.charge_calculation = {
       "calculation": {
         "compliancePerformanceBand": band

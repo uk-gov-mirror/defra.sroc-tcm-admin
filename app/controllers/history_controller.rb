@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class HistoryController < ApplicationController
-  include RegimeScope, CsvExporter, QueryTransactions, ViewModelBuilder
+  include ViewModelBuilder
+  include QueryTransactions
+  include CsvExporter
+  include RegimeScope
 
   before_action :set_regime, only: [:index]
   before_action :set_transaction, only: [:show]
@@ -13,9 +16,7 @@ class HistoryController < ApplicationController
 
     respond_to do |format|
       format.html do
-        if request.xhr?
-          render partial: 'table', locals: { view_model: @view_model }
-        end
+        render partial: "table", locals: { view_model: @view_model } if request.xhr?
       end
       format.csv do
         export_data_user_check!
@@ -25,24 +26,20 @@ class HistoryController < ApplicationController
           set_streaming_headers
           self.response_body = result.csv_stream
         end
-        # set_streaming_headers
-        # self.response_body = stream_csv_data(@view_model.fetch_transactions)
-
-        # send_data csv.full_export(@view_model.csv_transactions), csv_opts
       end
     end
   end
 
   # GET /regimes/:regime_id/history/1
   # GET /regimes/:regime_id/history/1.json
-  def show
-  end
+  def show; end
 
   private
-    def present_transactions(transactions)
-      Kaminari.paginate_array(presenter.wrap(transactions, current_user),
-                              total_count: transactions.total_count,
-                              limit: transactions.limit_value,
-                              offset: transactions.offset_value)
-    end
+
+  def present_transactions(transactions)
+    Kaminari.paginate_array(presenter.wrap(transactions, current_user),
+                            total_count: transactions.total_count,
+                            limit: transactions.limit_value,
+                            offset: transactions.offset_value)
+  end
 end

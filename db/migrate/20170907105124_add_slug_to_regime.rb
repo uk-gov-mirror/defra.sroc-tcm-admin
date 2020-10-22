@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddSlugToRegime < ActiveRecord::Migration[5.1]
   def self.up
     add_column :regimes, :slug, :string

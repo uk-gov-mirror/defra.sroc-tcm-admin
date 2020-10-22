@@ -8,13 +8,13 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = 'e56aad1fbab474697b4c3eadec2f76dda951c73769ad90d07f613c5ccbf056e5402cab910031d6d6a15428dea88d29c909325571d70d7d93e387fda61b4ad587'
+  # config.secret_key = 'e56aad1fbab474697b4c3eadec2f76dda951c73769ad90d07f613c5ccbf056e5402cab910031d6d6a15428dea88d29'
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = ENV.fetch('DEVISE_MAILER_SENDER')
+  config.mailer_sender = ENV.fetch("DEVISE_MAILER_SENDER")
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
@@ -26,7 +26,7 @@ Devise.setup do |config|
   # Load and configure the ORM. Supports :active_record (default) and
   # :mongoid (bson_ext recommended) by default. Other ORMs may be
   # available as additional gems.
-  require 'devise/orm/active_record'
+  require "devise/orm/active_record"
 
   # ==> Configuration for any authentication mechanism
   # Configure which keys are used when authenticating a user. The default is
@@ -110,7 +110,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 11
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = '0d765ed3152ea37a6b09178660bf2913a0b7be5e54ba01b7e7e8a330a0e69eaa8a1388542b9bdf9f55a5a849dd634fd90faefea72496476858384204a03eea27'
+  # config.pepper = '0d765ed3152ea37a6b09178660bf2913a0b7be5e54ba01b7e7e8a330a0e69eaa8a1388542b9bdf9f55a5a849dd634fd90f'
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
@@ -151,7 +151,7 @@ Devise.setup do |config|
   # The class name of the inviting model. If this is nil,
   # the #invited_by association is declared to be polymorphic.
   # Default: nil
-  config.invited_by_class_name = 'User'
+  config.invited_by_class_name = "User"
 
   # The foreign key to the inviting model (if invited_by_class_name is set)
   # Default: :invited_by_id

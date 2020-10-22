@@ -3,9 +3,8 @@
 class UpdateTransaction < ServiceObject
   include RegimePresenter
 
-  attr_reader :transaction
-
   def initialize(params = {})
+    super()
     @params = params
   end
 
@@ -13,17 +12,17 @@ class UpdateTransaction < ServiceObject
     attrs = @params.fetch(:attributes)
     user = @params.fetch(:user)
     # only get one attribute change at a time through the front-end
-    if attrs.has_key?(:category)
+    if attrs.key?(:category)
       UpdateCategory.call(transaction: transaction,
                           category: attrs.fetch(:category),
                           user: user)
-    elsif attrs.has_key?(:temporary_cessation)
+    elsif attrs.key?(:temporary_cessation)
       if str_to_bool(attrs.fetch(:temporary_cessation))
         ApplyTemporaryCessation.call(transaction: transaction, user: user)
       else
         RemoveTemporaryCessation.call(transaction: transaction, user: user)
       end
-    elsif attrs.has_key?(:excluded)
+    elsif attrs.key?(:excluded)
       if str_to_bool(attrs.fetch(:excluded))
         ExcludeTransaction.call(transaction: transaction,
                                 reason: attrs.fetch(:excluded_reason),
@@ -31,7 +30,7 @@ class UpdateTransaction < ServiceObject
       else
         UnexcludeTransaction.call(transaction: transaction, user: user)
       end
-    elsif attrs.has_key?(:approved_for_billing)
+    elsif attrs.key?(:approved_for_billing)
       if str_to_bool(attrs.fetch(:approved_for_billing))
         ApproveTransaction.call(transaction: transaction, approver: user)
       else

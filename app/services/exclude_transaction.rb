@@ -4,6 +4,7 @@ class ExcludeTransaction < ServiceObject
   attr_reader :transaction
 
   def initialize(params = {})
+    super()
     @transaction = params.fetch(:transaction)
     @reason = params.fetch(:reason)
     @user = params.fetch(:user)

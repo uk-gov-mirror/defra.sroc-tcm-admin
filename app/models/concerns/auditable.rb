@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Auditable
   extend ActiveSupport::Concern
 
@@ -12,11 +14,11 @@ module Auditable
   end
 
   def audit_events
-    self.auditable_events || []
+    auditable_events || []
   end
 
   def audit_attributes
-    self.auditable_attributes || []
+    auditable_attributes || []
   end
 
   private

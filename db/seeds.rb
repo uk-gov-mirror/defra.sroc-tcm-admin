@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 def create_user(details)
   user = User.new(
-    first_name: details['firstname'],
-    last_name: details['lastname'],
-    email: details['email'],
-    role: details['role'],
-    password: ENV['DEFAULT_PASSWORD']
+    first_name: details["firstname"],
+    last_name: details["lastname"],
+    email: details["email"],
+    role: details["role"],
+    password: ENV["DEFAULT_PASSWORD"]
   )
 
-  add_regimes_to_user(user, details['regimes'])
+  add_regimes_to_user(user, details["regimes"])
 
   user.save!
 end
@@ -21,49 +23,49 @@ end
 
 def seed_users
   seeds = JSON.parse(File.read("#{Rails.root}/db/seeds/users.json"))
-  users = seeds['users']
+  users = seeds["users"]
 
   users.each do |user|
-    create_user(user) unless User.where(email: user['email']).exists?
+    create_user(user) unless User.where(email: user["email"]).exists?
   end
 end
 
 if Regime.count.zero?
-  Regime.create!(name: 'PAS', title: 'Installations')
-  Regime.create!(name: 'CFD', title: 'Water Quality')
-  Regime.create!(name: 'WML', title: 'Waste')
+  Regime.create!(name: "PAS", title: "Installations")
+  Regime.create!(name: "CFD", title: "Water Quality")
+  Regime.create!(name: "WML", title: "Waste")
 end
 
 Regime.all.each do |r|
   ExportDataFile.find_or_create_by!(regime_id: r.id) do |edf|
-    edf.status = 'pending'
+    edf.status = "pending"
     edf.compress = true
   end
 end
 
 seed_users
 
-r = Regime.find_by!(slug: 'pas')
+r = Regime.find_by!(slug: "pas")
 r.permit_categories.destroy_all
-PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'installations.csv'))
+PermitCategoryImporter.import(r, Rails.root.join("db", "categories", "installations.csv"))
 
-%w[ A B E N S Y ].each do |region|
+%w[A B E N S Y].each do |region|
   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
 end
 
-r = Regime.find_by!(slug: 'cfd')
+r = Regime.find_by!(slug: "cfd")
 r.permit_categories.destroy_all
-PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'water_quality.csv'))
+PermitCategoryImporter.import(r, Rails.root.join("db", "categories", "water_quality.csv"))
 
-%w[ A B E N S T Y ].each do |region|
+%w[A B E N S T Y].each do |region|
   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
 end
 
-r = Regime.find_by!(slug: 'wml')
+r = Regime.find_by!(slug: "wml")
 r.permit_categories.destroy_all
-PermitCategoryImporter.import(r, Rails.root.join('db', 'categories', 'waste.csv'))
+PermitCategoryImporter.import(r, Rails.root.join("db", "categories", "waste.csv"))
 
-%w[ A B E N S T U Y ].each do |region|
+%w[A B E N S T U Y].each do |region|
   SequenceCounter.find_or_create_by(regime_id: r.id, region: region)
 end
 

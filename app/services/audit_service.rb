@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AuditService
   attr_reader :user
 
@@ -19,6 +21,7 @@ class AuditService
   end
 
   private
+
   def add_entry(action, entity, payload = nil)
     entity.audit_logs.create!(user: user, action: action, payload: payload)
   end
@@ -26,11 +29,6 @@ class AuditService
   def extract_changes(entity)
     mods = {}
     entity.audit_attributes.each do |attr|
-    # [ :category,
-    #   :temporary_cessation,
-    #   :charge_calculation,
-    #   :tcm_charge,
-    #   :variation ].each do |attr|
       if entity.send("saved_change_to_#{attr}?")
         mods[attr] = [entity.send("#{attr}_before_last_save"),
                       entity.send(attr)]

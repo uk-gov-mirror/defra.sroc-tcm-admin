@@ -4,6 +4,7 @@ class CreatePermitCategory < ServiceObject
   attr_reader :permit_category
 
   def initialize(params = {})
+    super()
     @regime = params.fetch(:regime)
     @valid_from = params.fetch(:valid_from)
     @user = params.fetch(:user)
@@ -23,23 +24,21 @@ class CreatePermitCategory < ServiceObject
     @permit_category = @regime.permit_categories.build(code: @code,
                                                        description: @description,
                                                        valid_from: @valid_from,
-                                                       status: 'active')
+                                                       status: "active")
     if code_exists?
       @permit_category.errors.add(:code, "^Code '#{@code}' is already in use.")
       false
-    else
-      if @permit_category.save
-        if @valid_from != '1819'
-          @regime.permit_categories.create(code: @code,
-                                           description: @description,
-                                           valid_from: '1819',
-                                           valid_to: @valid_from,
-                                           status: 'excluded')
-        end
-        true
-      else
-        false
+    elsif @permit_category.save
+      if @valid_from != "1819"
+        @regime.permit_categories.create(code: @code,
+                                         description: @description,
+                                         valid_from: "1819",
+                                         valid_to: @valid_from,
+                                         status: "excluded")
       end
+      true
+    else
+      false
     end
   end
 

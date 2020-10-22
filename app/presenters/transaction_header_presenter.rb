@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransactionHeaderPresenter < SimpleDelegator
   include FormattingUtils
 
@@ -12,12 +14,12 @@ class TransactionHeaderPresenter < SimpleDelegator
 
   def unbilled_items
     # handle sroc and pre-sroc items
-    transaction_details.where(status: ['unbilled', 'retrospective'])
+    transaction_details.where(status: %w[unbilled retrospective])
   end
 
   def billed_items
     # handle sroc and pre-sroc items
-    transaction_details.where(status: ['billed', 'retro_billed'])
+    transaction_details.where(status: %w[billed retro_billed])
   end
 
   def excluded_items
@@ -36,20 +38,21 @@ class TransactionHeaderPresenter < SimpleDelegator
   def created_at
     slash_formatted_date transaction_header.created_at
   end
-  
+
   def removed_by
-    transaction_header.removed_by.full_name unless transaction_header.removed_by.nil?
+    transaction_header.removed_by&.full_name
   end
 
   def removed_at
-    slash_formatted_date transaction_header.removed_at, true
+    slash_formatted_date transaction_header.removed_at, include_time: true
   end
 
   def currency_line_amount
     pence_to_currency(transaction_detail.line_amount)
   end
 
-protected
+  protected
+
   def transaction_header
     __getobj__
   end

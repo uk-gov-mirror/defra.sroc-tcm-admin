@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class TransactionFileTest < ActiveSupport::TestCase
   def setup
@@ -7,19 +9,19 @@ class TransactionFileTest < ActiveSupport::TestCase
 
     @regime = regimes(:cfd)
     @sroc_file = @regime.transaction_files.create!(user: @user,
-                                                   region: 'A',
+                                                   region: "A",
                                                    retrospective: false)
     @retro_file = @regime.transaction_files.create!(user: @user,
-                                                    region: 'B',
+                                                    region: "B",
                                                     retrospective: true)
   end
 
   def test_file_id_ends_with_t_for_sroc_charges
-    assert_match /\A\d{5}T\z/, @sroc_file.file_id
+    assert_match(/\A\d{5}T\z/, @sroc_file.file_id)
   end
 
   def test_file_id_does_not_end_with_t_for_retrospective_charges
-    assert_match /\A\d{5}\z/, @retro_file.file_id
+    assert_match(/\A\d{5}\z/, @retro_file.file_id)
   end
 
   def test_filename_has_correct_format_for_sroc
@@ -32,20 +34,20 @@ class TransactionFileTest < ActiveSupport::TestCase
     assert_equal "#{@regime.to_param}#{f.region}I#{f.file_id}.dat".downcase, f.filename
   end
 
-  def test_filename_is_lowercase_for_Water_Quality
+  def test_filename_is_lowercase_for_water_quality
     [@sroc_file, @retro_file].each do |f|
       assert_equal f.filename.downcase, f.filename
     end
   end
 
-  def test_filename_is_uppercase_for_Installations
+  def test_filename_is_uppercase_for_installations
     @regime = regimes(:pas)
     @sroc_file = @regime.transaction_files.create(user: @user,
-                                                   region: 'A',
-                                                   retrospective: false)
+                                                  region: "A",
+                                                  retrospective: false)
 
     @retro_file = @regime.transaction_files.create(user: @user,
-                                                   region: 'B',
+                                                   region: "B",
                                                    retrospective: true)
     [@sroc_file, @retro_file].each do |f|
       fn = f.filename
@@ -55,14 +57,14 @@ class TransactionFileTest < ActiveSupport::TestCase
     end
   end
 
-  def test_filename_is_all_uppercase_for_Waste
+  def test_filename_is_all_uppercase_for_waste
     @regime = regimes(:wml)
     @sroc_file = @regime.transaction_files.create(user: @user,
-                                                   region: 'A',
-                                                   retrospective: false)
+                                                  region: "A",
+                                                  retrospective: false)
 
     @retro_file = @regime.transaction_files.create(user: @user,
-                                                   region: 'B',
+                                                   region: "B",
                                                    retrospective: true)
     [@sroc_file, @retro_file].each do |f|
       assert_equal f.filename.upcase, f.filename

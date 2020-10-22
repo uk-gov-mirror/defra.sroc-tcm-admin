@@ -14,13 +14,12 @@ module Permits
     end
 
     def fetch_unique_consents
-      header.transaction_details.unbilled.distinct.order(reference_1: :asc).
-        pluck(:reference_1)
+      header.transaction_details.unbilled.distinct.order(reference_1: :asc).pluck(:reference_1)
     end
 
     def set_category(transaction, matched_transaction, confidence_level,
-                     stage, admin_lock = false)
-      
+                     stage, admin_lock: false)
+
       fy = transaction.tcm_financial_year
       # need to ensure the found category is still valid
       category = matched_transaction.category
@@ -32,7 +31,7 @@ module Permits
 
       cat = permit_store.code_for_financial_year(category, fy)
       if cat.nil?
-        sc.logic = 'Category not valid for financial year'
+        sc.logic = "Category not valid for financial year"
         sc.confidence_level = :red
       else
         transaction.category = category
@@ -40,11 +39,11 @@ module Permits
         if transaction.charge_calculation_error?
           transaction.category = nil
           transaction.tcm_charge = nil
-          sc.logic = 'Error assigning charge'
+          sc.logic = "Error assigning charge"
           sc.confidence_level = :red
         else
           transaction.tcm_charge = TransactionCharge.extract_correct_charge(transaction)
-          sc.logic = 'Assigned matching category'
+          sc.logic = "Assigned matching category"
           sc.confidence_level = confidence_level
           sc.admin_lock = admin_lock
         end
@@ -57,9 +56,6 @@ module Permits
 
     def calc_charge(transaction)
       CalculateCharge.call(transaction: transaction).charge_calculation
-
-      # TransactionCharge.invoke_charge_calculation(calculator,
-      #                                             presenter.new(transaction))
     end
 
     def not_annual_bill(where_args, stage)
@@ -85,7 +81,7 @@ module Permits
 
     def multiple_historic_matches(where_args, stage)
       make_suggestion(where_args, :red,
-                      'Multiple historic matches found', stage)
+                      "Multiple historic matches found", stage)
     end
 
     def multiple_matching_transactions(where_args, stage)
@@ -104,7 +100,7 @@ module Permits
         # supplementarty stuff done
         sc = suggested_category_for(t)
         sc.logic = msg
-        sc.suggestion_stage = 'Unknown'
+        sc.suggestion_stage = "Unknown"
         sc.confidence_level = :red
         sc.save!
       end

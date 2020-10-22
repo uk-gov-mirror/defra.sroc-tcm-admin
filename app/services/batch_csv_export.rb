@@ -1,4 +1,6 @@
-require 'csv'
+# frozen_string_literal: true
+
+require "csv"
 
 class BatchCsvExport < ServiceObject
   include RegimePresenter
@@ -6,9 +8,10 @@ class BatchCsvExport < ServiceObject
   attr_reader :regime, :query, :csv_stream, :max_limit, :batch_size
 
   def initialize(params = {})
+    super()
     @regime = params.fetch(:regime)
     @query = params.fetch(:query)
-    @max_limit = params.fetch(:max_limit, 15000)
+    @max_limit = params.fetch(:max_limit, 15_000)
     @batch_size = params.fetch(:batch_size, 1000)
     @csv_stream = nil
   end
@@ -19,7 +22,7 @@ class BatchCsvExport < ServiceObject
 
       batch_query do |t|
         y << csv_row(t)
-      end 
+      end
     end
 
     @result = true
@@ -28,12 +31,12 @@ class BatchCsvExport < ServiceObject
 
   private
 
-  def batch_query(&block)
+  def batch_query
     count = query.count
-    count = [ count, max_limit ].min unless max_limit.zero?
+    count = [count, max_limit].min unless max_limit.zero?
 
     offset = 0
-    while offset < count do
+    while offset < count
       query.offset(offset).limit(batch_size).each do |transaction|
         yield transaction
       end
@@ -52,10 +55,10 @@ class BatchCsvExport < ServiceObject
   end
 
   def regime_headings
-    ExportFileFormat::ExportColumns.map { |c| c[:heading] }
+    ExportFileFormat::EXPORT_COLUMNS.map { |c| c[:heading] }
   end
 
   def regime_columns
-    @regime_columns ||= ExportFileFormat::ExportColumns.map { |c| c[:accessor] }
+    @regime_columns ||= ExportFileFormat::EXPORT_COLUMNS.map { |c| c[:accessor] }
   end
 end

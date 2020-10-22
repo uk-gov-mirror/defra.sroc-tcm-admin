@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class RegionSelectorTest < ActionDispatch::IntegrationTest
   def setup
@@ -6,7 +8,7 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
     @regime = regimes(:cfd)
     @user = users(:billing_admin)
     @regions_only = @regime.transaction_headers.distinct.pluck(:region).sort
-    @regions_with_all = [ 'All' ] + @regions_only
+    @regions_with_all = ["All"] + @regions_only
     sign_in @user
   end
 
@@ -25,13 +27,13 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
 
     # select a region
     @regions_only.each do |r|
-      page.select(r, from: 'region')
+      page.select(r, from: "region")
       wait_for_ajax
       row_count = @regime.transaction_details.region(r).historic.count
       page.find(".tcm-table") do |t|
         # does region select have correct region selected?
-        assert t.has_select?('region', selected: r),
-          "'#{r}' option not selected"
+        assert t.has_select?("region", selected: r),
+               "'#{r}' option not selected"
         t.find("table>tbody") do |body|
           body.assert_selector("tr", count: row_count)
         end
@@ -39,13 +41,13 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
     end
 
     # select all regions
-    page.select('All', from: 'region')
+    page.select("All", from: "region")
     wait_for_ajax
     row_count = @regime.transaction_details.historic.count
     page.find(".tcm-table") do |t|
       # does region select have 'All' selected?
-      assert t.has_select?('region', selected: 'All'),
-        "All option not selected"
+      assert t.has_select?("region", selected: "All"),
+             "All option not selected"
 
       t.find("table>tbody") do |body|
         body.assert_selector("tr", count: row_count)
@@ -63,13 +65,13 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
 
     # select a region
     @regions_only.each do |r|
-      page.select(r, from: 'region')
+      page.select(r, from: "region")
       wait_for_ajax
       row_count = @regime.transaction_details.region(r).retrospective.count
       page.find(".tcm-table") do |t|
         # does region select have correct region selected?
-        assert t.has_select?('region', selected: r),
-          "'#{r}' option not selected"
+        assert t.has_select?("region", selected: r),
+               "'#{r}' option not selected"
         t.find("table>tbody") do |body|
           body.assert_selector("tr", count: row_count)
         end
@@ -77,13 +79,13 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
     end
 
     # select all regions
-    page.select('All', from: 'region')
+    page.select("All", from: "region")
     wait_for_ajax
     row_count = @regime.transaction_details.retrospective.count
     page.find(".tcm-table") do |t|
       # does region select have 'All' selected?
-      assert t.has_select?('region', selected: 'All'),
-        "All option not selected"
+      assert t.has_select?("region", selected: "All"),
+             "All option not selected"
 
       t.find("table>tbody") do |body|
         body.assert_selector("tr", count: row_count)
@@ -101,13 +103,13 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
 
     # select a region
     @regions_only.each do |r|
-      page.select(r, from: 'region')
+      page.select(r, from: "region")
       wait_for_ajax
       row_count = @regime.transaction_details.region(r).historic_excluded.count
       page.find(".tcm-table") do |t|
         # does region select have correct region selected?
-        assert t.has_select?('region', selected: r),
-          "'#{r}' option not selected"
+        assert t.has_select?("region", selected: r),
+               "'#{r}' option not selected"
         t.find("table>tbody") do |body|
           body.assert_selector("tr", count: row_count)
         end
@@ -115,13 +117,13 @@ class RegionSelectorTest < ActionDispatch::IntegrationTest
     end
 
     # select all regions
-    page.select('All', from: 'region')
+    page.select("All", from: "region")
     wait_for_ajax
     row_count = @regime.transaction_details.historic_excluded.count
     page.find(".tcm-table") do |t|
       # does region select have 'All' selected?
-      assert t.has_select?('region', selected: 'All'),
-        "All option not selected"
+      assert t.has_select?("region", selected: "All"),
+             "All option not selected"
 
       t.find("table>tbody") do |body|
         body.assert_selector("tr", count: row_count)

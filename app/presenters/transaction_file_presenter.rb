@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class TransactionFilePresenter < SimpleDelegator
-  include FormattingUtils, TransactionGroupFilters
+  include TransactionGroupFilters
+  include FormattingUtils
 
   def header
     [
@@ -17,7 +20,8 @@ class TransactionFilePresenter < SimpleDelegator
   def details
     records = []
     transactions = regime_specific_detail_presenter_class.wrap(
-      regime_specific_sorter(transaction_details))
+      regime_specific_sorter(transaction_details)
+    )
 
     transactions.each.with_index(1) do |td, idx|
       row = detail_row(td, idx)
@@ -30,7 +34,7 @@ class TransactionFilePresenter < SimpleDelegator
     records
   end
 
-  def detail_row(td, idx)
+  def detail_row(_table_data, _idx)
     raise "Implement me in a subclass"
   end
 
@@ -45,19 +49,20 @@ class TransactionFilePresenter < SimpleDelegator
     ]
   end
 
-protected
+  protected
+
   def transaction_file
     __getobj__
   end
 
   def trailer_invoice_total
-    transaction_details.where(tcm_transaction_type: 'I').sum(:tcm_charge).to_i
+    transaction_details.where(tcm_transaction_type: "I").sum(:tcm_charge).to_i
   end
 
   def trailer_credit_total
-    transaction_details.where(tcm_transaction_type: 'C').sum(:tcm_charge).to_i
+    transaction_details.where(tcm_transaction_type: "C").sum(:tcm_charge).to_i
   end
-  
+
   def file_generated_at
     generated_at.strftime("%d-%^b-%Y")
   end

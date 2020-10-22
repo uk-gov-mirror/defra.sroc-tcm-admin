@@ -1,18 +1,14 @@
+# frozen_string_literal: true
+
 module ChargeCalculation
   def build_mock_calculator
-    # calculator = mock('calculator')
     CalculateCharge.any_instance.stubs(:calculate_charge).returns(true)
     CalculateCharge.any_instance.stubs(:charge_calculation).returns(dummy_charge)
-    # calculator.stubs(:calculate_transaction_charge).returns(dummy_charge)
-    # calculator
   end
 
   def build_mock_calculator_with_error
     CalculateCharge.any_instance.stubs(:calculate_charge).returns(false)
     CalculateCharge.any_instance.stubs(:charge_calculation).returns(error_charge)
-    # calculator = mock('calculator')
-    # calculator.stubs(:calculate_transaction_charge).returns(error_charge)
-    # calculator
   end
 
   def dummy_charge
@@ -37,7 +33,7 @@ module ChargeCalculation
   def error_charge
     {
       "calculation" => {
-        "messages" => 'Error message'
+        "messages" => "Error message"
       }
     }
   end

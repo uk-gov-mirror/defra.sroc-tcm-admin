@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FileExportJob < ApplicationJob
   queue_as :default
 
@@ -9,7 +11,7 @@ class FileExportJob < ApplicationJob
                                              transaction_file.user)
       exporter.generate_output_file(transaction_file)
     end
-  rescue => e
-    Rails.logger.error("FileExportJob: Failure: " + e.message)
+  rescue StandardError => e
+    Rails.logger.error("FileExportJob: Failure: #{e.message}")
   end
 end

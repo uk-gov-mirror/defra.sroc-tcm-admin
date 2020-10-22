@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class UsersTest < ActionDispatch::IntegrationTest
 
@@ -12,7 +14,7 @@ class UsersTest < ActionDispatch::IntegrationTest
     visit users_path
 
     Regime.all.each do |regime|
-      page.select regime.title, from: 'regime'
+      page.select regime.title, from: "regime"
       tbl = page.find "div.tcm-table table"
       assert tbl.has_selector? "tbody>tr", count: regime.users.count
     end
@@ -21,9 +23,9 @@ class UsersTest < ActionDispatch::IntegrationTest
   def test_can_filter_by_role
     visit users_path
 
-    User.roles.keys.each do |r|
-      txt = I18n.t(r, scope: 'user.roles')
-      page.select txt, from: 'role'
+    User.roles.each_key do |r|
+      txt = I18n.t(r, scope: "user.roles")
+      page.select txt, from: "role"
       tbl = page.find "div.tcm-table table"
       assert tbl.has_selector? "tbody>tr", count: User.where(role: User.roles[r]).count
     end

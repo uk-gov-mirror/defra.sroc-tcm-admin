@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DataUploadError < ApplicationRecord
   belongs_to :annual_billing_data_file, inverse_of: :data_upload_errors
 

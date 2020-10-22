@@ -1,15 +1,17 @@
 # frozen_string_literal: true
+
 module Query
   class SortTransactions < QueryObject
     def initialize(opts = {})
+      super()
       @regime = opts.fetch(:regime)
       @query = opts.fetch(:query)
       @sort_column = opts.fetch(:sort, :customer_name)
-      @sort_direction = opts.fetch(:sort_direction, 'asc')
+      @sort_direction = opts.fetch(:sort_direction, "asc")
     end
 
     def call
-      dir = @sort_direction == 'desc' ? :desc : :asc
+      dir = @sort_direction == "desc" ? :desc : :asc
       q = @query
 
       # lookup col value
@@ -32,15 +34,12 @@ module Query
         q.order(reference_1: dir, reference_2: dir, reference_3: dir, id: dir)
       when :sroc_category
         q.order("string_to_array(category, '.')::int[] #{dir}, id #{dir}")
-        # q.order(category: dir, id: dir)
       when :compliance_band
         if @regime.installations?
           q.order(line_attr_11: dir, id: dir)
         else
           q.order(line_attr_6: dir, reference_1: dir)
         end
-        # when :variation
-        #   q.order(line_attr_9: dir, id: dir)
       when :variation
         q.order("to_number(variation, '999%') #{dir}, id #{dir}")
       when :period
@@ -51,13 +50,10 @@ module Query
         q.order(reference_2: dir, reference_1: dir)
       when :discharge
         q.order(reference_3: dir, reference_1: dir)
-      when :original_filename
-        q.order(original_filename: dir, id: dir)
       when :generated_filename
         q.order(generated_filename: dir, id: dir)
       when :generated_file_date
-        q.includes(:transaction_file).
-          order("transaction_files.created_at #{dir}, tcm_transaction_reference #{dir}")
+        q.includes(:transaction_file).order("transaction_files.created_at #{dir}, tcm_transaction_reference #{dir}")
       when :amount
         q.order(tcm_charge: dir, id: dir)
       when :credit_debit
@@ -67,9 +63,9 @@ module Query
       when :temporary_cessation
         q.order(temporary_cessation: dir, reference_1: dir)
       else
-        q.joins(:transaction_header).
-          merge(TransactionHeader.order(region: dir, file_sequence_number: dir)).
-          order(transaction_reference: dir, id: dir)
+        q.joins(:transaction_header)
+         .merge(TransactionHeader.order(region: dir, file_sequence_number: dir))
+         .order(transaction_reference: dir, id: dir)
       end
     end
   end

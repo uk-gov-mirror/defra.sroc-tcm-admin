@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "fileutils"
 
 class LocalFileStore
@@ -11,39 +12,37 @@ class LocalFileStore
 
   def list(path = "")
     file_root = Pathname.new(file_path(""))
-    Dir.glob(File.join(file_path(path), "**", "*")).select { |f| File.file?(f) }.map {|f| Pathname.new(f).relative_path_from(file_root).to_s }
+    files = Dir.glob(File.join(file_path(path), "**", "*"))
+    files.select { |f| File.file?(f) }.map { |f| Pathname.new(f).relative_path_from(file_root).to_s }
   end
 
   # to_path can be file path or io object
   def fetch_file(from_path, to_path)
     src = file_path(from_path)
-    if File.exists?(src)
-      FileUtils.cp(src, to_path)
-    else
-      raise Exceptions::FileNotFoundError.new("Local file storage file not found: #{from_path}")
-    end
+    raise Exceptions::FileNotFoundError.new("Local file storage file not found: #{from_path}") unless File.exist?(src)
+
+    FileUtils.cp(src, to_path)
   end
 
   # stream file from disk
   def store_file(from_path, to_path)
     dst = file_path(to_path)
-    x = FileUtils.mkdir_p(File.dirname(dst))
+    FileUtils.mkdir_p(File.dirname(dst))
     FileUtils.cp(from_path, dst)
-  rescue => e
+  rescue StandardError
     raise Exceptions::FileNotFoundError.new("Local file storage file not found: #{from_path}")
   end
 
   def delete_file(path)
     dst = file_path(path)
-    if File.exists?(dst)
-      FileUtils.rm(dst)
-    else
-      raise Exceptions::FileNotFoundError.new("Local file storage file not found: #{path}")
-    end
+    raise Exceptions::FileNotFoundError.new("Local file storage file not found: #{path}") unless File.exist?(dst)
+
+    FileUtils.rm(dst)
   end
-private
+
+  private
+
   def file_path(path)
     File.join(@base_path, path)
-    # Rails.root.join("tmp", "files", path)
   end
 end

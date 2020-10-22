@@ -1,48 +1,47 @@
+# frozen_string_literal: true
+
 module ViewModels
   class Transactions
-    include RegimeScope, ActionView::Helpers::FormOptionsHelper
+    include ActionView::Helpers::FormOptionsHelper
+    include RegimeScope
 
     attr_reader :regime, :user, :permit_all_regions
-    attr_accessor :region, :financial_year, :search, :sort, :sort_direction,
-      :page, :per_page, :unapproved
+    attr_writer :financial_year
+    attr_accessor :search, :sort, :sort_direction,
+                  :page, :per_page, :unapproved
 
     def initialize(params = {})
       @regime = params.fetch(:regime)
       @user = params.fetch(:user)
       @page = 1
       @per_page = 10
-      @sort = 'customer_reference'
-      @sort_direction = 'asc'
+      @sort = "customer_reference"
+      @sort_direction = "asc"
       @permit_all_regions = false
       @unapproved = false
     end
 
     def region=(val)
-      if val.blank? || val == 'all'
-        if permit_all_regions
-          @region = 'all'
-        else
-          @region = available_regions.first
-        end
-      else
-        if available_regions.include?(val)
-          @region = val
-        else
-          @region = available_regions.first
-        end
-      end
-      @region
+      @region = if val.blank? || val == "all"
+                  if permit_all_regions
+                    "all"
+                  else
+                    available_regions.first
+                  end
+                elsif available_regions.include?(val)
+                  val
+                else
+                  available_regions.first
+                end
     end
 
     def region
-      if permit_all_regions && @region == 'all'
+      if permit_all_regions && @region == "all"
+        @region
+      elsif available_regions.include?(@region)
         @region
       else
-        if available_regions.include?(@region)
-          @region
-        else
-          @region = available_regions.first
-        end
+        @region = available_regions.first
       end
     end
 
@@ -50,7 +49,7 @@ module ViewModels
       if available_years.include? @financial_year
         @financial_year
       else
-        ''
+        ""
       end
     end
 
@@ -91,14 +90,14 @@ module ViewModels
                                          financial_year: financial_year,
                                          search: search)
     end
-    
+
     # override me for different views
-    def csv_transactions(limit = 15000)
-      @csv ||= presenter.wrap(transactions.unexcluded.limit(limit), user)
+    def csv_transactions(limit = 15_000)
+      @csv_transactions ||= presenter.wrap(transactions.unexcluded.limit(limit), user)
     end
 
     def present_paged_transactions
-      @ppt ||= page_and_present_transactions
+      @present_paged_transactions ||= page_and_present_transactions
     end
 
     # override me if 'all' regions is permitted in the view
@@ -107,22 +106,23 @@ module ViewModels
     end
 
     def all_region_options
-      opts = available_regions.length == 1 ? [] : [['All', 'all']]
+      opts = available_regions.length == 1 ? [] : [%w[All all]]
       options_for_select(opts + available_regions.map { |r| [r, r] }, region)
     end
 
     def financial_year_options
-      opts = available_years.length == 1 ? [] : [['All', 'all']]
+      opts = available_years.length == 1 ? [] : [%w[All all]]
       options_for_select(opts + pretty_years_list, financial_year)
     end
 
     def table_partial_name
       "#{regime.slug}_table"
     end
-    
+
     def permit_category_timestamp
       @permit_category_timestamp ||= Query::PermitCategoryLastChanged.call(
-        regime: regime)
+        regime: regime
+      )
     end
 
     private

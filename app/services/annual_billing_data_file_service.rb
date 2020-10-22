@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require "csv"
 
 class AnnualBillingDataFileService
-  include AnnualBillingDataFileFormat, RegimeScope
+  include RegimeScope
+  include AnnualBillingDataFileFormat
 
   attr_reader :regime, :user
 
@@ -20,7 +23,7 @@ class AnnualBillingDataFileService
 
   def upload(params = {})
     record = regime.annual_billing_data_files.build(number_of_records: 0,
-                                                    status: 'new')
+                                                    status: "new")
     data_file = params.fetch(:data_file, nil)
     if data_file
       if valid_file? data_file.tempfile
@@ -30,10 +33,10 @@ class AnnualBillingDataFileService
           dest_file = File.join(storage_path, filename)
           PutAnnualBillingDataFile.call(local_path: data_file.tempfile.path,
                                         remote_path: dest_file)
-          # storage.store_file_in(:annual_billing_data, data_file.tempfile.path, dest_file)
+
           record.filename = dest_file
           record.state.upload!
-        rescue => e
+        rescue StandardError => e
           record.errors.add(:base, e.message)
         end
       else
@@ -49,26 +52,25 @@ class AnnualBillingDataFileService
   end
 
   def valid_file?(file)
-    #check file looks reasonable
-    begin
-      csv = CSV.new(file,
-                    headers: true,
-                    return_headers: true,
-                    header_converters: ->(h) { TcmUtils.strip_bom(h).
-                                               parameterize.underscore.to_sym },
-                    field_size_limit: 32)
-      row = csv.shift
-      headers = csv.headers
-      valid = true
-      mandatory_headers.each { |h| valid = false unless headers.include? h }
-      valid
-    rescue CSV::MalformedCSVError => e
-      Rails.logger.warn(e.message)
-      return false
-    rescue => e
-      Rails.logger.error(e.message)
-      return false
-    end
+    # check file looks reasonable
+    csv = CSV.new(file,
+                  headers: true,
+                  return_headers: true,
+                  header_converters: lambda { |h|
+                                       TcmUtils.strip_bom(h).parameterize.underscore.to_sym
+                                     },
+                  field_size_limit: 32)
+    csv.shift
+    headers = csv.headers
+    valid = true
+    mandatory_headers.each { |h| valid = false unless headers.include? h }
+    valid
+  rescue CSV::MalformedCSVError => e
+    Rails.logger.warn(e.message)
+    false
+  rescue StandardError => e
+    Rails.logger.error(e.message)
+    false
   end
 
   def mandatory_headers
@@ -78,10 +80,6 @@ class AnnualBillingDataFileService
   def regime_headers
     send("#{regime.to_param}_columns")
   end
-
-  # def storage
-  #   @storage ||= FileStorageService.new
-  # end
 
   def storage_path
     File.join(regime.to_param, Time.zone.now.strftime("%Y%m%d%H%M%S"))
@@ -93,12 +91,13 @@ class AnnualBillingDataFileService
     key_header = headers.select { |h| h.fetch(:unique_reference, false) }.first
     key_column = key_header[:header]
     ref_column = key_header[:column]
-    update_columns = headers.select { |h| h[:header] != key_column }
+    update_columns = headers.reject { |h| h[:header] == key_column }
 
     counter = 1
     CSV.foreach(path, headers: true,
-                      header_converters: ->(h) { TcmUtils.strip_bom(h).
-                                               parameterize.underscore.to_sym },
+                      header_converters: lambda { |h|
+                                           TcmUtils.strip_bom(h).parameterize.underscore.to_sym
+                                         },
                       field_size_limit: 32) do |row|
       counter += 1
       failed = false
@@ -113,69 +112,66 @@ class AnnualBillingDataFileService
       else
         # we have a transaction
         update_columns.each do |col|
-          unless failed
-            val = row.fetch(col[:header], nil)
+          next if failed
 
-            if val.blank? && col[:mandatory]
-              upload.log_error(counter, "No value for mandatory field #{present_column(col[:header])}")
-              failed = true
-            elsif val.present?
-              if col[:header] == :permit_category
-                # validate against categories first
-                # this needs to be against the new way of working now
-                # if !regime.permit_categories.where(code: val).exists
-                failed = !Query::PermitCategoryExists.call(regime: @regime,
-                                                           category: val,
-                                                           financial_year: transaction.tcm_financial_year)
-              elsif col[:header] == :variation
-                # check it's a positive number between 0 - 100
-                # will always be an integer as they round down any fractional values
-                begin
-                  i = Integer(val.to_s, 10)
-                  if i < 0 || i > 100
-                    raise ArgumentError
-                  else
-                    val += '%' unless val.include?('%')
-                  end
-                rescue ArgumentError => e
-                  failed = true
-                end
-              elsif col[:header] == :temporary_cessation
-                # check for Y or N
-                v = val.downcase
-                if v != 'y' && v != 'n'
-                  failed = true
-                else
-                  val = (v == 'y')
-                end
+          val = row.fetch(col[:header], nil)
+
+          if val.blank? && col[:mandatory]
+            upload.log_error(counter, "No value for mandatory field #{present_column(col[:header])}")
+            failed = true
+          elsif val.present?
+            case col[:header]
+            when :permit_category
+              # validate against categories first
+              # this needs to be against the new way of working now
+              # if !regime.permit_categories.where(code: val).exists
+              failed = !Query::PermitCategoryExists.call(regime: @regime,
+                                                         category: val,
+                                                         financial_year: transaction.tcm_financial_year)
+            when :variation
+              # check it's a positive number between 0 - 100
+              # will always be an integer as they round down any fractional values
+              begin
+                i = Integer(val.to_s, 10)
+                raise ArgumentError if i.negative? || i > 100
+
+                val += "%" unless val.include?("%")
+              rescue ArgumentError
+                failed = true
               end
-
-              if failed
-                upload.log_error(counter, "Invalid #{present_column(col[:header])} value: '#{val}'")
+            when :temporary_cessation
+              # check for Y or N
+              v = val.downcase
+              if v != "y" && v != "n"
+                failed = true
               else
-                transaction.send("#{col[:column]}=", val)
+                val = (v == "y")
               end
+            end
+
+            if failed
+              upload.log_error(counter, "Invalid #{present_column(col[:header])} value: '#{val}'")
+            else
+              transaction.send("#{col[:column]}=", val)
             end
           end
         end
 
-        if !failed
+        unless failed
           if transaction.changed?
             # (re)calculate the charge if the transaction has changed
-            # transaction.charge_calculation = TransactionCharge.invoke_charge_calculation(calculator, presenter.new(transaction))
             transaction.charge_calculation = CalculateCharge.call(transaction: transaction).charge_calculation
             if transaction.charge_calculation_error?
               # what should we do here? revoke the changes and mark as an error?
               upload.log_error(counter,
-                               "Calculation error: " +
-                               TransactionCharge.extract_calculation_error(transaction))
+                               "Calculation error: #{TransactionCharge.extract_calculation_error(transaction)}")
               failed = true
             else
               transaction.tcm_charge = TransactionCharge.extract_correct_charge(transaction)
               if transaction.save
                 upload.success_count += 1
               else
-                upload.log_error(counter, upload.errors.full_messages.join(', '))
+                upload.log_error(counter, upload.errors.full_messages.join(", "))
                 failed = true
               end
             end
@@ -191,8 +187,7 @@ class AnnualBillingDataFileService
   end
 
   def find_matching_transaction(upload, line_no, key_column, ref_column, ref_value)
-    transactions = regime.transaction_details.unbilled.
-      where(ref_column => ref_value).order(:updated_at)
+    transactions = regime.transaction_details.unbilled.where(ref_column => ref_value).order(:updated_at)
 
     if transactions.count.zero?
       upload.log_error(line_no, "Could not find #{present_column(key_column)} matching '#{ref_value}'")
@@ -204,7 +199,13 @@ class AnnualBillingDataFileService
       # to cater for the possiblity...
       regions = regions_for_transactions(transactions)
 
-      upload.log_error(line_no, "Multiple transactions found for #{present_column(key_column)}: '#{ref_value}' in #{'region'.pluralize(regions.count)} #{regions.join(', ')}")
+      column_name = present_column(key_column)
+      region_count = "region".pluralize(regions.count)
+
+      upload.log_error(
+        line_no,
+        "Multiple transactions found for #{column_name}: '#{ref_value}' in #{region_count} #{regions.join(', ')}"
+      )
       nil
     else
       # if multiple matches, it apparently doesn't matter which one we select,
@@ -215,16 +216,11 @@ class AnnualBillingDataFileService
   end
 
   def regions_for_transactions(list)
-    TransactionHeader.where(id: list.pluck(:transaction_header_id).uniq).
-      pluck(:region).uniq.sort
+    TransactionHeader.where(id: list.pluck(:transaction_header_id).uniq).pluck(:region).uniq.sort
   end
 
   def set_current_user
     # so we can pick up the user for auditing changes
     Thread.current[:current_user] = user
   end
-
-  # def calculator
-  #   @calculator ||= CalculationService.new
-  # end
 end

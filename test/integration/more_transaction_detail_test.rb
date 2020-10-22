@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class MoreTransactionDetailTest < ActionDispatch::IntegrationTest
   include RegimeSetup
@@ -19,7 +21,8 @@ class MoreTransactionDetailTest < ActionDispatch::IntegrationTest
     assert_not_nil @transaction.line_amount, "No line amount"
 
     amount = ActiveSupport::NumberHelper.number_to_currency(
-      sprintf("%.2f", @transaction.line_amount/100.0), unit: "")
+      format("%<amount>.2f", amount: (@transaction.line_amount / 100.0)), unit: ""
+    )
 
     visit regime_transaction_path(@regime, @transaction)
     assert page.has_selector?("dt", text: "Amount (£)"), "Incorrect or missing Amount label"
@@ -33,7 +36,8 @@ class MoreTransactionDetailTest < ActionDispatch::IntegrationTest
     assert_not_nil @transaction.line_amount, "No line amount"
 
     amount = ActiveSupport::NumberHelper.number_to_currency(
-      sprintf("%.2f", @transaction.line_amount/100.0), unit: "")
+      format("%<amount>.2f", amount: (@transaction.line_amount / 100.0)), unit: ""
+    )
 
     visit regime_transaction_path(@regime, @transaction)
     assert page.has_selector?("dt", text: "Amount (£)"), "Incorrect or missing Amount label"

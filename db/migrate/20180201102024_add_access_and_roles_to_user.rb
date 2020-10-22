@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddAccessAndRolesToUser < ActiveRecord::Migration[5.1]
   def change
     add_column :users, :role, :integer, null: false, default: 0
@@ -9,7 +11,7 @@ class AddAccessAndRolesToUser < ActiveRecord::Migration[5.1]
       t.boolean :enabled, null:false, default: false
       t.string :working_region
     end
-    
+
     add_index :regime_users, [:regime_id, :user_id], unique: true
   end
 end

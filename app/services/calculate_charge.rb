@@ -1,9 +1,12 @@
-require 'net/http'
+# frozen_string_literal: true
+
+require "net/http"
 
 class CalculateCharge < ServiceObject
   include RegimeScope
 
   def initialize(params = {})
+    super()
     @transaction = params.fetch(:transaction)
     @regime = @transaction.regime
     # this needs to  be decorated by a presenter to provide charge params etc
@@ -37,11 +40,11 @@ class CalculateCharge < ServiceObject
   private
 
   def extract_charge_amount
-    if success?
-      amt = (charge_calculation["calculation"]["chargeValue"] * 100).round
-      amt = -amt if @transaction.credit?
-      amt
-    end
+    return unless success?
+
+    amt = (charge_calculation["calculation"]["chargeValue"] * 100).round
+    amt = -amt if @transaction.credit?
+    amt
   end
 
   def calculate_charge
@@ -68,16 +71,13 @@ class CalculateCharge < ServiceObject
                                    "unexpected error.\nPlease try again later")
       false
     end
-  rescue => e
+  rescue StandardError => e
     # something REALLY unexpected happened ...
     TcmLogger.notify(e)
     @body = build_error_response("Unable to calculate charge due to the rules " \
                                  "service being unavailable. Please log a call " \
                                  "with the service desk.")
     false
-  # rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-  #   Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
-  #   raise Exceptions::CalculationServiceError.new e
   end
 
   def payload
@@ -90,22 +90,22 @@ class CalculateCharge < ServiceObject
 
   def build_post_request
     request = Net::HTTP::Post.new(charge_service_url.request_uri,
-                                  'Content-Type': 'application/json')
+                                  'Content-Type': "application/json")
     request.body = payload.to_json
     request
   end
 
   def build_error_response(text)
-    { "calculation": { "messages": text }}
+    { "calculation": { "messages": text } }
   end
 
   def charge_service_url
-    @charge_service_url ||= URI.parse(ENV.fetch('CHARGE_SERVICE_URL'))
+    @charge_service_url ||= URI.parse(ENV.fetch("CHARGE_SERVICE_URL"))
   end
 
   def http_connection
     http = Net::HTTP.new(charge_service_url.host, charge_service_url.port)
-    http.use_ssl = charge_service_url.scheme.downcase == 'https'
+    http.use_ssl = charge_service_url.scheme.downcase == "https"
     http
   end
 end

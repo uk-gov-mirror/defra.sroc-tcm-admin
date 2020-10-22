@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class TransactionDetailTest < ActiveSupport::TestCase
   def setup
@@ -36,7 +38,7 @@ class TransactionDetailTest < ActiveSupport::TestCase
   def test_indicates__when_charge_calculation_present
     @transaction.charge_calculation = nil
     assert_not @transaction.charge_calculated?, "charge_calculated? != false"
-    @transaction.charge_calculation = { some_value: 123456 }
+    @transaction.charge_calculation = { some_value: 123_456 }
     assert @transaction.charge_calculated?, "charge_calculated? == false"
   end
 
@@ -50,12 +52,12 @@ class TransactionDetailTest < ActiveSupport::TestCase
   end
 
   def test_unbilled_scope_returns_unbilled_transactions
-    transactions = TransactionDetail.where(status: 'unbilled')
+    transactions = TransactionDetail.where(status: "unbilled")
     assert_equal transactions, TransactionDetail.unbilled
   end
 
   def test_historic_scope_returns_historic_transactions
-    transactions = TransactionDetail.where(status: 'billed')
+    transactions = TransactionDetail.where(status: "billed")
     assert_equal transactions, TransactionDetail.historic
   end
 

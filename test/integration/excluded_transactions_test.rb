@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class ExcludedTransactionsTest < ActionDispatch::IntegrationTest
   include RegimeSetup
@@ -13,7 +15,7 @@ class ExcludedTransactionsTest < ActionDispatch::IntegrationTest
     setup_cfd
     @transaction = transaction_details(:cfd_unbilled_invoice_1)
     result = ExcludeTransaction.call(transaction: @transaction,
-                                     reason: 'Trod on false teeth',
+                                     reason: "Trod on false teeth",
                                      user: @user)
     assert result.success?
 
@@ -22,23 +24,23 @@ class ExcludedTransactionsTest < ActionDispatch::IntegrationTest
     visit regime_transactions_path(@regime)
     page.has_selector? "tr.excluded" do |row|
       assert row.has_selector? "td", text: @transaction.reference_1
-      assert row.has_style?('color' => 'rgba(170, 170, 170, 1)',
-        'text-decoration' => /line-through/)
+      assert row.has_style?("color" => "rgba(170, 170, 170, 1)",
+                            "text-decoration" => /line-through/)
     end
-    
-    page.select 'Excluded Transactions', from: 'mode'
-    page.fill_in 'search', with: "wibble"
+
+    page.select "Excluded Transactions", from: "mode"
+    page.fill_in "search", with: "wibble"
     page.click_button "Search"
 
     assert page.has_no_selector? "table tbody tr"
 
-    page.select 'Transactions to be billed', from: 'mode'
-    page.fill_in 'search', with: ""
+    page.select "Transactions to be billed", from: "mode"
+    page.fill_in "search", with: ""
     page.click_button "Search"
     page.has_selector? "tr.excluded" do |row|
       assert row.has_selector? "td", text: @transaction.reference_1
-      assert row.has_style?('color' => 'rgba(170, 170, 170, 1)',
-        'text-decoration' => /line-through/)
+      assert row.has_style?("color" => "rgba(170, 170, 170, 1)",
+                            "text-decoration" => /line-through/)
     end
   end
 end

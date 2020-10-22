@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
@@ -22,11 +24,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create user" do
-    assert_difference('User.count') do
-      post users_url, params: new_user_params 
+    assert_difference("User.count") do
+      post users_url, params: new_user_params
     end
     assert_redirected_to users_path
-    assert_equal 'User account created', flash[:notice]
+    assert_equal "User account created", flash[:notice]
     assert_enqueued_jobs 1
   end
 
@@ -38,7 +40,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "should update user" do
     put user_url(@user), params: update_user_params
     assert_redirected_to users_path
-    assert_equal 'User account updated', flash[:notice]
+    assert_equal "User account updated", flash[:notice]
   end
 
   def new_user_params

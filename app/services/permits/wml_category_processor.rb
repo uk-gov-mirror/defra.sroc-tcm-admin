@@ -17,15 +17,15 @@ module Permits
     def handle_annual_billing(permit)
       grouped_permits = find_unique_permits(permit)
 
-      grouped_permits.keys.each do |k|
+      grouped_permits.each_key do |k|
         permit_args = keys_to_args(k)
         historic_transaction = find_latest_historic_transaction(permit_args)
         if historic_transaction
           unbilled_transactions(permit_args) do |t|
-            set_category(t, historic_transaction, :green, 'Annual billing')
+            set_category(t, historic_transaction, :green, "Annual billing")
           end
         else
-          no_historic_transaction(permit_args, 'Annual billing')
+          no_historic_transaction(permit_args, "Annual billing")
         end
       end
     end
@@ -72,11 +72,11 @@ module Permits
         if invoices.count.zero?
           no_historic_transaction({ id: transaction.id }, stage)
         elsif invoices.count == 1
-          set_category(transaction, invoices.first, :green, stage, true)
+          set_category(transaction, invoices.first, :green, stage, admin_lock: true)
         else
           stage = "Supplementary credit stage 2"
           if invoices.first.period_start != invoices.second.period_start
-            set_category(transaction, invoices.first, :green, stage, true)
+            set_category(transaction, invoices.first, :green, stage, admin_lock: true)
           else
             multiple_historic_matches({ id: transaction.id }, stage)
           end
@@ -86,20 +86,19 @@ module Permits
 
     def find_unique_permits(permit)
       # use charge code (reference_3) to further differentiate
-      header.transaction_details.unbilled.where(reference_1: permit).
-        group(:reference_1, :reference_3).count
+      header.transaction_details.unbilled.where(reference_1: permit).group(:reference_1, :reference_3).count
     end
 
     def find_latest_historic_transaction(where_args)
-      regime.transaction_details.historic.invoices.where(where_args).
-        order(transaction_reference: :desc).first
+      regime.transaction_details.historic.invoices.where(where_args).order(transaction_reference: :desc).first
     end
 
     def find_historic_invoices(transaction)
-      regime.transaction_details.historic.invoices.
-        where(reference_1: transaction.reference_1).
-        where(period_end: transaction.period_end).
-        order(period_start: :desc)
+      regime.transaction_details
+            .historic.invoices
+            .where(reference_1: transaction.reference_1)
+            .where(period_end: transaction.period_end)
+            .order(period_start: :desc)
     end
 
     def multiple_activities(transaction, stage)

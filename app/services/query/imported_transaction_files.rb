@@ -1,17 +1,20 @@
+# frozen_string_literal: true
+
 module Query
   class ImportedTransactionFiles < QueryObject
     def initialize(opts = {})
+      super()
       @regime = opts.fetch(:regime)
-      @region = opts.fetch(:region, '')
-      @status = opts.fetch(:status, '')
+      @region = opts.fetch(:region, "")
+      @status = opts.fetch(:status, "")
       @sort_column = opts.fetch(:sort, :created_at)
-      @sort_direction = opts.fetch(:sort_direction, 'desc')
-      @search = opts.fetch(:search, '')
+      @sort_direction = opts.fetch(:sort_direction, "desc")
+      @search = opts.fetch(:search, "")
     end
 
     def call
       q = @regime.transaction_headers
-      q = q.where(region: @region) unless @region.blank? || @region == 'all'
+      q = q.where(region: @region) unless @region.blank? || @region == "all"
       q = for_status(q)
       q = q.search(@search) unless @search.blank?
       sort_query(q)
@@ -19,32 +22,32 @@ module Query
 
     private
 
-    def for_status(q)
+    def for_status(query)
       case @status
-      when 'removed'
-        q.where(removed: true)
-      when 'included'
-        q.where(removed: false)
+      when "removed"
+        query.where(removed: true)
+      when "included"
+        query.where(removed: false)
       else
-        q
+        query
       end
     end
 
-    def sort_query(q)
+    def sort_query(query)
       dir = @sort_direction
       case @sort_column.to_sym
       when :generated_at
-        q.order(generated_at: dir, id: dir)
+        query.order(generated_at: dir, id: dir)
       when :file_reference
-        q.order(file_reference: dir, id: dir)
+        query.order(file_reference: dir, id: dir)
       when :credit_count
-        q.order(credit_count: dir, id: dir)
+        query.order(credit_count: dir, id: dir)
       when :credit_total
-        q.order(credit_total: dir, id: dir)
+        query.order(credit_total: dir, id: dir)
       when :invoice_total
-        q.order(invoice_total: dir, id: dir)
+        query.order(invoice_total: dir, id: dir)
       else
-        q.order(created_at: dir, id: dir)
+        query.order(created_at: dir, id: dir)
       end
     end
   end

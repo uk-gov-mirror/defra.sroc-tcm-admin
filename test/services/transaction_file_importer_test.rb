@@ -1,27 +1,29 @@
-require 'test_helper.rb'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class TransactionFileImporterTest < ActiveSupport::TestCase
   def setup
     @importer = TransactionFileImporter.new
-    @header = @importer.import(file_fixture('cfd_transaction.dat'), 'cfd123.dat')
+    @header = @importer.import(file_fixture("cfd_transaction.dat"), "cfd123.dat")
   end
 
   def test_import_creates_transaction_header_record
-    assert_difference('TransactionHeader.count', 1) do
-      @importer.import(file_fixture('cfd_transaction.dat'), 'cfd123.dat')
+    assert_difference("TransactionHeader.count", 1) do
+      @importer.import(file_fixture("cfd_transaction.dat"), "cfd123.dat")
     end
   end
 
   def test_header_has_correct_regime
-    assert_equal('CFD', @header.regime.name)
+    assert_equal("CFD", @header.regime.name)
   end
 
   def test_header_has_correct_region
-    assert_equal('E', @header.region)
+    assert_equal("E", @header.region)
   end
 
   def test_header_has_correct_file_type_flag
-    assert_equal('I', @header.file_type_flag)
+    assert_equal("I", @header.file_type_flag)
   end
 
   def test_header_has_correct_file_sequence_number
@@ -33,8 +35,8 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
   end
 
   def test_import_creates_transaction_detail_records
-    assert_difference('TransactionDetail.count', 2) do
-      @importer.import(file_fixture('cfd_transaction.dat'), 'cfd123.dat')
+    assert_difference("TransactionDetail.count", 2) do
+      @importer.import(file_fixture("cfd_transaction.dat"), "cfd123.dat")
     end
   end
 
@@ -61,25 +63,24 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
   def test_extract_consent_fields_extracts_references
     # this is the line_description fields extracted from the complete annual billing
     # files for CFD 18/19
-    File.foreach(file_fixture('cfd_line_descriptions.txt')).with_index do |line, idx|
+    File.foreach(file_fixture("cfd_line_descriptions.txt")).with_index do |line, idx|
       line.chomp!
       fields = @importer.extract_consent_fields(line)
-      str = ""
-      if line.start_with? "Consent"
-        str = "Consent No - #{fields[:reference_1]}"
-      else
-        str = "Authorisation No - #{fields[:reference_1]}"
-      end
+      str = if line.start_with? "Consent"
+              "Consent No - #{fields[:reference_1]}"
+            else
+              "Authorisation No - #{fields[:reference_1]}"
+            end
       assert_equal(line, str, "Fail: #{idx}: #{line}")
 
-      arr = line.split('/')
+      arr = line.split("/")
       assert_equal(arr.second_to_last, fields[:reference_2], "Invalid version extracted #{idx}: #{line}")
       assert_equal(arr.last, fields[:reference_3], "Invalid discharge extracted #{idx}: #{line}")
     end
   end
 
   def test_import_creates_transactions_with_whitespace_consents
-    header = @importer.import(file_fixture('cfd_trans_consents.dat'), 'cfd456.dat')
+    header = @importer.import(file_fixture("cfd_trans_consents.dat"), "cfd456.dat")
 
     assert_equal(2, header.transaction_details.count)
 
@@ -91,37 +92,37 @@ class TransactionFileImporterTest < ActiveSupport::TestCase
   end
 
   def test_extract_charge_code_extracts_code_when_present
-    d = 'Charge Code 1 at Wigwam Wood Landfill Site, Wigwam Road, Tepee,' \
-      'West Sussex, RH1 3AA, Permit Ref: AB1234AB/A001'
-    assert_equal '1', @importer.extract_charge_code(d)
+    d = "Charge Code 1 at Wigwam Wood Landfill Site, Wigwam Road, Tepee," \
+      "West Sussex, RH1 3AA, Permit Ref: AB1234AB/A001"
+    assert_equal "1", @importer.extract_charge_code(d)
 
-    d = 'In cancellation of Charge Code 3 at Haystack Wood Pig Site, Eggham Road,' \
-      'Ham, Peas and Chips, West County, AA12 1AA, Permit Ref: AA3700BB/A001'
-    assert_equal '3', @importer.extract_charge_code(d)
+    d = "In cancellation of Charge Code 3 at Haystack Wood Pig Site, Eggham Road," \
+      "Ham, Peas and Chips, West County, AA12 1AA, Permit Ref: AA3700BB/A001"
+    assert_equal "3", @importer.extract_charge_code(d)
   end
 
   def test_extract_charge_code_returns_nil_when_no_code_found
-    d = 'There is no Charge Code here, so none shall be returned'
+    d = "There is no Charge Code here, so none shall be returned"
     assert_nil @importer.extract_charge_code(d)
   end
 
   def test_determine_financial_year_handles_2000_onwards_dates
-    [['10-JUL-2010', '1011'],
-     ['1-FEB-2019', '1819'],
-     ['22-MAR-2000', '9900'],
-     ['1-APR-2001', '0102']].each do |y|
-      d = Date.parse(y[0])
-      assert_equal y[1], @importer.determine_financial_year(d)
+    [%w[10-JUL-2010 1011],
+     %w[1-FEB-2019 1819],
+     %w[22-MAR-2000 9900],
+     %w[1-APR-2001 0102]].each do |y|
+       d = Date.parse(y[0])
+       assert_equal y[1], @importer.determine_financial_year(d)
      end
   end
 
   def test_determine_financial_year_handles_pre_2000_dates
-    [['10-JUL-1995', '9596'],
-     ['1-FEB-1997', '9697'],
-     ['22-MAR-1998', '9798'],
-     ['1-APR-1999', '9900']].each do |y|
-      d = Date.parse(y[0])
-      assert_equal y[1], @importer.determine_financial_year(d)
+    [%w[10-JUL-1995 9596],
+     %w[1-FEB-1997 9697],
+     %w[22-MAR-1998 9798],
+     %w[1-APR-1999 9900]].each do |y|
+       d = Date.parse(y[0])
+       assert_equal y[1], @importer.determine_financial_year(d)
      end
   end
 end

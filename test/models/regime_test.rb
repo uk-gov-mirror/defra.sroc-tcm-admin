@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class RegimeTest < ActiveSupport::TestCase
   def setup
@@ -20,16 +22,16 @@ class RegimeTest < ActiveSupport::TestCase
     assert @regime.invalid?
     assert_not_nil @regime.errors[:title]
   end
-  
+
   def test_slug_generated_on_create
-    regime = Regime.create!(name: 'ABC', title: 'Test Regime')
-    assert_equal 'abc', regime.slug
+    regime = Regime.create!(name: "ABC", title: "Test Regime")
+    assert_equal "abc", regime.slug
   end
 
   def test_slug_regenerated_on_save
-    @regime.name = 'XyZ'
+    @regime.name = "XyZ"
     @regime.save!
-    assert_equal 'xyz', @regime.slug
+    assert_equal "xyz", @regime.slug
   end
 
   def test_to_param_returns_slug

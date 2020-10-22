@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AnnualBillingDataImportJob < ApplicationJob
   queue_as :default
 
@@ -7,7 +9,6 @@ class AnnualBillingDataImportJob < ApplicationJob
       user = User.find(user_id)
 
       regime = upload.regime
-      # storage = FileStorageService.new
       data_service = AnnualBillingDataFileService.new(regime, user)
 
       # fetch stored file
@@ -16,7 +17,6 @@ class AnnualBillingDataImportJob < ApplicationJob
       GetAnnualBillingDataFile.call(remote_path: upload.filename,
                                     local_path: file.path)
 
-      # storage.fetch_file_from(:annual_billing_data, upload.filename, file.path)
       file.rewind
 
       # process stored file
@@ -28,8 +28,8 @@ class AnnualBillingDataImportJob < ApplicationJob
 
         # update upload record status
         upload.state.complete!
-      rescue => e
-        Rails.logger.error("AnnualBillingDataImportJob: Unhandled error: " + e.message)
+      rescue StandardError => e
+        Rails.logger.error("AnnualBillingDataImportJob: Unhandled error: #{e.message}")
         # update upload record status
         upload.state.error!
       ensure
@@ -37,8 +37,8 @@ class AnnualBillingDataImportJob < ApplicationJob
         file.unlink
       end
     end
-  rescue => e
-    Rails.logger.error("AnnualBillingDataImportJob: Failure: " + e.message)
+  rescue StandardError => e
+    Rails.logger.error("AnnualBillingDataImportJob: Failure: #{e.message}")
     throw e
   end
 end

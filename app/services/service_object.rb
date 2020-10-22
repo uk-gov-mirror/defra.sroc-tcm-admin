@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ServiceObject
   def self.call(parms = {})
     new(parms).call
