@@ -37,7 +37,7 @@ The SRoC Charging Service should be configured and running on the local system a
 
 #### Local system dependencies
 
-* [Ruby 2.4.x](https://www.ruby-lang.org) (e.g. via [RVM](https://rvm.io) or [Rbenv](https://github.com/sstephenson/rbenv/blob/master/README.md))
+* [Ruby 2.7.1](https://www.ruby-lang.org) (e.g. via [RVM](https://rvm.io) or [Rbenv](https://github.com/sstephenson/rbenv/blob/master/README.md))
 * [Postgresql](http://www.postgresql.org/download)
 * [Redis](https://redis.io)
 * [Phantomjs](https://github.com/teampoltergeist/poltergeist#installing-phantomjs) (test specs)

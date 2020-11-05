@@ -19,7 +19,7 @@ services:
 
 language: ruby
 os: linux
-rvm: 2.4.1
+rvm: 2.7.1
 cache: bundler
 
 # Travis CI uses shallow clone to speed up build times, but a truncated SCM
@@ -30,7 +30,7 @@ git:
 
 before_install:
   - export TZ=UTC
-  - gem install -v 1.17.3 bundler --no-document
+  - gem install bundler --no-document
 
 before_script:
   # To support running selenium on Travis we have told Travis to install Chrome
