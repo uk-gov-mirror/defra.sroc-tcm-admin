@@ -16,7 +16,7 @@ module Devise
         current_password = params.delete(:current_password)
 
         result = if valid_password?(current_password)
-                   update_attributes(params, *options)
+                   update(params, *options)
                  else
                    assign_attributes(params, *options)
                    valid?

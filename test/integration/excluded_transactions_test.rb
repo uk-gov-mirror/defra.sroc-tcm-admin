@@ -24,8 +24,12 @@ class ExcludedTransactionsTest < ActionDispatch::IntegrationTest
     visit regime_transactions_path(@regime)
     page.has_selector? "tr.excluded" do |row|
       assert row.has_selector? "td", text: @transaction.reference_1
-      assert row.has_style?("color" => "rgba(170, 170, 170, 1)",
-                            "text-decoration" => /line-through/)
+      assert row.matches_style?(
+        {
+          "color": "rgba(170, 170, 170, 1)",
+          "text-decoration": /line-through/
+        }
+      )
     end
 
     page.select "Excluded Transactions", from: "mode"
@@ -39,8 +43,12 @@ class ExcludedTransactionsTest < ActionDispatch::IntegrationTest
     page.click_button "Search"
     page.has_selector? "tr.excluded" do |row|
       assert row.has_selector? "td", text: @transaction.reference_1
-      assert row.has_style?("color" => "rgba(170, 170, 170, 1)",
-                            "text-decoration" => /line-through/)
+      assert row.matches_style?(
+        {
+          "color": "rgba(170, 170, 170, 1)",
+          "text-decoration": /line-through/
+        }
+      )
     end
   end
 end

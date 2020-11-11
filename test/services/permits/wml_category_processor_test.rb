@@ -125,7 +125,7 @@ class WmlCategoryProcessorTest < ActiveSupport::TestCase
 
   def test_suggest_categories_does_not_consider_historic_credits
     historic = generate_historic_wml
-    historic.last.update_attributes(line_amount: -1234)
+    historic.last.update(line_amount: -1234)
     @processor.suggest_categories
     t = @header.transaction_details.find_by(reference_1: "0123456", reference_3: "1")
     assert_equal("2.15.2", t.category)

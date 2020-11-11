@@ -8,6 +8,7 @@ addons:
 
 env:
   global:
+    - NODE_VERSION=12.16.1
     - DEVISE_MAILER_SENDER=no-reply@example.com
     - REDIS_URL="redis://localhost:6379"
 
@@ -31,6 +32,10 @@ git:
 before_install:
   - export TZ=UTC
   - gem install bundler --no-document
+  # Autoprefixer which is used by ActionView does not support v8.12.0 which
+  # appears to be the default at the time of adding this config value. We use
+  # Node v12 in production.
+  - nvm install v12.16.1
 
 before_script:
   # To support running selenium on Travis we have told Travis to install Chrome

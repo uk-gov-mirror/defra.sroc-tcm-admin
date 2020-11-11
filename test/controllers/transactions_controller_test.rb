@@ -163,7 +163,7 @@ class TransactionControllerTest < ActionDispatch::IntegrationTest
     setup_cfd_read_only
     @transaction = transaction_details(:cfd_excluded_invoice_1)
     # make only flagged for exclusion
-    @transaction.update_attributes(status: "unbilled")
+    @transaction.update(status: "unbilled")
     assert @transaction.excluded
     put regime_transaction_url(@regime, @transaction),
         params: { transaction_detail: { excluded: "false" } }

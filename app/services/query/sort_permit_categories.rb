@@ -17,7 +17,7 @@ module Query
       when :descripton
         q.order(description: @sort_column)
       else
-        q.order("string_to_array(code, '.')::int[] #{dir}")
+        q.order(Arel.sql("string_to_array(code, '.')::int[] #{dir}"))
       end
     end
   end

@@ -132,7 +132,7 @@ class PermitStorageService
     if col.to_sym == :description
       query.order(description: dir)
     else
-      query.order("string_to_array(code, '.')::int[] #{dir}")
+      query.order(Arel.sql("string_to_array(code, '.')::int[] #{dir}"))
     end
   end
 

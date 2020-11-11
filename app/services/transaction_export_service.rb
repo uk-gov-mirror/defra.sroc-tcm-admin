@@ -10,7 +10,7 @@ class TransactionExportService
   end
 
   def full_export(transactions, options = {})
-    CSV.generate(options) do |csv|
+    CSV.generate(**options) do |csv|
       csv << batch_regime_headers
       transactions.each do |transaction|
         csv << batch_regime_columns.map { |c| transaction.send(c) }
@@ -19,7 +19,7 @@ class TransactionExportService
   end
 
   def export(transactions, options = {})
-    CSV.generate(options) do |csv|
+    CSV.generate(**options) do |csv|
       csv << regime_columns
       transactions.each do |transaction|
         csv << ExportFileFormat::COLUMNS.map { |c| transaction.send(c) }
@@ -28,7 +28,7 @@ class TransactionExportService
   end
 
   def export_history(transactions, options = {})
-    CSV.generate(options) do |csv|
+    CSV.generate(**options) do |csv|
       csv << regime_history_columns
       transactions.each do |transaction|
         csv << ExportFileFormat::HISTORY_COLUMNS.map { |c| transaction.send(c) }

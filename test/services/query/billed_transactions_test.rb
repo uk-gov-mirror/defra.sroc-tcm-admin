@@ -27,8 +27,8 @@ module Query
 
     def test_it_can_search_extra_attributes
       @history.each do |t|
-        t.update_attributes(tcm_transaction_reference: "x1y2z3",
-                            generated_filename: "wig77wam")
+        t.update(tcm_transaction_reference: "x1y2z3",
+                 generated_filename: "wig77wam")
       end
       # search category, tcm_transaction_reference, generated_filename
       ["3.4", "y2z", "wig77"].each do |v|
