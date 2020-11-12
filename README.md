@@ -1,6 +1,6 @@
 # Strategic Review of Charges - Tactical Charging Module
 
-![Build Status](https://github.com/DEFRA/sroc-tcm-admin/workflows/CI/badge.svg?branch=main)
+![Build Status](https://github.com/DEFRA/sroc-tcm-admin/workflows/CI/badge.svg?branch=master)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=sqale_index)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DEFRA_sroc-tcm-admin&metric=coverage)](https://sonarcloud.io/dashboard?id=DEFRA_sroc-tcm-admin)
