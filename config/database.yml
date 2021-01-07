@@ -1,26 +1,22 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= ENV["POSTGRES_USERNAME"] %>
-  password: <%= ENV["POSTGRES_PASSWORD"] %>
+  # For details on connection pooling, see rails configuration guide
+  # http://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV["RAILS_MAX_THREADS"] || 5 %>
+  host: <%= ENV["POSTGRES_HOST"] || "localhost" %>
+  port: <%= ENV["POSTGRES_PORT"] || 5432 %>
+  username: <%= ENV["POSTGRES_USERNAME"] || "vagrant" %>
+  password: <%= ENV["POSTGRES_PASSWORD"] || "vagrant" %>
 
 development:
   <<: *default
-  host: <%= ENV["POSTGRES_HOST"] %>
-  port: <%= ENV["POSTGRES_PORT"] %>
-  database: sroc
-  # database: sroc-tcm-admin_development
+  database: <%= ENV["POSTGRES_DB"] || "sroc-tcm-admin" %>
 
-test: &test
+test:
   <<: *default
-  host: <%= ENV["POSTGRES_HOST"] %>
-  post: <%= ENV["POSTGRES_PORT"] %>
-  database: sroc-tcm-admin_test
+  database: <%= ENV["POSTGRES_DB_TEST"] || "sroc-tcm-admin_test" %>
 
 production:
   <<: *default
-  database: sroc-tcm-admin_production
-
-cucumber:
-  <<: *test
+  database: <%= ENV["POSTGRES_DB"] || "sroc" %>
