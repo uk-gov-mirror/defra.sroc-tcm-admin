@@ -81,13 +81,18 @@ module ApplicationHelper
     v
   end
 
-  def app_version_info
-    if File.exist? Rails.root.join("APPVERSION")
-      File.read(Rails.root.join("APPVERSION")).chomp
-    elsif File.exist? Rails.root.join("REVISION")
-      File.read(Rails.root.join("REVISION")).chomp
+  def current_git_commit
+    @current_git_commit ||= begin
+      sha =
+        if Rails.env.production?
+          capistrano_file = Rails.root.join "REVISION"
+
+          File.open(capistrano_file, &:gets) if File.exist? capistrano_file
+        else
+          `git rev-parse HEAD`
+        end
+
+      sha[0...7] if sha.present?
     end
-  rescue StandardError => e
-    TcmLogger.notify(e)
   end
 end
