@@ -1,5 +1,23 @@
 # Changelog
 
+## [v3.1.0](https://github.com/DEFRA/sroc-tcm-admin/tree/v3.1.0) (2021-03-31)
+
+[Full Changelog](https://github.com/DEFRA/sroc-tcm-admin/compare/v3.0.0...v3.1.0)
+
+**Implemented enhancements:**
+
+- Talk to the rules service directly [\#406](https://github.com/DEFRA/sroc-tcm-admin/pull/406) ([Cruikshanks](https://github.com/Cruikshanks))
+
+**Fixed bugs:**
+
+- Remove dependence on mimemagic gem [\#405](https://github.com/DEFRA/sroc-tcm-admin/pull/405) ([Cruikshanks](https://github.com/Cruikshanks))
+
+**Merged pull requests:**
+
+- Bump webmock from 3.12.1 to 3.12.2 [\#407](https://github.com/DEFRA/sroc-tcm-admin/pull/407) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump oauth2 from 1.4.4 to 1.4.7 [\#404](https://github.com/DEFRA/sroc-tcm-admin/pull/404) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rspec-rails from 5.0.0 to 5.0.1 [\#403](https://github.com/DEFRA/sroc-tcm-admin/pull/403) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v3.0.0](https://github.com/DEFRA/sroc-tcm-admin/tree/v3.0.0) (2021-03-12)
 
 [Full Changelog](https://github.com/DEFRA/sroc-tcm-admin/compare/v2.8...v3.0.0)
@@ -189,7 +207,6 @@
 - Changed message for multiple transaction mismatch [\#187](https://github.com/DEFRA/sroc-tcm-admin/pull/187) ([tonyheadford](https://github.com/tonyheadford))
 - Fixing / rewriting category suggestion tests [\#186](https://github.com/DEFRA/sroc-tcm-admin/pull/186) ([tonyheadford](https://github.com/tonyheadford))
 - Category suggestion [\#185](https://github.com/DEFRA/sroc-tcm-admin/pull/185) ([tonyheadford](https://github.com/tonyheadford))
-- Used .indexOf instead of .startsWith in JS for IE [\#184](https://github.com/DEFRA/sroc-tcm-admin/pull/184) ([tonyheadford](https://github.com/tonyheadford))
 - Cache categories and filter codes at front-end [\#183](https://github.com/DEFRA/sroc-tcm-admin/pull/183) ([tonyheadford](https://github.com/tonyheadford))
 
 ## [v2.6](https://github.com/DEFRA/sroc-tcm-admin/tree/v2.6) (2019-05-10)
