@@ -13,6 +13,7 @@ class CalculateCharge < ServiceObject
     transaction = presenter.new(@transaction)
     @charge_params = transaction.charge_params
     @financial_year = transaction.financial_year
+
     @result = @body = @full_response = @amount = nil
   end
 
@@ -37,25 +38,33 @@ class CalculateCharge < ServiceObject
     @amount ||= extract_charge_amount
   end
 
-  private
+  def self.test_connection
+    regime = Regime.find_by!(slug: "cfd")
+    transaction_detail = TransactionDetail.new(
+      regime: regime,
+      category: "2.3.1",
+      temporary_cessation: false,
+      period_start: Date.new(2018, 4, 1),
+      period_end: Date.new(2019, 3, 31),
+      tcm_financial_year: "1819"
+    )
 
-  def extract_charge_amount
-    return unless success?
-
-    amt = (charge_calculation["calculation"]["chargeValue"] * 100).round
-    amt = -amt if @transaction.credit?
-    amt
+    CalculateCharge.new(transaction: transaction_detail).call
   end
 
+  private
+
   def calculate_charge
-    @response = http_connection.request(build_post_request)
+    @url = build_url
+    request = build_request
+    @response = http_connection.request(request)
 
     case @response
     when Net::HTTPSuccess
       # successfully completed charge calculation or
       # an error in the calculation or a ruleset issue
       # we want to show an error at the front end if there's an issue
-      @body = JSON.parse(@response.body)
+      @body = build_response(JSON.parse(@response.body))
       true
     when Net::HTTPInternalServerError
       TcmLogger.error("Calculate charge problem: #{JSON.parse(@response.body)}")
@@ -66,7 +75,7 @@ class CalculateCharge < ServiceObject
       false
     else
       # something unexpected happened
-      TcmLogger.notify(CalculationServiceError.new(@response.value))
+      TcmLogger.notify(RulesServiceError.new(@response.value))
       @body = build_error_response("Unable to calculate charge due to an " \
                                    "unexpected error.\nPlease try again later")
       false
@@ -80,32 +89,53 @@ class CalculateCharge < ServiceObject
     false
   end
 
-  def payload
-    {
-      regime: @regime.slug,
-      financialYear: @financial_year,
-      chargeRequest: @charge_params
-    }
+  def build_url
+    URI.parse(File.join(ENV.fetch("RULES_SERVICE_URL"), determine_path))
   end
 
-  def build_post_request
-    request = Net::HTTP::Post.new(charge_service_url.request_uri,
-                                  'Content-Type': "application/json")
-    request.body = payload.to_json
+  def determine_path
+    env_slug = @regime.slug.upcase.squish
+    year_suffix = "_#{@financial_year}_#{(@financial_year + 1).to_s[-2..3]}"
+
+    path = File.join(ENV.fetch("#{env_slug}_APP"), ENV.fetch("#{env_slug}_RULESET"))
+
+    "#{path}#{year_suffix}"
+  end
+
+  def build_request
+    request = Net::HTTP::Post.new(@url.request_uri, 'Content-Type': "application/json")
+    request.body = { tcmChargingRequest: @charge_params }.to_json
+    request.basic_auth(ENV.fetch("RULES_SERVICE_USER"), ENV.fetch("RULES_SERVICE_PASSWORD"))
+
     request
+  end
+
+  def http_connection
+    http = Net::HTTP.new(@url.host, @url.port)
+    http.use_ssl = @url.scheme.downcase == "https"
+
+    http
+  end
+
+  def build_response(body)
+    response = {
+      uuid: body["__DecisionID__"],
+      generatedAt: Time.new,
+      calculation: body["tcmChargingResponse"]
+    }
+
+    response.with_indifferent_access
   end
 
   def build_error_response(text)
     { "calculation": { "messages": text } }
   end
 
-  def charge_service_url
-    @charge_service_url ||= URI.parse(ENV.fetch("CHARGE_SERVICE_URL"))
-  end
+  def extract_charge_amount
+    return unless success?
 
-  def http_connection
-    http = Net::HTTP.new(charge_service_url.host, charge_service_url.port)
-    http.use_ssl = charge_service_url.scheme.downcase == "https"
-    http
+    amt = (charge_calculation["calculation"]["chargeValue"] * 100).round
+    amt = -amt if @transaction.credit?
+    amt
   end
 end

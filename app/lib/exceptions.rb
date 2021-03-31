@@ -4,7 +4,7 @@ module Exceptions
   class FileNotFoundError < StandardError; end
   class TransactionFileError < StandardError; end
   class PermissionError < StandardError; end
-  class CalculationServiceError < StandardError; end
+  class RulesServiceError < StandardError; end
 
   class ChargingModuleApiError < StandardError
     def initialize(http, endpoint, response)

@@ -131,9 +131,5 @@ module Permits
     def permit_store
       @permit_store ||= PermitStorageService.new(regime, user)
     end
-
-    def calculator
-      @calculator ||= CalculationService.new(user)
-    end
   end
 end

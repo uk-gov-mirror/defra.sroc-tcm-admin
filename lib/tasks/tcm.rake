@@ -8,10 +8,12 @@ namespace :tcm do
 
   desc "Check charging service accessible"
   task check_charge_service: :environment do
-    result = CalculationService.new.check_connectivity
+    result = CalculateCharge.test_connection.charge_calculation
+
     abort("Cannot generate charge") unless result &&
                                            result["calculation"] &&
                                            result["calculation"]["chargeValue"]
+    puts "Successfully generated charge"
   end
 
   desc "Generate suggested categories"
