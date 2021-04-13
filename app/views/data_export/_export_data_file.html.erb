@@ -9,7 +9,7 @@
 <% else %>
   <dl class="row">
     <dt class="col-5 col-lg-6">Export file generated on:</dt>
-    <dd class="col-7 col-lg-6"><%= formatted_date(export_data_file.last_exported_at, true) %></dd>
+    <dd class="col-7 col-lg-6"><%= formatted_date(export_data_file.last_exported_at, include_time: true) %></dd>
   </dl>
 <% end %>
 <% if export_data_file.exported_filename %>
