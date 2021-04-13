@@ -93,7 +93,7 @@ class AnnualBillingDataFilesController < ApplicationController
   def present_file(upload, errors)
     {
       filename: File.basename(upload.filename),
-      upload_date: helpers.formatted_date(upload.created_at, true),
+      upload_date: helpers.formatted_date(upload.created_at, include_time: true),
       status: upload.status.humanize,
       success_count: upload.success_count,
       failed_count: upload.failed_count,
