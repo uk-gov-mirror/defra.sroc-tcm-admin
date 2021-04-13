@@ -3,31 +3,13 @@
 source "https://rubygems.org"
 ruby "2.7.1"
 
-# Temporarily commented out due to the issue caused by mimemagic, a dependency of activestorage being yanked from
-# RubyGems. See https://github.com/rails/rails/issues/41750
-# Referencing the rails dependencies directly was inspired by
-# https://github.com/DFE-Digital/early-careers-framework/pull/178
-# gem "rails", "~> 6.0.3"
-# These rails gems need to be commented out to avoid bringing mimemagic in
-# activestorage is the gem that has a dependency on marcel, which has the dependency on mimemagic
-# gem "activestorage", "~> 6.0.3"
-# actionmailbox and actiontext both have a dependency on activestorage
-# gem "actionmailbox", "~> 6.0.3"
-# gem "actiontext", "~> 6.0.3"
-gem "actioncable", "~> 6.0.3"
-gem "actionmailer", "~> 6.0.3"
-gem "actionpack", "~> 6.0.3"
-gem "actionview", "~> 6.0.3"
-gem "activejob", "~> 6.0.3"
-gem "activemodel", "~> 6.0.3"
-gem "activerecord", "~> 6.0.3"
-gem "activesupport", "~> 6.0.3"
-gem "bundler", ">= 1.3.0"
-gem "railties", "~> 6.0.3"
-gem "sprockets-rails", ">= 2.0.0"
+# Rails must be v6.1.3.1 or greater to avoid the issue around earlier versions of mimemagic and its use of GPL licensed
+# data. See https://github.com/rails/rails/issues/41750 and https://github.com/DEFRA/sroc-tcm-admin/pull/405 for more
+# details
+gem "rails", ">= 6.1.3.1"
 
 # Use postgresql as the database for Active Record
-gem "pg", "~> 0.18"
+gem "pg", "~> 1.2"
 
 gem "aws-sdk", "~> 2"
 # bootstrap 4
