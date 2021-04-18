@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-namespace :file_import do
-  desc "Check for and process import files"
-  task run: :environment do
+namespace :jobs do
+  desc "Check for and process transaction import files"
+  task file_import: :environment do
     FileImportService.call
   end
 end
