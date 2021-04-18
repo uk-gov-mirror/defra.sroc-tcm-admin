@@ -21,7 +21,7 @@ class FileImportService < ServiceObject
       result = ListEtlImportFiles.call
       result.files.each do |f|
         begin
-          Rails.logger.info("Importing file #{f}")
+          puts("Importing file #{f}")
           in_file = Tempfile.new
           out_file = Tempfile.new
           GetEtlImportFile.call(remote_path: f, local_path: in_file.path)
@@ -40,7 +40,7 @@ class FileImportService < ServiceObject
               processor = category_processor(transaction_file, user)
               processor&.suggest_categories
             rescue StandardError => e
-              Rails.logger.warn("Failed suggesting category: #{e.message}")
+              puts("Failed suggesting category for #{f}: #{e.message}")
             end
           else
             raise Exceptions::TransactionFileError,
@@ -50,13 +50,13 @@ class FileImportService < ServiceObject
         rescue Exceptions::TransactionFileError, ArgumentError => e
           # invalid transaction file or some other file handling issue
           # move file to quarantine
-          Rails.logger.warn("Quarantining file #{f} because: #{e}")
+          puts("Quarantining file #{f} because: #{e}")
           PutQuarantineFile.call(local_path: in_file.path,
                                  remote_path: f)
           DeleteEtlImportFile.call(remote_path: f)
           quarantined += 1
         rescue StandardError => e
-          Rails.logger.warn("Failed to import file #{f}: #{e}")
+          puts("Failed to import file #{f}: #{e}")
           failed += 1
         ensure
           in_file.close
@@ -66,9 +66,7 @@ class FileImportService < ServiceObject
         end
       end
 
-      Rails.logger.info(
-        "Successfully copied #{success} files, failed to copy #{failed}, quarantined #{quarantined} files"
-      )
+      puts("Successfully copied #{success} files, failed to copy #{failed}, quarantined #{quarantined} files")
     ensure
       SystemConfig.config.stop_import
     end
