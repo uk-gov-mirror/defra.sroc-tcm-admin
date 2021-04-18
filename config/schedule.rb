@@ -6,7 +6,7 @@
 # http://en.wikipedia.org/wiki/Cron
 
 every 15.minutes, roles: [:db] do
-  runner "FileCheckJob.perform_now"
+  rake "jobs:file_import"
 end
 
 every 1.day, at: "5:30 am", roles: [:db] do
