@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-class FileCheckJob < ApplicationJob
-  queue_as :default
+class FileImportService < ServiceObject
+  def initialize(_params = {})
+    super()
+  end
 
-  def perform(*_args)
+  def call
     return unless SystemConfig.config.start_import
 
     begin
@@ -43,6 +45,7 @@ class FileCheckJob < ApplicationJob
             raise Exceptions::TransactionFileError,
                   "File generated invalid transaction record [#{f}]"
           end
+          @result = true
         rescue Exceptions::TransactionFileError, ArgumentError => e
           # invalid transaction file or some other file handling issue
           # move file to quarantine
