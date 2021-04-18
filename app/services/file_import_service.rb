@@ -21,6 +21,7 @@ class FileImportService < ServiceObject
       result = ListEtlImportFiles.call
       result.files.each do |f|
         begin
+          Rails.logger.info("Importing file #{f}")
           in_file = Tempfile.new
           out_file = Tempfile.new
           GetEtlImportFile.call(remote_path: f, local_path: in_file.path)
@@ -49,13 +50,13 @@ class FileImportService < ServiceObject
         rescue Exceptions::TransactionFileError, ArgumentError => e
           # invalid transaction file or some other file handling issue
           # move file to quarantine
-          Rails.logger.warn("Quarantining file because: #{e}")
+          Rails.logger.warn("Quarantining file #{f} because: #{e}")
           PutQuarantineFile.call(local_path: in_file.path,
                                  remote_path: f)
           DeleteEtlImportFile.call(remote_path: f)
           quarantined += 1
         rescue StandardError => e
-          Rails.logger.warn("Failed to import file: #{e}")
+          Rails.logger.warn("Failed to import file #{f}: #{e}")
           failed += 1
         ensure
           in_file.close
