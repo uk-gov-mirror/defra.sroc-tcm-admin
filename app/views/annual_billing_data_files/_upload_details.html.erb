@@ -2,7 +2,7 @@
   <dt class="col-sm-4 col-md-3">Filename</dt>
   <dd class="col-sm-7 col-md-8"><%= File.basename @upload.filename %></dd>
   <dt class="col-sm-4 col-md-3">Date uploaded</dt>
-  <dd class="col-sm-7 col-md-8"><%= formatted_date(@upload.created_at, true) %></dd>
+  <dd class="col-sm-7 col-md-8"><%= formatted_date(@upload.created_at, include_time: true) %></dd>
   <dt class="col-sm-4 col-md-3">Status</dt>
   <dd class="col-sm-7 col-md-8" id="upload-status"><%= @upload.status.humanize %></dd>
   <dt class="col-sm-4 col-md-3">Records updated</dt>

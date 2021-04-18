@@ -28,7 +28,7 @@
               <%= link_to File.basename(upload.filename),
                 regime_annual_billing_data_file_path(@regime, upload) %>
             </td>
-            <td><%= formatted_date(upload.created_at, true) %></td>
+            <td><%= formatted_date(upload.created_at, include_time: true) %></td>
             <td><%= upload.status.humanize %></td>
             <td><%= upload.failed_count %></td>
           </tr>
