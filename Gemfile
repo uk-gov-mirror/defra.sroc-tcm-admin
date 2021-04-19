@@ -73,7 +73,7 @@ end
 group :test do
   gem "capybara"
   gem "capybara-selenium"
-  gem "factory_bot_rails", "~> 4.0"
+  gem "factory_bot_rails"
   gem "mocha"
   gem "rails-controller-testing"
   gem "selenium-webdriver"
