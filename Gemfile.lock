@@ -106,6 +106,10 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
+    database_cleaner-active_record (2.0.0)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     defra_ruby_style (0.2.2)
       rubocop (~> 0.82)
     devise (4.7.3)
@@ -391,6 +395,7 @@ DEPENDENCIES
   byebug
   capybara
   capybara-selenium
+  database_cleaner-active_record
   defra_ruby_style
   devise
   devise_invitable
