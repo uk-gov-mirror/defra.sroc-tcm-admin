@@ -65,6 +65,13 @@ RSpec.describe FileImportService do
           expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
         end
 
+        it "marks the import as successful" do
+          service.call
+
+          expect(service.success?).to be(true)
+          expect(service.failed?).to be(false)
+        end
+
         context "but no category can be suggested" do
           before(:each) do
             allow_any_instance_of(Permits::CfdCategoryProcessor).to receive(:fetch_unique_consents).and_return(nil)
@@ -92,6 +99,13 @@ RSpec.describe FileImportService do
 
             expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
           end
+
+          it "still marks the import as successful" do
+            service.call
+
+            expect(service.success?).to be(true)
+            expect(service.failed?).to be(false)
+          end
         end
       end
 
@@ -114,6 +128,13 @@ RSpec.describe FileImportService do
 
             expect(etl_file_store.list("import")).to include("import/#{import_file}")
           end
+
+          it "marks the import as failed" do
+            service.call
+
+            expect(service.success?).to be(false)
+            expect(service.failed?).to be(true)
+          end
         end
 
         context "because the regime is unrecognised" do
@@ -133,6 +154,13 @@ RSpec.describe FileImportService do
             service.call
 
             expect(etl_file_store.list("import")).to include("import/#{import_file}")
+          end
+
+          it "marks the import as failed" do
+            service.call
+
+            expect(service.success?).to be(false)
+            expect(service.failed?).to be(true)
           end
         end
 
@@ -160,6 +188,13 @@ RSpec.describe FileImportService do
 
             expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
           end
+
+          it "marks the import as failed" do
+            service.call
+
+            expect(service.success?).to be(false)
+            expect(service.failed?).to be(true)
+          end
         end
 
         context "because the file is not an import file" do
@@ -186,6 +221,13 @@ RSpec.describe FileImportService do
 
             expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
           end
+
+          it "marks the import as failed" do
+            service.call
+
+            expect(service.success?).to be(false)
+            expect(service.failed?).to be(true)
+          end
         end
       end
     end
@@ -201,6 +243,13 @@ RSpec.describe FileImportService do
         service.call
 
         expect(etl_file_store.list("import")).to include("import/#{import_file}")
+      end
+
+      it "marks the import as failed" do
+        service.call
+
+        expect(service.success?).to be(false)
+        expect(service.failed?).to be(true)
       end
     end
   end

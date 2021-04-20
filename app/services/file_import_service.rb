@@ -6,6 +6,8 @@ class FileImportService < ServiceObject
   end
 
   def call
+    # Default the overall import result to `false`
+    @result = false
     return unless SystemConfig.config.start_import
 
     begin
@@ -42,7 +44,6 @@ class FileImportService < ServiceObject
           rescue StandardError => e
             puts("Failed suggesting category for #{f}: #{e.message}")
           end
-          @result = true
         rescue Exceptions::TransactionFileError, ArgumentError => e
           # invalid transaction file or some other file handling issue
           # move file to quarantine
@@ -51,9 +52,11 @@ class FileImportService < ServiceObject
                                  remote_path: f)
           DeleteEtlImportFile.call(remote_path: f)
           quarantined += 1
+          @result = false
         rescue StandardError => e
           puts("Failed to import file #{f}: #{e}")
           failed += 1
+          @result = false
         ensure
           in_file.close
           in_file.unlink
@@ -61,6 +64,11 @@ class FileImportService < ServiceObject
           out_file.unlink
         end
       end
+
+      # Set the service object result to `true` as long as nothing got quarantined or failed. Even if there are no files
+      # imported the importer can be said to have completed 'successfully'. But we set the result to 'false' if any one
+      # file fails
+      @result = true unless (quarantined + failed) > 0
 
       puts("Successfully copied #{success} files, failed to copy #{failed}, quarantined #{quarantined} files")
     ensure
