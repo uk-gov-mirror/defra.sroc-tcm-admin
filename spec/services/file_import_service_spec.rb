@@ -66,8 +66,26 @@ RSpec.describe FileImportService do
         end
       end
 
-      it "imports the transaction data" do
-        service.call
+      context "and the import file is invalid" do
+        context "because the regime is unrecognised" do
+          let(:import_file) { "footi999.dat.csv" }
+
+          it "does not import any data" do
+            service.call
+
+            transaction_headers = TransactionHeader.all
+            transaction_details = TransactionDetail.all
+
+            expect(transaction_headers.length).to eq(0)
+            expect(transaction_details.length).to eq(0)
+          end
+
+          it "leaves the file in 'import'" do
+            service.call
+
+            expect(etl_file_store.list("import")).to include("import/#{import_file}")
+          end
+        end
 
         transaction_header = TransactionHeader.first
         transaction_details = TransactionDetail.all
