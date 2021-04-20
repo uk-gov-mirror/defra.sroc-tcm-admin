@@ -87,12 +87,31 @@ RSpec.describe FileImportService do
           end
         end
 
-        transaction_header = TransactionHeader.first
-        transaction_details = TransactionDetail.all
+        context "because the file type is not 'I'" do
+          let(:import_file) { "cfdti666.dat.csv" }
 
-        expect(transaction_header.filename).to eq(import_file)
-        expect(transaction_header.file_reference).to eq("CFDTI00999")
-        expect(transaction_details.length).to eq(3)
+          it "does not import any data" do
+            service.call
+
+            transaction_headers = TransactionHeader.all
+            transaction_details = TransactionDetail.all
+
+            expect(transaction_headers.length).to eq(0)
+            expect(transaction_details.length).to eq(0)
+          end
+
+          it "creates a copy in 'quarantine'" do
+            service.call
+
+            expect(archive_file_store.list("quarantine")).to include("quarantine/#{import_file}")
+          end
+
+          it "deletes the original import file" do
+            service.call
+
+            expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
+          end
+        end
       end
     end
 
