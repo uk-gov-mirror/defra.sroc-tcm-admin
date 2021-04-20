@@ -68,7 +68,7 @@ class FileImportService < ServiceObject
       # Set the service object result to `true` as long as nothing got quarantined or failed. Even if there are no files
       # imported the importer can be said to have completed 'successfully'. But we set the result to 'false' if any one
       # file fails
-      @result = true unless (quarantined + failed) > 0
+      @result = true unless (quarantined + failed).positive?
 
       puts("Successfully copied #{success} files, failed to copy #{failed}, quarantined #{quarantined} files")
     ensure
