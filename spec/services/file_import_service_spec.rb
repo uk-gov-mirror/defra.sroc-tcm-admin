@@ -4,7 +4,6 @@ require "rails_helper"
 
 RSpec.describe FileImportService do
   describe "#call" do
-    let(:import_file) { "cfdti999.dat.csv" }
     let(:service) { FileImportService.new }
     let(:etl_file_store) { LocalFileStore.new("etl_bucket") }
     let(:archive_file_store) { LocalFileStore.new("archive_bucket") }
@@ -40,16 +39,31 @@ RSpec.describe FileImportService do
         allow(User).to receive(:system_account).and_return(user)
       end
 
-      it "deletes the original import file" do
-        service.call
+      context "and the import file is valid" do
+        let(:import_file) { "cfdti999.dat.csv" }
 
-        expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
-      end
+        it "imports the transaction data" do
+          service.call
 
-      it "creates a copy in the 'archive_bucket'" do
-        service.call
+          transaction_header = TransactionHeader.first
+          transaction_details = TransactionDetail.all
 
-        expect(archive_file_store.list("import")).to include("import/#{import_file}")
+          expect(transaction_header.filename).to eq(import_file)
+          expect(transaction_header.file_reference).to eq("CFDTI00999")
+          expect(transaction_details.length).to eq(3)
+        end
+
+        it "creates a copy in the 'archive_bucket'" do
+          service.call
+
+          expect(archive_file_store.list("import")).to include("import/#{import_file}")
+        end
+
+        it "deletes the original import file" do
+          service.call
+
+          expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
+        end
       end
 
       it "imports the transaction data" do
@@ -65,6 +79,8 @@ RSpec.describe FileImportService do
     end
 
     context "when another import is running" do
+      let(:import_file) { "cfdti999.dat.csv" }
+
       before(:each) do
         allow_any_instance_of(SystemConfig).to receive(:start_import).and_return(false)
       end
