@@ -28,23 +28,19 @@ class FileImportService < ServiceObject
           in_file.rewind
 
           transaction_file = importer.import(in_file.path, File.basename(f))
-          if transaction_file&.valid?
-            in_file.rewind
-            PutArchiveImportFile.call(local_path: in_file.path,
-                                      remote_path: f)
+          in_file.rewind
+          PutArchiveImportFile.call(local_path: in_file.path,
+                                    remote_path: f)
 
-            DeleteEtlImportFile.call(remote_path: f)
-            success += 1
+          DeleteEtlImportFile.call(remote_path: f)
+          success += 1
 
-            begin
-              processor = category_processor(transaction_file, user)
-              processor&.suggest_categories
-            rescue StandardError => e
-              puts("Failed suggesting category for #{f}: #{e.message}")
-            end
-          else
-            raise Exceptions::TransactionFileError,
-                  "File generated invalid transaction record [#{f}]"
+          begin
+            processor = category_processor(transaction_file, user)
+            puts("Category #{processor.class} #{processor}")
+            processor&.suggest_categories
+          rescue StandardError => e
+            puts("Failed suggesting category for #{f}: #{e.message}")
           end
           @result = true
         rescue Exceptions::TransactionFileError, ArgumentError => e

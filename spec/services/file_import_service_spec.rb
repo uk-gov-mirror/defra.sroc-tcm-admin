@@ -64,9 +64,58 @@ RSpec.describe FileImportService do
 
           expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
         end
+
+        context "but no category can be suggested" do
+          before(:each) do
+            allow_any_instance_of(Permits::CfdCategoryProcessor).to receive(:fetch_unique_consents).and_return(nil)
+          end
+
+          it "still imports the transaction data" do
+            service.call
+
+            transaction_header = TransactionHeader.first
+            transaction_details = TransactionDetail.all
+
+            expect(transaction_header.filename).to eq(import_file)
+            expect(transaction_header.file_reference).to eq("CFDTI00999")
+            expect(transaction_details.length).to eq(3)
+          end
+
+          it "still creates a copy in the 'archive_bucket'" do
+            service.call
+
+            expect(archive_file_store.list("import")).to include("import/#{import_file}")
+          end
+
+          it "still deletes the original import file" do
+            service.call
+
+            expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
+          end
+        end
       end
 
       context "and the import file is invalid" do
+        context "because the file is missing required data" do
+          let(:import_file) { "cfdti.dat.csv" }
+
+          it "does not import any data" do
+            service.call
+
+            transaction_headers = TransactionHeader.all
+            transaction_details = TransactionDetail.all
+
+            expect(transaction_headers.length).to eq(0)
+            expect(transaction_details.length).to eq(0)
+          end
+
+          it "leaves the file in 'import'" do
+            service.call
+
+            expect(etl_file_store.list("import")).to include("import/#{import_file}")
+          end
+        end
+
         context "because the regime is unrecognised" do
           let(:import_file) { "footi999.dat.csv" }
 
