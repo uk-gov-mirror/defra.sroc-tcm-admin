@@ -84,11 +84,3 @@ group :test do
   # Stubbing HTTP requests
   gem "webmock"
 end
-
-group :benchmark do
-  gem "benchmark-ips"
-  gem "flamegraph"
-  gem "memory_profiler"
-  gem "rack-mini-profiler"
-  gem "stackprof"
-end
