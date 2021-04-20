@@ -112,6 +112,32 @@ RSpec.describe FileImportService do
             expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
           end
         end
+
+        context "because the file is not an import file" do
+          let(:import_file) { "unrecognised.txt" }
+
+          it "does not import any data" do
+            service.call
+
+            transaction_headers = TransactionHeader.all
+            transaction_details = TransactionDetail.all
+
+            expect(transaction_headers.length).to eq(0)
+            expect(transaction_details.length).to eq(0)
+          end
+
+          it "creates a copy in 'quarantine'" do
+            service.call
+
+            expect(archive_file_store.list("quarantine")).to include("quarantine/#{import_file}")
+          end
+
+          it "deletes the original import file" do
+            service.call
+
+            expect(etl_file_store.list("import")).not_to include("import/#{import_file}")
+          end
+        end
       end
     end
 
