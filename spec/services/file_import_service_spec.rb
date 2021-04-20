@@ -10,7 +10,9 @@ RSpec.describe FileImportService do
 
     before(:each) do
       # Copy our import fixture to the import folder. It doesn't matter if it already exists as we just overwrite
-      etl_file_store.store_file(Rails.root.join("spec", "fixtures", import_file), File.join("import", import_file))
+      etl_file_store.store_file(
+        Rails.root.join("spec", "fixtures", "import_files", import_file), File.join("import", import_file)
+      )
 
       # The file importer uses `puts()` to ensure details are logged when run from a rake task. We don't want that
       # output in our tests so we use this to silence it. If you need to debug anything whilst working on tests
