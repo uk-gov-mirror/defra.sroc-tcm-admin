@@ -19,6 +19,18 @@ RSpec.describe FileImportService do
       allow($stdout).to receive(:puts)
     end
 
+    after(:each) do
+      # Clean up - ensure any files we create irrespective of whether the test is successful or not is deleted
+      full_path = File.join(etl_file_store.base_path, "import", import_file)
+      FileUtils.rm(full_path) if File.exist?(full_path)
+
+      full_path = File.join(archive_file_store.base_path, "import", import_file)
+      FileUtils.rm(full_path) if File.exist?(full_path)
+
+      full_path = File.join(archive_file_store.base_path, "quarantine", import_file)
+      FileUtils.rm(full_path) if File.exist?(full_path)
+    end
+
     context "when no other import is running" do
       let(:user) { build(:user) }
       let!(:regime) { create(:regime) }
