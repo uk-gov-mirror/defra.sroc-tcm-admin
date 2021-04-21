@@ -105,6 +105,10 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
+    database_cleaner-active_record (2.0.0)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     defra_ruby_style (0.2.2)
       rubocop (~> 0.82)
     devise (4.7.3)
@@ -124,11 +128,11 @@ GEM
       railties (>= 3.2)
     erubi (1.10.0)
     execjs (2.7.0)
-    factory_bot (4.11.1)
-      activesupport (>= 3.0.0)
-    factory_bot_rails (4.11.1)
-      factory_bot (~> 4.11.1)
-      railties (>= 3.0.0)
+    factory_bot (6.1.0)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.1.0)
+      factory_bot (~> 6.1.0)
+      railties (>= 5.0.0)
     faraday (1.3.0)
       faraday-net_http (~> 1.0)
       multipart-post (>= 1.2, < 3)
@@ -384,11 +388,12 @@ DEPENDENCIES
   byebug
   capybara
   capybara-selenium
+  database_cleaner-active_record
   defra_ruby_style
   devise
   devise_invitable
   dotenv-rails
-  factory_bot_rails (~> 4.0)
+  factory_bot_rails
   jbuilder (~> 2.5)
   jquery-rails
   jquery-ui-rails

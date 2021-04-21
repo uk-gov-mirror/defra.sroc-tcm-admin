@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
-class FileCheckJob < ApplicationJob
-  queue_as :default
+class FileImportService < ServiceObject
+  def initialize(_params = {})
+    super()
+  end
 
-  def perform(*_args)
+  def call
+    # Default the overall import result to `false`
+    @result = false
     return unless SystemConfig.config.start_import
 
     begin
@@ -19,40 +23,37 @@ class FileCheckJob < ApplicationJob
       result = ListEtlImportFiles.call
       result.files.each do |f|
         begin
+          puts("Importing file #{f}")
           in_file = Tempfile.new
           out_file = Tempfile.new
           GetEtlImportFile.call(remote_path: f, local_path: in_file.path)
           in_file.rewind
 
           transaction_file = importer.import(in_file.path, File.basename(f))
-          if transaction_file&.valid?
-            in_file.rewind
-            PutArchiveImportFile.call(local_path: in_file.path,
-                                      remote_path: f)
+          in_file.rewind
+          PutArchiveImportFile.call(local_path: in_file.path,
+                                    remote_path: f)
 
-            DeleteEtlImportFile.call(remote_path: f)
-            success += 1
+          DeleteEtlImportFile.call(remote_path: f)
+          success += 1
 
-            begin
-              processor = category_processor(transaction_file, user)
-              processor&.suggest_categories
-            rescue StandardError => e
-              Rails.logger.warn("Failed suggesting category: #{e.message}")
-            end
-          else
-            raise Exceptions::TransactionFileError,
-                  "File generated invalid transaction record [#{f}]"
+          begin
+            processor = category_processor(transaction_file, user)
+            puts("Category #{processor.class} #{processor}")
+            processor&.suggest_categories
+          rescue StandardError => e
+            puts("Failed suggesting category for #{f}: #{e.message}")
           end
         rescue Exceptions::TransactionFileError, ArgumentError => e
           # invalid transaction file or some other file handling issue
           # move file to quarantine
-          Rails.logger.warn("Quarantining file because: #{e}")
+          puts("Quarantining file #{f} because: #{e}")
           PutQuarantineFile.call(local_path: in_file.path,
                                  remote_path: f)
           DeleteEtlImportFile.call(remote_path: f)
           quarantined += 1
         rescue StandardError => e
-          Rails.logger.warn("Failed to import file: #{e}")
+          puts("Failed to import file #{f}: #{e}")
           failed += 1
         ensure
           in_file.close
@@ -62,9 +63,12 @@ class FileCheckJob < ApplicationJob
         end
       end
 
-      Rails.logger.info(
-        "Successfully copied #{success} files, failed to copy #{failed}, quarantined #{quarantined} files"
-      )
+      # Set the service object result to `true` as long as nothing got quarantined or failed. Even if there are no files
+      # imported the importer can be said to have completed 'successfully'. But we set the result to 'false' if any one
+      # file fails
+      @result = true unless (quarantined + failed).positive?
+
+      puts("Successfully copied #{success} files, failed to copy #{failed}, quarantined #{quarantined} files")
     ensure
       SystemConfig.config.stop_import
     end

@@ -73,7 +73,9 @@ end
 group :test do
   gem "capybara"
   gem "capybara-selenium"
-  gem "factory_bot_rails", "~> 4.0"
+  # Needed because the existing minitest suite leaves data in the DB which interferes with the rspec tests
+  gem "database_cleaner-active_record"
+  gem "factory_bot_rails"
   gem "mocha"
   gem "rails-controller-testing"
   gem "selenium-webdriver"
